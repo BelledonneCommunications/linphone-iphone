@@ -492,12 +492,11 @@ class TelecomManager: ObservableObject {
 				Log.info("[Call] Recording is stopped by \(call.remoteAddress!.asStringUriOnly())")
 			}
 			
-			switch call.state {
-			case Call.State.PausedByRemote:
+			if cstate == Call.State.PausedByRemote {
 				DispatchQueue.main.async {
 					self.isPausedByRemote = true
 				}
-			default:
+			} else {
 				DispatchQueue.main.async {
 					self.isPausedByRemote = false
 				}
@@ -515,13 +514,7 @@ class TelecomManager: ObservableObject {
 				let appData = CallAppData()
 				TelecomManager.setAppData(sCall: call, appData: appData)
 			}
-			/*
-			 if let conference = call.conference, ConferenceViewModel.shared.conference.value == nil {
-			 Log.info("[Call] Found conference attached to call and no conference in dedicated view model, init & configure it")
-			 ConferenceViewModel.shared.initConference(conference)
-			 ConferenceViewModel.shared.configureConference(conference)
-			 }
-			 */
+			
 			switch cstate {
 			case .IncomingReceived:
 				let addr = call.remoteAddress
@@ -539,38 +532,9 @@ class TelecomManager: ObservableObject {
 						}
 					}
 	#endif
-					/*
-					if call.replacedCall != nil {
-						self.endCallKitReplacedCall = false
-						
-						let uuid = self.providerDelegate.uuids["\(TelecomManager.uuidReplacedCall ?? "")"]
-						let callInfo = self.providerDelegate.callInfos[uuid!]
-						callInfo!.callId = self.referedToCall ?? ""
-						if callInfo != nil && uuid != nil && addr != nil {
-							self.providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
-							self.providerDelegate.uuids.removeValue(forKey: callId)
-							self.providerDelegate.uuids.updateValue(uuid!, forKey: callInfo!.callId)
-							self.providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: self.remoteConfVideo, displayName: displayName)
-						}
-					} else */
 					if TelecomManager.callKitEnabled(core: core) {
-						/*
-						 let isConference = isConferenceCall(call: call)
-						 let isEarlyConference = isConference && CallsViewModel.shared.currentCallData.value??.isConferenceCall.value != true // Conference info not be received yet.
-						 if (isEarlyConference) {
-						 CallsViewModel.shared.currentCallData.readCurrentAndObserve { _ in
-						 let uuid = providerDelegate.uuids["\(callId)"]
-						 if (uuid != nil) {
-						 displayName = "\(VoipTexts.conference_incoming_title):  \(CallsViewModel.shared.currentCallData.value??.remoteConferenceSubject.value ?? "") (\(CallsViewModel.shared.currentCallData.value??.conferenceParticipantsCountLabel.value ?? ""))"
-						 providerDelegate.updateCall(uuid: uuid!, handle: addr!.asStringUriOnly(), hasVideo: video, displayName: displayName)
-						 }
-						 }
-						 }
-						 */
 						let uuid = self.providerDelegate.uuids["\(callId)"]
-						// if call.replacedCall == nil {
-							TelecomManager.uuidReplacedCall = callId
-						// }
+						TelecomManager.uuidReplacedCall = callId
 						
 						if uuid != nil {
 							// Tha app is now registered, updated the call already existed.
@@ -581,17 +545,7 @@ class TelecomManager: ObservableObject {
 							let videoDir = call.remoteParams?.videoDirection != MediaDirection.Inactive
 							self.displayIncomingCall(call: call, handle: addr!.asStringUriOnly(), hasVideo: videoEnabled && videoDir && !isConference, callId: callId, displayName: displayName)
 						}
-					} /* else if UIApplication.shared.applicationState != .active {
-					   // not support callkit , use notif
-					   let content = UNMutableNotificationContent()
-					   content.title = NSLocalizedString("Incoming call", comment: "")
-					   content.body = displayName
-					   content.sound = UNNotificationSound.init(named: UNNotificationSoundName.init("notes_of_the_optimistic.caf"))
-					   content.categoryIdentifier = "call_cat"
-					   content.userInfo = ["CallId": callId]
-					   let req = UNNotificationRequest.init(identifier: "call_request", content: content, trigger: nil)
-					   UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
-					   } */
+					}
 				}
 			case .StreamsRunning:
 				if TelecomManager.callKitEnabled(core: core) {
@@ -611,13 +565,6 @@ class TelecomManager: ObservableObject {
 						}
 					}
 				}
-				
-				/*
-				 if speakerBeforePause {
-				 speakerBeforePause = false
-				 AudioRouteUtils.routeAudioToSpeaker(core: core)
-				 }
-				 */
 				
 				actionToFulFill?.fulfill()
 				actionToFulFill = nil
@@ -641,16 +588,7 @@ class TelecomManager: ObservableObject {
 						Log.info("CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId)")
 						providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
 					} else {
-						if false { /* isConferenceCall(call: call) {
-									let uuid = UUID()
-									let callInfo = CallInfo.newOutgoingCallInfo(addr: call.remoteAddress!, isSas: call.params?.mediaEncryption == .ZRTP, displayName: VoipTexts.conference_default_title, isVideo: call.params?.videoEnabled == true, isConference:true)
-									providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
-									providerDelegate.uuids.updateValue(uuid, forKey: "")
-									providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid)
-									Core.get().activateAudioSession(actived: true) */
-						} else {
-							referedToCall = callId
-						}
+						referedToCall = callId
 					}
 				}
 			case .End,
@@ -659,10 +597,6 @@ class TelecomManager: ObservableObject {
 				UIDevice.current.isProximityMonitoringEnabled = false
 				if core.callsNb == 0 {
 					core.outputAudioDevice = core.defaultOutputAudioDevice
-					// disable this because I don't find anygood reason for it: _bluetoothAvailable = FALSE;
-					// furthermore it introduces a bug when calling multiple times since route may not be
-					// reconfigured between cause leading to bluetooth being disabled while it should not
-					// bluetoothEnabled = false
 				}
 				
 				// if core.callsNb == 0 {
