@@ -211,12 +211,6 @@ final class CoreContext: ObservableObject {
 				
 				switch(cbVal.state) {
 				case .Ok:
-					let newParams = cbVal.account.params?.clone()
-					newParams?.internationalPrefix = "33"
-					newParams?.internationalPrefixIsoCountryCode = "FRA"
-					newParams?.useInternationalPrefixForCallsAndChats = true
-					cbVal.account.params = newParams
-					
 					ContactsManager.shared.fetchContacts()
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
