@@ -347,7 +347,6 @@ class MeetingViewModel: ObservableObject {
 	
 	func cancelMeetingWithNotifications(meeting: MeetingModel) {
 		CoreContext.shared.doOnCoreQueue { core in
-			Log.info("debugtrace - core media encryption = \(core.mediaEncryption)")
 			self.resetConferenceSchedulerAndListeners(core: core)
 			self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
 		}

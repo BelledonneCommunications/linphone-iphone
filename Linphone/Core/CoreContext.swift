@@ -164,7 +164,6 @@ final class CoreContext: ObservableObject {
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					
 					let hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
-					Log.info("debugtrace onGlobalStateChanged -- core accounts: \(self.mCore.accountList.count), hasDefaultAccount: \(self.mCore.defaultAccount != nil ? "yes" : "no")")
 					var accountModels: [AccountModel] = []
 					for account in self.mCore.accountList {
 						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
@@ -181,7 +180,6 @@ final class CoreContext: ObservableObject {
 			// In this case, we want to know about the account registration status
 			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnCoreQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
 				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
-				Log.info("debugtrace onConfiguringStatus -- core accounts: \(self.mCore.accountList.count), hasDefaultAccount: \(self.mCore.defaultAccount != nil ? "yes" : "no")")
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
 					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
@@ -207,9 +205,8 @@ final class CoreContext: ObservableObject {
 				// Otherwise, we will be Failed.
 				Log.info("New registration state is \(cbVal.state) for user id " +
 						 "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
-				Log.info("debugtrace onAccountRegistrationStateChanged -- core accounts: \(self.mCore.accountList.count), hasDefaultAccount: \(self.mCore.defaultAccount != nil ? "yes" : "no")")
 				
-				switch(cbVal.state) {
+				switch cbVal.state {
 				case .Ok:
 					ContactsManager.shared.fetchContacts()
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
