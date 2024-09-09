@@ -1146,7 +1146,7 @@ struct ContentView: View {
 				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 			}
 			.onReceive(pub) { _ in
-				conversationsListViewModel.refreshContactAvatarModel()
+				conversationsListViewModel.computeChatRoomsList(filter: "")
 				historyListViewModel.refreshHistoryAvatarModel()
 			}
 		}

@@ -90,6 +90,10 @@ class ConversationsListViewModel: ObservableObject {
 				}
 			})
 			
+			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomRead?.postOnCoreQueue { _ in
+				self.computeChatRoomsList(filter: "")
+			})
+			
 			self.mCoreSuscriptions.insert(core.publisher?.onMessageSent?.postOnCoreQueue { _ in
 				self.computeChatRoomsList(filter: "")
 			})
