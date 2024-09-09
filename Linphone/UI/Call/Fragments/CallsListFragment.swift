@@ -162,7 +162,7 @@ struct CallsListFragment: View {
 						}
 						TelecomManager.shared.setHeld(call: callViewModel.selectedCall!, hold: false)
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             callViewModel.resetCallView()
                         }
                     }
@@ -345,7 +345,7 @@ struct CallsListFragment: View {
 							}
 						 	TelecomManager.shared.setHeld(call: callViewModel.calls[index], hold: false)
 							
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 								callViewModel.resetCallView()
 							}
 						}

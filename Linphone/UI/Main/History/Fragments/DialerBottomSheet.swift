@@ -456,7 +456,7 @@ struct DialerBottomSheet: View {
 								if callViewModel.isTransferInsteadCall {
 									showingDialer = false
 									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										magicSearch.searchForContacts(
 											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 										
@@ -478,7 +478,7 @@ struct DialerBottomSheet: View {
 								} else {
 									showingDialer = false
 									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 										magicSearch.searchForContacts(
 											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 										

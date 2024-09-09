@@ -292,7 +292,7 @@ struct ConversationFragment: View {
 												.onAppear {
 													if index == counter - 1
 														&& conversationViewModel.displayedConversationHistorySize > conversationViewModel.conversationMessagesSection.first!.rows.count {
-														DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+														DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 															conversationViewModel.getOldMessages()
 														}
 													}

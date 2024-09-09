@@ -60,7 +60,7 @@ struct StartConversationFragment: View {
 							.padding(.top, 2)
 							.padding(.leading, -10)
 							.onTapGesture {
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 									magicSearch.searchForContacts(
 										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 								}
@@ -225,7 +225,7 @@ struct StartConversationFragment: View {
 					PopupLoadingView()
 						.background(.black.opacity(0.65))
 						.onDisappear {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 								magicSearch.searchForContacts(
 									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue
 								)
