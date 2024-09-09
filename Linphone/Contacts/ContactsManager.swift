@@ -106,7 +106,7 @@ final class ContactsManager: ObservableObject {
 					do {
 						var contactCounter = 0
 						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
-							DispatchQueue.main.sync {
+							DispatchQueue.main.async {
 								let newContact = Contact(
 									identifier: contact.identifier,
 									firstName: contact.givenName,
