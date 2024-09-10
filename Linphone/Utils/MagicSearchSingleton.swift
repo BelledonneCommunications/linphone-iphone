@@ -41,7 +41,7 @@ final class MagicSearchSingleton: ObservableObject {
 	@Published var allContact = false
 	private var domainDefaultAccount = ""
 	
-	var searchSubscription: AnyCancellable?
+	var searchDelegate: MagicSearchDelegate?
 	
 	func destroyMagicSearch() {
 		magicSearch = nil
@@ -54,7 +54,7 @@ final class MagicSearchSingleton: ObservableObject {
 			self.magicSearch = try? core.createMagicSearch()
 			self.magicSearch.limitedSearch = false
 			
-			self.searchSubscription = self.magicSearch.publisher?.onSearchResultsReceived?.postOnCoreQueue { (magicSearch: MagicSearch) in
+			self.searchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
 				self.needUpdateLastSearchContacts = true
 				
 				var lastSearchFriend: [SearchResult] = []
@@ -102,7 +102,8 @@ final class MagicSearchSingleton: ObservableObject {
 					
 					NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
 				}
-			}
+			})
+			self.magicSearch.addDelegate(delegate: self.searchDelegate!)
 		}
 	}
 	
