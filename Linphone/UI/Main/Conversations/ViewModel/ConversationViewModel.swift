@@ -103,13 +103,11 @@ class ConversationViewModel: ObservableObject {
 					statusTmp = .sending
 				}
 				
-				let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
-				
-				if self.conversationMessagesSection[0].rows[indexMessage!].message.status != statusTmp {
-					DispatchQueue.main.async {
-						if indexMessage != nil {
+				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId}) {
+					if indexMessage < self.conversationMessagesSection[0].rows.count && self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
+						DispatchQueue.main.async {
 							self.objectWillChange.send()
-							self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp
+							self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp
 						}
 					}
 				}
