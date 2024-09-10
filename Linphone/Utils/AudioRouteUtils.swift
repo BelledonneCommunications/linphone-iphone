@@ -126,8 +126,7 @@ class AudioRouteUtils {
 			print("[Audio Route Helper] No call found, setting audio route on Core")
 		}
 		
-		let conference = core.conference
-		let audioDevice = conference != nil && conference?.isIn == true ? conference!.outputAudioDevice : currentCall != nil ? currentCall!.outputAudioDevice : core.outputAudioDevice
+		let audioDevice = currentCall != nil ? currentCall!.outputAudioDevice : core.outputAudioDevice
 		print("[Audio Route Helper] Playback audio currently in use is [\(audioDevice?.deviceName ?? "n/a")] with type (\(audioDevice?.type ?? .Unknown)")
 		return audioDevice?.type == AudioDevice.Kind.Speaker
 	}
@@ -138,9 +137,7 @@ class AudioRouteUtils {
 			return false
 		}
 		let currentCall = call != nil  ? call : core.currentCall != nil ? core.currentCall : core.calls[0]
-		let conference = core.conference
-		
-		let audioDevice =  conference != nil && conference?.isIn == true ? conference!.outputAudioDevice : currentCall?.outputAudioDevice
+		let audioDevice = currentCall != nil ? currentCall!.outputAudioDevice : core.outputAudioDevice
 		print("[Audio Route Helper] Playback audio device currently in use is [\(audioDevice?.deviceName ?? "n/a")] with type (\(audioDevice?.type  ?? .Unknown)")
 		return audioDevice?.type == AudioDevice.Kind.Bluetooth
 	}
