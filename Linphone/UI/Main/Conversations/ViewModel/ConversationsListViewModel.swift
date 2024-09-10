@@ -22,13 +22,12 @@ import linphonesw
 import Combine
 
 // swiftlint:disable line_length
-// swiftlint:disable large_tuple
 class ConversationsListViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
 	
-	private var mCoreSuscriptions = Set<AnyCancellable?>()
+	private var coreConversationDelegate: CoreDelegate?
 	
 	@Published var conversationsList: [ConversationModel] = []
 	var conversationsListTmp: [ConversationModel] = []
@@ -69,11 +68,18 @@ class ConversationsListViewModel: ObservableObject {
 			let account = core.defaultAccount
 			let chatRoomsCounter = account?.chatRooms != nil ? account!.chatRooms.count : core.chatRooms.count
 			var counter = 0
-			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomStateChanged?.postOnCoreQueue { (cbValue: (core: Core, chatRoom: ChatRoom, state: ChatRoom.State)) in
+			
+			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
+				self.computeChatRoomsList(filter: "")
+			}, onMessageSent: { (_: Core, _: ChatRoom, _: ChatMessage) in
+				self.computeChatRoomsList(filter: "")
+			}, onChatRoomRead: { (_: Core, _: ChatRoom) in
+				self.computeChatRoomsList(filter: "")
+			}, onChatRoomStateChanged: { (_: Core, chatRoom: ChatRoom, state: ChatRoom.State) in
 				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
-				switch cbValue.state {
+				switch state {
 				case ChatRoom.State.Created:
-					if !(cbValue.chatRoom.isEmpty && cbValue.chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue)) {
+					if !(chatRoom.isEmpty && chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue)) {
 						counter += 1
 					}
 					
@@ -89,18 +95,7 @@ class ConversationsListViewModel: ObservableObject {
 					break
 				}
 			})
-			
-			self.mCoreSuscriptions.insert(core.publisher?.onChatRoomRead?.postOnCoreQueue { _ in
-				self.computeChatRoomsList(filter: "")
-			})
-			
-			self.mCoreSuscriptions.insert(core.publisher?.onMessageSent?.postOnCoreQueue { _ in
-				self.computeChatRoomsList(filter: "")
-			})
-			
-			self.mCoreSuscriptions.insert(core.publisher?.onMessagesReceived?.postOnCoreQueue { _ in
-				self.computeChatRoomsList(filter: "")
-			})
+			core.addDelegate(delegate: self.coreConversationDelegate!)
 		}
 	}
 	
@@ -221,4 +216,3 @@ class ConversationsListViewModel: ObservableObject {
 	}
 }
 // swiftlint:enable line_length
-// swiftlint:enable large_tuple
