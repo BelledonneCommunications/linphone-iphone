@@ -34,7 +34,7 @@ class ContactViewModel: ObservableObject {
 	@Published var operationInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
 	
-	private var chatRoomSuscriptions = Set<AnyCancellable?>()
+	private var contactChatRoomDelegate: ChatRoomDelegate?
 	
 	init() {}
 	
@@ -178,14 +178,31 @@ class ContactViewModel: ObservableObject {
 	}
 	
 	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue { (chatRoom: ChatRoom, _: EventLog) in
+		contactChatRoomDelegate = ChatRoomDelegateStub(onStateChanged: { (chatRoom: ChatRoom, state: ChatRoom.State) in
+			let state = chatRoom.state
+			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+			if state == ChatRoom.State.CreationFailed {
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
+				if let delegate = self.contactChatRoomDelegate {
+					chatRoom.removeDelegate(delegate: delegate)
+					self.contactChatRoomDelegate = nil
+				}
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+					ToastViewModel.shared.displayToast = true
+				}
+			}
+		}, onConferenceJoined: { (chatRoom: ChatRoom, _: EventLog) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
 			if state == ChatRoom.State.Created {
 				Log.info("\(StartConversationViewModel.TAG) Conversation \(id) successfully created")
-				self.chatRoomSuscriptions.removeAll()
-				
+				if let delegate = self.contactChatRoomDelegate {
+					chatRoom.removeDelegate(delegate: delegate)
+					self.contactChatRoomDelegate = nil
+				}
 				let model = ConversationModel(chatRoom: chatRoom)
 				if 	self.operationInProgress == false {
 					DispatchQueue.main.async {
@@ -204,7 +221,11 @@ class ContactViewModel: ObservableObject {
 				}
 			} else if state == ChatRoom.State.CreationFailed {
 				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
-				self.chatRoomSuscriptions.removeAll()
+				
+				if let delegate = self.contactChatRoomDelegate {
+					chatRoom.removeDelegate(delegate: delegate)
+					self.contactChatRoomDelegate = nil
+				}
 				DispatchQueue.main.async {
 					self.operationInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
@@ -212,20 +233,7 @@ class ContactViewModel: ObservableObject {
 				}
 			}
 		})
-		
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue { (chatRoom: ChatRoom, state: ChatRoom.State) in
-			let state = chatRoom.state
-			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-			if state == ChatRoom.State.CreationFailed {
-				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
-				self.chatRoomSuscriptions.removeAll()
-				DispatchQueue.main.async {
-					self.operationInProgress = false
-					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-					ToastViewModel.shared.displayToast = true
-				}
-			}
-		})
+		chatRoom.addDelegate(delegate: contactChatRoomDelegate!)
 	}
 }
 // swiftlint:enable line_length
