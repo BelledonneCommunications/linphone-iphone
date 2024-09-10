@@ -125,7 +125,7 @@ public struct Message: Identifiable, Hashable {
 				guard let thumbnailURL = await media.getThumbnailURL() else {
 					return nil
 				}
-
+				
 				switch media.type {
 				case .image:
 					return Attachment(id: UUID().uuidString, name: "", url: thumbnailURL, type: .image)
@@ -134,6 +134,10 @@ public struct Message: Identifiable, Hashable {
 						return nil
 					}
 					return Attachment(id: UUID().uuidString, name: "", thumbnail: thumbnailURL, full: fullURL, type: .video)
+				case .audio:
+					return Attachment(id: UUID().uuidString, name: "", url: thumbnailURL, type: .audio)
+				default:
+					return Attachment(id: UUID().uuidString, name: "", url: thumbnailURL, type: .other)
 				}
 			}
 
@@ -272,7 +276,14 @@ public struct DraftMessage {
 
 public enum MediaType {
 	case image
+	case gif
 	case video
+	case audio
+	case voiceRecording
+	case pdf
+	case text
+	case fileTransfer
+	case other
 }
 
 public struct Media: Identifiable, Equatable {

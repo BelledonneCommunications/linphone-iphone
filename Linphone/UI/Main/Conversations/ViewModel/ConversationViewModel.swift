@@ -288,7 +288,7 @@ class ConversationViewModel: ObservableObject {
 											id: UUID().uuidString,
 											name: content.name!,
 											url: path!,
-											type: .image
+											type: .fileTransfer
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -296,6 +296,20 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										var typeTmp: AttachmentType = .other
+										
+										switch content.type {
+										case "image":
+											typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+										case "audio":
+											typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+										case "application":
+											typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+										case "text":
+											typeTmp = .text
+										default:
+											typeTmp = .other
+										}
 										
 										if path != nil {
 											let attachment =
@@ -303,7 +317,7 @@ class ConversationViewModel: ObservableObject {
 												id: UUID().uuidString,
 												name: content.name!,
 												url: path!,
-												type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+												type: typeTmp
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -489,7 +503,7 @@ class ConversationViewModel: ObservableObject {
 											id: UUID().uuidString,
 											name: content.name!,
 											url: path!,
-											type: .image
+											type: .fileTransfer
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -497,6 +511,20 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										var typeTmp: AttachmentType = .other
+										
+										switch content.type {
+										case "image":
+											typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+										case "audio":
+											typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+										case "application":
+											typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+										case "text":
+											typeTmp = .text
+										default:
+											typeTmp = .other
+										}
 										
 										if path != nil {
 											let attachment =
@@ -504,7 +532,7 @@ class ConversationViewModel: ObservableObject {
 												id: UUID().uuidString,
 												name: content.name!,
 												url: path!,
-												type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+												type: typeTmp
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -687,7 +715,7 @@ class ConversationViewModel: ObservableObject {
 									id: UUID().uuidString,
 									name: content.name ?? "???",
 									url: path!,
-									type: .image
+									type: .fileTransfer
 								)
 								attachmentNameList += ", \(content.name ?? "???")"
 								attachmentList.append(attachment)
@@ -695,6 +723,20 @@ class ConversationViewModel: ObservableObject {
 						} else if content.name != nil && !content.name!.isEmpty {
 							if content.type != "video" {
 								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+								var typeTmp: AttachmentType = .other
+								
+								switch content.type {
+								case "image":
+									typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+								case "audio":
+									typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+								case "application":
+									typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+								case "text":
+									typeTmp = .text
+								default:
+									typeTmp = .other
+								}
 								
 								if path != nil {
 									let attachment =
@@ -702,7 +744,7 @@ class ConversationViewModel: ObservableObject {
 										id: UUID().uuidString,
 										name: content.name!,
 										url: path!,
-										type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+										type: typeTmp
 									)
 									attachmentNameList += ", \(content.name!)"
 									attachmentList.append(attachment)
@@ -958,7 +1000,7 @@ class ConversationViewModel: ObservableObject {
 													id: UUID().uuidString,
 													name: content.name!,
 													url: path!,
-													type: .image
+													type: .fileTransfer
 												)
 												attachmentNameList += ", \(content.name!)"
 												attachmentList.append(attachment)
@@ -966,6 +1008,20 @@ class ConversationViewModel: ObservableObject {
 										} else {
 											if content.type != "video" {
 												let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+												var typeTmp: AttachmentType = .other
+												
+												switch content.type {
+												case "image":
+													typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+												case "audio":
+													typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+												case "application":
+													typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+												case "text":
+													typeTmp = .text
+												default:
+													typeTmp = .other
+												}
 												
 												if path != nil {
 													let attachment =
@@ -973,7 +1029,7 @@ class ConversationViewModel: ObservableObject {
 														id: UUID().uuidString,
 														name: content.name!,
 														url: path!,
-														type: (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+														type: typeTmp
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
@@ -1564,6 +1620,48 @@ class ConversationViewModel: ObservableObject {
 				}
 			}
 		}
+	}
+}
+
+struct CustomSlider: View {
+	@Binding var value: Double
+	var range: ClosedRange<Double>
+	var thumbColor: Color
+	var trackColor: Color
+	var trackHeight: CGFloat
+	var cornerRadius: CGFloat
+	
+	var body: some View {
+		VStack {
+			ZStack {
+				// Slider track with rounded corners
+				Rectangle()
+					.fill(trackColor)
+					.frame(height: trackHeight)
+					.cornerRadius(cornerRadius)
+				
+				// Progress track to show the current value
+				Rectangle()
+					.fill(thumbColor.opacity(0.5))
+					.frame(width: CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound)) * UIScreen.main.bounds.width, height: trackHeight)
+					.cornerRadius(cornerRadius)
+				
+				// Thumb (handle) with rounded appearance
+				Circle()
+					.fill(thumbColor)
+					.frame(width: 30, height: 30)
+					.offset(x: CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound)) * UIScreen.main.bounds.width - 20)
+					.gesture(DragGesture(minimumDistance: 0)
+						.onChanged { gesture in
+							let sliderWidth = UIScreen.main.bounds.width
+							let dragX = gesture.location.x
+							let newValue = range.lowerBound + Double(dragX / sliderWidth) * (range.upperBound - range.lowerBound)
+							value = min(max(newValue, range.lowerBound), range.upperBound)
+						}
+					)
+			}
+		}
+		.padding(.horizontal, 20)
 	}
 }
 // swiftlint:enable line_length

@@ -33,6 +33,7 @@ struct ChatBubbleView: View {
 	@State private var ticker = Ticker()
 	@State private var isPressed: Bool = false
 	@State private var timePassed: TimeInterval?
+	@State private var sliderValue: Double = 0.5
 	
 	var body: some View {
 		HStack {
@@ -394,6 +395,47 @@ struct ChatBubbleView: View {
 				}
 				.clipShape(RoundedRectangle(cornerRadius: 4))
 				.clipped()
+			} else if eventLogMessage.message.attachments.first!.type == .voiceRecording {
+				CustomSlider(
+					value: $sliderValue,
+					range: 0...1,
+					thumbColor: .blue,
+					trackColor: .gray,
+					trackHeight: 8,
+					cornerRadius: 10
+				)
+				.padding()
+			} else {
+				HStack {
+					VStack {
+						Image(getImageOfType(type: eventLogMessage.message.attachments.first!.type))
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c700)
+							.frame(width: 60, height: 60, alignment: .leading)
+					}
+					.frame(width: 100, height: 100)
+					.background(Color.grayMain2c200)
+					
+					VStack {
+						Text(eventLogMessage.message.attachments.first!.name)
+							.foregroundStyle(Color.grayMain2c700)
+							.default_text_style_600(styleSize: 16)
+							.truncationMode(.middle)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.lineLimit(1)
+						
+						Text("2,2 Mo")
+							.default_text_style_300(styleSize: 16)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.lineLimit(1)
+					}
+					.padding(.horizontal, 10)
+					.frame(maxWidth: .infinity, alignment: .leading)
+				}
+				.frame(width: geometryProxy.size.width - 110, height: 100)
+				.background(.white)
+				.clipShape(RoundedRectangle(cornerRadius: 10))
 			}
 		} else if eventLogMessage.message.attachments.count > 1 {
 			let isGroup = conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
@@ -471,6 +513,20 @@ struct ChatBubbleView: View {
 			}
 		}
 		return (100, 100)
+	}
+	
+	func getImageOfType(type: AttachmentType) -> String {
+		if type == .audio {
+			return "file-audio"
+		} else if type == .pdf {
+			return "file-pdf"
+		} else if type == .text {
+			return "file-text"
+		} else if type == .fileTransfer {
+			return "download-simple"
+		} else {
+			return "file"
+		}
 	}
 }
 

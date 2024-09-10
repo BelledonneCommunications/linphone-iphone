@@ -21,15 +21,35 @@ import Foundation
 
 public enum AttachmentType: String, Codable {
 	case image
-	case video
 	case gif
+	case video
+	case audio
+	case voiceRecording
+	case pdf
+	case text
+	case fileTransfer
+	case other
 
 	public var title: String {
 		switch self {
 		case .image:
 			return "Image"
-		default:
+		case .gif:
+			return "GIF"
+		case .video:
 			return "Video"
+		case .audio:
+			return "Audio"
+		case .voiceRecording:
+			return "Voice Recording"
+		case .pdf:
+			return "PDF"
+		case .text:
+			return "Text"
+		case .fileTransfer:
+			return "File Transfer"
+		default:
+			return "Other"
 		}
 	}
 
@@ -37,8 +57,22 @@ public enum AttachmentType: String, Codable {
 		switch mediaType {
 		case .image:
 			self = .image
-		default:
+		case .gif:
+			self = .gif
+		case .video:
 			self = .video
+		case .audio:
+			self = .audio
+		case .voiceRecording:
+			self = .voiceRecording
+		case .pdf:
+			self = .pdf
+		case .text:
+			self = .text
+		case .fileTransfer:
+			self = .fileTransfer
+		default:
+			self = .other
 		}
 	}
 }
