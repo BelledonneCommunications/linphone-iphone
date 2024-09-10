@@ -39,7 +39,7 @@ class ContactAvatarModel: ObservableObject {
 	
 	@Published var presenceStatus: ConsolidatedPresence
 	
-	private var friendSuscription: AnyCancellable?
+	private var friendDelegate: FriendDelegate?
 	
 	init(friend: Friend?, name: String, address: String, withPresence: Bool?) {
 		self.friend = friend
@@ -71,27 +71,26 @@ class ContactAvatarModel: ObservableObject {
 				self.lastPresenceInfo = ""
 			}
 			
-			if self.friendSuscription != nil {
-				self.friendSuscription = nil
+			if let delegate = friendDelegate {
+				self.friend?.removeDelegate(delegate: delegate)
+				self.friendDelegate = nil
 			}
 			
-			addSubscription()
+			addFriendDelegate()
 		} else {
 			self.lastPresenceInfo = ""
 			self.presenceStatus = .Offline
 		}
 	}
 	
-	func addSubscription() {
-		friendSuscription = self.friend?.publisher?.onPresenceReceived?.postOnCoreQueue { (cbValue: (Friend)) in
-			
-			let latestActivityTimestamp = cbValue.presenceModel?.latestActivityTimestamp ?? -1
-			
+	func addFriendDelegate() {
+		friendDelegate = FriendDelegateStub(onPresenceReceived: { (friend: Friend) in
+			let latestActivityTimestamp = friend.presenceModel?.latestActivityTimestamp ?? -1
 			DispatchQueue.main.async {
-				self.presenceStatus = cbValue.consolidatedPresence
-				if cbValue.consolidatedPresence == .Online || cbValue.consolidatedPresence == .Busy {
-					if cbValue.consolidatedPresence == .Online || latestActivityTimestamp != -1 {
-						self.lastPresenceInfo = cbValue.consolidatedPresence == .Online ?
+				self.presenceStatus = friend.consolidatedPresence
+				if friend.consolidatedPresence == .Online || friend.consolidatedPresence == .Busy {
+					if friend.consolidatedPresence == .Online || latestActivityTimestamp != -1 {
+						self.lastPresenceInfo = friend.consolidatedPresence == .Online ?
 						"Online" : self.getCallTime(startDate: latestActivityTimestamp)
 					} else {
 						self.lastPresenceInfo = "Away"
@@ -100,13 +99,15 @@ class ContactAvatarModel: ObservableObject {
 					self.lastPresenceInfo = ""
 				}
 			}
-		}
+		})
+		friend?.addDelegate(delegate: friendDelegate!)
 	}
 	
-	func removeAllSuscription() {
-		if friendSuscription != nil {
+	func removeFriendDelegate() {
+		if let delegate = friendDelegate {
 			presenceStatus = .Offline
-			friendSuscription = nil
+			friend?.removeDelegate(delegate: delegate)
+			friendDelegate = nil
 		}
 	}
 	
