@@ -166,7 +166,7 @@ final class CoreContext: ObservableObject {
 					
 					var accountModels: [AccountModel] = []
 					for account in self.mCore.accountList {
-						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+						accountModels.append(AccountModel(account: account, core: self.mCore))
 					}
 					DispatchQueue.main.async {
 						self.coreIsStarted = true
@@ -203,7 +203,7 @@ final class CoreContext: ObservableObject {
 				Log.info("New configuration state is \(status) = \(message)\n")
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
-					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+					accountModels.append(AccountModel(account: account, core: self.mCore))
 				}
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
@@ -281,7 +281,7 @@ final class CoreContext: ObservableObject {
 			}, onAccountAdded: { (_: Core, _: Account) in
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
-					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+					accountModels.append(AccountModel(account: account, core: self.mCore))
 				}
 				DispatchQueue.main.async {
 					self.accounts = accountModels
@@ -289,7 +289,7 @@ final class CoreContext: ObservableObject {
 			}, onAccountRemoved: { (_: Core, _: Account) in
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
-					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+					accountModels.append(AccountModel(account: account, core: self.mCore))
 				}
 				DispatchQueue.main.async {
 					self.accounts = accountModels

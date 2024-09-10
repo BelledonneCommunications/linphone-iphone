@@ -31,29 +31,39 @@ class AccountModel: ObservableObject {
 	@Published var displayName: String = ""
 	@Published var address: String = ""
 	
-	private var mSuscriptions = Set<AnyCancellable?>()
+	private var accountDelegate: AccountDelegate?
+	private var coreDelegate: CoreDelegate?
 	
-	init(account: Account, corePublisher: CoreDelegatePublisher?) {
+	init(account: Account, core: Core) {
 		self.account = account
 		
-		mSuscriptions.insert(account.publisher?.onRegistrationStateChanged?.postOnCoreQueue { _ in
+		accountDelegate = AccountDelegateStub(onRegistrationStateChanged: { (_: Account, _: RegistrationState, _: String) in
 			self.update()
 		})
-		mSuscriptions.insert(corePublisher?.onChatRoomRead?.postOnCoreQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-			}))
-		mSuscriptions.insert(corePublisher?.onMessagesReceived?.postOnCoreQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-			}))
-		mSuscriptions.insert(corePublisher?.onCallStateChanged?.postOnCoreQueue(
-			receiveValue: { _ in
-				self.computeNotificationsCount()
-			}))
+		account.addDelegate(delegate: accountDelegate!)
+		
+		coreDelegate = CoreDelegateStub(onCallStateChanged: { (_: Core, _: Call, _: Call.State, _: String) in
+			self.computeNotificationsCount()
+		}, onMessagesReceived: { (_: Core, _: ChatRoom, _:[ChatMessage]) in
+			self.computeNotificationsCount()
+		}, onChatRoomRead: { (_: Core, _: ChatRoom) in
+			self.computeNotificationsCount()
+		})
+		core.addDelegate(delegate: coreDelegate!)
 		
 		CoreContext.shared.doOnCoreQueue { _ in
 			self.update()
+		}
+	}
+	
+	deinit {
+		if let delegate = accountDelegate {
+			account.removeDelegate(delegate: delegate)
+		}
+		if let delegate = coreDelegate {
+			CoreContext.shared.doOnCoreQueue { core in
+				core.removeDelegate(delegate: delegate)
+			}
 		}
 	}
 	
