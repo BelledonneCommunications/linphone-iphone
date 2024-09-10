@@ -54,8 +54,7 @@ class RegisterViewModel: ObservableObject {
 	private var accountCreated: Account?
 	private var normalizedPhoneNumber: String?
 	
-	private var accountManagerServicesSuscriptions = Set<AnyCancellable?>()
-	private var mCoreSuscriptions = Set<AnyCancellable?>()
+	private var requestDelegate: AccountManagerServicesRequestDelegate?
 	
 	@Published var isLinkActive: Bool = false
 	@Published var createInProgress: Bool = false
@@ -121,7 +120,7 @@ class RegisterViewModel: ObservableObject {
 	}
 	func addDelegate(request: AccountManagerServicesRequest) {
 		coreContext.doOnCoreQueue { core in
-			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestSuccessful?.postOnCoreQueue { (request: AccountManagerServicesRequest, data: String) in
+			self.requestDelegate = AccountManagerServicesRequestDelegateStub(onRequestSuccessful: { (request: AccountManagerServicesRequest, data: String) in
 				Log.info("\(RegisterViewModel.TAG) Request \(request) was successful, data is \(data)")
 				switch request.type {
 				case .CreateAccountUsingToken:
@@ -156,16 +155,15 @@ class RegisterViewModel: ObservableObject {
 						do {
 							try core.addAccount(account: account!)
 							core.defaultAccount = account
-							self.accountManagerServicesSuscriptions.removeAll()
+							request.removeDelegate(delegate: self.requestDelegate!)
+							self.requestDelegate = nil
 						} catch {
 						}
 					}
 					
 				default: break
 				}
-			})
-			
-			self.accountManagerServicesSuscriptions.insert(request.publisher?.onRequestError?.postOnCoreQueue { (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+			}, onRequestError: { (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
 				Log.error(
 					"\(RegisterViewModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
 				)
@@ -202,6 +200,7 @@ class RegisterViewModel: ObservableObject {
 					self.createInProgress = false
 				}
 			})
+			request.addDelegate(delegate: self.requestDelegate!)
 		}
 	}
 	
