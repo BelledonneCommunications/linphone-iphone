@@ -22,7 +22,7 @@ import linphonesw
 import Combine
 import EventKit
 
-// swiftlint:disable line_length
+// swiftlint:disable type_body_length
 class MeetingViewModel: ObservableObject {
 	static let TAG = "[MeetingViewModel]"
 	let eventStore: EKEventStore = EKEventStore()
@@ -46,7 +46,7 @@ class MeetingViewModel: ObservableObject {
 	var knownTimezones: [String] = []
 	
 	var conferenceScheduler: ConferenceScheduler?
-	private var mSchedulerSubscriptions = Set<AnyCancellable?>()
+	private var mSchedulerDelegate: ConferenceSchedulerDelegate?
 	var conferenceInfoToEdit: ConferenceInfo?
 	@Published var displayedMeeting: MeetingModel? // if nil, then we are currently creating a new meeting
 	@Published var myself: SelectedAddressModel?
@@ -172,20 +172,18 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	private func resetConferenceSchedulerAndListeners(core: Core) {
-		self.mSchedulerSubscriptions.removeAll()
+		self.mSchedulerDelegate = nil
 		self.conferenceScheduler = try? core.createConferenceScheduler()
 		
-		self.mSchedulerSubscriptions.insert(self.conferenceScheduler?.publisher?.onStateChanged?.postOnCoreQueue { (cbVal: (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State)) in
-			
-			Log.info("\(MeetingViewModel.TAG) Conference state changed \(cbVal.state)")
-			if cbVal.state == ConferenceScheduler.State.Error {
+		self.mSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (_: ConferenceScheduler, state: ConferenceScheduler.State) in
+			Log.info("\(MeetingViewModel.TAG) Conference state changed \(state)")
+			if state == ConferenceScheduler.State.Error {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
-					
 					self.errorMsg = (self.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
 					// TODO: show error toast
 				}
-			} else if cbVal.state == ConferenceScheduler.State.Ready {
+			} else if state == ConferenceScheduler.State.Ready {
 				let conferenceAddress = self.conferenceScheduler?.info?.uri
 				if let confInfoToEdit = self.conferenceInfoToEdit {
 					Log.info("\(MeetingViewModel.TAG) Conference info \(confInfoToEdit.uri?.asStringUriOnly() ?? "'nil'") has been updated")
@@ -203,16 +201,14 @@ class MeetingViewModel: ObservableObject {
 						self.conferenceCreatedEvent = true
 					}
 				}
-			} else if cbVal.state == ConferenceScheduler.State.Updating {
+			} else if state == ConferenceScheduler.State.Updating {
 				self.sendIcsInvitation(core: core)
 			}
-		})
-		
-		self.mSchedulerSubscriptions.insert(self.conferenceScheduler?.publisher?.onInvitationsSent?.postOnCoreQueue { (cbVal: (conferenceScheduler: ConferenceScheduler, failedInvitations: [Address])) in
+		}, onInvitationsSent: { (_: ConferenceScheduler, failedInvitations: [Address]) in
 			
-			if cbVal.failedInvitations.isEmpty {
+			if failedInvitations.isEmpty {
 				Log.info("\(MeetingViewModel.TAG) All invitations have been sent")
-			} else if cbVal.failedInvitations.count == self.participants.count {
+			} else if failedInvitations.count == self.participants.count {
 				Log.error("\(MeetingViewModel.TAG) No invitation sent!")
 				DispatchQueue.main.async {
 					ToastViewModel.shared.toastMessage = "Failed_meeting_invitations_not_sent"
@@ -220,15 +216,15 @@ class MeetingViewModel: ObservableObject {
 				}
 			} else {
 				var failInvList = ""
-				for failInv in cbVal.failedInvitations {
+				for failInv in failedInvitations {
 					if !failInvList.isEmpty {
 						failInvList += ", "
 					}
 					failInvList.append(failInv.asStringUriOnly())
 				}
-				Log.warn("\(MeetingViewModel.TAG) \(cbVal.failedInvitations.count) invitations couldn't have been sent to: \(failInvList)")
+				Log.warn("\(MeetingViewModel.TAG) \(failedInvitations.count) invitations couldn't have been sent to: \(failInvList)")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Error: \(cbVal.failedInvitations.count) invitations couldn't be sent to \(failInvList)"
+					ToastViewModel.shared.toastMessage = "Error: \(failedInvitations.count) invitations couldn't be sent to \(failInvList)"
 					ToastViewModel.shared.displayToast = true
 				}
 			}
@@ -238,6 +234,7 @@ class MeetingViewModel: ObservableObject {
 				self.conferenceCreatedEvent = true
 			}
 		})
+		self.conferenceScheduler?.addDelegate(delegate: self.mSchedulerDelegate!)
 	}
 	
 	func schedule() {
@@ -384,4 +381,4 @@ class MeetingViewModel: ObservableObject {
 	}
 }
 
-// swiftlint:enable line_length
+// swiftlint:enable type_body_length
