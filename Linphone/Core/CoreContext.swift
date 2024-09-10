@@ -17,11 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// swiftlint:disable large_tuple
 // swiftlint:disable line_length
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable identifier_name
-// swiftlint:disable type_body_length
 
 import linphonesw
 import linphone // needed for unwrapped function linphone_core_set_push_and_app_delegate_dispatch_queue
@@ -47,14 +45,13 @@ final class CoreContext: ObservableObject {
 	
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
-	private var mCoreSuscriptions = Set<AnyCancellable?>()
 	
 	var bearerAuthInfoPendingPasswordUpdate: AuthInfo?
 	
 	let monitor = NWPathMonitor()
 	var networkStatusIsConnected: Bool = true // updated on core queue
 	
-	private var mCorePushIncomingDelegate: CoreDelegate!
+	private var mCoreDelegate: CoreDelegate!
 	private var actionsToPerformOnCoreQueueWhenCoreIsStarted: [((Core) -> Void)] = []
 	private var callStateCallBacks: [((Call.State) -> Void)] = []
 	private var configuringStateCallBacks: [((ConfiguringState) -> Void)] = []
@@ -137,7 +134,6 @@ final class CoreContext: ObservableObject {
 			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
 			
 			self.mCore.setUserAgent(name: "\(appName ?? "Linphone")iOS/\(version ?? "6.0.0") Beta (\(UIDevice.current.localizedModel)) LinphoneSDK", version: self.coreVersion)
-			
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
 			self.mCore.videoPreviewEnabled = false
@@ -146,21 +142,22 @@ final class CoreContext: ObservableObject {
 			self.mCore.maxSizeForAutoDownloadIncomingFiles = 0
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onGlobalStateChanged?.postOnCoreQueue { (cbVal: (core: Core, state: GlobalState, message: String)) in
-				if cbVal.state == GlobalState.On {
+			
+			self.mCoreDelegate = CoreDelegateStub(onGlobalStateChanged: { (core: Core, state: GlobalState, message: String) in
+				if state == GlobalState.On {
 #if DEBUG
 					let pushEnvironment = ".dev"
 #else
 					let pushEnvironment = ""
 #endif
-					for account in cbVal.core.accountList where account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+					for account in core.accountList where account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
 						let newParams = account.params?.clone()
 						Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
 						newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
 						account.params = newParams
 					}
 					
-					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {	$0(cbVal.core) }
+					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {	$0(core) }
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					
 					let hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
@@ -174,75 +171,96 @@ final class CoreContext: ObservableObject {
 						self.accounts = accountModels
 					}
 				}
-			})
-			
-			// Create a Core listener to listen for the callback we need
-			// In this case, we want to know about the account registration status
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onConfiguringStatus?.postOnCoreQueue { (cbVal: (core: Core, status: ConfiguringState, message: String)) in
-				Log.info("New configuration state is \(cbVal.status) = \(cbVal.message)\n")
+			}, onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
+				TelecomManager.shared.onCallStateChanged(core: core, call: call, state: cstate, message: message)
+			}, onAuthenticationRequested: { (_: Core, authInfo: AuthInfo, method: AuthMethod) in
+				guard let username = authInfo.username, let server = authInfo.authorizationServer, !server.isEmpty else {
+					Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
+					return
+				}
+				if method == .Bearer {
+					Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(username)")
+					self.bearerAuthInfoPendingPasswordUpdate = authInfo
+					SingleSignOnManager.shared.setUp(ssoUrl: server, user: username)
+				}
+			}, onTransferStateChanged: { (_: Core, transferred: Call, callState: Call.State) in
+				Log.info("[CoreContext] Transferred call \(transferred.remoteAddress!.asStringUriOnly()) state changed \(callState)")
+				DispatchQueue.main.async {
+					if callState == Call.State.Connected {
+						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_successful"
+						ToastViewModel.shared.displayToast = true
+					} else if callState == Call.State.OutgoingProgress {
+						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_in_progress"
+						ToastViewModel.shared.displayToast = true
+					} else if callState == Call.State.End || callState == Call.State.Error {
+						ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
+						ToastViewModel.shared.displayToast = true
+					}
+				}
+			}, onConfiguringStatus: { (core: Core, status: ConfiguringState, message: String) in
+				Log.info("New configuration state is \(status) = \(message)\n")
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
 					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
 				}
 				DispatchQueue.main.async {
-					if cbVal.status == ConfiguringState.Successful {
+					if status == ConfiguringState.Successful {
 						ToastViewModel.shared.toastMessage = "Successful"
 						ToastViewModel.shared.displayToast = true
 						self.accounts = accountModels
 					}
 				}
-				/*
-				 else {
-				 ToastViewModel.shared.toastMessage = "Failed"
-				 ToastViewModel.shared.displayToast = true
-				 }
-				 */
-			})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRegistrationStateChanged?.postOnCoreQueue { (cbVal: (core: Core, account: Account, state: RegistrationState, message: String)) in
-				
+			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in
+				if info.starts(with: "https") {
+					DispatchQueue.main.async {
+						UIPasteboard.general.setValue(info,	forPasteboardType: UTType.plainText.identifier)
+						ToastViewModel.shared.toastMessage = "Success_send_logs"
+						ToastViewModel.shared.displayToast = true
+					}
+				}
+			}, onAccountRegistrationStateChanged: { (core: Core, account: Account, state: RegistrationState, message: String) in
 				// If account has been configured correctly, we will go through Progress and Ok states
 				// Otherwise, we will be Failed.
-				Log.info("New registration state is \(cbVal.state) for user id " +
-						 "\( String(describing: cbVal.account.params?.identityAddress?.asString())) = \(cbVal.message)\n")
+				Log.info("New registration state is \(state) for user id " +
+						 "\( String(describing: account.params?.identityAddress?.asString())) = \(message)\n")
 				
-				switch cbVal.state {
+				switch state {
 				case .Ok:
 					ContactsManager.shared.fetchContacts()
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}
 				case .Cleared:
-					Log.info("[onAccountRegistrationStateChanged] Account \(cbVal.account.displayName()) registration was cleared. Looking for auth info")
-					if let authInfo = cbVal.account.findAuthInfo() {
+					Log.info("[onAccountRegistrationStateChanged] Account \(account.displayName()) registration was cleared. Looking for auth info")
+					if let authInfo = account.findAuthInfo() {
 						Log.info("[onAccountRegistrationStateChanged] Found auth info for account, removing it")
-						cbVal.core.removeAuthInfo(info: authInfo)
+						core.removeAuthInfo(info: authInfo)
 					} else {
 						Log.warn("[onAccountRegistrationStateChanged] Failed to find matching auth info for account")
 					}
 				case .Failed:  // If registration failed, remove account from core
 					if self.networkStatusIsConnected {
-						let params = cbVal.account.params
+						let params = account.params
 						let clonedParams = params?.clone()
 						clonedParams?.registerEnabled = false
-						cbVal.account.params = clonedParams
+						account.params = clonedParams
 						
-						Log.warn("Registration failed for account \(cbVal.account.displayName()), deleting it from core")
-						cbVal.core.removeAccount(account: cbVal.account)
+						Log.warn("Registration failed for account \(account.displayName()), deleting it from core")
+						core.removeAccount(account: account)
 					}
 				default:
 					break
 				}
 				
-				TelecomManager.shared.onAccountRegistrationStateChanged(core: cbVal.core, account: cbVal.account, state: cbVal.state, message: cbVal.message)
+				TelecomManager.shared.onAccountRegistrationStateChanged(core: core, account: account, state: state, message: message)
 				
 				DispatchQueue.main.async {
-					if cbVal.state == .Ok {
+					if state == .Ok {
 						self.loggingInProgress = false
 						self.loggedIn = true
-					} else if cbVal.state == .Progress || cbVal.state == .Refreshing {
+					} else if state == .Progress || state == .Refreshing {
 						self.loggingInProgress = true
-					} else if cbVal.state == .Cleared {
+					} else if state == .Cleared {
 						self.loggingInProgress = false
 						self.loggedIn = false
 						self.hasDefaultAccount = false
@@ -255,89 +273,24 @@ final class CoreContext: ObservableObject {
 						ToastViewModel.shared.displayToast = true
 					}
 				}
-			})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onCallStateChanged?.postOnCoreQueue { (cbVal: (core: Core, call: Call, state: Call.State, message: String)) in
-				TelecomManager.shared.onCallStateChanged(core: cbVal.core, call: cbVal.call, state: cbVal.state, message: cbVal.message)
-			})
-			
-			self.mCorePushIncomingDelegate = CoreDelegateStub(onCallStateChanged: { (_, call: Call, cstate: Call.State, _) in
-				if cstate == .PushIncomingReceived {
-					let callLog = call.callLog
-					let callId = callLog?.callId ?? ""
-					Log.info("PushIncomingReceived in core delegate, display callkit call")
-					TelecomManager.shared.displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
+			}, onAccountAdded: { (_: Core, _: Account) in
+				var accountModels: [AccountModel] = []
+				for account in self.mCore.accountList {
+					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
 				}
-			})
-			self.mCore.addDelegate(delegate: self.mCorePushIncomingDelegate)
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onLogCollectionUploadStateChanged?.postOnCoreQueue { (cbValue: (_: Core, _: Core.LogCollectionUploadState, info: String)) in
-				
-				if cbValue.info.starts(with: "https") {
-					DispatchQueue.main.async {
-						UIPasteboard.general.setValue(
-							cbValue.info,
-							forPasteboardType: UTType.plainText.identifier
-						)
-						ToastViewModel.shared.toastMessage = "Success_send_logs"
-						ToastViewModel.shared.displayToast = true
-					}
-				}
-			})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onTransferStateChanged?.postOnCoreQueue { (cbValue: (_: Core, transferred: Call, callState: Call.State)) in
-				Log.info(
-					"[CoreContext] Transferred call \(cbValue.transferred.remoteAddress!.asStringUriOnly()) state changed \(cbValue.callState)"
-				)
-				
 				DispatchQueue.main.async {
-					if cbValue.callState == Call.State.Connected {
-						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_successful"
-						ToastViewModel.shared.displayToast = true
-					} else if cbValue.callState == Call.State.OutgoingProgress {
-						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_in_progress"
-						ToastViewModel.shared.displayToast = true
-					} else if cbValue.callState == Call.State.End || cbValue.callState == Call.State.Error {
-						ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
-						ToastViewModel.shared.displayToast = true
-					}
+					self.accounts = accountModels
+				}
+			}, onAccountRemoved: { (_: Core, _: Account) in
+				var accountModels: [AccountModel] = []
+				for account in self.mCore.accountList {
+					accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
+				}
+				DispatchQueue.main.async {
+					self.accounts = accountModels
 				}
 			})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAuthenticationRequested?.postOnCoreQueue { (cbValue: (_: Core, authInfo: AuthInfo, method: AuthMethod)) in
-				let authInfo = cbValue.authInfo
-				guard let username = authInfo.username, let server = authInfo.authorizationServer, !server.isEmpty else {
-					Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
-					return
-				}
-				if cbValue.method == .Bearer {
-					Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(username)")
-					self.bearerAuthInfoPendingPasswordUpdate = cbValue.authInfo
-					SingleSignOnManager.shared.setUp(ssoUrl: server, user: username)
-				}
-			})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountAdded?
-				.postOnCoreQueue { _ in
-					var accountModels: [AccountModel] = []
-					for account in self.mCore.accountList {
-						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
-					}
-					DispatchQueue.main.async {
-						self.accounts = accountModels
-					}
-				})
-			
-			self.mCoreSuscriptions.insert(self.mCore.publisher?.onAccountRemoved?
-				.postOnCoreQueue { _ in
-					var accountModels: [AccountModel] = []
-					for account in self.mCore.accountList {
-						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
-					}
-					DispatchQueue.main.async {
-						self.accounts = accountModels
-					}
-				})
+			self.mCore.addDelegate(delegate: self.mCoreDelegate)
 			
 			self.mIterateSuscription = Timer.publish(every: 0.02, on: .main, in: .common)
 				.autoconnect()
@@ -410,8 +363,6 @@ final class CoreContext: ObservableObject {
 	
 }
 
-// swiftlint:enable large_tuple
 // swiftlint:enable line_length
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable identifier_name
-// swiftlint:enable type_body_length

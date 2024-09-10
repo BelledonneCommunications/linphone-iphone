@@ -425,7 +425,8 @@ class TelecomManager: ObservableObject {
 		let callLog = call.callLog
 		let callId = callLog?.callId ?? ""
 		if cstate == .PushIncomingReceived {
-			Log.info("PushIncomingReceived on TelecomManager -- Ignore, should be processed by a the dedicated CoreDelegate for callkit display")
+			Log.info("PushIncomingReceived in core delegate, display callkit call")
+			TelecomManager.shared.displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
 		} else {
 			// let oldRemoteConfVideo = self.remoteConfVideo
 			
