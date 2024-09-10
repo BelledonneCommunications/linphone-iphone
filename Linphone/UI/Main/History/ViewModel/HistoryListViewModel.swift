@@ -28,7 +28,7 @@ class HistoryListViewModel: ObservableObject {
 	var callLogsTmp: [HistoryModel] = []
 	
 	var callLogsAddressToDelete = ""
-	var callLogSubscription: AnyCancellable?
+	var callLogCoreDelegate: CoreDelegate?
 	
 	@Published var missedCallsCount: Int = 0
 	
@@ -59,7 +59,7 @@ class HistoryListViewModel: ObservableObject {
 				self.callLogsTmp = callLogsTmpBis
 			}
 			
-			self.callLogSubscription = core.publisher?.onCallLogUpdated?.postOnCoreQueue { (_: (_: Core, _: CallLog)) in
+			self.callLogCoreDelegate = CoreDelegateStub(onCallLogUpdated: { (_: Core, _: CallLog) in
 				let account = core.defaultAccount
 				let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
 				
@@ -81,7 +81,8 @@ class HistoryListViewModel: ObservableObject {
 				}
 				
 				self.updateMissedCallsCount()
-			}
+			})
+			core.addDelegate(delegate: self.callLogCoreDelegate!)
 		}
 	}
 	
