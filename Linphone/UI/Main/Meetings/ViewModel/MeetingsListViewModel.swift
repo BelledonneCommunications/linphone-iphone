@@ -26,7 +26,7 @@ class MeetingsListViewModel: ObservableObject {
 	static let ScrollToTodayNotification = Notification.Name("ScrollToToday")
 	
 	private var coreContext = CoreContext.shared
-	private var mCoreSuscriptions = Set<AnyCancellable?>()
+	private var mMeetingsListCoreDelegate: CoreDelegate?
 	var selectedMeetingToDelete: MeetingModel?
 	
 	@Published var meetingsList: [MeetingsListItemModel] = []
@@ -35,10 +35,11 @@ class MeetingsListViewModel: ObservableObject {
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
-			self.mCoreSuscriptions.insert(core.publisher?.onConferenceInfoReceived?.postOnCoreQueue { (cbVal: (core: Core, conferenceInfo: ConferenceInfo)) in
-				Log.info("\(MeetingsListViewModel.TAG) Conference info received [\(cbVal.conferenceInfo.uri?.asStringUriOnly() ?? "NIL")")
+			self.mMeetingsListCoreDelegate = CoreDelegateStub(onConferenceInfoReceived: { (_: Core, conferenceInfo: ConferenceInfo) in
+				Log.info("\(MeetingsListViewModel.TAG) Conference info received [\(conferenceInfo.uri?.asStringUriOnly() ?? "NIL")")
 				self.computeMeetingsList()
 			})
+			core.addDelegate(delegate: self.mMeetingsListCoreDelegate!)
 		}
 		computeMeetingsList()
 	}
