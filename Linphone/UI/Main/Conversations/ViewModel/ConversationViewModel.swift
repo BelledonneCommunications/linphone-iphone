@@ -26,7 +26,6 @@ import AVFoundation
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length
 // swiftlint:disable cyclomatic_complexity
-
 class ConversationViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
@@ -50,8 +49,15 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var isShowSelectedMessageToDisplayDetails: Bool = false
 	@Published var selectedMessageToDisplayDetails: EventLogMessage?
+	@Published var selectedMessageToPlayVoiceRecording: EventLogMessage?
 	@Published var selectedMessage: EventLogMessage?
 	@Published var messageToReply: EventLogMessage?
+	
+	@Published var sheetCategories: [SheetCategory] = []
+	
+	var vrpManager: VoiceRecordPlayerManager?
+	@Published var isPlaying = false
+	@Published var progress: Double = 0.0
 	
 	struct SheetCategory: Identifiable {
 		let id = UUID()
@@ -65,8 +71,6 @@ class ConversationViewModel: ObservableObject {
 		let detail: String
 		var isMe: Bool = false
 	}
-	
-	@Published var sheetCategories: [SheetCategory] = []
 	
 	init() {}
 	
@@ -103,11 +107,13 @@ class ConversationViewModel: ObservableObject {
 					statusTmp = .sending
 				}
 				
-				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId}) {
-					if indexMessage < self.conversationMessagesSection[0].rows.count && self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
-						DispatchQueue.main.async {
-							self.objectWillChange.send()
-							self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp
+				if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
+					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId}) {
+						if indexMessage < self.conversationMessagesSection[0].rows.count && self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
+							DispatchQueue.main.async {
+								self.objectWillChange.send()
+								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp
+							}
 						}
 					}
 				}
@@ -317,7 +323,8 @@ class ConversationViewModel: ObservableObject {
 												id: UUID().uuidString,
 												name: content.name!,
 												url: path!,
-												type: typeTmp
+												type: typeTmp,
+												duration: typeTmp == . voiceRecording ? content.fileDuration : 0
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -532,7 +539,8 @@ class ConversationViewModel: ObservableObject {
 												id: UUID().uuidString,
 												name: content.name!,
 												url: path!,
-												type: typeTmp
+												type: typeTmp,
+												duration: typeTmp == . voiceRecording ? content.fileDuration : 0
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -744,7 +752,8 @@ class ConversationViewModel: ObservableObject {
 										id: UUID().uuidString,
 										name: content.name!,
 										url: path!,
-										type: typeTmp
+										type: typeTmp,
+										duration: typeTmp == . voiceRecording ? content.fileDuration : 0
 									)
 									attachmentNameList += ", \(content.name!)"
 									attachmentList.append(attachment)
@@ -1029,7 +1038,8 @@ class ConversationViewModel: ObservableObject {
 														id: UUID().uuidString,
 														name: content.name!,
 														url: path!,
-														type: typeTmp
+														type: typeTmp,
+														duration: typeTmp == . voiceRecording ? content.fileDuration : 0
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
@@ -1198,7 +1208,7 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func sendMessage() {
+	func sendMessage(audioRecorder: AudioRecorder? = nil) {
 		coreContext.doOnCoreQueue { _ in
 			do {
 				var message: ChatMessage?
@@ -1219,75 +1229,74 @@ class ConversationViewModel: ObservableObject {
 					}
 				}
 				
-				/*
-				 if (isVoiceRecording.value == true && voiceMessageRecorder.file != null) {
-				 stopVoiceRecorder()
-				 val content = voiceMessageRecorder.createContent()
-				 if (content != null) {
-				 Log.i(
-				 "$TAG Voice recording content created, file name is ${content.name} and duration is ${content.fileDuration}"
-				 )
-				 message.addContent(content)
-				 } else {
-				 Log.e("$TAG Voice recording content couldn't be created!")
-				 }
-				 } else {
-				 */
-				self.mediasToSend.forEach { attachment in
+				if audioRecorder != nil {
 					do {
-						let content = try Factory.Instance.createContent()
-						
-						switch attachment.type {
-						case .image:
-							content.type = "image"
-							/*
-							 case .audio:
-							 content.type = "audio"
-							 */
-						case .video:
-							content.type = "video"
-							/*
-							 case .pdf:
-							 content.type = "application"
-							 case .plainText:
-							 content.type = "text"
-							 */
-						default:
-							content.type = "file"
-						}
-						
-						// content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
-						content.subtype = attachment.full.pathExtension
-						
-						content.name = attachment.full.lastPathComponent
+						audioRecorder!.stopVoiceRecorder()
+						let content = try audioRecorder!.linphoneAudioRecorder.createContent()
+						Log.info(
+							"[ConversationViewModel] Voice recording content created, file name is \(content.name ?? "") and duration is \(content.fileDuration)"
+						)
 						
 						if message != nil {
-							
-							let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-							let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
-											  + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-							/*
-							 let data = try Data(contentsOf: path)
-							 let decodedData: () = try data.write(to: path)
-							 */
-							
-							do {
-								if FileManager.default.fileExists(atPath: newPath!.path) {
-									try FileManager.default.removeItem(atPath: newPath!.path)
-								}
-								try FileManager.default.moveItem(atPath: path.path, toPath: newPath!.path)
-								
-								let filePathTmp = newPath?.absoluteString
-								content.filePath = String(filePathTmp!.dropFirst(7))
-								message!.addFileContent(content: content)
-							} catch {
-								Log.error(error.localizedDescription)
-							}
+							message!.addContent(content: content)
 						}
-					} catch {
+					}
+				} else {
+					self.mediasToSend.forEach { attachment in
+						do {
+							let content = try Factory.Instance.createContent()
+							
+							switch attachment.type {
+							case .image:
+								content.type = "image"
+								/*
+								 case .audio:
+								 content.type = "audio"
+								 */
+							case .video:
+								content.type = "video"
+								/*
+								 case .pdf:
+								 content.type = "application"
+								 case .plainText:
+								 content.type = "text"
+								 */
+							default:
+								content.type = "file"
+							}
+							
+							// content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
+							content.subtype = attachment.full.pathExtension
+							
+							content.name = attachment.full.lastPathComponent
+							
+							if message != nil {
+								
+								let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+								let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
+												  + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+								/*
+								 let data = try Data(contentsOf: path)
+								 let decodedData: () = try data.write(to: path)
+								 */
+								
+								do {
+									if FileManager.default.fileExists(atPath: newPath!.path) {
+										try FileManager.default.removeItem(atPath: newPath!.path)
+									}
+									try FileManager.default.moveItem(atPath: path.path, toPath: newPath!.path)
+									
+									let filePathTmp = newPath?.absoluteString
+									content.filePath = String(filePathTmp!.dropFirst(7))
+									message!.addFileContent(content: content)
+								} catch {
+									Log.error(error.localizedDescription)
+								}
+							}
+						} catch {
+						}
 					}
 				}
-				// }
 				
 				if message != nil && !message!.contents.isEmpty {
 					Log.info("[ConversationViewModel] Sending message")
@@ -1621,49 +1630,335 @@ class ConversationViewModel: ObservableObject {
 			}
 		}
 	}
-}
-
-struct CustomSlider: View {
-	@Binding var value: Double
-	var range: ClosedRange<Double>
-	var thumbColor: Color
-	var trackColor: Color
-	var trackHeight: CGFloat
-	var cornerRadius: CGFloat
 	
-	var body: some View {
-		VStack {
-			ZStack {
-				// Slider track with rounded corners
-				Rectangle()
-					.fill(trackColor)
-					.frame(height: trackHeight)
-					.cornerRadius(cornerRadius)
-				
-				// Progress track to show the current value
-				Rectangle()
-					.fill(thumbColor.opacity(0.5))
-					.frame(width: CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound)) * UIScreen.main.bounds.width, height: trackHeight)
-					.cornerRadius(cornerRadius)
-				
-				// Thumb (handle) with rounded appearance
-				Circle()
-					.fill(thumbColor)
-					.frame(width: 30, height: 30)
-					.offset(x: CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound)) * UIScreen.main.bounds.width - 20)
-					.gesture(DragGesture(minimumDistance: 0)
-						.onChanged { gesture in
-							let sliderWidth = UIScreen.main.bounds.width
-							let dragX = gesture.location.x
-							let newValue = range.lowerBound + Double(dragX / sliderWidth) * (range.upperBound - range.lowerBound)
-							value = min(max(newValue, range.lowerBound), range.upperBound)
-						}
-					)
+	func startVoiceRecordPlayer(voiceRecordPath: URL) {
+		coreContext.doOnCoreQueue { core in
+			if self.vrpManager == nil || self.vrpManager!.voiceRecordPath != voiceRecordPath {
+				self.vrpManager = VoiceRecordPlayerManager(core: core, voiceRecordPath: voiceRecordPath)
+			}
+			
+			if self.vrpManager != nil {
+				self.vrpManager!.startVoiceRecordPlayer()
 			}
 		}
-		.padding(.horizontal, 20)
+	}
+	
+	func getPositionVoiceRecordPlayer(voiceRecordPath: URL) -> Double {
+		if self.vrpManager != nil && self.vrpManager!.voiceRecordPath == voiceRecordPath {
+			return self.vrpManager!.positionVoiceRecordPlayer()
+		} else {
+			return 0
+		}
+	}
+	
+	func isPlayingVoiceRecordPlayer(voiceRecordPath: URL) -> Bool {
+		if self.vrpManager != nil && self.vrpManager!.voiceRecordPath == voiceRecordPath {
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	func pauseVoiceRecordPlayer() {
+		coreContext.doOnCoreQueue { _ in
+			if self.vrpManager != nil {
+				self.vrpManager!.pauseVoiceRecordPlayer()
+			}
+		}
+	}
+	
+	func stopVoiceRecordPlayer() {
+		coreContext.doOnCoreQueue { _ in
+			if self.vrpManager != nil {
+				self.vrpManager!.stopVoiceRecordPlayer()
+			}
+		}
 	}
 }
 // swiftlint:enable line_length
 // swiftlint:enable type_body_length
 // swiftlint:enable cyclomatic_complexity
+
+class VoiceRecordPlayerManager {
+	private var core: Core
+	var voiceRecordPath: URL
+	private var voiceRecordPlayer: Player?
+	//private var isPlayingVoiceRecord = false
+	private var voiceRecordAudioFocusRequest: AVAudioSession?
+	//private var voiceRecordPlayerPosition: Double = 0
+	//private var voiceRecordingDuration: TimeInterval = 0
+	
+	init(core: Core, voiceRecordPath: URL) {
+		self.core = core
+		self.voiceRecordPath = voiceRecordPath
+	}
+	
+	private func initVoiceRecordPlayer() {
+		print("Creating player for voice record")
+		do {
+			voiceRecordPlayer = try core.createLocalPlayer(soundCardName: getSpeakerSoundCard(core: core), videoDisplayName: nil, windowId: nil)
+		} catch {
+			print("Couldn't create local player!")
+		}
+		
+		print("Voice record player created")
+		print("Opening voice record file [\(voiceRecordPath.absoluteString)]")
+		
+		do {
+			try voiceRecordPlayer!.open(filename: String(voiceRecordPath.absoluteString.dropFirst(7)))
+			print("Player opened file at [\(voiceRecordPath.absoluteString)]")
+		} catch {
+			print("Player failed to open file at [\(voiceRecordPath.absoluteString)]")
+		}
+	}
+	
+	func startVoiceRecordPlayer() {
+		if voiceRecordAudioFocusRequest == nil {
+			voiceRecordAudioFocusRequest = AVAudioSession.sharedInstance()
+			if let request = voiceRecordAudioFocusRequest {
+				try? request.setActive(true)
+			}
+		}
+		
+		if isPlayerClosed() {
+			print("Player closed, let's open it first")
+			initVoiceRecordPlayer()
+			
+			if voiceRecordPlayer!.state == .Closed {
+				print("It seems the player fails to open the file, abort playback")
+				// Handle the failure (e.g. show a toast)
+				return
+			}
+		}
+		
+		do {
+			try voiceRecordPlayer!.start()
+			print("Playing voice record")
+		} catch {
+			print("Player failed to start voice recording")
+		}
+	}
+	
+	func positionVoiceRecordPlayer() -> Double {
+		if !isPlayerClosed() {
+			return Double(voiceRecordPlayer!.currentPosition) / Double(voiceRecordPlayer!.duration) * 100
+		} else {
+			return 0.0
+		}
+	}
+	
+	func pauseVoiceRecordPlayer() {
+		if !isPlayerClosed() {
+			print("Pausing voice record")
+			try? voiceRecordPlayer?.pause()
+		}
+	}
+	
+	private func isPlayerClosed() -> Bool {
+		return voiceRecordPlayer == nil || voiceRecordPlayer?.state == .Closed
+	}
+	
+	func stopVoiceRecordPlayer() {
+		if !isPlayerClosed() {
+			print("Stopping voice record")
+			try? voiceRecordPlayer?.pause()
+			try? voiceRecordPlayer?.seek(timeMs: 0)
+			voiceRecordPlayer?.close()
+		}
+		
+		if let request = voiceRecordAudioFocusRequest {
+			try? request.setActive(false)
+			voiceRecordAudioFocusRequest = nil
+		}
+	}
+	
+	func getSpeakerSoundCard(core: Core) -> String? {
+		var speakerCard: String? = nil
+		var earpieceCard: String? = nil
+		core.audioDevices.forEach { device in
+			if (device.hasCapability(capability: .CapabilityPlay)) {
+				if (device.type == .Speaker) {
+					speakerCard = device.id
+				} else if (device.type == .Earpiece) {
+					earpieceCard = device.id
+				}
+			}
+		}
+		return speakerCard != nil ? speakerCard : earpieceCard
+	}
+	
+	func changeRouteToSpeaker() {
+		core.outputAudioDevice = core.audioDevices.first { $0.type == AudioDevice.Kind.Speaker }
+		UIDevice.current.isProximityMonitoringEnabled = false
+	}
+}
+
+class AudioRecorder: NSObject, ObservableObject {
+	var linphoneAudioRecorder: Recorder!
+	var recordingSession: AVAudioSession?
+	@Published var isRecording = false
+	@Published var audioFilename: URL?
+	@Published var audioFilenameAAC: URL?
+	@Published var recordingTime: TimeInterval = 0
+	@Published var soundPower: Float = 0
+	
+	var timer: Timer?
+	
+	func startRecording() {
+		recordingSession = AVAudioSession.sharedInstance()
+		CoreContext.shared.doOnCoreQueue { core in
+			core.activateAudioSession(activated: true)
+		}
+		
+		if recordingSession != nil {
+			do {
+				try recordingSession!.setCategory(.playAndRecord, mode: .default)
+				try recordingSession!.setActive(true)
+				recordingSession!.requestRecordPermission { allowed in
+					if allowed {
+						self.initVoiceRecorder()
+					} else {
+						print("Permission to record not granted.")
+					}
+				}
+			} catch {
+				print("Failed to setup recording session.")
+			}
+		}
+	}
+	
+	private func initVoiceRecorder() {
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("[ConversationViewModel] [AudioRecorder] Creating voice message recorder")
+			let recorderParams = try? core.createRecorderParams()
+			if recorderParams != nil {
+				recorderParams!.fileFormat = MediaFileFormat.Mkv
+				
+				let recordingAudioDevice = self.getAudioRecordingDeviceIdForVoiceMessage()
+				recorderParams!.audioDevice = recordingAudioDevice
+				Log.info(
+					"[ConversationViewModel] [AudioRecorder] Using device \(recorderParams!.audioDevice?.id ?? "Error id") to make the voice message recording"
+				)
+				
+				self.linphoneAudioRecorder = try? core.createRecorder(params: recorderParams!)
+				Log.info("[ConversationViewModel] [AudioRecorder] Voice message recorder created")
+				
+				self.startVoiceRecorder()
+			}
+		}
+	}
+	
+	func startVoiceRecorder() {
+		switch linphoneAudioRecorder.state {
+		case .Running:
+			Log.warn("[ConversationViewModel] [AudioRecorder] Recorder is already recording")
+		case .Paused:
+			Log.warn("[ConversationViewModel] [AudioRecorder] Recorder is paused, resuming recording")
+			try? linphoneAudioRecorder.start()
+		case .Closed:
+			var extensionFileFormat: String = ""
+			switch linphoneAudioRecorder.params?.fileFormat {
+			case .Smff:
+				extensionFileFormat = "smff"
+			case .Mkv:
+				extensionFileFormat = "mka"
+			default:
+				extensionFileFormat = "wav"
+			}
+			
+			let tempFileName = "voice-recording-\(Int(Date().timeIntervalSince1970)).\(extensionFileFormat)"
+			audioFilename = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").appendingPathComponent(tempFileName)
+			
+			if audioFilename != nil {
+				Log.warn("[ConversationViewModel] [AudioRecorder] Recorder is closed, starting recording in \(audioFilename!.absoluteString)")
+				try? linphoneAudioRecorder.open(file: String(audioFilename!.absoluteString.dropFirst(7)))
+				try? linphoneAudioRecorder.start()
+			}
+			
+			startTimer()
+			
+			DispatchQueue.main.async {
+				self.isRecording = true
+			}
+		}
+	}
+
+	func stopVoiceRecorder() {
+		if linphoneAudioRecorder.state == .Running {
+			Log.info("[ConversationViewModel] [AudioRecorder] Closing voice recorder")
+			try? linphoneAudioRecorder.pause()
+			linphoneAudioRecorder.close()
+		}
+		
+		stopTimer()
+		
+		DispatchQueue.main.async {
+			self.isRecording = false
+		}
+		
+		if let request = recordingSession {
+			Log.info("[ConversationViewModel] [AudioRecorder] Releasing voice recording audio focus request")
+			try? request.setActive(false)
+			recordingSession = nil
+			CoreContext.shared.doOnCoreQueue { core in
+				core.activateAudioSession(activated: false)
+			}
+		}
+	}
+	
+	func startTimer() {
+		DispatchQueue.main.async {
+			self.recordingTime = 0
+			let maxVoiceRecordDuration = Config.voiceRecordingMaxDuration
+			self.timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in  // More frequent updates
+				self.recordingTime += 0.1
+				self.updateSoundPower()
+				let duration = self.linphoneAudioRecorder.duration
+				if duration >= maxVoiceRecordDuration {
+					print("[ConversationViewModel] [AudioRecorder] Max duration for voice recording exceeded (\(maxVoiceRecordDuration)ms), stopping.")
+					self.stopVoiceRecorder()
+				}
+			}
+		}
+	}
+	
+	func stopTimer() {
+		self.timer?.invalidate()
+		self.timer = nil
+	}
+	
+	func updateSoundPower() {
+		let soundPowerTmp = linphoneAudioRecorder.captureVolume * 1000	// Capture sound power
+		soundPower = soundPowerTmp < 10 ? 0 : (soundPowerTmp > 100 ? 100 : (soundPowerTmp - 10))
+	}
+	
+	func getAudioRecordingDeviceIdForVoiceMessage() -> AudioDevice? {
+		// In case no headset/hearing aid/bluetooth is connected, use microphone sound card
+		// If none are available, default one will be used
+		var headsetCard: AudioDevice?
+		var bluetoothCard: AudioDevice?
+		var microphoneCard: AudioDevice?
+		
+		CoreContext.shared.doOnCoreQueue { core in
+			for device in core.audioDevices {
+				if device.hasCapability(capability: .CapabilityRecord) {
+					switch device.type {
+					case .Headphones, .Headset:
+						headsetCard = device
+					case .Bluetooth, .HearingAid:
+						bluetoothCard = device
+					case .Microphone:
+						microphoneCard = device
+					default:
+						break
+					}
+				}
+			}
+		}
+
+		Log.info("Found headset/headphones/hearingAid sound card [\(String(describing: headsetCard))], "
+				 + "bluetooth sound card [\(String(describing: bluetoothCard))] and microphone card [\(String(describing: microphoneCard))]")
+
+		return headsetCard ?? bluetoothCard ?? microphoneCard
+	}
+}

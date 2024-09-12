@@ -50,6 +50,7 @@ struct ConversationFragment: View {
 	@State private var isShowCamera = false
 	
 	@State private var mediasIsLoading = false
+	@State private var voiceRecordingInProgress = false
 	
 	@State private var isShowConversationForwardMessageFragment = false
 	
@@ -102,6 +103,7 @@ struct ConversationFragment: View {
 							ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$conversationViewModel.mediasToSend)
 								.edgesIgnoringSafeArea(.all)
 						}
+						.background(Color.gray100.ignoresSafeArea(.keyboard))
 				} else {
 					innerView(geometry: geometry)
 						.background(.white)
@@ -141,6 +143,7 @@ struct ConversationFragment: View {
 						.fullScreenCover(isPresented: $isShowCamera) {
 							ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$conversationViewModel.mediasToSend)
 						}
+						.background(Color.gray100.ignoresSafeArea(.keyboard))
 				}
 			}
 		}
@@ -513,117 +516,123 @@ struct ConversationFragment: View {
 					}
 					
 					HStack(spacing: 0) {
-						Button {
-						} label: {
-							Image("smiley")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
-								.frame(width: 28, height: 28, alignment: .leading)
-								.padding(.all, 6)
-								.padding(.top, 4)
-						}
-						.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-						
-						Button {
-							self.isShowPhotoLibrary = true
-							self.mediasIsLoading = true
-						} label: {
-							Image("paperclip")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-								.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
-								.padding(.all, isMessageTextFocused ? 0 : 6)
-								.padding(.top, 4)
-								.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
-						}
-						.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-						
-						Button {
-							self.isShowCamera = true
-						} label: {
-							Image("camera")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-								.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
-								.padding(.all, isMessageTextFocused ? 0 : 6)
-								.padding(.top, 4)
-								.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
-						}
-						.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-						
-						HStack {
-							if #available(iOS 16.0, *) {
-								TextField("Say something...", text: $conversationViewModel.messageText, axis: .vertical)
-									.default_text_style(styleSize: 15)
-									.focused($isMessageTextFocused)
-									.padding(.vertical, 5)
-							} else {
-								ZStack(alignment: .leading) {
-									TextEditor(text: $conversationViewModel.messageText)
-										.multilineTextAlignment(.leading)
-										.frame(maxHeight: 160)
-										.fixedSize(horizontal: false, vertical: true)
+						if !voiceRecordingInProgress {
+							Button {
+							} label: {
+								Image("smiley")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c500)
+									.frame(width: 28, height: 28, alignment: .leading)
+									.padding(.all, 6)
+									.padding(.top, 4)
+							}
+							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
+							
+							Button {
+								self.isShowPhotoLibrary = true
+								self.mediasIsLoading = true
+							} label: {
+								Image("paperclip")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
+									.padding(.all, isMessageTextFocused ? 0 : 6)
+									.padding(.top, 4)
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+							}
+							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
+							
+							Button {
+								self.isShowCamera = true
+							} label: {
+								Image("camera")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+									.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
+									.padding(.all, isMessageTextFocused ? 0 : 6)
+									.padding(.top, 4)
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+							}
+							.padding(.horizontal, isMessageTextFocused ? 0 : 2)
+							
+							HStack {
+								if #available(iOS 16.0, *) {
+									TextField("Say something...", text: $conversationViewModel.messageText, axis: .vertical)
 										.default_text_style(styleSize: 15)
 										.focused($isMessageTextFocused)
-									
-									if conversationViewModel.messageText.isEmpty {
-										Text("Say something...")
-											.padding(.leading, 4)
-											.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)
-											.foregroundStyle(Color.gray300)
+										.padding(.vertical, 5)
+								} else {
+									ZStack(alignment: .leading) {
+										TextEditor(text: $conversationViewModel.messageText)
+											.multilineTextAlignment(.leading)
+											.frame(maxHeight: 160)
+											.fixedSize(horizontal: false, vertical: true)
 											.default_text_style(styleSize: 15)
+											.focused($isMessageTextFocused)
+										
+										if conversationViewModel.messageText.isEmpty {
+											Text("Say something...")
+												.padding(.leading, 4)
+												.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)
+												.foregroundStyle(Color.gray300)
+												.default_text_style(styleSize: 15)
+										}
+									}
+									.onTapGesture {
+										isMessageTextFocused = true
 									}
 								}
-								.onTapGesture {
-									isMessageTextFocused = true
-								}
-							}
-							
-							if conversationViewModel.messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
-								Button {
-								} label: {
-									Image("microphone")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
-										.frame(width: 28, height: 28, alignment: .leading)
-										.padding(.all, 6)
-										.padding(.top, 4)
-								}
-							} else {
-								Button {
-									if conversationViewModel.displayedConversationHistorySize > 0 {
-										NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+								
+								if conversationViewModel.messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
+									Button {
+										voiceRecordingInProgress = true
+									} label: {
+										Image("microphone")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.grayMain2c500)
+											.frame(width: 28, height: 28, alignment: .leading)
+											.padding(.all, 6)
+											.padding(.top, 4)
 									}
-									conversationViewModel.sendMessage()
-								} label: {
-									Image("paper-plane-tilt")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.orangeMain500)
-										.frame(width: 28, height: 28, alignment: .leading)
-										.padding(.all, 6)
-										.padding(.top, 4)
-										.rotationEffect(.degrees(45))
+								} else {
+									Button {
+										if conversationViewModel.displayedConversationHistorySize > 0 {
+											NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+										}
+										conversationViewModel.sendMessage()
+									} label: {
+										Image("paper-plane-tilt")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 28, height: 28, alignment: .leading)
+											.padding(.all, 6)
+											.padding(.top, 4)
+											.rotationEffect(.degrees(45))
+									}
+									.padding(.trailing, 4)
 								}
-								.padding(.trailing, 4)
 							}
+							.padding(.leading, 15)
+							.padding(.trailing, 5)
+							.padding(.vertical, 6)
+							.frame(maxWidth: .infinity, minHeight: 55)
+							.background(.white)
+							.cornerRadius(30)
+							.overlay(
+								RoundedRectangle(cornerRadius: 30)
+									.inset(by: 0.5)
+									.stroke(Color.gray200, lineWidth: 1.5)
+							)
+							.padding(.horizontal, 4)
+						} else {
+							VoiceRecorderPlayer(conversationViewModel: conversationViewModel, voiceRecordingInProgress: $voiceRecordingInProgress)
+								.frame(maxHeight: 60)
 						}
-						.padding(.leading, 15)
-						.padding(.trailing, 5)
-						.padding(.vertical, 6)
-						.frame(maxWidth: .infinity, minHeight: 55)
-						.background(.white)
-						.cornerRadius(30)
-						.overlay(
-							RoundedRectangle(cornerRadius: 30)
-								.inset(by: 0.5)
-								.stroke(Color.gray200, lineWidth: 1.5)
-						)
-						.padding(.horizontal, 4)
 					}
 					.frame(maxWidth: .infinity, minHeight: 60)
 					.padding(.top, 12)
@@ -1010,6 +1019,187 @@ struct ImagePicker: UIViewControllerRepresentable {
 	}
 }
 
+struct VoiceRecorderPlayer: View {
+	@ObservedObject var conversationViewModel: ConversationViewModel
+	
+	@Binding var voiceRecordingInProgress: Bool
+	
+	@StateObject var audioRecorder = AudioRecorder()
+	
+	@State private var value: Double = 0.0
+	@State private var isPlaying: Bool = false
+	@State private var isRecording: Bool = true
+	@State private var timer: Timer?
+	
+	var minTrackColor: Color = .white.opacity(0.5)
+	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain300, Color.orangeMain500])
+	
+	var body: some View {
+		GeometryReader { geometry in
+			let radius = geometry.size.height * 0.5
+			HStack {
+				Button(
+					action: {
+						self.audioRecorder.stopVoiceRecorder()
+						voiceRecordingInProgress = false
+					},
+					label: {
+						Image("x")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25)
+					}
+				)
+				.padding(10)
+				.background(.white)
+				.clipShape(RoundedRectangle(cornerRadius: 25))
+				
+				ZStack(alignment: .leading) {
+					LinearGradient(
+						gradient: maxTrackGradient,
+						startPoint: .leading,
+						endPoint: .trailing
+					)
+					.frame(width: geometry.size.width - 110, height: 50)
+					HStack {
+						if !isRecording {
+							Rectangle()
+								.foregroundColor(minTrackColor)
+								.frame(width: self.value * (geometry.size.width - 110) / 100, height: 50)
+						} else {
+							Rectangle()
+								.foregroundColor(minTrackColor)
+								.frame(width: CGFloat(audioRecorder.soundPower) * (geometry.size.width - 110) / 100, height: 50)
+						}
+					}
+					
+					HStack {
+						Button(
+							action: {
+								if isRecording {
+									self.audioRecorder.stopVoiceRecorder()
+									isRecording = false
+								} else if isPlaying {
+									conversationViewModel.pauseVoiceRecordPlayer()
+									pauseProgress()
+								} else {
+									if audioRecorder.audioFilename != nil {
+										conversationViewModel.startVoiceRecordPlayer(voiceRecordPath: audioRecorder.audioFilename!)
+										playProgress()
+									}
+								}
+							},
+							label: {
+								Image(isRecording ? "stop-fill" : (isPlaying ? "pause-fill" : "play-fill"))
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.orangeMain500)
+									.frame(width: 20, height: 20)
+							}
+						)
+						.padding(8)
+						.background(.white)
+						.clipShape(RoundedRectangle(cornerRadius: 25))
+						
+						Spacer()
+						
+						HStack {
+							if isRecording {
+								Image("record-fill")
+								 .renderingMode(.template)
+								 .resizable()
+								 .foregroundStyle(isRecording ? Color.redDanger500 : Color.orangeMain500)
+								 .frame(width: 18, height: 18)
+							}
+							
+							Text(Int(audioRecorder.recordingTime).convertDurationToString())
+								.default_text_style(styleSize: 16)
+								.padding(.horizontal, 5)
+						}
+						.padding(8)
+						.background(.white)
+						.clipShape(RoundedRectangle(cornerRadius: 25))
+					}
+					.padding(.horizontal, 10)
+				}
+				.clipShape(RoundedRectangle(cornerRadius: radius))
+				
+				Button {
+					if conversationViewModel.displayedConversationHistorySize > 0 {
+						NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+					}
+					conversationViewModel.sendMessage(audioRecorder: self.audioRecorder)
+					voiceRecordingInProgress = false
+				} label: {
+					Image("paper-plane-tilt")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.orangeMain500)
+						.frame(width: 28, height: 28, alignment: .leading)
+						.padding(.all, 6)
+						.padding(.top, 4)
+						.rotationEffect(.degrees(45))
+				}
+				.padding(.trailing, 4)
+			}
+			.padding(.horizontal, 4)
+			.padding(.vertical, 5)
+			.onAppear {
+				self.audioRecorder.startRecording()
+			}
+			.onDisappear {
+				self.audioRecorder.stopVoiceRecorder()
+				resetProgress()
+			}
+		}
+	}
+	
+	private func playProgress() {
+		isPlaying = true
+		if audioRecorder.audioFilename != nil {
+			self.value = conversationViewModel.getPositionVoiceRecordPlayer(voiceRecordPath: audioRecorder.audioFilename!)
+			timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+				if self.value < 100.0 {
+					let valueTmp = conversationViewModel.getPositionVoiceRecordPlayer(voiceRecordPath: audioRecorder.audioFilename!)
+					if self.value > 90 && self.value == valueTmp {
+						self.value = 100
+					} else {
+						if valueTmp == 0 && !conversationViewModel.isPlayingVoiceRecordPlayer(voiceRecordPath: audioRecorder.audioFilename!) {
+							stopProgress()
+							value = 0.0
+							isPlaying = false
+						} else {
+							self.value = valueTmp
+						}
+					}
+				} else {
+					resetProgress()
+				}
+			}
+		}
+	}
+	
+	// Pause the progress
+	private func pauseProgress() {
+		isPlaying = false
+		stopProgress()
+	}
+	
+	// Reset the progress
+	private func resetProgress() {
+		conversationViewModel.stopVoiceRecordPlayer()
+		stopProgress()
+		value = 0.0
+		isPlaying = false
+	}
+	
+	// Stop the progress and invalidate the timer
+	private func stopProgress() {
+		timer?.invalidate()
+		timer = nil
+	}
+}
 /*
 #Preview {
 	ConversationFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel(), sections: [MessagesSection], ids: [""])

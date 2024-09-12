@@ -33,7 +33,6 @@ struct ChatBubbleView: View {
 	@State private var ticker = Ticker()
 	@State private var isPressed: Bool = false
 	@State private var timePassed: TimeInterval?
-	@State private var sliderValue: Double = 0.5
 	
 	var body: some View {
 		HStack {
@@ -160,8 +159,8 @@ struct ChatBubbleView: View {
 											
 											if !eventLogMessage.message.text.isEmpty {
 												Text(eventLogMessage.message.text)
-													.foregroundStyle(Color.grayMain2c700)
-													.default_text_style(styleSize: 16)
+													   .foregroundStyle(Color.grayMain2c700)
+													   .default_text_style(styleSize: 16)
 											}
 											
 											HStack(alignment: .center) {
@@ -397,14 +396,10 @@ struct ChatBubbleView: View {
 				.clipped()
 			} else if eventLogMessage.message.attachments.first!.type == .voiceRecording {
 				CustomSlider(
-					value: $sliderValue,
-					range: 0...1,
-					thumbColor: .blue,
-					trackColor: .gray,
-					trackHeight: 8,
-					cornerRadius: 10
+					conversationViewModel: conversationViewModel,
+					eventLogMessage: eventLogMessage
 				)
-				.padding()
+				.frame(width: geometryProxy.size.width - 160, height: 50)
 			} else {
 				HStack {
 					VStack {
@@ -606,6 +601,122 @@ struct RoundedCorner: Shape {
 extension View {
 	func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
 		clipShape(RoundedCorner(radius: radius, corners: corners) )
+	}
+}
+
+struct CustomSlider: View {
+	@ObservedObject var conversationViewModel: ConversationViewModel
+	
+	let eventLogMessage: EventLogMessage
+	
+	@State private var value: Double = 0.0
+	@State private var isPlaying: Bool = false
+	@State private var timer: Timer?
+	
+	var minTrackColor: Color = .white.opacity(0.5)
+	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain300, Color.orangeMain500])
+	
+	var body: some View {
+		GeometryReader { geometry in
+			let radius = geometry.size.height * 0.5
+			ZStack(alignment: .leading) {
+				LinearGradient(
+					gradient: maxTrackGradient,
+					startPoint: .leading,
+					endPoint: .trailing
+				)
+				.frame(width: geometry.size.width, height: geometry.size.height)
+				HStack {
+					Rectangle()
+						.foregroundColor(minTrackColor)
+						.frame(width: self.value * geometry.size.width / 100, height: geometry.size.height)
+						.animation(self.value > 0 ? .linear(duration: 0.1) : nil, value: self.value)
+				}
+				
+				HStack {
+					Button(
+						action: {
+							if isPlaying {
+								conversationViewModel.pauseVoiceRecordPlayer()
+								pauseProgress()
+							} else {
+								conversationViewModel.startVoiceRecordPlayer(voiceRecordPath: eventLogMessage.message.attachments.first!.full)
+								playProgress()
+							}
+						},
+						label: {
+							Image(isPlaying ? "pause-fill" : "play-fill")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.orangeMain500)
+								.frame(width: 20, height: 20)
+						}
+					)
+					.padding(8)
+					.background(.white)
+					.clipShape(RoundedRectangle(cornerRadius: 25))
+					
+					Spacer()
+					
+					HStack {
+						Text((eventLogMessage.message.attachments.first!.duration/1000).convertDurationToString())
+							.default_text_style(styleSize: 16)
+							.padding(.horizontal, 5)
+					}
+					.padding(8)
+					.background(.white)
+					.clipShape(RoundedRectangle(cornerRadius: 25))
+				}
+				.padding(.horizontal, 10)
+			}
+			.clipShape(RoundedRectangle(cornerRadius: radius))
+			.onDisappear {
+				resetProgress()
+			}
+		}
+	}
+	
+	private func playProgress() {
+		isPlaying = true
+		self.value = conversationViewModel.getPositionVoiceRecordPlayer(voiceRecordPath: eventLogMessage.message.attachments.first!.full)
+		timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+			if self.value < 100.0 {
+				let valueTmp = conversationViewModel.getPositionVoiceRecordPlayer(voiceRecordPath: eventLogMessage.message.attachments.first!.full)
+				if self.value > 90 && self.value == valueTmp {
+					self.value = 100
+				} else {
+					if valueTmp == 0 && !conversationViewModel.isPlayingVoiceRecordPlayer(voiceRecordPath: eventLogMessage.message.attachments.first!.full) {
+						stopProgress()
+						value = 0.0
+						isPlaying = false
+					} else {
+						self.value = valueTmp
+					}
+				}
+			} else {
+				resetProgress()
+			}
+		}
+	}
+	
+	// Pause the progress
+	private func pauseProgress() {
+		isPlaying = false
+		stopProgress()
+	}
+	
+	// Reset the progress
+	private func resetProgress() {
+		conversationViewModel.stopVoiceRecordPlayer()
+		stopProgress()
+		value = 0.0
+		isPlaying = false
+	}
+	
+	// Stop the progress and invalidate the timer
+	private func stopProgress() {
+		timer?.invalidate()
+		timer = nil
 	}
 }
 

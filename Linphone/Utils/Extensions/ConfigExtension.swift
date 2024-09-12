@@ -57,5 +57,7 @@ extension Config {
 	static let defaultPass =  Config.get().getString(section: "app", key: "pass", defaultString: "")
 	
 	static let pushNotificationsInterval =  Config.get().getInt(section: "net", key: "pn-call-remote-push-interval", defaultValue: 3)
+	
+	static let voiceRecordingMaxDuration =  Config.get().getInt(section: "app", key: "voice_recording_max_duration", defaultValue: 600000)
 
 }

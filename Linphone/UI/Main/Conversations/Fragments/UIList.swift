@@ -119,6 +119,7 @@ struct UIList: UIViewRepresentable {
 		tableView.showsVerticalScrollIndicator = true
 		tableView.estimatedSectionHeaderHeight = 1
 		tableView.estimatedSectionFooterHeight = UITableView.automaticDimension
+		tableView.keyboardDismissMode = .interactive
 		tableView.backgroundColor = UIColor(.white)
 		tableView.scrollsToTop = true
 		

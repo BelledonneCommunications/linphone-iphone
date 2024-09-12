@@ -83,16 +83,18 @@ public struct Attachment: Codable, Identifiable, Hashable {
 	public let thumbnail: URL
 	public let full: URL
 	public let type: AttachmentType
+	public let duration: Int
 
-	public init(id: String, name: String, thumbnail: URL, full: URL, type: AttachmentType) {
+	public init(id: String, name: String, thumbnail: URL, full: URL, type: AttachmentType, duration: Int = 0) {
 		self.id = id
 		self.name = name
 		self.thumbnail = thumbnail
 		self.full = full
 		self.type = type
+		self.duration = duration
 	}
 
-	public init(id: String, name: String, url: URL, type: AttachmentType) {
-		self.init(id: id, name: name, thumbnail: url, full: url, type: type)
+	public init(id: String, name: String, url: URL, type: AttachmentType, duration: Int = 0) {
+		self.init(id: id, name: name, thumbnail: url, full: url, type: type, duration: duration)
 	}
 }

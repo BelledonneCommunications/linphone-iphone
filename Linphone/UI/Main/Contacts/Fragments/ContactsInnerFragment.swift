@@ -81,7 +81,7 @@ struct ContactsInnerFragment: View {
 										 showingSheet: $showingSheet, startCallFunc: {_ in })}
 				.safeAreaInset(edge: .top, content: {
 					Spacer()
-						.frame(height: 14)
+						.frame(height: 12)
 				})
 				.listStyle(.plain)
 				.overlay(

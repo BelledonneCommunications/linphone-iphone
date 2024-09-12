@@ -166,7 +166,7 @@ struct ConversationsListFragment: View {
 			}
 			.safeAreaInset(edge: .top, content: {
 				Spacer()
-					.frame(height: 14)
+					.frame(height: 12)
 			})
 			.listStyle(.plain)
 			.overlay(

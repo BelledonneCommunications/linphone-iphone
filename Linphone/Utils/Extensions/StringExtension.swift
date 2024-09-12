@@ -24,3 +24,17 @@ extension String {
 		return NSLocalizedString(self, comment: comment != nil ? comment! : self)
 	}
 }
+
+extension String {
+	var isOnlyEmojis: Bool {
+			let filteredText = self.filter { !$0.isWhitespace }
+			return !filteredText.isEmpty && filteredText.allSatisfy { $0.isEmoji }
+		}
+}
+
+extension Character {
+	var isEmoji: Bool {
+		guard let scalar = unicodeScalars.first else { return false }
+		return scalar.properties.isEmoji && (scalar.value > 0x238C || unicodeScalars.count > 1)
+	}
+}
