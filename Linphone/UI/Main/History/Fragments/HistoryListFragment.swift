@@ -142,6 +142,10 @@ struct HistoryListFragment: View {
 					}
 				}
 			}
+			.safeAreaInset(edge: .top, content: {
+				Spacer()
+					.frame(height: 14)
+			})
 			.listStyle(.plain)
 			.overlay(
 				VStack {

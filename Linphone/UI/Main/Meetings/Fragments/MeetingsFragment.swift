@@ -160,6 +160,10 @@ struct MeetingsFragment: View {
 						proxyReader.scrollTo(meetingsListViewModel.todayIdx)
 					}
 				}
+				.safeAreaInset(edge: .top, content: {
+					Spacer()
+						.frame(height: 14)
+				})
 				.listStyle(.plain)
 				.overlay(
 					VStack {

@@ -79,6 +79,10 @@ struct ContactsInnerFragment: View {
 				List {
                     ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(),
 										 showingSheet: $showingSheet, startCallFunc: {_ in })}
+				.safeAreaInset(edge: .top, content: {
+					Spacer()
+						.frame(height: 14)
+				})
 				.listStyle(.plain)
 				.overlay(
 					VStack {

@@ -284,293 +284,347 @@ struct ContentView: View {
 									   .edgesIgnoringSafeArea(.top)
 									   .frame(height: 1)
 								
-								if searchIsActive == false {
-									HStack {
-										Image("profile-image-example")
-											.resizable()
-											.frame(width: 45, height: 45)
-											.clipShape(Circle())
-											.onTapGesture {
-												openMenu()
-											}
-										
-										Text(index == 0 ? "Contacts" : (index == 1 ? "Calls" : (index == 2 ? "Conversations" : "Meetings")))
-											.default_text_style_white_800(styleSize: 20)
-											.padding(.leading, 10)
+								ZStack {
+									VStack {
+										Rectangle()
+											.foregroundColor(
+												(orientation == .landscapeLeft
+												 || orientation == .landscapeRight
+												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+												? Color.white
+												: Color.orangeMain500
+											)
+											.frame(height: 100)
 										
 										Spacer()
-										
-										Button {
-											withAnimation {
-												searchIsActive.toggle()
-											}
-										} label: {
-											Image("magnifying-glass")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 25, height: 25, alignment: .leading)
-												.padding(.all, 10)
-										}
-										.padding(.trailing, index == 2 ? 10 : 0)
-										
-										if index == 3 {
-											Button {
-												NotificationCenter.default.post(name: MeetingsListViewModel.ScrollToTodayNotification, object: nil)
-											} label: {
-												Image("calendar")
-													.renderingMode(.template)
+									}
+									
+									VStack(spacing: 0) {
+										if searchIsActive == false {
+											HStack {
+												Image("profile-image-example")
 													.resizable()
-													.foregroundStyle(.white)
-													.frame(width: 25, height: 25, alignment: .leading)
-													.padding(.all, 10)
-											}
-											.padding(.trailing, 10)
-										} else if index != 2 {
-											Menu {
-												if index == 0 {
+													.frame(width: 45, height: 45)
+													.clipShape(Circle())
+													.onTapGesture {
+														openMenu()
+													}
+												
+												Text(index == 0 ? "Contacts" : (index == 1 ? "Calls" : (index == 2 ? "Conversations" : "Meetings")))
+													.default_text_style_white_800(styleSize: 20)
+													.padding(.leading, 10)
+												
+												Spacer()
+												
+												Button {
+													withAnimation {
+														searchIsActive.toggle()
+													}
+												} label: {
+													Image("magnifying-glass")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(.white)
+														.frame(width: 25, height: 25, alignment: .leading)
+														.padding(.all, 10)
+												}
+												.padding(.trailing, index == 2 ? 10 : 0)
+												
+												if index == 3 {
 													Button {
-														contactViewModel.indexDisplayedFriend = nil
-														isMenuOpen = false
-														magicSearch.allContact = true
-														MagicSearchSingleton.shared.searchForContacts(
-															sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+														NotificationCenter.default.post(name: MeetingsListViewModel.ScrollToTodayNotification, object: nil)
 													} label: {
-														HStack {
-															Text("See all")
-															Spacer()
-															if magicSearch.allContact {
-																Image("green-check")
-																	.resizable()
-																	.frame(width: 25, height: 25, alignment: .leading)
-																	.padding(.all, 10)
+														Image("calendar")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(.white)
+															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
+													}
+													.padding(.trailing, 10)
+												} else if index != 2 {
+													Menu {
+														if index == 0 {
+															Button {
+																contactViewModel.indexDisplayedFriend = nil
+																isMenuOpen = false
+																magicSearch.allContact = true
+																MagicSearchSingleton.shared.searchForContacts(
+																	sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+															} label: {
+																HStack {
+																	Text("See all")
+																	Spacer()
+																	if magicSearch.allContact {
+																		Image("green-check")
+																			.resizable()
+																			.frame(width: 25, height: 25, alignment: .leading)
+																			.padding(.all, 10)
+																	}
+																}
+															}
+															
+															Button {
+																contactViewModel.indexDisplayedFriend = nil
+																isMenuOpen = false
+																magicSearch.allContact = false
+																MagicSearchSingleton.shared.searchForContacts(
+																	sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+															} label: {
+																HStack {
+																	Text("See Linphone contact")
+																	Spacer()
+																	if !magicSearch.allContact {
+																		Image("green-check")
+																			.resizable()
+																			.frame(width: 25, height: 25, alignment: .leading)
+																			.padding(.all, 10)
+																	}
+																}
+															}
+														} else {
+															Button(role: .destructive) {
+																isMenuOpen = false
+																isShowDeleteAllHistoryPopup.toggle()
+															} label: {
+																HStack {
+																	Text("Delete all history")
+																	Spacer()
+																	Image("trash-simple-red")
+																		.resizable()
+																		.frame(width: 25, height: 25, alignment: .leading)
+																		.padding(.all, 10)
+																}
 															}
 														}
+													} label: {
+														Image(index == 0 ? "funnel" : "dots-three-vertical")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(.white)
+															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
+													}
+													.padding(.trailing, 10)
+													.onTapGesture {
+														isMenuOpen = true
+													}
+												}
+											}
+											.frame(maxWidth: .infinity)
+											.frame(height: 50)
+											.padding(.leading)
+											.padding(.top, 2.5)
+											.padding(.bottom, 2.5)
+											.background(Color.orangeMain500)
+											.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
+										} else {
+											HStack {
+												Button {
+													withAnimation {
+														self.focusedField = false
+														searchIsActive.toggle()
 													}
 													
-													Button {
-														contactViewModel.indexDisplayedFriend = nil
-														isMenuOpen = false
-														magicSearch.allContact = false
+													text = ""
+													
+													if index == 0 {
+														magicSearch.currentFilter = ""
 														MagicSearchSingleton.shared.searchForContacts(
 															sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-													} label: {
-														HStack {
-															Text("See Linphone contact")
-															Spacer()
-															if !magicSearch.allContact {
-																Image("green-check")
-																	.resizable()
-																	.frame(width: 25, height: 25, alignment: .leading)
-																	.padding(.all, 10)
+													} else if index == 1 {
+														historyListViewModel.resetFilterCallLogs()
+													} else if index == 2 {
+														conversationsListViewModel.resetFilterConversations()
+													} else if index == 3 {
+														meetingsListViewModel.currentFilter = ""
+														meetingsListViewModel.computeMeetingsList()
+													}
+												} label: {
+													Image("caret-left")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(.white)
+														.frame(width: 25, height: 25, alignment: .leading)
+														.padding(.all, 10)
+														.padding(.leading, -10)
+												}
+												
+												if #available(iOS 16.0, *) {
+													TextEditor(text: Binding(
+														get: {
+															return text
+														},
+														set: { value in
+															var newValue = value
+															if value.contains("\n") {
+																newValue = value.replacingOccurrences(of: "\n", with: "")
 															}
+															text = newValue
+														}
+													))
+													.default_text_style_white_700(styleSize: 15)
+													.padding(.all, 6)
+													.disableAutocorrection(true)
+													.autocapitalization(.none)
+													.accentColor(.white)
+													.scrollContentBackground(.hidden)
+													.focused($focusedField)
+													.onAppear {
+														self.focusedField = true
+													}
+													.onChange(of: text) { newValue in
+														if index == 0 {
+															magicSearch.currentFilter = newValue
+															MagicSearchSingleton.shared.searchForContacts(
+																sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+														} else if index == 1 {
+															if text.isEmpty {
+																historyListViewModel.resetFilterCallLogs()
+															} else {
+																historyListViewModel.filterCallLogs(filter: text)
+															}
+														} else if index == 2 {
+															if text.isEmpty {
+																conversationsListViewModel.resetFilterConversations()
+															} else {
+																conversationsListViewModel.filterConversations(filter: text)
+															}
+														} else if index == 3 {
+															meetingsListViewModel.currentFilter = text
+															meetingsListViewModel.computeMeetingsList()
 														}
 													}
 												} else {
-													Button(role: .destructive) {
-														isMenuOpen = false
-														isShowDeleteAllHistoryPopup.toggle()
-													} label: {
-														HStack {
-															Text("Delete all history")
-															Spacer()
-															Image("trash-simple-red")
-																.resizable()
-																.frame(width: 25, height: 25, alignment: .leading)
-																.padding(.all, 10)
+													TextEditor(text: Binding(
+														get: {
+															return text
+														},
+														set: { value in
+															var newValue = value
+															if value.contains("\n") {
+																newValue = value.replacingOccurrences(of: "\n", with: "")
+															}
+															text = newValue
+														}
+													))
+													.default_text_style_700(styleSize: 15)
+													.padding(.all, 6)
+													.focused($focusedField)
+													.disableAutocorrection(true)
+													.autocapitalization(.none)
+													.onAppear {
+														self.focusedField = true
+													}
+													.onChange(of: text) { newValue in
+														if index == 0 {
+															magicSearch.currentFilter = newValue
+															MagicSearchSingleton.shared.searchForContacts(
+																sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+														} else if index == 1 {
+															historyListViewModel.filterCallLogs(filter: text)
+														} else if index == 2 {
+															conversationsListViewModel.filterConversations(filter: text)
+														} else if index == 3 {
+															meetingsListViewModel.currentFilter = text
+															meetingsListViewModel.computeMeetingsList()
 														}
 													}
 												}
-											} label: {
-												Image(index == 0 ? "funnel" : "dots-three-vertical")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(.white)
-													.frame(width: 25, height: 25, alignment: .leading)
-													.padding(.all, 10)
+												
+												Button {
+													text = ""
+												} label: {
+													Image("x")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(.white)
+														.frame(width: 25, height: 25, alignment: .leading)
+														.padding(.all, 10)
+												}
+												.padding(.leading)
 											}
-											.padding(.trailing, 10)
-											.onTapGesture {
-												isMenuOpen = true
-											}
-										}
-									}
-									.frame(maxWidth: .infinity)
-									.frame(height: 50)
-									.padding(.leading)
-									.padding(.top, 2.5)
-									.padding(.bottom, 2.5)
-									.background(Color.orangeMain500)
-									.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
-								} else {
-									HStack {
-										Button {
-											withAnimation {
-												self.focusedField = false
-												searchIsActive.toggle()
-											}
-											
-											text = ""
-											
-											if index == 0 {
-												magicSearch.currentFilter = ""
-												MagicSearchSingleton.shared.searchForContacts(
-													sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											} else if index == 1 {
-												historyListViewModel.resetFilterCallLogs()
-											} else if index == 2 {
-												conversationsListViewModel.resetFilterConversations()
-											} else if index == 3 {
-												meetingsListViewModel.currentFilter = ""
-												meetingsListViewModel.computeMeetingsList()
-											}
-										} label: {
-											Image("caret-left")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 25, height: 25, alignment: .leading)
-												.padding(.all, 10)
-												.padding(.leading, -10)
+											.frame(maxWidth: .infinity)
+											.frame(height: 50)
+											.padding(.horizontal)
+											.padding(.bottom, 5)
+											.background(Color.orangeMain500)
+											.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
 										}
 										
-										if #available(iOS 16.0, *) {
-											TextEditor(text: Binding(
-												get: {
-													return text
-												},
-												set: { value in
-													var newValue = value
-													if value.contains("\n") {
-														newValue = value.replacingOccurrences(of: "\n", with: "")
-													}
-													text = newValue
-												}
-											))
-											.default_text_style_white_700(styleSize: 15)
-											.padding(.all, 6)
-											.disableAutocorrection(true)
-											.autocapitalization(.none)
-											.accentColor(.white)
-											.scrollContentBackground(.hidden)
-											.focused($focusedField)
-											.onAppear {
-												self.focusedField = true
-											}
-											.onChange(of: text) { newValue in
-												if index == 0 {
-													magicSearch.currentFilter = newValue
-													MagicSearchSingleton.shared.searchForContacts(
-														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-												} else if index == 1 {
-													if text.isEmpty {
-														historyListViewModel.resetFilterCallLogs()
-													} else {
-														historyListViewModel.filterCallLogs(filter: text)
-													}
-												} else if index == 2 {
-													if text.isEmpty {
-														conversationsListViewModel.resetFilterConversations()
-													} else {
-														conversationsListViewModel.filterConversations(filter: text)
-													}
-												} else if index == 3 {
-													meetingsListViewModel.currentFilter = text
-													meetingsListViewModel.computeMeetingsList()
-												}
-											}
-										} else {
-											TextEditor(text: Binding(
-												get: {
-													return text
-												},
-												set: { value in
-													var newValue = value
-													if value.contains("\n") {
-														newValue = value.replacingOccurrences(of: "\n", with: "")
-													}
-													text = newValue
-												}
-											))
-											.default_text_style_700(styleSize: 15)
-											.padding(.all, 6)
-											.focused($focusedField)
-											.disableAutocorrection(true)
-											.autocapitalization(.none)
-											.onAppear {
-												self.focusedField = true
-											}
-											.onChange(of: text) { newValue in
-												if index == 0 {
-													magicSearch.currentFilter = newValue
-													MagicSearchSingleton.shared.searchForContacts(
-														sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-												} else if index == 1 {
-													historyListViewModel.filterCallLogs(filter: text)
-												} else if index == 2 {
-													conversationsListViewModel.filterConversations(filter: text)
-												} else if index == 3 {
-													meetingsListViewModel.currentFilter = text
-													meetingsListViewModel.computeMeetingsList()
-												}
-											}
+										if self.index == 0 {
+											ContactsView(
+												contactViewModel: contactViewModel,
+												historyViewModel: historyViewModel,
+												editContactViewModel: editContactViewModel,
+												isShowEditContactFragment: $isShowEditContactFragment,
+												isShowDeletePopup: $isShowDeleteContactPopup,
+												text: $text
+											)
+											.roundedCorner(25, corners: [.topRight, .topLeft])
+											.shadow(
+												color: (orientation == .landscapeLeft
+														|| orientation == .landscapeRight
+														|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+												? .white.opacity(0.0)
+												: .black.opacity(0.2),
+												radius: 25
+											)
+										} else if self.index == 1 {
+											HistoryView(
+												historyListViewModel: historyListViewModel,
+												historyViewModel: historyViewModel,
+												contactViewModel: contactViewModel,
+												editContactViewModel: editContactViewModel,
+												index: $index,
+												isShowStartCallFragment: $isShowStartCallFragment,
+												isShowEditContactFragment: $isShowEditContactFragment,
+												text: $text
+											)
+											.roundedCorner(25, corners: [.topRight, .topLeft])
+											.shadow(
+												color: (orientation == .landscapeLeft
+														|| orientation == .landscapeRight
+														|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+												? .white.opacity(0.0)
+												: .black.opacity(0.2),
+												radius: 25
+											)
+										} else if self.index == 2 {
+											ConversationsView(
+												conversationViewModel: conversationViewModel,
+												conversationsListViewModel: conversationsListViewModel,
+												text: $text,
+												isShowStartConversationFragment: $isShowStartConversationFragment
+											)
+											.roundedCorner(25, corners: [.topRight, .topLeft])
+											.shadow(
+												color: (orientation == .landscapeLeft
+														|| orientation == .landscapeRight
+														|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+												? .white.opacity(0.0)
+												: .black.opacity(0.2),
+												radius: 25
+											)
+										} else if self.index == 3 {
+											MeetingsView(
+												meetingsListViewModel: meetingsListViewModel,
+												meetingViewModel: meetingViewModel,
+												isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+												isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
+												text: $text
+											)
+											.roundedCorner(25, corners: [.topRight, .topLeft])
+											.shadow(
+												color: (orientation == .landscapeLeft
+														|| orientation == .landscapeRight
+														|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+												? .white.opacity(0.0)
+												: .black.opacity(0.2),
+												radius: 25
+											)
 										}
-										
-										Button {
-											text = ""
-										} label: {
-											Image("x")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 25, height: 25, alignment: .leading)
-												.padding(.all, 10)
-										}
-										.padding(.leading)
 									}
-									.frame(maxWidth: .infinity)
-									.frame(height: 50)
-									.padding(.horizontal)
-									.padding(.bottom, 5)
-									.background(Color.orangeMain500)
-									.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
-								}
-								
-								if self.index == 0 {
-									ContactsView(
-										contactViewModel: contactViewModel,
-										historyViewModel: historyViewModel,
-										editContactViewModel: editContactViewModel,
-										isShowEditContactFragment: $isShowEditContactFragment,
-										isShowDeletePopup: $isShowDeleteContactPopup,
-										text: $text
-									)
-								} else if self.index == 1 {
-									HistoryView(
-										historyListViewModel: historyListViewModel,
-										historyViewModel: historyViewModel,
-										contactViewModel: contactViewModel,
-										editContactViewModel: editContactViewModel,
-										index: $index,
-										isShowStartCallFragment: $isShowStartCallFragment,
-										isShowEditContactFragment: $isShowEditContactFragment,
-										text: $text
-									)
-								} else if self.index == 2 {
-									ConversationsView(
-										conversationViewModel: conversationViewModel,
-										conversationsListViewModel: conversationsListViewModel,
-										text: $text,
-										isShowStartConversationFragment: $isShowStartConversationFragment
-									)
-								} else if self.index == 3 {
-									MeetingsView(
-										meetingsListViewModel: meetingsListViewModel,
-										meetingViewModel: meetingViewModel,
-										isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
-										isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
-										text: $text
-									)
 								}
 							}
 							.frame(maxWidth:
