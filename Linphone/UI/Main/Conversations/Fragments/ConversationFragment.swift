@@ -150,8 +150,8 @@ struct ConversationFragment: View {
 		.navigationViewStyle(.stack)
 	}
 	
-	//swiftlint:disable cyclomatic_complexity
-	//swiftlint:disable function_body_length
+	// swiftlint:disable cyclomatic_complexity
+	// swiftlint:disable function_body_length
 	@ViewBuilder
 	func innerView(geometry: GeometryProxy) -> some View {
 		ZStack {
@@ -869,8 +869,8 @@ struct ConversationFragment: View {
 			}
 		}
 	}
-	//swiftlint:enable cyclomatic_complexity
-	//swiftlint:enable function_body_length
+	// swiftlint:enable cyclomatic_complexity
+	// swiftlint:enable function_body_length
 	
 	@ViewBuilder
 	func imdnOrReactionsSheet() -> some View {

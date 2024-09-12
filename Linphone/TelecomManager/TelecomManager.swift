@@ -453,8 +453,7 @@ class TelecomManager: ObservableObject {
 				}
 				updateRemoteConfVideo(remConfVideoEnabled: remConfVideoEnabled)
 			}
-			
-			
+						
 			if self.remoteConfVideo {
 				Log.info("[Call] Remote video is activated")
 			}

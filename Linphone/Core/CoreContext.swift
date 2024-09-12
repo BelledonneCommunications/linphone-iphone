@@ -147,7 +147,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
 			
-			self.mCoreDelegate = CoreDelegateStub(onGlobalStateChanged: { (core: Core, state: GlobalState, message: String) in
+			self.mCoreDelegate = CoreDelegateStub(onGlobalStateChanged: { (core: Core, state: GlobalState, _: String) in
 				if state == GlobalState.On {
 #if DEBUG
 					let pushEnvironment = ".dev"
@@ -199,7 +199,7 @@ final class CoreContext: ObservableObject {
 						ToastViewModel.shared.displayToast = true
 					}
 				}
-			}, onConfiguringStatus: { (core: Core, status: ConfiguringState, message: String) in
+			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
@@ -215,7 +215,7 @@ final class CoreContext: ObservableObject {
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in
 				if info.starts(with: "https") {
 					DispatchQueue.main.async {
-						UIPasteboard.general.setValue(info,	forPasteboardType: UTType.plainText.identifier)
+						UIPasteboard.general.setValue(info, forPasteboardType: UTType.plainText.identifier)
 						ToastViewModel.shared.toastMessage = "Success_send_logs"
 						ToastViewModel.shared.displayToast = true
 					}

@@ -44,7 +44,7 @@ class AccountModel: ObservableObject {
 		
 		coreDelegate = CoreDelegateStub(onCallStateChanged: { (_: Core, _: Call, _: Call.State, _: String) in
 			self.computeNotificationsCount()
-		}, onMessagesReceived: { (_: Core, _: ChatRoom, _:[ChatMessage]) in
+		}, onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
 			self.computeNotificationsCount()
 		}, onChatRoomRead: { (_: Core, _: ChatRoom) in
 			self.computeNotificationsCount()
