@@ -25,7 +25,6 @@ import Combine
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length
 // swiftlint:disable cyclomatic_complexity
-// swiftlint:disable large_tuple
 class CallViewModel: ObservableObject {
 	
 	static let TAG = "[CallViewModel]"
@@ -67,7 +66,8 @@ class CallViewModel: ObservableObject {
 	@Published var qualityValue: Float = 0.0
 	@Published var qualityIcon = "cell-signal-full"
 
-	private var mConferenceSuscriptions = Set<AnyCancellable?>()
+	private var conferenceDelegate: ConferenceDelegate?
+	private var waitingForConferenceDelegate: ConferenceDelegate?
 	
 	@Published var calls: [Call] = []
 	@Published var callsCounter: Int = 0
@@ -77,7 +77,7 @@ class CallViewModel: ObservableObject {
 	
 	var currentCall: Call?
 	
-	private var callSuscriptions = Set<AnyCancellable?>()
+	private var callDelegate: CallDelegate?
 	
 	@Published var letters1: String = "AA"
 	@Published var letters2: String = "BB"
@@ -87,7 +87,7 @@ class CallViewModel: ObservableObject {
 	@Published var operationInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
 	
-	private var chatRoomSuscriptions = Set<AnyCancellable?>()
+	private var chatRoomDelegate: ChatRoomDelegate?
 	
 	init() {
 		do {
@@ -100,10 +100,19 @@ class CallViewModel: ObservableObject {
 	func resetCallView() {
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
+				if self.callDelegate != nil {
+					self.currentCall?.removeDelegate(delegate: self.callDelegate!)
+					self.callDelegate = nil
+				}
+				if self.conferenceDelegate != nil {
+					self.currentCall?.conference?.removeDelegate(delegate: self.conferenceDelegate!)
+					self.conferenceDelegate = nil
+				}
+				if self.waitingForConferenceDelegate != nil {
+					self.currentCall?.conference?.removeDelegate(delegate: self.waitingForConferenceDelegate!)
+					self.waitingForConferenceDelegate = nil
+				}
 				self.currentCall = core.currentCall
-				self.callSuscriptions.removeAll()
-				self.mConferenceSuscriptions.removeAll()
-				
 				let callsCounterTmp = core.calls.count
 				
 				var videoDisplayedTmp = false
@@ -231,47 +240,41 @@ class CallViewModel: ObservableObject {
 					}
 				}
 				
-				self.callSuscriptions.insert(self.currentCall!.publisher?.onEncryptionChanged?.postOnCoreQueue { _ in
+				self.callDelegate = CallDelegateStub(onEncryptionChanged: { (_: Call, _: Bool, _: String)in
 					self.updateEncryption(withToast: false)
 					if self.currentCall != nil {
 						self.callMediaEncryptionModel.update(call: self.currentCall!)
 					}
-				})
-				
-				self.callSuscriptions.insert(self.currentCall!.publisher?.onStatsUpdated?.postOnCoreQueue {(cbVal: (call: Call, stats: CallStats)) in
+				}, onAuthenticationTokenVerified: { (_, verified: Bool) in
+					Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
+					if verified {
+						self.updateEncryption(withToast: true)
+						if self.currentCall != nil {
+							self.callMediaEncryptionModel.update(call: self.currentCall!)
+						}
+					} else {
+						if self.telecomManager.isNotVerifiedCounter == 0 {
+							DispatchQueue.main.async {
+								self.isNotVerified = true
+								self.telecomManager.isNotVerifiedCounter += 1
+							}
+							self.showZrtpSasDialogIfPossible()
+						} else {
+							DispatchQueue.main.async {
+								self.isNotVerified = true
+								self.telecomManager.isNotVerifiedCounter += 1
+								self.zrtpPopupDisplayed = true
+							}
+						}
+					}
+				}, onStatsUpdated: { (_: Call, stats: CallStats) in
 					DispatchQueue.main.async {
 						if self.currentCall != nil {
-							self.callStatsModel.update(call: self.currentCall!, stats: cbVal.stats)
+							self.callStatsModel.update(call: self.currentCall!, stats: stats)
 						}
 					}
 				})
-				
-				self.callSuscriptions.insert(
-					self.currentCall!.publisher?.onAuthenticationTokenVerified?.postOnCoreQueue {(_, verified: Bool) in
-						Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
-						if verified {
-							self.updateEncryption(withToast: true)
-							if self.currentCall != nil {
-								self.callMediaEncryptionModel.update(call: self.currentCall!)
-							}
-						} else {
-							if self.telecomManager.isNotVerifiedCounter == 0 {
-								DispatchQueue.main.async {
-									self.isNotVerified = true
-									self.telecomManager.isNotVerifiedCounter += 1
-								}
-								self.showZrtpSasDialogIfPossible()
-							} else {
-								DispatchQueue.main.async {
-									self.isNotVerified = true
-									self.telecomManager.isNotVerifiedCounter += 1
-									self.zrtpPopupDisplayed = true
-								}
-							}
-						}
-					}
-				)
-				
+				self.currentCall!.addDelegate(delegate: self.callDelegate!)
 				self.updateCallQualityIcon()
 			}
 		}
@@ -385,263 +388,241 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func waitingForCreatedStateConference() {
-		self.mConferenceSuscriptions.insert(
-			self.currentCall?.conference?.publisher?.onStateChanged?.postOnCoreQueue {(cbValue: (conference: Conference, newState: Conference.State)) in
-				if cbValue.newState == .Created {
+		if let conference = self.currentCall?.conference {
+			self.waitingForConferenceDelegate = ConferenceDelegateStub(onStateChanged: { (_: Conference, newState: Conference.State) in
+				if newState == .Created {
 					DispatchQueue.main.async {
 						self.getConference()
 					}
 				}
-			}
-		)
+			})
+			conference.addDelegate(delegate: self.waitingForConferenceDelegate!)
+		}
 	}
 	
 	func addConferenceCallBacks() {
 		coreContext.doOnCoreQueue { _ in
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onActiveSpeakerParticipantDevice?.postOnCoreQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
-					if cbValue.participantDevice.address != nil {
-						let activeSpeakerParticipantBis = self.activeSpeakerParticipant
-						
-						let activeSpeakerParticipantTmp = ParticipantModel(
-							address: cbValue.participantDevice.address!,
-							isJoining: false,
-							onPause: cbValue.participantDevice.state == .OnHold,
-							isMuted: cbValue.participantDevice.isMuted
-						)
-						
-						var activeSpeakerNameTmp = ""
-						let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp.address)
-						if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-							activeSpeakerNameTmp = friend!.address!.displayName!
-						} else {
-							if activeSpeakerParticipantTmp.address.displayName != nil {
-								activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.displayName!
-							} else if activeSpeakerParticipantTmp.address.username != nil {
-								activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.username!
+			guard let conference = self.currentCall?.conference else { return }
+			
+			self.conferenceDelegate = ConferenceDelegateStub(onParticipantDeviceAdded: { (conference: Conference, participantDevice: ParticipantDevice) in
+				if participantDevice.address != nil {
+					var participantListTmp: [ParticipantModel] = []
+					conference.participantDeviceList.forEach({ pDevice in
+						if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
+							if !conference.isMe(uri: pDevice.address!.clone()!) {
+								let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
+								participantListTmp.append(
+									ParticipantModel(
+										address: pDevice.address!,
+										isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
+										onPause: pDevice.state == .OnHold,
+										isMuted: pDevice.isMuted,
+										isAdmin: isAdmin ?? false
+									)
+								)
 							}
 						}
-						
-						var participantListTmp: [ParticipantModel] = []
-						if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
-								|| ( activeSpeakerParticipantBis == nil) {
-							
-							cbValue.conference.participantDeviceList.forEach({ participantDevice in
-								if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-									if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-										let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
-										participantListTmp.append(
-											ParticipantModel(
-												address: participantDevice.address!,
-												isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
-												onPause: participantDevice.state == .OnHold,
-												isMuted: participantDevice.isMuted,
-												isAdmin: isAdmin ?? false
-											)
-										)
-									}
-								}
-							})
+					})
+					
+					var activeSpeakerParticipantTmp: ParticipantModel?
+					var activeSpeakerNameTmp = ""
+					
+					if self.activeSpeakerParticipant == nil {
+						if conference.activeSpeakerParticipantDevice?.address != nil {
+							activeSpeakerParticipantTmp = ParticipantModel(
+								address: conference.activeSpeakerParticipantDevice!.address!,
+								isJoining: false,
+								onPause: conference.activeSpeakerParticipantDevice!.state == .OnHold,
+								isMuted: conference.activeSpeakerParticipantDevice!.isMuted
+							)
+						} else if conference.participantList.first?.address != nil && conference.participantList.first!.address!.clone()!.equal(address2: (conference.me?.address)!) {
+							activeSpeakerParticipantTmp = ParticipantModel(
+								address: conference.participantDeviceList.first!.address!,
+								isJoining: false,
+								onPause: conference.participantDeviceList.first!.state == .OnHold,
+								isMuted: conference.participantDeviceList.first!.isMuted
+							)
+						} else if conference.participantList.last?.address != nil {
+							activeSpeakerParticipantTmp = ParticipantModel(
+								address: conference.participantDeviceList.last!.address!,
+								isJoining: false,
+								onPause: conference.participantDeviceList.last!.state == .OnHold,
+								isMuted: conference.participantDeviceList.last!.isMuted
+							)
 						}
 						
-						DispatchQueue.main.async {
+						if activeSpeakerParticipantTmp != nil {
+							let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp?.address)
+							if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+								activeSpeakerNameTmp = friend!.address!.displayName!
+							} else {
+								if activeSpeakerParticipantTmp!.address.displayName != nil {
+									activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
+								} else if activeSpeakerParticipantTmp!.address.username != nil {
+									activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
+								}
+							}
+							DispatchQueue.main.async {
+								if self.activeSpeakerParticipant == nil {
+									self.activeSpeakerName = activeSpeakerNameTmp
+								}
+							}
+						}
+					}
+					
+					DispatchQueue.main.async {
+						if self.activeSpeakerParticipant == nil {
 							self.activeSpeakerParticipant = activeSpeakerParticipantTmp
 							self.activeSpeakerName = activeSpeakerNameTmp
-							if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
-								|| ( activeSpeakerParticipantBis == nil) {
-								self.participantList = participantListTmp
-							}
 						}
+						self.participantList = participantListTmp
 					}
 				}
-			)
-			
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onParticipantDeviceAdded?.postOnCoreQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
-					if cbValue.participantDevice.address != nil {
-						var participantListTmp: [ParticipantModel] = []
-						cbValue.conference.participantDeviceList.forEach({ participantDevice in
-							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-								if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-									let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
-									participantListTmp.append(
-										ParticipantModel(
-											address: participantDevice.address!,
-											isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
-											onPause: participantDevice.state == .OnHold,
-											isMuted: participantDevice.isMuted,
-											isAdmin: isAdmin ?? false
-										)
+			}, onParticipantDeviceRemoved: { (conference: Conference, participantDevice: ParticipantDevice) in
+				if participantDevice.address != nil {
+					var participantListTmp: [ParticipantModel] = []
+					conference.participantDeviceList.forEach({ pDevice in
+						if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
+							if !conference.isMe(uri: pDevice.address!.clone()!) {
+								let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
+								participantListTmp.append(
+									ParticipantModel(
+										address: pDevice.address!,
+										isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
+										onPause: pDevice.state == .OnHold,
+										isMuted: pDevice.isMuted,
+										isAdmin: isAdmin ?? false
 									)
-								}
-							}
-						})
-						
-						var activeSpeakerParticipantTmp: ParticipantModel?
-						var activeSpeakerNameTmp = ""
-						
-						if self.activeSpeakerParticipant == nil {
-							if cbValue.conference.activeSpeakerParticipantDevice?.address != nil {
-								activeSpeakerParticipantTmp = ParticipantModel(
-									address: cbValue.conference.activeSpeakerParticipantDevice!.address!,
-									isJoining: false,
-									onPause: cbValue.conference.activeSpeakerParticipantDevice!.state == .OnHold,
-									isMuted: cbValue.conference.activeSpeakerParticipantDevice!.isMuted
 								)
-							} else if cbValue.conference.participantList.first?.address != nil && cbValue.conference.participantList.first!.address!.clone()!.equal(address2: (cbValue.conference.me?.address)!) {
-								activeSpeakerParticipantTmp = ParticipantModel(
-									address: cbValue.conference.participantDeviceList.first!.address!,
-									isJoining: false,
-									onPause: cbValue.conference.participantDeviceList.first!.state == .OnHold,
-									isMuted: cbValue.conference.participantDeviceList.first!.isMuted
-								)
-							} else if cbValue.conference.participantList.last?.address != nil {
-								activeSpeakerParticipantTmp = ParticipantModel(
-									address: cbValue.conference.participantDeviceList.last!.address!,
-									isJoining: false,
-									onPause: cbValue.conference.participantDeviceList.last!.state == .OnHold,
-									isMuted: cbValue.conference.participantDeviceList.last!.isMuted
-								)
-							}
-							
-							if activeSpeakerParticipantTmp != nil {
-								let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp?.address)
-								if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-									activeSpeakerNameTmp = friend!.address!.displayName!
-								} else {
-									if activeSpeakerParticipantTmp!.address.displayName != nil {
-										activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
-									} else if activeSpeakerParticipantTmp!.address.username != nil {
-										activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
-									}
-								}
-								DispatchQueue.main.async {
-									if self.activeSpeakerParticipant == nil {
-										self.activeSpeakerName = activeSpeakerNameTmp
-									}
-								}
-							}
-						}
-						
-						DispatchQueue.main.async {
-							if self.activeSpeakerParticipant == nil {
-								self.activeSpeakerParticipant = activeSpeakerParticipantTmp
-								self.activeSpeakerName = activeSpeakerNameTmp
-							}
-							self.participantList = participantListTmp
-						}
-					}
-				}
-			)
-			
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onParticipantDeviceRemoved?.postOnCoreQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice)) in
-					if cbValue.participantDevice.address != nil {
-						var participantListTmp: [ParticipantModel] = []
-						cbValue.conference.participantDeviceList.forEach({ participantDevice in
-							if participantDevice.address != nil && !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-								if !cbValue.conference.isMe(uri: participantDevice.address!.clone()!) {
-									let isAdmin = cbValue.conference.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
-									participantListTmp.append(
-										ParticipantModel(
-											address: participantDevice.address!,
-											isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
-											onPause: participantDevice.state == .OnHold,
-											isMuted: participantDevice.isMuted,
-											isAdmin: isAdmin ?? false
-										)
-									)
-								}
-							}
-						})
-						
-						let participantDeviceListCount = cbValue.conference.participantDeviceList.count
-						
-						DispatchQueue.main.async {
-							self.participantList = participantListTmp
-							
-							if participantDeviceListCount == 1 {
-								self.activeSpeakerParticipant = nil
-							}
-						}
-					}
-				}
-			)
-			
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onParticipantDeviceIsMuted?.postOnCoreQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice, isMuted: Bool)) in
-					if self.activeSpeakerParticipant != nil && self.activeSpeakerParticipant!.address.equal(address2: cbValue.participantDevice.address!) {
-						DispatchQueue.main.async {
-							self.activeSpeakerParticipant!.isMuted = cbValue.isMuted
-						}
-					}
-					self.participantList.forEach({ participantDevice in
-						if participantDevice.address.equal(address2: cbValue.participantDevice.address!) {
-							DispatchQueue.main.async {
-								participantDevice.isMuted = cbValue.isMuted
 							}
 						}
 					})
+					
+					let participantDeviceListCount = conference.participantDeviceList.count
+					
+					DispatchQueue.main.async {
+						self.participantList = participantListTmp
+						
+						if participantDeviceListCount == 1 {
+							self.activeSpeakerParticipant = nil
+						}
+					}
 				}
-			)
-			
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onParticipantDeviceStateChanged?.postOnCoreQueue {(cbValue: (conference: Conference, device: ParticipantDevice, state: ParticipantDevice.State)) in
-					Log.info(
-						"[CallViewModel] Participant device \(cbValue.device.address!.asStringUriOnly()) state changed \(cbValue.state)"
+			}, onParticipantAdminStatusChanged: { (_: Conference, participant: Participant) in
+				let isAdmin = participant.isAdmin
+				if self.myParticipantModel != nil && self.myParticipantModel!.address.clone()!.equal(address2: participant.address!) {
+					DispatchQueue.main.async {
+						self.myParticipantModel!.isAdmin = isAdmin
+					}
+				}
+				self.participantList.forEach({ participantDevice in
+					if participantDevice.address.clone()!.equal(address2: participant.address!) {
+						DispatchQueue.main.async {
+							participantDevice.isAdmin = isAdmin
+						}
+					}
+				})
+			}, onParticipantDeviceStateChanged: { (_: Conference, device: ParticipantDevice, state: ParticipantDevice.State) in
+				Log.info(
+					"[CallViewModel] Participant device \(device.address!.asStringUriOnly()) state changed \(state)"
+				)
+				if self.activeSpeakerParticipant != nil && self.activeSpeakerParticipant!.address.equal(address2: device.address!) {
+					DispatchQueue.main.async {
+						self.activeSpeakerParticipant!.onPause = state == .OnHold
+						self.activeSpeakerParticipant!.isJoining = state == .Joining || state == .Alerting
+					}
+				}
+				self.participantList.forEach({ participantDevice in
+					if participantDevice.address.equal(address2: device.address!) {
+						DispatchQueue.main.async {
+							participantDevice.onPause = state == .OnHold
+							participantDevice.isJoining = state == .Joining || state == .Alerting
+						}
+					}
+				})
+			}, onParticipantDeviceIsSpeakingChanged: { (_: Conference, device: ParticipantDevice, isSpeaking: Bool) in
+				let isSpeaking = device.isSpeaking
+				if self.myParticipantModel != nil && self.myParticipantModel!.address.clone()!.equal(address2: device.address!) {
+					DispatchQueue.main.async {
+						self.myParticipantModel!.isSpeaking = isSpeaking
+					}
+				}
+				self.participantList.forEach({ participantDeviceList in
+					if participantDeviceList.address.clone()!.equal(address2: device.address!) {
+						DispatchQueue.main.async {
+							participantDeviceList.isSpeaking = isSpeaking
+						}
+					}
+				})
+			}, onParticipantDeviceIsMuted: { (_: Conference, device: ParticipantDevice, isMuted: Bool) in
+				if self.activeSpeakerParticipant != nil && self.activeSpeakerParticipant!.address.equal(address2: device.address!) {
+					DispatchQueue.main.async {
+						self.activeSpeakerParticipant!.isMuted = isMuted
+					}
+				}
+				self.participantList.forEach({ participantDevice in
+					if participantDevice.address.equal(address2: device.address!) {
+						DispatchQueue.main.async {
+							participantDevice.isMuted = isMuted
+						}
+					}
+				})
+			}, onActiveSpeakerParticipantDevice: { (conference: Conference, participantDevice: ParticipantDevice) in
+				if participantDevice.address != nil {
+					let activeSpeakerParticipantBis = self.activeSpeakerParticipant
+					
+					let activeSpeakerParticipantTmp = ParticipantModel(
+						address: participantDevice.address!,
+						isJoining: false,
+						onPause: participantDevice.state == .OnHold,
+						isMuted: participantDevice.isMuted
 					)
-					if self.activeSpeakerParticipant != nil && self.activeSpeakerParticipant!.address.equal(address2: cbValue.device.address!) {
-						DispatchQueue.main.async {
-							self.activeSpeakerParticipant!.onPause = cbValue.state == .OnHold
-							self.activeSpeakerParticipant!.isJoining = cbValue.state == .Joining || cbValue.state == .Alerting
+					
+					var activeSpeakerNameTmp = ""
+					let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp.address)
+					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+						activeSpeakerNameTmp = friend!.address!.displayName!
+					} else {
+						if activeSpeakerParticipantTmp.address.displayName != nil {
+							activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.displayName!
+						} else if activeSpeakerParticipantTmp.address.username != nil {
+							activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.username!
 						}
 					}
-					self.participantList.forEach({ participantDevice in
-						if participantDevice.address.equal(address2: cbValue.device.address!) {
-							DispatchQueue.main.async {
-								participantDevice.onPause = cbValue.state == .OnHold
-								participantDevice.isJoining = cbValue.state == .Joining || cbValue.state == .Alerting
+					
+					var participantListTmp: [ParticipantModel] = []
+					if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
+						|| ( activeSpeakerParticipantBis == nil) {
+						
+						conference.participantDeviceList.forEach({ pDevice in
+							if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
+								if !conference.isMe(uri: pDevice.address!.clone()!) {
+									let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
+									participantListTmp.append(
+										ParticipantModel(
+											address: pDevice.address!,
+											isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
+											onPause: pDevice.state == .OnHold,
+											isMuted: pDevice.isMuted,
+											isAdmin: isAdmin ?? false
+										)
+									)
+								}
 							}
-						}
-					})
-				}
-			)
-			
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onParticipantAdminStatusChanged?.postOnCoreQueue {(cbValue: (conference: Conference, participant: Participant)) in
-					let isAdmin = cbValue.participant.isAdmin
-					if self.myParticipantModel != nil && self.myParticipantModel!.address.clone()!.equal(address2: cbValue.participant.address!) {
-						DispatchQueue.main.async {
-							self.myParticipantModel!.isAdmin = isAdmin
+						})
+					}
+					
+					DispatchQueue.main.async {
+						self.activeSpeakerParticipant = activeSpeakerParticipantTmp
+						self.activeSpeakerName = activeSpeakerNameTmp
+						if (activeSpeakerParticipantBis != nil && !activeSpeakerParticipantBis!.address.equal(address2: activeSpeakerParticipantTmp.address))
+							|| ( activeSpeakerParticipantBis == nil) {
+							self.participantList = participantListTmp
 						}
 					}
-					self.participantList.forEach({ participantDevice in
-						if participantDevice.address.clone()!.equal(address2: cbValue.participant.address!) {
-							DispatchQueue.main.async {
-								participantDevice.isAdmin = isAdmin
-							}
-						}
-					})
 				}
-			)
-			
-			self.mConferenceSuscriptions.insert(
-				self.currentCall?.conference?.publisher?.onParticipantDeviceIsSpeakingChanged?.postOnCoreQueue {(cbValue: (conference: Conference, participantDevice: ParticipantDevice, isSpeaking: Bool)) in
-					let isSpeaking = cbValue.participantDevice.isSpeaking
-					if self.myParticipantModel != nil && self.myParticipantModel!.address.clone()!.equal(address2: cbValue.participantDevice.address!) {
-						DispatchQueue.main.async {
-							self.myParticipantModel!.isSpeaking = isSpeaking
-						}
-					}
-					self.participantList.forEach({ participantDeviceList in
-						if participantDeviceList.address.clone()!.equal(address2: cbValue.participantDevice.address!) {
-							DispatchQueue.main.async {
-								participantDeviceList.isSpeaking = isSpeaking
-							}
-						}
-					})
-				}
-			)
+			})
+			conference.addDelegate(delegate: self.conferenceDelegate!)
 		}
 	}
 	
@@ -1306,13 +1287,27 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onConferenceJoined?.postOnCoreQueue { (chatRoom: ChatRoom, _: EventLog) in
+		self.chatRoomDelegate = ChatRoomDelegateStub(onStateChanged: { (chatRoom: ChatRoom, state: ChatRoom.State) in
+			let state = chatRoom.state
+			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+			if state == ChatRoom.State.CreationFailed {
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
+				chatRoom.removeDelegate(delegate: self.chatRoomDelegate!)
+				self.chatRoomDelegate = nil
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+					ToastViewModel.shared.displayToast = true
+				}
+			}
+		}, onConferenceJoined: { (chatRoom: ChatRoom, _: EventLog) in
 			let state = chatRoom.state
 			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
 			if state == ChatRoom.State.Created {
 				Log.info("\(StartConversationViewModel.TAG) Conversation \(id) successfully created")
-				self.chatRoomSuscriptions.removeAll()
+				chatRoom.removeDelegate(delegate: self.chatRoomDelegate!)
+				self.chatRoomDelegate = nil
 				
 				let model = ConversationModel(chatRoom: chatRoom)
 				if 	self.operationInProgress == false {
@@ -1332,7 +1327,8 @@ class CallViewModel: ObservableObject {
 				}
 			} else if state == ChatRoom.State.CreationFailed {
 				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
-				self.chatRoomSuscriptions.removeAll()
+				chatRoom.removeDelegate(delegate: self.chatRoomDelegate!)
+				self.chatRoomDelegate = nil
 				DispatchQueue.main.async {
 					self.operationInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
@@ -1340,23 +1336,9 @@ class CallViewModel: ObservableObject {
 				}
 			}
 		})
-		
-		self.chatRoomSuscriptions.insert(chatRoom.publisher?.onStateChanged?.postOnCoreQueue { (chatRoom: ChatRoom, state: ChatRoom.State) in
-			let state = chatRoom.state
-			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-			if state == ChatRoom.State.CreationFailed {
-				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
-				self.chatRoomSuscriptions.removeAll()
-				DispatchQueue.main.async {
-					self.operationInProgress = false
-					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-					ToastViewModel.shared.displayToast = true
-				}
-			}
-		})
+		chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 	}
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
 // swiftlint:enable cyclomatic_complexity
-// swiftlint:enable large_tuple
