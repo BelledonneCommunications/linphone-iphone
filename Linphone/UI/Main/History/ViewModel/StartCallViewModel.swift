@@ -37,7 +37,7 @@ class StartCallViewModel: ObservableObject {
 	
 	@Published var operationInProgress: Bool = false
 	
-	private var conferenceSuscriptions = Set<AnyCancellable?>()
+	private var conferenceSchedulerDelegate: ConferenceSchedulerDelegate?
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
@@ -116,10 +116,11 @@ class StartCallViewModel: ObservableObject {
 	}
 	
 	func conferenceAddDelegate(core: Core, conferenceScheduler: ConferenceScheduler) {
-		self.conferenceSuscriptions.insert(conferenceScheduler.publisher?.onStateChanged?.postOnCoreQueue { (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
+		self.conferenceSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
 			Log.info("\(StartCallViewModel.TAG) Conference scheduler state is \(state)")
 			if state == ConferenceScheduler.State.Ready {
-				self.conferenceSuscriptions.removeAll()
+				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
+				self.conferenceSchedulerDelegate = nil
 				
 				let conferenceAddress = conferenceScheduler.info?.uri
 				if conferenceAddress != nil {
@@ -139,7 +140,8 @@ class StartCallViewModel: ObservableObject {
 					self.operationInProgress = false
 				}
 			} else if state == ConferenceScheduler.State.Error {
-				self.conferenceSuscriptions.removeAll()
+				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
+				self.conferenceSchedulerDelegate = nil
 				Log.error("\(StartCallViewModel.TAG) Failed to create group call!")
 				
 				ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
@@ -150,6 +152,7 @@ class StartCallViewModel: ObservableObject {
 				}
 			}
 		})
+		conferenceScheduler.addDelegate(delegate: self.conferenceSchedulerDelegate!)
 	}
 	
 	func startVideoCall(core: Core, conferenceAddress: Address) {
