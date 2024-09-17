@@ -136,4 +136,14 @@ import linphonesw
 		}
 	}
 	
+	@objc public class func deleteRecurse(appGroupName:String) {
+		let fileManager = FileManager.default
+		do {
+			let fileURLs = try fileManager.contentsOfDirectory(at:  FileUtil.sharedContainerUrl(appGroupName: appGroupName), includingPropertiesForKeys: nil)
+			fileURLs.forEach{delete(path: $0.absoluteURL.path)}
+		} catch {
+			Log.e("Error while enumerating files \(error.localizedDescription)")
+		}
+	}
+	
 }
