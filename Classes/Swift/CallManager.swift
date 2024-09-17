@@ -656,7 +656,7 @@ import AVFoundation
 							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 							CallManager.instance().providerDelegate.uuids.updateValue(uuid, forKey: "")
 							CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid)
-							Core.get().activateAudioSession(actived: true)
+							Core.get().activateAudioSession(activated: true)
 						} else {
 							CallManager.instance().referedToCall = callId
 						}
@@ -763,7 +763,7 @@ import AVFoundation
 	// Audio messages
 	
 	@objc func activateAudioSession() {
-		lc?.activateAudioSession(actived: true)
+		lc?.activateAudioSession(activated: true)
 	}
 	
 	@objc func getSpeakerSoundCard() -> String? {

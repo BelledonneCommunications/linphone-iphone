@@ -273,7 +273,7 @@ extension ProviderDelegate: CXProviderDelegate {
 						// Callkit's design is not consistent, or its documentation imcomplete, wich is somewhat disapointing.
 						//
 						Log.directLog(BCTBX_LOG_DEBUG, text: "Assuming AudioSession is active when executing a CXSetHeldCallAction with isOnHold=false.")
-						CallManager.instance().lc?.activateAudioSession(actived: true)
+						CallManager.instance().lc?.activateAudioSession(activated: true)
 						CallManager.instance().callkitAudioSessionActivated = true
 					}
 				}
@@ -352,13 +352,13 @@ extension ProviderDelegate: CXProviderDelegate {
 
 	func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session activated.")
-		CallManager.instance().lc?.activateAudioSession(actived: true)
+		CallManager.instance().lc?.activateAudioSession(activated: true)
 		CallManager.instance().callkitAudioSessionActivated = true
 	}
 
 	func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: audio session deactivated.")
-		CallManager.instance().lc?.activateAudioSession(actived: false)
+		CallManager.instance().lc?.activateAudioSession(activated: false)
 		CallManager.instance().callkitAudioSessionActivated = nil
 	}
 }
