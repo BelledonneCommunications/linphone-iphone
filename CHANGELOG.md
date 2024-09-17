@@ -9,6 +9,13 @@ Group changes to describe their impact on the project, as follows:
 	Removed for deprecated features removed in this release.
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
+
+## [5.2.3] - 2024-17-09
+### Fixed
+- Crash when attempting to play audio memo with nil path (multi device sending situation for example)
+- Crash playing recorded call
+- Callkit ignoring incoming call if a registration failure occured earlier (incl. network connection problems)
+- Displaying of <?xml in chat list when last chat message received is a voice memo 
 		
 ## [5.2.2] - 2023-28-12
 ### Added
