@@ -55,11 +55,15 @@ class AudioPlayer {
 			NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LinphoneVoiceMessagePlayerEOF"), object: nil, userInfo: userInfo as [AnyHashable : Any])
 		}
 		CallManager.instance().changeRouteToSpeaker()
-		do{
-			try linphonePlayer?.open(filename: path!)
-			try linphonePlayer?.start()
-		}catch{
-			Log.e(error.localizedDescription)
+		if let path = path, FileUtil.fileExists(path: path) {
+			do{
+				try linphonePlayer?.open(filename: path)
+				try linphonePlayer?.start()
+			}catch{
+				Log.e(error.localizedDescription)
+			}
+		} else {
+			Log.e("[Voice Message] unable to play file, \(path != nil ? path : "nil") does not exist of is empty.")
 		}
 	}
 	
