@@ -140,14 +140,16 @@
 	const char *url = linphone_chat_message_get_external_body_url(message);
 	const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(message);
 	// Last message was a file transfer (image) so display a picture...
-	if ((url || last_content) && message) {
-        if (linphone_chat_message_get_utf8_text(message))
-            return [NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)];
-		return @"🗻";
-	} else {
-        const char *text = linphone_chat_message_get_utf8_text(message) ?: "";
+	if (url || last_content) {
+		if (linphone_chat_message_has_text_content(message) && linphone_chat_message_get_utf8_text(message) && !strstr(linphone_chat_message_get_utf8_text(message),"<?xml version"))
+			return [NSString stringWithUTF8String:linphone_chat_message_get_utf8_text(message)];
+		return @"📎";
+	} else if (linphone_chat_message_has_text_content(message)){
+		const char *text = linphone_chat_message_get_utf8_text(message) ?: "";
 		return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
 														   ?: NSLocalizedString(@"(invalid string)", nil);
+	} else {
+		return @"📎";
 	}
 }
 
