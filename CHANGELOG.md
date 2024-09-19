@@ -16,6 +16,7 @@ Group changes to describe their impact on the project, as follows:
 - Crash playing recorded call
 - Callkit ignoring incoming call if a registration failure occured earlier (incl. network connection problems)
 - Displaying of <?xml in chat list when last chat message received is a voice memo 
+- Fix audio memo downlowing when opened from the notification
 		
 ## [5.2.2] - 2023-28-12
 ### Added
