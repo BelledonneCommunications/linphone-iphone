@@ -233,6 +233,21 @@ class NotificationService: UNNotificationServiceExtension {
 			NotificationService.logDelegate = try! LinphoneLoggingServiceManager(config: config!, log: NotificationService.log, domain: "msgNotificationService")
 		}
 		lc = try! Factory.Instance.createSharedCoreWithConfig(config: config!, systemContext: nil, appGroupId: APP_GROUP_ID, mainCore: false)
+
+
+		// Disable auto downloads in service extension
+		
+		// Save config values
+		let configMaxSizeForAutoDownloadIncomingFiles = config?.getInt(section: "app", key: "auto_download_incoming_files_max_size", defaultValue: -1)
+		let configAutoDownloadVoiceRecordingsEnabled = config?.getBool(section: "app", key: "auto_download_incoming_voice_recordings", defaultValue: true)
+
+		// Disable downloads in service extension (API calls below will set the core attributes value + config)
+		lc?.maxSizeForAutoDownloadIncomingFiles = -1
+		lc?.autoDownloadVoiceRecordingsEnabled = false
+		
+		// restore the config values for the app
+		config?.setInt(section: "app", key: "auto_download_incoming_files_max_size", value: configMaxSizeForAutoDownloadIncomingFiles!)
+		config?.setBool(section: "app", key: "auto_download_incoming_voice_recordings", value: configAutoDownloadVoiceRecordingsEnabled!)
 	}
 
 	func stopCore() {

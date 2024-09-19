@@ -646,6 +646,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		recordingDurationTextView.text = recordingDuration(filePathRecording)
 		
 		recordingPlayButton.onClickAction = {
+			self.downloadAudioMemoIfNeeded(message: message)
 			self.playRecordedMessage(voiceRecorder: filePathRecording, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
 		}
 		recordingStopButton.onClickAction = {
@@ -661,7 +662,25 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			NSLayoutConstraint.activate(recordingWaveConstraints)
 		}
 		
+		if (Core.get().autoDownloadVoiceRecordingsEnabled) {
+			downloadAudioMemoIfNeeded(message: message)
+		}
+		
 		recordingView.isHidden = false
+	}
+	
+	func downloadAudioMemoIfNeeded(message: ChatMessage) {
+		if let audioContent = message.contents.filter({$0.isVoiceRecording}).first {
+			if (audioContent.filePath == nil || !FileUtil.fileExistsAndIsNotEmpty(path: audioContent.filePath!)) {
+				audioContent.filePath = LinphoneManager.imagesDirectory() + audioContent.name!;
+				if message.downloadContent(content: audioContent) {
+					Log.i("Started downloading voice memo")
+				} else {
+					Log.i("An error occured downloading voice memo")
+				}
+				return
+			}
+		}
 	}
 	
 	func initReplyView(){
@@ -1806,7 +1825,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		AudioPlayer.sharedModel.fileChanged.value = voiceRecorder
 		recordingPlayButton.isHidden = true
 		recordingStopButton.isHidden = false
-		
+
 		AudioPlayer.startSharedPlayer(voiceRecorder)
 		isPlayingVoiceRecording = true
 		
