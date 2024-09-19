@@ -31,7 +31,6 @@ class MeetingViewModel: ObservableObject {
 	@Published var showBroadcastHelp: Bool = false
 	@Published var subject: String = ""
 	@Published var description: String = ""
-	@Published var allDayMeeting: Bool = false
 	@Published var fromDateStr: String = ""
 	@Published var fromTime: String = ""
 	@Published var toDateStr: String = ""
@@ -80,7 +79,6 @@ class MeetingViewModel: ObservableObject {
 		showBroadcastHelp = false
 		subject = ""
 		description = ""
-		allDayMeeting = false
 		sendInvitations = true
 		participants = []
 		operationInProgress = false
@@ -122,7 +120,7 @@ class MeetingViewModel: ObservableObject {
 	func getFullDateString() -> String {
 		let formatter = DateFormatter()
 		formatter.dateFormat = "EEE d MMM yyyy"
-		return "\(formatter.string(from: fromDate)) | \(allDayMeeting ? "All day" : "\(fromTime) - \(toTime)")"
+		return "\(formatter.string(from: fromDate)) | \(fromTime) - \(toTime)"
 	}
 	
 	func addParticipants(participantsToAdd: [SelectedAddressModel]) {

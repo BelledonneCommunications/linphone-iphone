@@ -132,62 +132,30 @@ struct ScheduleMeetingFragment: View {
 							Spacer()
 						}.padding(.bottom, -5)
 						
-						if !meetingViewModel.allDayMeeting {
-							HStack(spacing: 10) {
-								Text(meetingViewModel.fromTime)
-									.fontWeight(.bold)
-									.padding(.leading, 50)
-									.frame(height: 29, alignment: .leading)
-									.default_text_style_500(styleSize: 16)
-									.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
-									.onTapGesture {
-										setFromDate = true
-										selectedDate = meetingViewModel.fromDate
-										showTimePicker.toggle()
-									}
-								Text(meetingViewModel.toTime)
-									.fontWeight(.bold)
-									.padding(.leading, 10)
-									.frame(height: 29, alignment: .leading)
-									.default_text_style_500(styleSize: 16)
-									.opacity(meetingViewModel.allDayMeeting ? 0 : 1)
-									.onTapGesture {
-										setFromDate = false
-										selectedDate = meetingViewModel.toDate
-										showTimePicker.toggle()
-									}
-								Spacer()
-								Toggle("", isOn: $meetingViewModel.allDayMeeting)
-									.labelsHidden()
-									.tint(Color.orangeMain300)
-								Text("All day")
-									.default_text_style_500(styleSize: 16)
-									.padding(.trailing, 15)
-							}
-						} else {
-							HStack(alignment: .center, spacing: 10) {
-								Image("clock")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c800)
-									.frame(width: 24, height: 24)
-									.padding(.leading, 15)
-								Text(meetingViewModel.toDateStr)
-									.fontWeight(.bold)
-									.default_text_style_500(styleSize: 16)
-									.onTapGesture {
-										setFromDate = false
-										selectedDate = meetingViewModel.toDate
-										showDatePicker.toggle()
-									}
-								Spacer()
-								Toggle("", isOn: $meetingViewModel.allDayMeeting)
-									.labelsHidden()
-									.tint(Color.orangeMain300)
-								Text("All day")
-									.default_text_style_500(styleSize: 16)
-								.padding(.trailing, 15)						}
+						HStack(spacing: 10) {
+							Text(meetingViewModel.fromTime)
+								.fontWeight(.bold)
+								.padding(.leading, 50)
+								.frame(height: 29, alignment: .leading)
+								.default_text_style_500(styleSize: 16)
+								.onTapGesture {
+									setFromDate = true
+									selectedDate = meetingViewModel.fromDate
+									showTimePicker.toggle()
+								}
+							Text(meetingViewModel.toTime)
+								.fontWeight(.bold)
+								.padding(.leading, 10)
+								.frame(height: 29, alignment: .leading)
+								.default_text_style_500(styleSize: 16)
+								.onTapGesture {
+									setFromDate = false
+									selectedDate = meetingViewModel.toDate
+									showTimePicker.toggle()
+								}
+							Spacer()
 						}
+						
 						
 						HStack(alignment: .center, spacing: 10) {
 							Image("earth")
