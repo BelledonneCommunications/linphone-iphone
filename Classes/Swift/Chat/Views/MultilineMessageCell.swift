@@ -176,6 +176,8 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	let newStackViewReactionsItem = UILabel()
 	var stackViewReactionsCounter = UILabel()
 	
+	var reused = false
+	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		initCell()
@@ -592,7 +594,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		ephemeralIcon.isHidden = true
 	}
 	
-	func initPlayerAudio(message: ChatMessage){
+	func initPlayerAudio(message: ChatMessage, justForDisplay: Bool = false){
 		let recordingPlayButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_color_button("vr_play"))
 		let recordingStopButton = CallControlButton(width: 40, height: 40, buttonTheme:VoipTheme.nav_color_button("vr_stop"))
 		let recordingWaveView = UIProgressView()
@@ -646,8 +648,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		recordingDurationTextView.text = recordingDuration(filePathRecording)
 		
 		recordingPlayButton.onClickAction = {
-			self.downloadAudioMemoIfNeeded(message: message)
-			self.playRecordedMessage(voiceRecorder: filePathRecording, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+			if (message.audioContent()?.downloaded() == true) {
+				self.playRecordedMessage(voiceRecorder: filePathRecording, recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
+			} else {
+				message.downloadAudioContent(ok: {if (!self.reused) {self.initPlayerAudio(message: message, justForDisplay: true)}}, ko: {if (!self.reused) {self.initPlayerAudio(message: message, justForDisplay: true)}})
+			}
 		}
 		recordingStopButton.onClickAction = {
 			self.stopVoiceRecordPlayer(recordingPlayButton: recordingPlayButton, recordingStopButton: recordingStopButton, recordingWaveView: recordingWaveView, message: message)
@@ -662,25 +667,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			NSLayoutConstraint.activate(recordingWaveConstraints)
 		}
 		
-		if (Core.get().autoDownloadVoiceRecordingsEnabled) {
-			downloadAudioMemoIfNeeded(message: message)
+		if (Core.get().autoDownloadVoiceRecordingsEnabled && !justForDisplay) {
+			message.downloadAudioContent(ok: {if (!self.reused) {self.initPlayerAudio(message: message, justForDisplay: true)}}, ko: {if (!self.reused){self.initPlayerAudio(message: message, justForDisplay: true)}})
 		}
 		
 		recordingView.isHidden = false
-	}
-	
-	func downloadAudioMemoIfNeeded(message: ChatMessage) {
-		if let audioContent = message.contents.filter({$0.isVoiceRecording}).first {
-			if (audioContent.filePath == nil || !FileUtil.fileExistsAndIsNotEmpty(path: audioContent.filePath!)) {
-				audioContent.filePath = LinphoneManager.imagesDirectory() + audioContent.name!;
-				if message.downloadContent(content: audioContent) {
-					Log.i("Started downloading voice memo")
-				} else {
-					Log.i("An error occured downloading voice memo")
-				}
-				return
-			}
-		}
 	}
 	
 	func initReplyView(){
@@ -741,7 +732,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 	
 	override func prepareForReuse() {
 		super.prepareForReuse()
-		
+		reused = true
 		deleteItemCheckBox.removeFromSuperview()
 		eventMessageView.removeFromSuperview()
 		contactDateLabel.removeFromSuperview()
@@ -1639,6 +1630,7 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 			deleteItemCheckBox.isHidden = true
 			deleteItemCheckBox.width(0).done()
 		}
+		reused = false
 	}
 	
 	@objc func showMyViewControllerInACustomizedSheet(_ sender: UITapGestureRecognizer? = nil) {
@@ -1736,6 +1728,11 @@ class MultilineMessageCell: SwipeCollectionViewCell, UICollectionViewDataSource,
 		chatMessageDelegate = ChatMessageDelegateStub(
 			onMsgStateChanged: { (message: ChatMessage, state: ChatMessage.State) -> Void in
 				self.displayImdnStatus(message: message, state: state)
+				if (message.hasAudioContent() && state == .FileTransferDone) {
+					if (!self.reused) {
+						self.initPlayerAudio(message: message)
+					}
+				}
 			},
 			onNewMessageReaction: { (message: ChatMessage, messageReaction: ChatMessageReaction) -> Void in
 				ChatConversationTableViewModel.sharedModel.reloadCollectionViewCell()
