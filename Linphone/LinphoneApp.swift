@@ -94,15 +94,14 @@ struct LinphoneApp: App {
 						ToastView()
 							.zIndex(3)
 					}
-				} else if !coreContext.hasDefaultAccount || sharedMainViewModel.displayProfileMode {
+				} else if coreContext.accounts.isEmpty || sharedMainViewModel.displayProfileMode {
 					ZStack {
 						AssistantView()
 						
 						ToastView()
 							.zIndex(3)
 					}
-				} else if coreContext.hasDefaultAccount
-							&& coreContext.loggedIn
+				} else if !coreContext.accounts.isEmpty
 							&& contactViewModel != nil
 							&& editContactViewModel != nil
 							&& historyViewModel != nil

@@ -130,9 +130,16 @@ struct ToastView: View {
 							.padding(8)
 						
 					case "Unavailable_network":
-						Text("Could not reach network")
+						Text("Network is not reachable")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_toast_network_connected":
+						Text("Network is now reachable again")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						

@@ -39,7 +39,6 @@ final class CoreContext: ObservableObject {
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn: Bool = false
 	@Published var loggingInProgress: Bool = false
-	@Published var hasDefaultAccount: Bool = false
 	@Published var coreIsStarted: Bool = false
 	@Published var accounts: [AccountModel] = []
 	
@@ -87,10 +86,15 @@ final class CoreContext: ObservableObject {
 		monitor.pathUpdateHandler = { path in
 			let isConnected = path.status == .satisfied
 			if self.networkStatusIsConnected != isConnected {
-				if isConnected {
-					Log.info("Network is now satisfied")
-				} else {
-					Log.error("Network is now \(path.status)")
+				DispatchQueue.main.async {
+					if isConnected {
+						Log.info("Network is now satisfied")
+						ToastViewModel.shared.toastMessage = "Success_toast_network_connected"
+					} else {
+						Log.error("Network is now \(path.status)")
+						ToastViewModel.shared.toastMessage = "Unavailable_network"
+					}
+					ToastViewModel.shared.displayToast = true
 				}
 				self.networkStatusIsConnected = isConnected
 			}
@@ -160,13 +164,11 @@ final class CoreContext: ObservableObject {
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {	$0(core) }
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					
-					let hasDefaultAccount = self.mCore.defaultAccount != nil ? true : false
 					var accountModels: [AccountModel] = []
 					for account in self.mCore.accountList {
 						accountModels.append(AccountModel(account: account, corePublisher: self.mCore.publisher))
 					}
 					DispatchQueue.main.async {
-						self.hasDefaultAccount = hasDefaultAccount
 						self.coreIsStarted = true
 						self.accounts = accountModels
 					}
@@ -263,14 +265,17 @@ final class CoreContext: ObservableObject {
 					} else if state == .Cleared {
 						self.loggingInProgress = false
 						self.loggedIn = false
-						self.hasDefaultAccount = false
 						ToastViewModel.shared.toastMessage = "Success_account_logged_out"
 						ToastViewModel.shared.displayToast = true
 					} else {
 						self.loggingInProgress = false
 						self.loggedIn = false
-						ToastViewModel.shared.toastMessage = "Registration_failed"
-						ToastViewModel.shared.displayToast = true
+						if self.networkStatusIsConnected {
+							// If network is disconnected, a toast message with key "Unavailable_network" should already be displayed
+							ToastViewModel.shared.toastMessage = "Registration_failed"
+							ToastViewModel.shared.displayToast = true
+						}
+							
 					}
 				}
 			}, onAccountAdded: { (_: Core, _: Account) in
