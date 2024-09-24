@@ -36,244 +36,272 @@ struct ChatBubbleView: View {
 	
 	var body: some View {
 		HStack {
-			VStack {
-				if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty {
-					HStack(alignment: .top, content: {
-						if eventLogMessage.message.isOutgoing {
-							Spacer()
-						}
-						if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup 
-							&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
-							VStack {
-								Avatar(
-									contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address}) ??
-									ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
-									avatarSize: 35
-								)
-								.padding(.top, 30)
+			if eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage {
+				VStack {
+					if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty {
+						HStack(alignment: .top, content: {
+							if eventLogMessage.message.isOutgoing {
+								Spacer()
 							}
-						} else if conversationViewModel.displayedConversation != nil 
-									&& conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
-							VStack {
-							}
-							.padding(.leading, 43)
-						}
-						
-						VStack(alignment: .leading, spacing: 0) {
-							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup 
+							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
 								&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
-								Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address})?.name ?? "")
-									.default_text_style(styleSize: 12)
-									.padding(.top, 10)
-									.padding(.bottom, 2)
-							}
-							
-							if eventLogMessage.message.isForward {
-								HStack {
-									if eventLogMessage.message.isOutgoing {
-										Spacer()
-									}
-									
-									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading, spacing: 0) {
-										HStack {
-											Image("forward")
-												.resizable()
-												.frame(width: 15, height: 15, alignment: .leading)
-											
-											Text("message_forwarded_label")
-												.default_text_style(styleSize: 12)
-										}
-										.padding(.bottom, 2)
-									}
-									
-									if !eventLogMessage.message.isOutgoing {
-										Spacer()
-									}
+								VStack {
+									Avatar(
+										contactAvatarModel: conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address}) ??
+										ContactAvatarModel(friend: nil, name: "??", address: "", withPresence: false),
+										avatarSize: 35
+									)
+									.padding(.top, 30)
 								}
-								.frame(maxWidth: .infinity)
+							} else if conversationViewModel.displayedConversation != nil
+										&& conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
+								VStack {
+								}
+								.padding(.leading, 43)
 							}
 							
-							if eventLogMessage.message.replyMessage != nil {
-								HStack {
-									if eventLogMessage.message.isOutgoing {
-										Spacer()
-									}
-									
-									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading, spacing: 0) {
-										HStack {
-											Image("reply")
-												.resizable()
-												.frame(width: 15, height: 15, alignment: .leading)
-											
-											Text(conversationViewModel.participantConversationModel.first(
-												where: {$0.address == eventLogMessage.message.replyMessage!.address})?.name ?? "")
-												.default_text_style(styleSize: 12)
-										}
+							VStack(alignment: .leading, spacing: 0) {
+								if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
+									&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
+									Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address})?.name ?? "")
+										.default_text_style(styleSize: 12)
+										.padding(.top, 10)
 										.padding(.bottom, 2)
+								}
+								
+								if eventLogMessage.message.isForward {
+									HStack {
+										if eventLogMessage.message.isOutgoing {
+											Spacer()
+										}
 										
-										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
-											if !eventLogMessage.message.replyMessage!.text.isEmpty {
-												Text(eventLogMessage.message.replyMessage!.text)
-													.foregroundStyle(Color.grayMain2c700)
-													.default_text_style(styleSize: 16)
-													.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
-											} else if !eventLogMessage.message.replyMessage!.attachmentsNames.isEmpty {
-												Text(eventLogMessage.message.replyMessage!.attachmentsNames)
-													.foregroundStyle(Color.grayMain2c700)
-													.default_text_style(styleSize: 16)
-													.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
-											}
-										}
-										.padding(.all, 15)
-										.padding(.bottom, 15)
-										.background(Color.gray200)
-										.clipShape(RoundedRectangle(cornerRadius: 1))
-										.roundedCorner(
-											16,
-											corners: eventLogMessage.message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
-										)
-									}
-									.onTapGesture {
-										conversationViewModel.scrollToMessage(message: eventLogMessage.message)
-									}
-									
-									if !eventLogMessage.message.isOutgoing {
-										Spacer()
-									}
-								}
-								.frame(maxWidth: .infinity)
-								.padding(.bottom, -20)
-							}
-							
-							ZStack {
-								HStack {
-									if eventLogMessage.message.isOutgoing {
-										Spacer()
-									}
-									
-									VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
-										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
-											if !eventLogMessage.message.attachments.isEmpty {
-												messageAttachments()
-											}
-											
-											if !eventLogMessage.message.text.isEmpty {
-												Text(eventLogMessage.message.text)
-													   .foregroundStyle(Color.grayMain2c700)
-													   .default_text_style(styleSize: 16)
-											}
-											
-											HStack(alignment: .center) {
-												Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
-													.foregroundStyle(Color.grayMain2c500)
-													.default_text_style_300(styleSize: 14)
-													.padding(.top, 1)
+										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading, spacing: 0) {
+											HStack {
+												Image("forward")
+													.resizable()
+													.frame(width: 15, height: 15, alignment: .leading)
 												
-												if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup) 
-													|| eventLogMessage.message.isOutgoing {
-													if eventLogMessage.message.status == .sending {
-														ProgressView()
-															.controlSize(.mini)
-															.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
-															.frame(width: 10, height: 10)
-															.padding(.top, 1)
-													} else if eventLogMessage.message.status != nil {
-														Image(conversationViewModel.getImageIMDN(status: eventLogMessage.message.status!))
-															.renderingMode(.template)
-															.resizable()
-															.foregroundStyle(Color.orangeMain500)
-															.frame(width: 15, height: 15)
-															.padding(.top, 1)
-													}
+												Text("message_forwarded_label")
+													.default_text_style(styleSize: 12)
+											}
+											.padding(.bottom, 2)
+										}
+										
+										if !eventLogMessage.message.isOutgoing {
+											Spacer()
+										}
+									}
+									.frame(maxWidth: .infinity)
+								}
+								
+								if eventLogMessage.message.replyMessage != nil {
+									HStack {
+										if eventLogMessage.message.isOutgoing {
+											Spacer()
+										}
+										
+										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading, spacing: 0) {
+											HStack {
+												Image("reply")
+													.resizable()
+													.frame(width: 15, height: 15, alignment: .leading)
+												
+												Text(conversationViewModel.participantConversationModel.first(
+													where: {$0.address == eventLogMessage.message.replyMessage!.address})?.name ?? "")
+												.default_text_style(styleSize: 12)
+											}
+											.padding(.bottom, 2)
+											
+											VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+												if !eventLogMessage.message.replyMessage!.text.isEmpty {
+													Text(eventLogMessage.message.replyMessage!.text)
+														.foregroundStyle(Color.grayMain2c700)
+														.default_text_style(styleSize: 16)
+														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
+												} else if !eventLogMessage.message.replyMessage!.attachmentsNames.isEmpty {
+													Text(eventLogMessage.message.replyMessage!.attachmentsNames)
+														.foregroundStyle(Color.grayMain2c700)
+														.default_text_style(styleSize: 16)
+														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
 												}
 											}
-											.onTapGesture {
-												conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
-												conversationViewModel.prepareBottomSheetForDeliveryStatus()
-											}
-											.disabled(conversationViewModel.selectedMessage != nil)
-											.padding(.top, -4)
+											.padding(.all, 15)
+											.padding(.bottom, 15)
+											.background(Color.gray200)
+											.clipShape(RoundedRectangle(cornerRadius: 1))
+											.roundedCorner(
+												16,
+												corners: eventLogMessage.message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
+											)
 										}
-										.padding(.all, 15)
-										.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-										.clipShape(RoundedRectangle(cornerRadius: 3))
-										.roundedCorner(
-											16,
-											corners: eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
-												(!eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
+										.onTapGesture {
+											conversationViewModel.scrollToMessage(message: eventLogMessage.message)
+										}
 										
-										if !eventLogMessage.message.reactions.isEmpty {
-											HStack {
-												ForEach(0..<eventLogMessage.message.reactions.count, id: \.self) { index in
-													if eventLogMessage.message.reactions.firstIndex(of: eventLogMessage.message.reactions[index]) == index {
-														Text(eventLogMessage.message.reactions[index])
+										if !eventLogMessage.message.isOutgoing {
+											Spacer()
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.padding(.bottom, -20)
+								}
+								
+								ZStack {
+									HStack {
+										if eventLogMessage.message.isOutgoing {
+											Spacer()
+										}
+										
+										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+											VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
+												if !eventLogMessage.message.attachments.isEmpty {
+													messageAttachments()
+												}
+												
+												if !eventLogMessage.message.text.isEmpty {
+													Text(eventLogMessage.message.text)
+														.foregroundStyle(Color.grayMain2c700)
+														.default_text_style(styleSize: 16)
+												}
+												
+												HStack(alignment: .center) {
+													Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
+														.foregroundStyle(Color.grayMain2c500)
+														.default_text_style_300(styleSize: 14)
+														.padding(.top, 1)
+													
+													if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup)
+														|| eventLogMessage.message.isOutgoing {
+														if eventLogMessage.message.status == .sending {
+															ProgressView()
+																.controlSize(.mini)
+																.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+																.frame(width: 10, height: 10)
+																.padding(.top, 1)
+														} else if eventLogMessage.message.status != nil {
+															Image(conversationViewModel.getImageIMDN(status: eventLogMessage.message.status!))
+																.renderingMode(.template)
+																.resizable()
+																.foregroundStyle(Color.orangeMain500)
+																.frame(width: 15, height: 15)
+																.padding(.top, 1)
+														}
+													}
+												}
+												.onTapGesture {
+													conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+													conversationViewModel.prepareBottomSheetForDeliveryStatus()
+												}
+												.disabled(conversationViewModel.selectedMessage != nil)
+												.padding(.top, -4)
+											}
+											.padding(.all, 15)
+											.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+											.clipShape(RoundedRectangle(cornerRadius: 3))
+											.roundedCorner(
+												16,
+												corners: eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
+													(!eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
+											
+											if !eventLogMessage.message.reactions.isEmpty {
+												HStack {
+													ForEach(0..<eventLogMessage.message.reactions.count, id: \.self) { index in
+														if eventLogMessage.message.reactions.firstIndex(of: eventLogMessage.message.reactions[index]) == index {
+															Text(eventLogMessage.message.reactions[index])
+																.default_text_style(styleSize: 14)
+																.padding(.horizontal, -2)
+														}
+													}
+													
+													if containsDuplicates(strings: eventLogMessage.message.reactions) {
+														Text("\(eventLogMessage.message.reactions.count)")
 															.default_text_style(styleSize: 14)
 															.padding(.horizontal, -2)
 													}
 												}
-												
-												if containsDuplicates(strings: eventLogMessage.message.reactions) {
-													Text("\(eventLogMessage.message.reactions.count)")
-														.default_text_style(styleSize: 14)
-														.padding(.horizontal, -2)
+												.onTapGesture {
+													conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+													conversationViewModel.prepareBottomSheetForReactions()
 												}
+												.disabled(conversationViewModel.selectedMessage != nil)
+												.padding(.vertical, 6)
+												.padding(.horizontal, 10)
+												.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+												.cornerRadius(20)
+												.overlay(
+													RoundedRectangle(cornerRadius: 20)
+														.stroke(.white, lineWidth: 3)
+												)
+												.padding(.top, -20)
+												.padding(eventLogMessage.message.isOutgoing ? .trailing : .leading, 5)
 											}
-											.onTapGesture {
-												conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
-												conversationViewModel.prepareBottomSheetForReactions()
-											}
-											.disabled(conversationViewModel.selectedMessage != nil)
-											.padding(.vertical, 6)
-											.padding(.horizontal, 10)
-											.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
-											.cornerRadius(20)
-											.overlay(
-												RoundedRectangle(cornerRadius: 20)
-													.stroke(.white, lineWidth: 3)
-											)
-											.padding(.top, -20)
-											.padding(eventLogMessage.message.isOutgoing ? .trailing : .leading, 5)
+										}
+										
+										if !eventLogMessage.message.isOutgoing {
+											Spacer()
 										}
 									}
-									
-									if !eventLogMessage.message.isOutgoing {
-										Spacer()
-									}
+									.frame(maxWidth: .infinity)
 								}
 								.frame(maxWidth: .infinity)
 							}
-							.frame(maxWidth: .infinity)
+							
+							if !eventLogMessage.message.isOutgoing {
+								Spacer()
+							}
+						})
+						.padding(.leading, eventLogMessage.message.isOutgoing ? 40 : 0)
+						.padding(.trailing, !eventLogMessage.message.isOutgoing ? 40 : 0)
+					}
+				}
+				.onTapGesture {}
+				.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
+					self.isPressed = value
+					if value == true {
+						self.timePassed = 0
+						self.ticker.start(interval: 0.2)
+					}
+					
+				}, perform: {})
+				.onReceive(ticker.objectWillChange) { (_) in
+					// Stop timer and reset the start date if the button in not pressed
+					guard self.isPressed else {
+						self.ticker.stop()
+						return
+					}
+					
+					self.timePassed = self.ticker.timeIntervalSinceStarted
+					withAnimation {
+						conversationViewModel.selectedMessage = eventLogMessage
+					}
+				}
+			} else if !eventLogMessage.eventModel.text.isEmpty {
+				HStack {
+					Spacer()
+					
+					HStack {
+						if eventLogMessage.eventModel.icon != nil {
+							eventLogMessage.eventModel.icon!
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 25, height: 25, alignment: .leading)
 						}
 						
-						if !eventLogMessage.message.isOutgoing {
-							Spacer()
-						}
-					})
-					.padding(.leading, eventLogMessage.message.isOutgoing ? 40 : 0)
-					.padding(.trailing, !eventLogMessage.message.isOutgoing ? 40 : 0)
+						Text(eventLogMessage.eventModel.text)
+							.foregroundStyle(Color.grayMain2c500)
+							.default_text_style(styleSize: 12)
+					}
+					.padding(.horizontal, 10)
+					.padding(.vertical, 4)
+					.overlay(
+						RoundedRectangle(cornerRadius: 6)
+							.stroke(Color.grayMain2c200, lineWidth: 1)
+					)
+					
+					Spacer()
 				}
-			}
-			.onTapGesture {}
-			.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
-				self.isPressed = value
-				if value == true {
-					self.timePassed = 0
-					self.ticker.start(interval: 0.2)
-				}
-				
-			}, perform: {})
-			.onReceive(ticker.objectWillChange) { (_) in
-				// Stop timer and reset the start date if the button in not pressed
-				guard self.isPressed else {
-					self.ticker.stop()
-					return
-				}
-				
-				self.timePassed = self.ticker.timeIntervalSinceStarted
-				withAnimation {
-					conversationViewModel.selectedMessage = eventLogMessage
-				}
-				
+				.padding(.vertical, 4)
 			}
 		}
 		.contentShape(Rectangle())

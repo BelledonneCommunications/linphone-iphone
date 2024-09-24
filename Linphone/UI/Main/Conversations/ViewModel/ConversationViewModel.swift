@@ -125,7 +125,7 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
-					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId}) {
+					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId}) {
 						if indexMessage < self.conversationMessagesSection[0].rows.count && self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
 							DispatchQueue.main.async {
 								self.objectWillChange.send()
@@ -153,7 +153,7 @@ class ConversationViewModel: ObservableObject {
 							statusTmp = .sending
 						}
 						
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {
@@ -162,7 +162,7 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
 						var reactionsTmp: [String] = []
 						message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
@@ -175,7 +175,7 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					}, onReactionRemoved: { (message: ChatMessage, _: Address) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
 						var reactionsTmp: [String] = []
 						message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
@@ -453,7 +453,7 @@ class ConversationViewModel: ObservableObject {
 					if eventLog.chatMessage != nil {
 						conversationMessage.append(
 							EventLogMessage(
-								eventLog: eventLog,
+								eventModel: EventModel(eventLog: eventLog),
 								message: Message(
 									id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
 									status: statusTmp,
@@ -474,9 +474,9 @@ class ConversationViewModel: ObservableObject {
 						
 						self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					} else {
-						conversationMessage.insert(
+						conversationMessage.append(
 							EventLogMessage(
-								eventLog: eventLog,
+								eventModel: EventModel(eventLog: eventLog),
 								message: Message(
 									id: UUID().uuidString,
 									status: nil,
@@ -489,7 +489,7 @@ class ConversationViewModel: ObservableObject {
 									ownReaction: "",
 									reactions: []
 								)
-							), at: 0
+							)
 						)
 					}
 				}
@@ -672,7 +672,7 @@ class ConversationViewModel: ObservableObject {
 					if eventLog.chatMessage != nil {
 						conversationMessagesTmp.insert(
 							EventLogMessage(
-								eventLog: eventLog,
+								eventModel: EventModel(eventLog: eventLog),
 								message: Message(
 									id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
 									status: statusTmp,
@@ -695,7 +695,7 @@ class ConversationViewModel: ObservableObject {
 					} else {
 						conversationMessagesTmp.insert(
 							EventLogMessage(
-								eventLog: eventLog,
+								eventModel: EventModel(eventLog: eventLog),
 								message: Message(
 									id: UUID().uuidString,
 									status: nil,
@@ -902,7 +902,7 @@ class ConversationViewModel: ObservableObject {
 			
 			if eventLog.chatMessage != nil {
 				let message = EventLogMessage(
-					eventLog: eventLog,
+					eventModel: EventModel(eventLog: eventLog),
 					message: Message(
 						id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
 						appData: eventLog.chatMessage!.appdata ?? "",
@@ -943,7 +943,7 @@ class ConversationViewModel: ObservableObject {
 				}
 			} else {
 				let message = EventLogMessage(
-					eventLog: eventLog,
+					eventModel: EventModel(eventLog: eventLog),
 					message: Message(
 						id: UUID().uuidString,
 						status: nil,
@@ -987,7 +987,7 @@ class ConversationViewModel: ObservableObject {
 	func scrollToMessage(message: Message) {
 		coreContext.doOnCoreQueue { _ in
 			if message.replyMessage != nil {
-				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.replyMessage!.id}) {
+				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.replyMessage!.id}) {
 					NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": indexMessage, "animated": true])
 				} else {
 					if self.conversationMessagesSection[0].rows.last != nil {
@@ -1177,7 +1177,7 @@ class ConversationViewModel: ObservableObject {
 							if eventLog.chatMessage != nil {
 								conversationMessagesTmp.insert(
 									EventLogMessage(
-										eventLog: eventLog,
+										eventModel: EventModel(eventLog: eventLog),
 										message: Message(
 											id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
 											status: statusTmp,
@@ -1200,7 +1200,7 @@ class ConversationViewModel: ObservableObject {
 							} else {
 								conversationMessagesTmp.insert(
 									EventLogMessage(
-										eventLog: eventLog,
+										eventModel: EventModel(eventLog: eventLog),
 										message: Message(
 											id: UUID().uuidString,
 											status: nil,
@@ -1243,7 +1243,7 @@ class ConversationViewModel: ObservableObject {
 			do {
 				var message: ChatMessage?
 				if self.messageToReply != nil {
-					let chatMessageToReply = self.messageToReply!.eventLog.chatMessage
+					let chatMessageToReply = self.messageToReply!.eventModel.eventLog.chatMessage
 					if chatMessageToReply != nil {
 						message = try self.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
 					}
@@ -1482,7 +1482,7 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.selectedMessageToDisplayDetails != nil {
 				Log.info("[ConversationViewModel] Remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
-				let messageToSendReaction = self.selectedMessageToDisplayDetails!.eventLog.chatMessage
+				let messageToSendReaction = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage
 				if messageToSendReaction != nil {
 					do {
 						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: "")
@@ -1509,7 +1509,7 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.selectedMessage != nil {
 				Log.info("[ConversationViewModel] Sending reaction \(emoji) to message with ID \(self.selectedMessage!.message.id)")
-				let messageToSendReaction = self.selectedMessage!.eventLog.chatMessage
+				let messageToSendReaction = self.selectedMessage!.eventModel.eventLog.chatMessage
 				if messageToSendReaction != nil {
 					do {
 						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji)
@@ -1533,9 +1533,9 @@ class ConversationViewModel: ObservableObject {
 	
 	func resend() {
 		coreContext.doOnCoreQueue { _ in
-			if self.selectedMessage != nil && self.selectedMessage!.eventLog.chatMessage != nil {
-				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.eventLog.chatMessage!)")
-				self.selectedMessage!.eventLog.chatMessage!.send()
+			if self.selectedMessage != nil && self.selectedMessage!.eventModel.eventLog.chatMessage != nil {
+				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.eventModel.eventLog.chatMessage!)")
+				self.selectedMessage!.eventModel.eventLog.chatMessage!.send()
 			}
 		}
 	}
@@ -1543,9 +1543,9 @@ class ConversationViewModel: ObservableObject {
 	func prepareBottomSheetForDeliveryStatus() {
 		self.sheetCategories.removeAll()
 		coreContext.doOnCoreQueue { _ in
-			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventLog.chatMessage != nil {
+			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage != nil {
 				
-				let participantsImdnDisplayed = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .Displayed)
+				let participantsImdnDisplayed = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .Displayed)
 				var participantListDisplayed: [InnerSheetCategory] = []
 				participantsImdnDisplayed.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1556,7 +1556,7 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				let participantsImdnDeliveredToUser = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .DeliveredToUser)
+				let participantsImdnDeliveredToUser = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .DeliveredToUser)
 				var participantListDeliveredToUser: [InnerSheetCategory] = []
 				participantsImdnDeliveredToUser.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1567,7 +1567,7 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				let participantsImdnDelivered = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .Delivered)
+				let participantsImdnDelivered = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .Delivered)
 				var participantListDelivered: [InnerSheetCategory] = []
 				participantsImdnDelivered.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1578,7 +1578,7 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				let participantsImdnNotDelivered = self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.getParticipantsByImdnState(state: .NotDelivered)
+				let participantsImdnNotDelivered = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .NotDelivered)
 				var participantListNotDelivered: [InnerSheetCategory] = []
 				participantsImdnNotDelivered.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1604,7 +1604,7 @@ class ConversationViewModel: ObservableObject {
 	func prepareBottomSheetForReactions() {
 		self.sheetCategories.removeAll()
 		coreContext.doOnCoreQueue { core in
-			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventLog.chatMessage != nil {
+			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage != nil {
 				let dispatchGroup = DispatchGroup()
 				
 				var sheetCategoriesTmp: [SheetCategory] = []
@@ -1612,7 +1612,7 @@ class ConversationViewModel: ObservableObject {
 				var participantList: [[InnerSheetCategory]] = [[]]
 				var reactionList: [String] = []
 				
-				self.selectedMessageToDisplayDetails!.eventLog.chatMessage!.reactions.forEach { chatMessageReaction in
+				self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.reactions.forEach { chatMessageReaction in
 					if chatMessageReaction.fromAddress != nil {
 						dispatchGroup.enter()
 						ContactAvatarModel.getAvatarModelFromAddress(address: chatMessageReaction.fromAddress!) { avatarResult in
@@ -1698,6 +1698,14 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.vrpManager != nil {
 				self.vrpManager!.stopVoiceRecordPlayer()
+			}
+		}
+	}
+	
+	func compose() {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				self.displayedConversation!.chatRoom.compose()
 			}
 		}
 	}

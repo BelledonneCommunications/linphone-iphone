@@ -525,7 +525,7 @@ struct MessagesSection: Equatable {
 
 struct EventLogMessage: Equatable {
 	
-	let eventLog: EventLog
+	let eventModel: EventModel
 	var message: Message
 	
 	static var formatter = {

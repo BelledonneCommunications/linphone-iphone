@@ -564,6 +564,11 @@ struct ConversationFragment: View {
 										.default_text_style(styleSize: 15)
 										.focused($isMessageTextFocused)
 										.padding(.vertical, 5)
+										.onChange(of: conversationViewModel.messageText) { text in
+											if !text.isEmpty {
+												conversationViewModel.compose()
+											}
+										}
 								} else {
 									ZStack(alignment: .leading) {
 										TextEditor(text: $conversationViewModel.messageText)
@@ -572,6 +577,11 @@ struct ConversationFragment: View {
 											.fixedSize(horizontal: false, vertical: true)
 											.default_text_style(styleSize: 15)
 											.focused($isMessageTextFocused)
+											.onChange(of: conversationViewModel.messageText) { text in
+												if !text.isEmpty {
+													conversationViewModel.compose()
+												}
+											}
 										
 										if conversationViewModel.messageText.isEmpty {
 											Text("Say something...")
