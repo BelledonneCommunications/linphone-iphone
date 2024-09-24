@@ -312,7 +312,8 @@ class ConversationViewModel: ObservableObject {
 											id: UUID().uuidString,
 											name: content.name!,
 											url: path!,
-											type: .fileTransfer
+											type: .fileTransfer,
+											size: content.fileSize
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -342,7 +343,8 @@ class ConversationViewModel: ObservableObject {
 												name: content.name!,
 												url: path!,
 												type: typeTmp,
-												duration: typeTmp == . voiceRecording ? content.fileDuration : 0
+												duration: typeTmp == .voiceRecording ? content.fileDuration : 0,
+												size: content.fileSize
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -358,7 +360,8 @@ class ConversationViewModel: ObservableObject {
 												name: content.name!,
 												thumbnail: pathThumbnail!,
 												full: path!,
-												type: .video
+												type: .video,
+												size: content.fileSize
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -528,7 +531,8 @@ class ConversationViewModel: ObservableObject {
 											id: UUID().uuidString,
 											name: content.name!,
 											url: path!,
-											type: .fileTransfer
+											type: .fileTransfer,
+											size: content.fileSize
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -558,7 +562,8 @@ class ConversationViewModel: ObservableObject {
 												name: content.name!,
 												url: path!,
 												type: typeTmp,
-												duration: typeTmp == . voiceRecording ? content.fileDuration : 0
+												duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
+												size: content.fileSize
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -574,7 +579,8 @@ class ConversationViewModel: ObservableObject {
 												name: content.name!,
 												thumbnail: pathThumbnail!,
 												full: path!,
-												type: .video
+												type: .video,
+												size: content.fileSize
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -741,7 +747,8 @@ class ConversationViewModel: ObservableObject {
 									id: UUID().uuidString,
 									name: content.name ?? "???",
 									url: path!,
-									type: .fileTransfer
+									type: .fileTransfer,
+									size: content.fileSize
 								)
 								attachmentNameList += ", \(content.name ?? "???")"
 								attachmentList.append(attachment)
@@ -771,7 +778,8 @@ class ConversationViewModel: ObservableObject {
 										name: content.name!,
 										url: path!,
 										type: typeTmp,
-										duration: typeTmp == . voiceRecording ? content.fileDuration : 0
+										duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
+										size: content.fileSize
 									)
 									attachmentNameList += ", \(content.name!)"
 									attachmentList.append(attachment)
@@ -787,7 +795,8 @@ class ConversationViewModel: ObservableObject {
 										name: content.name!,
 										thumbnail: pathThumbnail!,
 										full: path!,
-										type: .video
+										type: .video,
+										size: content.fileSize
 									)
 									attachmentNameList += ", \(content.name!)"
 									attachmentList.append(attachment)
@@ -1027,7 +1036,8 @@ class ConversationViewModel: ObservableObject {
 													id: UUID().uuidString,
 													name: content.name!,
 													url: path!,
-													type: .fileTransfer
+													type: .fileTransfer,
+													size: content.fileSize
 												)
 												attachmentNameList += ", \(content.name!)"
 												attachmentList.append(attachment)
@@ -1057,7 +1067,8 @@ class ConversationViewModel: ObservableObject {
 														name: content.name!,
 														url: path!,
 														type: typeTmp,
-														duration: typeTmp == . voiceRecording ? content.fileDuration : 0
+														duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
+														size: content.fileSize
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
@@ -1073,7 +1084,8 @@ class ConversationViewModel: ObservableObject {
 														name: content.name!,
 														thumbnail: pathThumbnail!,
 														full: path!,
-														type: .video
+														type: .video,
+														size: content.fileSize
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)

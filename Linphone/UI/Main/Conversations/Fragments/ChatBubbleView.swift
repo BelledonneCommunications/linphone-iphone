@@ -420,7 +420,7 @@ struct ChatBubbleView: View {
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.lineLimit(1)
 						
-						Text("2,2 Mo")
+						Text(eventLogMessage.message.attachments.first!.size.formatBytes())
 							.default_text_style_300(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.lineLimit(1)

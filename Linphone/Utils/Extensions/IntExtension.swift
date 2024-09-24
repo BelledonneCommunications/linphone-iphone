@@ -34,6 +34,14 @@ extension Int {
         }
         return "\(duration)\(self.getMinute(minute: minute))\(self.getSecond(second: second))"
     }
+	
+	public func formatBytes() -> String {
+		let byteCountFormatter = ByteCountFormatter()
+		byteCountFormatter.allowedUnits = [.useKB, .useMB, .useGB] // Allows KB, MB and KB
+		byteCountFormatter.countStyle = .file // Use file size style
+		byteCountFormatter.isAdaptive = true // Adjusts automatically to appropriate unit
+		return byteCountFormatter.string(fromByteCount: Int64(self))
+	}
     
     private func getHour(hour: Int) -> String {
         var duration = "\(hour):"
