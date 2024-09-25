@@ -181,7 +181,13 @@
     "9" : {
 
     },
+    "A subject and at least one participant is required to create a meeting" : {
+
+    },
     "Accept all" : {
+
+    },
+    "Account successfully logged out" : {
 
     },
     "Active" : {
@@ -913,6 +919,40 @@
         }
       }
     },
+    "conversation_composing_label_multiple" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ are composing…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ sont en train d'écrire…"
+          }
+        }
+      }
+    },
+    "conversation_composing_label_single" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is composing…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ est en train d'écrire…"
+          }
+        }
+      }
+    },
     "conversation_dialog_set_subject" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -946,6 +986,24 @@
           }
         }
       }
+    },
+    "conversation_ephemeral_messages_duration_disabled" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_day" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_hour" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_minute" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_week" : {
+
+    },
+    "conversation_ephemeral_messages_duration_three_days" : {
+
     },
     "conversation_event_admin_set" : {
       "extractionState" : "manual",
@@ -1280,6 +1338,12 @@
 
     },
     "Copy SIP address" : {
+
+    },
+    "Could not reach network" : {
+
+    },
+    "Could not send ICS invitations to meeting to any participant" : {
 
     },
     "D'accord" : {
@@ -1677,9 +1741,6 @@
           }
         }
       }
-    },
-    "Incoming call" : {
-
     },
     "Information" : {
 

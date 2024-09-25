@@ -379,6 +379,20 @@ struct ConversationFragment: View {
 						}
 					}
 					
+					if !conversationViewModel.composingLabel.isEmpty {
+						HStack {
+							Text(conversationViewModel.composingLabel)
+								.lineLimit(1)
+								.default_text_style_300(styleSize: 15)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding(.horizontal, 10)
+						}
+						.onDisappear {
+							conversationViewModel.composingLabel = ""
+						}
+						.transition(.move(edge: .bottom))
+					}
+					
 					if conversationViewModel.messageToReply != nil {
 						ZStack(alignment: .top) {
 							HStack {

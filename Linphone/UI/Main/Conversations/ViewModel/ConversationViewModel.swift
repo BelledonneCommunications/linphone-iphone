@@ -35,6 +35,7 @@ class ConversationViewModel: ObservableObject {
 	@Published var displayedConversationUnreadMessagesCount: Int = 0
 	
 	@Published var messageText: String = ""
+	@Published var composingLabel: String = ""
 	
 	private var chatRoomDelegate: ChatRoomDelegate?
 	
@@ -99,6 +100,8 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: eventLogs)
 				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
+				}, onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
+					self.computeComposingLabel()
 				})
 				self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 			}
@@ -282,6 +285,7 @@ class ConversationViewModel: ObservableObject {
 		self.getHistorySize()
 		self.getUnreadMessagesCount()
 		self.getParticipantConversationModel()
+		self.computeComposingLabel()
 		
 		self.mediasToSend.removeAll()
 		self.messageToReply = nil
@@ -1375,10 +1379,26 @@ class ConversationViewModel: ObservableObject {
 			conversationsList.forEach { conversation in
 				if conversation.id == self.displayedConversation!.id {
 					self.displayedConversation = conversation
+<<<<<<< HEAD
 					self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
 						self.getNewMessages(eventLogs: eventLogs)
 					}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
 						self.getNewMessages(eventLogs: [eventLog])
+=======
+					
+					let messageID = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first?.chatMessage?.messageId
+					if self.conversationMessagesSection[0].rows.first?.message.id != messageID {
+						self.resetMessage()
+						self.getMessages()
+					}
+					
+					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessageSending?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
+						self.getNewMessages(eventLogs: [cbValue.eventLog])
+					})
+					
+					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessagesReceived?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
+						self.getNewMessages(eventLogs: cbValue.eventLogs)
+>>>>>>> aa3a58b (Add banner when users are writing (composing))
 					})
 					self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 				}
@@ -1706,6 +1726,54 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				self.displayedConversation!.chatRoom.compose()
+			}
+		}
+	}
+	
+	func computeComposingLabel() {
+		let composing = self.displayedConversation!.chatRoom.isRemoteComposing
+		
+		if !composing {
+			DispatchQueue.main.async {
+				withAnimation {
+					self.composingLabel = ""
+				}
+			}
+			return
+		}
+		
+		var composingFriends: [String] = []
+		var label = ""
+		
+		for address in self.displayedConversation!.chatRoom.composingAddresses {
+			if let addressCleaned = address.clone() {
+				addressCleaned.clean()
+				
+				if let avatar = self.participantConversationModel.first(where: {$0.address == addressCleaned.asStringUriOnly()}) {
+					let name = avatar.name
+					composingFriends.append(name)
+					label += "\(name), "
+				}
+			}
+		}
+		
+		if !composingFriends.isEmpty {
+			label = String(label.dropLast(2))
+			
+			let format = composingFriends.count > 1
+			? String(format: NSLocalizedString("conversation_composing_label_multiple", comment: ""), label)
+			: String(format: NSLocalizedString("conversation_composing_label_single", comment: ""), label)
+			
+			DispatchQueue.main.async {
+				withAnimation {
+					self.composingLabel = format
+				}
+			}
+		} else {
+			DispatchQueue.main.async {
+				withAnimation {
+					self.composingLabel = ""
+				}
 			}
 		}
 	}
