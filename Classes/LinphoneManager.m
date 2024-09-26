@@ -1454,6 +1454,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 
 	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationAppGroupId UTF8String], true);
+	linphone_core_enable_auto_iterate(theLinphoneCore, true);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);
 
 	[ConfigManager.instance setDbWithDb:_configDb];
