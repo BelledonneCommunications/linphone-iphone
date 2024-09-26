@@ -500,6 +500,7 @@ class ConversationViewModel: ObservableObject {
 				
 				DispatchQueue.main.async {
 					if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
+						Log.info("[ConversationViewModel] Get Messages \(self.conversationMessagesSection.count)")
 						self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: conversationMessage.reversed()))
 					}
 				}
@@ -719,6 +720,7 @@ class ConversationViewModel: ObservableObject {
 				
 				if !conversationMessagesTmp.isEmpty {
 					DispatchQueue.main.async {
+						Log.info("[ConversationViewModel] Get old Messages \(self.conversationMessagesSection.count) \(conversationMessagesTmp.count)")
 						if self.conversationMessagesSection[0].rows.last?.message.address == conversationMessagesTmp.last?.message.address {
 							self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].message.isFirstMessage = false
 						}
@@ -928,7 +930,8 @@ class ConversationViewModel: ObservableObject {
 				self.addChatMessageDelegate(message: eventLog.chatMessage!)
 				
 				DispatchQueue.main.async {
-					if !self.conversationMessagesSection.isEmpty 
+					Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")
+					if !self.conversationMessagesSection.isEmpty
 						&& !self.conversationMessagesSection[0].rows.isEmpty
 						&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
 						&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
@@ -963,6 +966,7 @@ class ConversationViewModel: ObservableObject {
 				)
 				
 				DispatchQueue.main.async {
+					Log.info("[ConversationViewModel] Get new Messages (message nil) \(self.conversationMessagesSection.count)")
 					if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
 						self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [message]))
 					} else {
@@ -1379,28 +1383,35 @@ class ConversationViewModel: ObservableObject {
 			conversationsList.forEach { conversation in
 				if conversation.id == self.displayedConversation!.id {
 					self.displayedConversation = conversation
-<<<<<<< HEAD
-					self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
-						self.getNewMessages(eventLogs: eventLogs)
-					}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
-						self.getNewMessages(eventLogs: [eventLog])
-=======
+					self.computeComposingLabel()
 					
-					let messageID = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first?.chatMessage?.messageId
-					if self.conversationMessagesSection[0].rows.first?.message.id != messageID {
-						self.resetMessage()
-						self.getMessages()
+					if self.displayedConversation != nil {
+						
+						let eventLogFirst =	self.displayedConversation!.chatRoom.findEventLog(messageId: self.conversationMessagesSection[0].rows.first!.eventModel.eventLog.chatMessage!.messageId)
+						
+						let eventLogLast = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first
+						
+						var eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeBetween(
+							firstEvent: eventLogFirst,
+							lastEvent: eventLogLast,
+							filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
+						)
+						
+						if eventLogLast != nil {
+							eventLogList.append(eventLogLast!)
+							if !eventLogList.isEmpty && self.conversationMessagesSection[0].rows.first?.message.id != eventLogLast!.chatMessage?.messageId {
+								self.getNewMessages(eventLogs: eventLogList)
+							}
+						}
+						
+						self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
+							self.getNewMessages(eventLogs: eventLogs)
+						}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
+							self.getNewMessages(eventLogs: [eventLog])
+						})
+						self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 					}
 					
-					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessageSending?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
-						self.getNewMessages(eventLogs: [cbValue.eventLog])
-					})
-					
-					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessagesReceived?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
-						self.getNewMessages(eventLogs: cbValue.eventLogs)
->>>>>>> aa3a58b (Add banner when users are writing (composing))
-					})
-					self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 				}
 			}
 		}
