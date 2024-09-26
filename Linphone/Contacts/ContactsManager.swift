@@ -18,7 +18,6 @@
  */
 
 // swiftlint:disable line_length
-// swiftlint:disable large_tuple
 // swiftlint:disable function_parameter_count
 
 import linphonesw
@@ -43,7 +42,7 @@ final class ContactsManager: ObservableObject {
 	@Published var lastSearchSuggestions: [SearchResult] = []
 	@Published var avatarListModel: [ContactAvatarModel] = []
 	
-	private var friendListSuscription: AnyCancellable?
+	private var friendListDelegate: FriendListDelegate?
 	
 	private init() {}
 	
@@ -132,26 +131,30 @@ final class ContactsManager: ObservableObject {
 									prefix: ((imageThumbnail == nil) ? "-default" : ""),
 									contact: newContact, linphoneFriend: false, existingFriend: nil) {
 										if (self.friendList?.friends.count ?? 0) + (self.linphoneFriendList?.friends.count ?? 0) == contactCounter {
+											// Every contact properly added, proceed
 											self.linphoneFriendList?.updateSubscriptions()
 											self.friendList?.updateSubscriptions()
 											
-											self.friendListSuscription = self.friendList?.publisher?.onNewSipAddressDiscovered?.postOnCoreQueue { (cbValue: (friendList: FriendList, linphoneFriend: Friend, sipUri: String)) in
+											if let friendListDelegate = self.friendListDelegate {
+												self.friendList?.removeDelegate(delegate: friendListDelegate)
+											}
+											self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
 												
 												var addedAvatarListModel: [ContactAvatarModel] = []
-												cbValue.linphoneFriend.phoneNumbers.forEach { phone in
+												linphoneFriend.phoneNumbers.forEach { phone in
 													let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
 													
-													let presence = cbValue.linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
+													let presence = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
 													if address != nil && presence != nil {
-														cbValue.linphoneFriend.edit()
-														cbValue.linphoneFriend.addAddress(address: address!)
-														cbValue.linphoneFriend.done()
+														linphoneFriend.edit()
+														linphoneFriend.addAddress(address: address!)
+														linphoneFriend.done()
 														
 														addedAvatarListModel.append(
 															ContactAvatarModel(
-																friend: cbValue.linphoneFriend,
-																name: cbValue.linphoneFriend.name ?? "",
-																address: cbValue.linphoneFriend.address?.clone()?.asStringUriOnly() ?? "",
+																friend: linphoneFriend,
+																name: linphoneFriend.name ?? "",
+																address: linphoneFriend.address?.clone()?.asStringUriOnly() ?? "",
 																withPresence: true
 															)
 														)
@@ -163,7 +166,8 @@ final class ContactsManager: ObservableObject {
 												}
 												
 												MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-											}
+											})
+											self.friendList?.addDelegate(delegate: self.friendListDelegate!)
 										}
 									}
 							}
@@ -386,5 +390,4 @@ struct Contact: Identifiable {
 }
 
 // swiftlint:enable line_length
-// swiftlint:enable large_tuple
 // swiftlint:enable function_parameter_count
