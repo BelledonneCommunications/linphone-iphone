@@ -36,7 +36,7 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var messageText: String = ""
 	
-	private var chatRoomSuscriptions = Set<AnyCancellable?>()
+	private var chatRoomDelegate: ChatRoomDelegate?
 	private var chatMessageSuscriptions = Set<AnyCancellable?>()
 	
 	@Published var conversationMessagesSection: [MessagesSection] = []
@@ -77,13 +77,12 @@ class ConversationViewModel: ObservableObject {
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
-				self.chatRoomSuscriptions.insert(self.displayedConversation?.chatRoom.publisher?.onChatMessageSending?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
-					self.getNewMessages(eventLogs: [cbValue.eventLog])
+				self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
+					self.getNewMessages(eventLogs: eventLogs)
+				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
+					self.getNewMessages(eventLogs: [eventLog])
 				})
-				
-				self.chatRoomSuscriptions.insert(self.displayedConversation?.chatRoom.publisher?.onChatMessagesReceived?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
-					self.getNewMessages(eventLogs: cbValue.eventLogs)
-				})
+				self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 			}
 		}
 	}
@@ -181,7 +180,10 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeConversationDelegate() {
-		self.chatRoomSuscriptions.removeAll()
+		if let crDelegate = self.chatRoomDelegate {
+			self.displayedConversation?.chatRoom.removeDelegate(delegate: crDelegate)
+		}
+		self.chatRoomDelegate = nil
 		self.chatMessageSuscriptions.removeAll()
 	}
 	
@@ -1341,19 +1343,16 @@ class ConversationViewModel: ObservableObject {
 	
 	func resetDisplayedChatRoom(conversationsList: [ConversationModel]) {
 		removeConversationDelegate()
-		
 		if self.displayedConversation != nil {
 			conversationsList.forEach { conversation in
 				if conversation.id == self.displayedConversation!.id {
 					self.displayedConversation = conversation
-					
-					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessageSending?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLog: EventLog)) in
-						self.getNewMessages(eventLogs: [cbValue.eventLog])
+					self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
+						self.getNewMessages(eventLogs: eventLogs)
+					}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
+						self.getNewMessages(eventLogs: [eventLog])
 					})
-					
-					self.chatRoomSuscriptions.insert(conversation.chatRoom.publisher?.onChatMessagesReceived?.postOnCoreQueue { (cbValue: (chatRoom: ChatRoom, eventLogs: [EventLog])) in
-						self.getNewMessages(eventLogs: cbValue.eventLogs)
-					})
+					self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 				}
 			}
 		}
