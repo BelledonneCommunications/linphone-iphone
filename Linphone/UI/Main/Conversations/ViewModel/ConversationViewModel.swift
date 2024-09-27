@@ -19,13 +19,13 @@
 
 import Foundation
 import linphonesw
-import Combine
 import SwiftUI
 import AVFoundation
 
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length
 // swiftlint:disable cyclomatic_complexity
+
 class ConversationViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
@@ -37,7 +37,25 @@ class ConversationViewModel: ObservableObject {
 	@Published var messageText: String = ""
 	
 	private var chatRoomDelegate: ChatRoomDelegate?
-	private var chatMessageSuscriptions = Set<AnyCancellable?>()
+	
+	// Used to keep track of a ChatMessage callback without having to worry about life cycle
+	// Init will add the delegate, deinit will remove it
+	class ChatMessageDelegateHolder {
+		var chatMessage: ChatMessage
+		var chatMessageDelegate: ChatMessageDelegate
+		
+		init (message: ChatMessage, delegate: ChatMessageDelegate) {
+			message.addDelegate(delegate: delegate)
+			chatMessage = message
+			chatMessageDelegate = delegate
+		}
+		
+		deinit {
+			chatMessage.removeDelegate(delegate: chatMessageDelegate)
+		}
+	}
+	
+	private var chatMessageDelegateHolders: [ChatMessageDelegateHolder] = []
 	
 	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var participantConversationModel: [ContactAvatarModel] = []
@@ -118,9 +136,9 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				self.coreContext.doOnCoreQueue { _ in
-					self.chatMessageSuscriptions.insert(message.publisher?.onMsgStateChanged?.postOnCoreQueue {(cbValue: (message: ChatMessage, state: ChatMessage.State)) in
+					let chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, _: ChatMessage.State) in
 						var statusTmp: Message.Status? = .sending
-						switch cbValue.message.state {
+						switch message.state {
 						case .InProgress:
 							statusTmp = .sending
 						case .Delivered:
@@ -143,12 +161,23 @@ class ConversationViewModel: ObservableObject {
 								self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp
 							}
 						}
-					})
-					
-					self.chatMessageSuscriptions.insert(message.publisher?.onNewMessageReaction?.postOnCoreQueue {(cbValue: (message: ChatMessage, reaction: ChatMessageReaction)) in
+					}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
 						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
 						var reactionsTmp: [String] = []
-						cbValue.message.reactions.forEach({ chatMessageReaction in
+						message.reactions.forEach({ chatMessageReaction in
+							reactionsTmp.append(chatMessageReaction.body)
+						})
+						
+						DispatchQueue.main.async {
+							if indexMessage != nil {
+								self.objectWillChange.send()
+								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
+							}
+						}
+					}, onReactionRemoved: { (message: ChatMessage, _: Address) in
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
+						var reactionsTmp: [String] = []
+						message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
 						})
 						
@@ -159,21 +188,8 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					})
-					
-					self.chatMessageSuscriptions.insert(message.publisher?.onReactionRemoved?.postOnCoreQueue {(cbValue: (message: ChatMessage, address: Address)) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventLog.chatMessage?.messageId == message.messageId})
-						var reactionsTmp: [String] = []
-						cbValue.message.reactions.forEach({ chatMessageReaction in
-							reactionsTmp.append(chatMessageReaction.body)
-						})
-						
-						DispatchQueue.main.async {
-							if indexMessage != nil {
-								self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
-							}
-						}
-					})
+					message.addDelegate(delegate: chatMessageDelegate)
+					self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 				}
 			}
 		}
@@ -184,7 +200,7 @@ class ConversationViewModel: ObservableObject {
 			self.displayedConversation?.chatRoom.removeDelegate(delegate: crDelegate)
 		}
 		self.chatRoomDelegate = nil
-		self.chatMessageSuscriptions.removeAll()
+		self.chatMessageDelegateHolders.removeAll()
 	}
 	
 	func getHistorySize() {
