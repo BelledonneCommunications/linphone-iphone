@@ -150,7 +150,6 @@ class NotificationService: UNNotificationServiceExtension {
 						}
 						
 						stopCore()
-						
 						bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
 						bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
 						if let subtitle = msgData?.subtitle {
@@ -166,7 +165,6 @@ class NotificationService: UNNotificationServiceExtension {
 						bestAttemptContent.userInfo.updateValue(msgData?.from as Any, forKey: "from")
 						bestAttemptContent.userInfo.updateValue(msgData?.peerAddr as Any, forKey: "peer_addr")
 						bestAttemptContent.userInfo.updateValue(msgData?.localAddr as Any, forKey: "local_addr")
-						
 						if message.reactionContent != " " {
 							contentHandler(bestAttemptContent)
 						} else {
@@ -233,20 +231,15 @@ class NotificationService: UNNotificationServiceExtension {
 		var msgData = MsgData(from: fromAddr, body: "", subtitle: "", callId: callId, localAddr: localUri, peerAddr: peerUri)
 		
 		if let showMsg = lc!.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
-			if let subject = message.subject as String?, !subject.isEmpty {
-				msgData.subtitle = subject
-				if reactionContent == nil {
-					msgData.body = from + " : " + content
-				} else {
-					msgData.body = from + NSLocalizedString(" has reacted by ", comment: "") + reactionContent! + NSLocalizedString(" to: ", comment: "") + content
-				}
+			msgData.subtitle = message.subject ?? from
+			if reactionContent == nil {
+				msgData.body = (message.subject != nil ? "\(from): " : "") + content
 			} else {
-				msgData.subtitle = from
-				msgData.body = content
+				msgData.body = from + NSLocalizedString(" has reacted by ", comment: "") + reactionContent! + NSLocalizedString(" to: ", comment: "") + content
 			}
 		} else {
-			if let subject = message.subject as String?, !subject.isEmpty {
-				msgData.body = subject + " : " + from
+			if let subject = message.subject {
+				msgData.body = subject + ": " + from
 			} else {
 				msgData.body = from
 			}
