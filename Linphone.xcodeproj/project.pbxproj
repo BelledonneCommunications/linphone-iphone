@@ -17,6 +17,7 @@
 		66246C6A2C622AE900973E97 /* TimeZoneExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66246C692C622AE900973E97 /* TimeZoneExtension.swift */; };
 		662B69D92B25DE18007118BF /* TelecomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69D82B25DE18007118BF /* TelecomManager.swift */; };
 		662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69DA2B25DE25007118BF /* ProviderDelegate.swift */; };
+		663E07E42CAAFD3B0010029D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		6646A7A32BB2E224006B842A /* ScheduleMeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */; };
 		667E5D7F2B8E430C00EBCFC4 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
 		667E5D812B8E444E00EBCFC4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */; };
