@@ -191,7 +191,6 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					})
-					message.addDelegate(delegate: chatMessageDelegate)
 					self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 				}
 			}
