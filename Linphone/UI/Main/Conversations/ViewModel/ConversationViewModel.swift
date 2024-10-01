@@ -96,12 +96,12 @@ class ConversationViewModel: ObservableObject {
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
-				self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
+				self.chatRoomDelegate = ChatRoomDelegateStub( onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
+					self.computeComposingLabel()
+				}, onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
 					self.getNewMessages(eventLogs: eventLogs)
 				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
-				}, onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
-					self.computeComposingLabel()
 				})
 				self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 			}
