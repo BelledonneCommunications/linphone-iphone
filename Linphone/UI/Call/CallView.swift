@@ -205,7 +205,7 @@ struct CallView: View {
 					.zIndex(4)
 					.transition(.move(edge: .bottom))
 					.onDisappear {
-						conversationViewModel.displayedConversation = nil
+						conversationViewModel.removeConversationDelegate()
 						isShowConversationFragment = false
 					}
 				}
@@ -2199,7 +2199,7 @@ struct CallView: View {
 											.onDisappear {
 												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
 													if conversationViewModel.displayedConversation != nil {
-														conversationViewModel.displayedConversation = nil
+														conversationViewModel.removeConversationDelegate()
 														conversationViewModel.resetMessage()
 														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
 														
@@ -2582,7 +2582,7 @@ struct CallView: View {
 											.onDisappear {
 												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
 													if conversationViewModel.displayedConversation != nil {
-														conversationViewModel.displayedConversation = nil
+														conversationViewModel.removeConversationDelegate()
 														conversationViewModel.resetMessage()
 														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
 														

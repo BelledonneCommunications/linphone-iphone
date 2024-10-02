@@ -178,7 +178,7 @@ struct ConversationFragment: View {
 										if isShowConversationFragment {
 											isShowConversationFragment = false
 										}
-										conversationViewModel.displayedConversation = nil
+										conversationViewModel.removeConversationDelegate()
 									}
 								}
 						}

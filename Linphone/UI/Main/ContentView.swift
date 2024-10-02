@@ -27,6 +27,8 @@ struct ContentView: View {
 	@Environment(\.scenePhase) var scenePhase
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
+	@EnvironmentObject var navigationManager: NavigationManager
+	
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
@@ -127,7 +129,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 0
 											historyViewModel.displayedCall = nil
-											conversationViewModel.displayedConversation = nil
+											conversationViewModel.removeConversationDelegate()
 											meetingViewModel.displayedMeeting = nil
 										}, label: {
 											VStack {
@@ -172,7 +174,7 @@ struct ContentView: View {
 											Button(action: {
 												self.index = 1
 												contactViewModel.indexDisplayedFriend = nil
-												conversationViewModel.displayedConversation = nil
+												conversationViewModel.removeConversationDelegate()
 												meetingViewModel.displayedMeeting = nil
 												if historyListViewModel.missedCallsCount > 0 {
 													historyListViewModel.resetMissedCallsCount()
@@ -248,7 +250,7 @@ struct ContentView: View {
 											self.index = 3
 											contactViewModel.indexDisplayedFriend = nil
 											historyViewModel.displayedCall = nil
-											conversationViewModel.displayedConversation = nil
+											conversationViewModel.removeConversationDelegate()
 										}, label: {
 											VStack {
 												Image("video-conference")
@@ -656,7 +658,7 @@ struct ContentView: View {
 									Button(action: {
 										self.index = 0
 										historyViewModel.displayedCall = nil
-										conversationViewModel.displayedConversation = nil
+										conversationViewModel.removeConversationDelegate()
 										meetingViewModel.displayedMeeting = nil
 									}, label: {
 										VStack {
@@ -703,7 +705,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 1
 											contactViewModel.indexDisplayedFriend = nil
-											conversationViewModel.displayedConversation = nil
+											conversationViewModel.removeConversationDelegate()
 											meetingViewModel.displayedMeeting = nil
 											if historyListViewModel.missedCallsCount > 0 {
 												historyListViewModel.resetMissedCallsCount()
@@ -782,7 +784,7 @@ struct ContentView: View {
 										self.index = 3
 										contactViewModel.indexDisplayedFriend = nil
 										historyViewModel.displayedCall = nil
-										conversationViewModel.displayedConversation = nil
+										conversationViewModel.removeConversationDelegate()
 									}, label: {
 										VStack {
 											Image("video-conference")
@@ -1199,6 +1201,11 @@ struct ContentView: View {
 			.onAppear {
 				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 			}
+			.onChange(of: navigationManager.selectedCallId) { newCallId in
+				if newCallId != nil {
+					self.index = 2
+				}
+			}
 			.onReceive(pub) { _ in
 				conversationsListViewModel.computeChatRoomsList(filter: "")
 				historyListViewModel.refreshHistoryAvatarModel()
@@ -1228,6 +1235,18 @@ struct ContentView: View {
 		withAnimation {
 			self.sideMenuIsOpen.toggle()
 		}
+	}
+}
+
+class NavigationManager: ObservableObject {
+	@Published var selectedCallId: String? = nil
+	@Published var peerAddr: String? = nil
+	@Published var localAddr: String? = nil
+	
+	func openChatRoom(callId: String, peerAddr: String, localAddr: String) {
+		self.selectedCallId = callId
+		self.peerAddr = peerAddr
+		self.localAddr = localAddr
 	}
 }
 

@@ -19,10 +19,17 @@
 
 import SwiftUI
 import linphonesw
+import UserNotifications
 
 let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+	
+	var launchNotificationCallId: String?
+	var launchNotificationPeerAddr: String?
+	var launchNotificationLocalAddr: String?
+	
+	var navigationManager: NavigationManager?
 	
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 		let tokenStr = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
@@ -44,7 +51,34 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 		if let creationToken = creationToken {
 			NotificationCenter.default.post(name: accountTokenNotification, object: nil, userInfo: ["token": creationToken])
 		}
+		
 		completionHandler(UIBackgroundFetchResult.newData)
+	}
+					 
+	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+		// Set up notifications
+		UNUserNotificationCenter.current().delegate = self
+		
+		return true
+	}
+	
+	// Called when the user interacts with the notification
+	func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+		let userInfo = response.notification.request.content.userInfo
+		
+		if let callId = userInfo["CallId"] as? String, let peerAddr = userInfo["peer_addr"] as? String, let localAddr = userInfo["local_addr"] as? String {
+			if self.navigationManager != nil {
+				self.navigationManager!.selectedCallId = callId
+				self.navigationManager!.peerAddr = peerAddr
+				self.navigationManager!.localAddr = localAddr
+			} else {
+				launchNotificationCallId = callId
+				launchNotificationPeerAddr = peerAddr
+				launchNotificationLocalAddr = localAddr
+			}
+		}
+		
+		completionHandler()
 	}
 	
 	func applicationWillTerminate(_ application: UIApplication) {
@@ -59,7 +93,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 			}
 		}
 	}
-	
 }
 
 @main
@@ -67,6 +100,8 @@ struct LinphoneApp: App {
 	
 	@Environment(\.scenePhase) var scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+	@StateObject var navigationManager = NavigationManager()
+	
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
@@ -129,7 +164,19 @@ struct LinphoneApp: App {
 						meetingsListViewModel: meetingsListViewModel!,
 						meetingViewModel: meetingViewModel!,
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel!
-					).onOpenURL { url in
+					)
+					.environmentObject(navigationManager)
+					.onAppear {
+						// Link the navigation manager to the AppDelegate
+						delegate.navigationManager = navigationManager
+						
+						// Check if the app was launched with a notification payload
+						if let callId = delegate.launchNotificationCallId, let peerAddr = delegate.launchNotificationPeerAddr, let localAddr = delegate.launchNotificationLocalAddr {
+							// Notify the app to navigate to the chat room
+							navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
+						}
+					}
+					.onOpenURL { url in
 						URIHandler.handleURL(url: url)
 					}
 				} else {
@@ -161,12 +208,6 @@ struct LinphoneApp: App {
 			if newPhase == .active {
 				Log.info("Entering foreground")
 				coreContext.onEnterForeground()
-				
-				DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-					if conversationViewModel != nil && conversationViewModel!.displayedConversation != nil && conversationsListViewModel != nil {
-						conversationViewModel!.resetDisplayedChatRoom(conversationsList: conversationsListViewModel!.conversationsList)
-					}
-				}
 			} else if newPhase == .inactive {
 			} else if newPhase == .background {
 				Log.info("Entering background")

@@ -223,9 +223,6 @@
     "All contacts" : {
 
     },
-    "All day" : {
-
-    },
     "All modifications will be canceled." : {
 
     },
@@ -900,9 +897,6 @@
         }
       }
     },
-    "Content" : {
-
-    },
     "Continue" : {
       "localizations" : {
         "en" : {
@@ -1338,9 +1332,6 @@
 
     },
     "Copy SIP address" : {
-
-    },
-    "Could not reach network" : {
 
     },
     "Could not send ICS invitations to meeting to any participant" : {
@@ -2360,9 +2351,6 @@
 
     },
     "Time Zone: %@" : {
-
-    },
-    "Title" : {
 
     },
     "TLS" : {

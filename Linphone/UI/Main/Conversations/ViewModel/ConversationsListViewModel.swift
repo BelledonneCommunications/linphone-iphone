@@ -57,6 +57,7 @@ class ConversationsListViewModel: ObservableObject {
 			
 			DispatchQueue.main.async {
 				self.conversationsList = self.conversationsListTmp
+				NotificationCenter.default.post(name: NSNotification.Name("ChatRoomsComputed"), object: nil)
 			}
 			
 			self.updateUnreadMessagesCount()

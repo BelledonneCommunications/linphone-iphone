@@ -239,7 +239,7 @@ struct StartConversationFragment: View {
 							
 							if startConversationViewModel.displayedConversation != nil {
 								if self.conversationViewModel.displayedConversation != nil {
-									self.conversationViewModel.displayedConversation = nil
+									self.conversationViewModel.removeConversationDelegate()
 									self.conversationViewModel.resetMessage()
 									self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
 									

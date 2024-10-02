@@ -199,10 +199,13 @@ class ConversationViewModel: ObservableObject {
 	
 	func removeConversationDelegate() {
 		if let crDelegate = self.chatRoomDelegate {
-			self.displayedConversation?.chatRoom.removeDelegate(delegate: crDelegate)
+			if self.displayedConversation != nil {
+				self.displayedConversation!.chatRoom.removeDelegate(delegate: crDelegate)
+			}
 		}
 		self.chatRoomDelegate = nil
 		self.chatMessageDelegateHolders.removeAll()
+		self.displayedConversation = nil
 	}
 	
 	func getHistorySize() {
@@ -1377,40 +1380,36 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func resetDisplayedChatRoom(conversationsList: [ConversationModel]) {
-		removeConversationDelegate()
-		if self.displayedConversation != nil {
-			conversationsList.forEach { conversation in
-				if conversation.id == self.displayedConversation!.id {
-					self.displayedConversation = conversation
-					self.computeComposingLabel()
-					
-					if self.displayedConversation != nil {
+		if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
+			if self.displayedConversation != nil {
+				conversationsList.forEach { conversation in
+					if conversation.id == self.displayedConversation!.id {
+						self.displayedConversation = conversation
+						self.computeComposingLabel()
 						
-						let eventLogFirst =	self.displayedConversation!.chatRoom.findEventLog(messageId: self.conversationMessagesSection[0].rows.first!.eventModel.eventLog.chatMessage!.messageId)
-						
-						let eventLogLast = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first
-						
-						var eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeBetween(
-							firstEvent: eventLogFirst,
-							lastEvent: eventLogLast,
-							filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
-						)
-						
-						if eventLogLast != nil {
-							eventLogList.append(eventLogLast!)
-							if !eventLogList.isEmpty && self.conversationMessagesSection[0].rows.first?.message.id != eventLogLast!.chatMessage?.messageId {
-								self.getNewMessages(eventLogs: eventLogList)
+						if self.displayedConversation != nil {
+							CoreContext.shared.doOnCoreQueue { _ in
+								let eventLogFirst =	self.displayedConversation!.chatRoom.findEventLog(messageId: self.conversationMessagesSection[0].rows.first!.eventModel.eventLog.chatMessage!.messageId)
+								
+								let eventLogLast = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first
+								
+								var eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeBetween(
+									firstEvent: eventLogFirst,
+									lastEvent: eventLogLast,
+									filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
+								)
+								
+								if eventLogLast != nil {
+									eventLogList.append(eventLogLast!)
+									if !eventLogList.isEmpty && self.conversationMessagesSection[0].rows.first?.message.id != eventLogLast!.chatMessage?.messageId {
+										self.getNewMessages(eventLogs: eventLogList)
+									}
+								}
+								
+								self.addConversationDelegate()
 							}
 						}
-						
-						self.chatRoomDelegate = ChatRoomDelegateStub(onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
-							self.getNewMessages(eventLogs: eventLogs)
-						}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
-							self.getNewMessages(eventLogs: [eventLog])
-						})
-						self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 					}
-					
 				}
 			}
 		}
@@ -1784,6 +1783,37 @@ class ConversationViewModel: ObservableObject {
 				withAnimation {
 					self.composingLabel = ""
 				}
+			}
+		}
+	}
+	
+	func getChatRoomWithStringAddress(conversationsList: [ConversationModel], stringAddr: String) {
+		CoreContext.shared.doOnCoreQueue { _ in
+			do {
+				let stringAddrCleaned = stringAddr.components(separatedBy: ";gr=")
+				let address = try Factory.Instance.createAddress(addr: stringAddrCleaned[0])
+					if let dispChatRoom = conversationsList.first(where: {$0.chatRoom.peerAddress != nil && $0.chatRoom.peerAddress!.equal(address2: address)}) {
+						if self.displayedConversation != nil {
+							if dispChatRoom.id != self.displayedConversation!.id {
+								DispatchQueue.main.async {
+									self.removeConversationDelegate()
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+										self.selectedMessage = nil
+										self.resetMessage()
+										self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
+										self.getMessages()
+									}
+								}
+							}
+						} else {
+							DispatchQueue.main.async {
+								self.selectedMessage = nil
+								self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
+							}
+						}
+					}
+			} catch {
+				
 			}
 		}
 	}

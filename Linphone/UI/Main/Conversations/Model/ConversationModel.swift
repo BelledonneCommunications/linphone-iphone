@@ -193,7 +193,7 @@ class ConversationModel: ObservableObject {
 			: ContactAvatarModel(
 				friend: nil,
 				name: subjectTmp,
-				address: addressTmp,
+				address: self.chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
 				withPresence: false
 			)
 			

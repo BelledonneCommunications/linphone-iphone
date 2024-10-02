@@ -22,6 +22,10 @@ import linphonesw
 
 struct ConversationsListFragment: View {
 	
+	@EnvironmentObject var navigationManager: NavigationManager
+	@Environment(\.scenePhase) var scenePhase
+	@State private var enteredForeground: Bool = false
+	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
@@ -29,6 +33,9 @@ struct ConversationsListFragment: View {
 	@Binding var text: String
 	
 	var body: some View {
+		let pub = NotificationCenter.default
+				.publisher(for: NSNotification.Name("ChatRoomsComputed"))
+		
 		VStack {
 			List {
 				ForEach(0..<conversationsListViewModel.conversationsList.count, id: \.self) { index in
@@ -135,10 +142,25 @@ struct ConversationsListFragment: View {
 						.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
 						.listRowSeparator(.hidden)
 						.background(.white)
+						.onReceive(pub) { _ in
+							if enteredForeground && conversationViewModel.displayedConversation != nil
+								&& (navigationManager.peerAddr == nil || navigationManager.peerAddr == conversationViewModel.displayedConversation!.remoteSipUri) {
+								if conversationViewModel.displayedConversation != nil {
+									conversationViewModel.resetDisplayedChatRoom(conversationsList: conversationsListViewModel.conversationsList)
+								}
+							}
+							
+							enteredForeground = false
+							
+							if navigationManager.peerAddr != nil && conversationsListViewModel.conversationsList[index].remoteSipUri.contains(navigationManager.peerAddr!) {
+								conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
+								navigationManager.peerAddr = nil
+							}
+						}
 						.onTapGesture {
 							if index < conversationsListViewModel.conversationsList.count {
-								if conversationViewModel.displayedConversation != nil { 
-									conversationViewModel.displayedConversation = nil
+								if conversationViewModel.displayedConversation != nil {
+									conversationViewModel.removeConversationDelegate()
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 										conversationViewModel.selectedMessage = nil
 										conversationViewModel.resetMessage()
@@ -189,6 +211,9 @@ struct ConversationsListFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+		.onChange(of: scenePhase) { newPhase in
+			enteredForeground = newPhase == .active
+		}
 	}
 }
 
