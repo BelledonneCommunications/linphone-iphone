@@ -7,7 +7,13 @@
     " et " : {
 
     },
+    " has reacted by " : {
+
+    },
     " or " : {
+
+    },
+    " to: " : {
 
     },
     "." : {
@@ -140,6 +146,15 @@
 
     },
     "👍" : {
+
+    },
+    "📅 Meeting has been cancelled" : {
+
+    },
+    "📅 Meeting has been modified" : {
+
+    },
+    "📅 You are invited to a meeting" : {
 
     },
     "😂" : {
@@ -1911,6 +1926,9 @@
 
     },
     "Message copied into clipboard" : {
+
+    },
+    "Message received" : {
 
     },
     "message_delivery_info_error_title" : {

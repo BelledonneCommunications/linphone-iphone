@@ -937,25 +937,27 @@ class ConversationViewModel: ObservableObject {
 					)
 				)
 				
-				self.addChatMessageDelegate(message: eventLog.chatMessage!)
-				
-				DispatchQueue.main.async {
-					Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")
-					if !self.conversationMessagesSection.isEmpty
-						&& !self.conversationMessagesSection[0].rows.isEmpty
-						&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
-						&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
-						self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
-					}
+				if self.conversationMessagesSection[0].rows.first?.eventModel.eventLog.chatMessage?.messageId != eventLog.chatMessage?.messageId {
+					self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					
-					if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
-						self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [message]))
-					} else {
-						self.conversationMessagesSection[0].rows.insert(message, at: 0)
-					}
-					
-					if !message.message.isOutgoing {
-						self.displayedConversationUnreadMessagesCount = unreadMessagesCount
+					DispatchQueue.main.async {
+						Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")
+						if !self.conversationMessagesSection.isEmpty
+							&& !self.conversationMessagesSection[0].rows.isEmpty
+							&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
+							&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
+							self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
+						}
+						
+						if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
+							self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [message]))
+						} else {
+							self.conversationMessagesSection[0].rows.insert(message, at: 0)
+						}
+						
+						if !message.message.isOutgoing {
+							self.displayedConversationUnreadMessagesCount = unreadMessagesCount
+						}
 					}
 				}
 			} else {
