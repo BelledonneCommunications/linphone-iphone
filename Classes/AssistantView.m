@@ -29,6 +29,7 @@
 #import "UITextField+DoneButton.h"
 #import "LinphoneAppDelegate.h"
 #import "SVProgressHUD.h"
+#import "linphoneapp-Swift.h"
 
 #ifdef DEBUG
 #define PROVIDER_NAME "apns.dev"
@@ -100,9 +101,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onContactTap {
 	NSString *url = @"https://www.linphone.org/contact";
-	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"[Assistant] Failed to open %@, invalid URL", url);
-	}
+	[SwiftUtil openUrlWithUrlString:url];
 }
 
 - (void)viewDidLoad {
@@ -1928,9 +1927,7 @@ UIColor *previousColor = (UIColor*)[sender backgroundColor]; \
 
 - (IBAction)onLinkTap:(id)sender {
 	NSString *url = @"https://subscribe.linphone.org";
-	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"[Assistant] Failed to open %@, invalid URL", url);
-	}
+	[SwiftUtil openUrlWithUrlString:url];
 }
 
 - (IBAction)onAcceptTermsClick:(id)sender {

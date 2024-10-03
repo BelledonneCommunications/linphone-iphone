@@ -121,5 +121,18 @@ import linphonesw
 		return log.dir == .Incoming && [.Missed,.Aborted,.EarlyAborted].contains(log.status)
 	}
 	
+	@objc static func openUrl(urlString:String) {
+		if let url = URL(string: urlString) {
+			UIApplication.shared.open(url, options: [:], completionHandler: { success in
+				if (!success) {
+					Log.e("Unable to open URL \(urlString)")
+				}
+			})
+		} else {
+			Log.e("Invalid URL \(urlString)")
+		}
+
+	}
+
 }
 

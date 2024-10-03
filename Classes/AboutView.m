@@ -20,6 +20,7 @@
 #import "PhoneMainView.h"
 #import "LinphoneManager.h"
 #import "LinphoneIOSVersion.h"
+#import "linphoneapp-Swift.h"
 
 @implementation AboutView
 
@@ -79,29 +80,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onLinkTap:(id)sender {
 	UIGestureRecognizer *gest = sender;
 	NSString *url = ((UILabel *)gest.view).text;
-	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"Failed to open %@, invalid URL", url);
-	}
+	[SwiftUtil openUrlWithUrlString:url];
 }
 
 - (IBAction)onPolicyTap {
 	NSString *url = @"https://www.linphone.org/privacy-policy";
-	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"Failed to open %@, invalid URL", url);
-	}
+	[SwiftUtil openUrlWithUrlString:url];
 }
 
 - (IBAction)onLicenceTap {
 	NSString *url = @"https://www.gnu.org/licenses/gpl-3.0.html";
-	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"Failed to open %@, invalid URL", url);
-	}
+	[SwiftUtil openUrlWithUrlString:url];
 }
 - (IBAction)onTranslateTap {
 	NSString *url = @"https://weblate.linphone.org/projects/linphone-iphone";
-	if (![UIApplication.sharedApplication openURL:[NSURL URLWithString:url]]) {
-		LOGE(@"Failed to open %@, invalid URL", url);
-	}
+	[SwiftUtil openUrlWithUrlString:url];
 }
 
 - (IBAction)onDialerBackClick:(id)sender {
