@@ -152,29 +152,15 @@ struct ConversationsListFragment: View {
 							
 							enteredForeground = false
 							
-							if navigationManager.peerAddr != nil && conversationsListViewModel.conversationsList[index].remoteSipUri.contains(navigationManager.peerAddr!) {
+							if navigationManager.peerAddr != nil 
+								&& conversationsListViewModel.conversationsList[index].remoteSipUri.contains(navigationManager.peerAddr!) {
 								conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
 								navigationManager.peerAddr = nil
 							}
 						}
 						.onTapGesture {
 							if index < conversationsListViewModel.conversationsList.count {
-								if conversationViewModel.displayedConversation != nil {
-									conversationViewModel.removeConversationDelegate()
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-										conversationViewModel.selectedMessage = nil
-										conversationViewModel.resetMessage()
-										withAnimation {
-											conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-										}
-										conversationViewModel.getMessages()
-									}
-								} else {
-									conversationViewModel.selectedMessage = nil
-									withAnimation {
-										conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
-									}
-								}
+								conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationsListViewModel.conversationsList[index])
 							}
 						}
 						.onLongPressGesture(minimumDuration: 0.2) {

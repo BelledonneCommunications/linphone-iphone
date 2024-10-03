@@ -68,9 +68,6 @@ struct ConversationFragment: View {
 						.onRotate { newOrientation in
 							orientation = newOrientation
 						}
-						.onAppear {
-							conversationViewModel.addConversationDelegate()
-						}
 						.onDisappear {
 							conversationViewModel.removeConversationDelegate()
 						}
@@ -110,9 +107,6 @@ struct ConversationFragment: View {
 						.navigationBarHidden(true)
 						.onRotate { newOrientation in
 							orientation = newOrientation
-						}
-						.onAppear {
-							conversationViewModel.addConversationDelegate()
 						}
 						.onDisappear {
 							conversationViewModel.removeConversationDelegate()
@@ -178,7 +172,7 @@ struct ConversationFragment: View {
 										if isShowConversationFragment {
 											isShowConversationFragment = false
 										}
-										conversationViewModel.removeConversationDelegate()
+										conversationViewModel.displayedConversation = nil
 									}
 								}
 						}

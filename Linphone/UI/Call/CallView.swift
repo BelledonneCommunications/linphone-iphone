@@ -205,7 +205,7 @@ struct CallView: View {
 					.zIndex(4)
 					.transition(.move(edge: .bottom))
 					.onDisappear {
-						conversationViewModel.removeConversationDelegate()
+						conversationViewModel.displayedConversation = nil
 						isShowConversationFragment = false
 					}
 				}
@@ -2198,21 +2198,7 @@ struct CallView: View {
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
 												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
-													if conversationViewModel.displayedConversation != nil {
-														conversationViewModel.removeConversationDelegate()
-														conversationViewModel.resetMessage()
-														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
-														
-														conversationViewModel.getMessages()
-														withAnimation {
-															isShowConversationFragment = true
-														}
-													} else {
-														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
-														withAnimation {
-															isShowConversationFragment = true
-														}
-													}
+													conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
 												}
 											}
 									}
@@ -2581,21 +2567,7 @@ struct CallView: View {
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
 												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
-													if conversationViewModel.displayedConversation != nil {
-														conversationViewModel.removeConversationDelegate()
-														conversationViewModel.resetMessage()
-														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
-														
-														conversationViewModel.getMessages()
-														withAnimation {
-															isShowConversationFragment = true
-														}
-													} else {
-														conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
-														withAnimation {
-															isShowConversationFragment = true
-														}
-													}
+													conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
 												}
 											}
 									}

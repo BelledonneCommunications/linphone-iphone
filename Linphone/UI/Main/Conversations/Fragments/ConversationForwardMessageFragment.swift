@@ -211,20 +211,11 @@ struct ConversationForwardMessageFragment: View {
 							
 							if conversationForwardMessageViewModel.displayedConversation != nil {
 								if conversationViewModel.displayedConversation != nil {
-									conversationViewModel.removeConversationDelegate()
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-										conversationViewModel.selectedMessage = nil
-										conversationViewModel.resetMessage()
-										withAnimation {
-											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationForwardMessageViewModel.displayedConversation!)
-										}
-										conversationViewModel.getMessages()
-									}
-								} else {
-									conversationViewModel.selectedMessage = nil
-									withAnimation {
 										self.conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationForwardMessageViewModel.displayedConversation!)
 									}
+								} else {
+									self.conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationForwardMessageViewModel.displayedConversation!)
 								}
 							}
 						}

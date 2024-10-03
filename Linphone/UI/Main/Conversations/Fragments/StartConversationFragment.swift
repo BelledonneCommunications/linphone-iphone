@@ -238,17 +238,7 @@ struct StartConversationFragment: View {
 							isShowStartConversationFragment = false
 							
 							if startConversationViewModel.displayedConversation != nil {
-								if self.conversationViewModel.displayedConversation != nil {
-									self.conversationViewModel.removeConversationDelegate()
-									self.conversationViewModel.resetMessage()
-									self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
-									
-									self.conversationViewModel.getMessages()
-								} else {
-									withAnimation {
-										self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
-									}
-								}
+								self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
 								
 								startConversationViewModel.displayedConversation = nil
 							}

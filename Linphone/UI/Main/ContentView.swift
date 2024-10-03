@@ -129,7 +129,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 0
 											historyViewModel.displayedCall = nil
-											conversationViewModel.removeConversationDelegate()
+											conversationViewModel.displayedConversation = nil
 											meetingViewModel.displayedMeeting = nil
 										}, label: {
 											VStack {
@@ -174,7 +174,7 @@ struct ContentView: View {
 											Button(action: {
 												self.index = 1
 												contactViewModel.indexDisplayedFriend = nil
-												conversationViewModel.removeConversationDelegate()
+												conversationViewModel.displayedConversation = nil
 												meetingViewModel.displayedMeeting = nil
 												if historyListViewModel.missedCallsCount > 0 {
 													historyListViewModel.resetMissedCallsCount()
@@ -250,7 +250,7 @@ struct ContentView: View {
 											self.index = 3
 											contactViewModel.indexDisplayedFriend = nil
 											historyViewModel.displayedCall = nil
-											conversationViewModel.removeConversationDelegate()
+											conversationViewModel.displayedConversation = nil
 										}, label: {
 											VStack {
 												Image("video-conference")
@@ -658,7 +658,7 @@ struct ContentView: View {
 									Button(action: {
 										self.index = 0
 										historyViewModel.displayedCall = nil
-										conversationViewModel.removeConversationDelegate()
+										conversationViewModel.displayedConversation = nil
 										meetingViewModel.displayedMeeting = nil
 									}, label: {
 										VStack {
@@ -705,7 +705,7 @@ struct ContentView: View {
 										Button(action: {
 											self.index = 1
 											contactViewModel.indexDisplayedFriend = nil
-											conversationViewModel.removeConversationDelegate()
+											conversationViewModel.displayedConversation = nil
 											meetingViewModel.displayedMeeting = nil
 											if historyListViewModel.missedCallsCount > 0 {
 												historyListViewModel.resetMissedCallsCount()
@@ -784,7 +784,7 @@ struct ContentView: View {
 										self.index = 3
 										contactViewModel.indexDisplayedFriend = nil
 										historyViewModel.displayedCall = nil
-										conversationViewModel.removeConversationDelegate()
+										conversationViewModel.displayedConversation = nil
 									}, label: {
 										VStack {
 											Image("video-conference")

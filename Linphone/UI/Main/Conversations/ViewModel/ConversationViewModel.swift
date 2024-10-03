@@ -37,22 +37,34 @@ class ConversationViewModel: ObservableObject {
 	@Published var messageText: String = ""
 	@Published var composingLabel: String = ""
 	
-	private var chatRoomDelegate: ChatRoomDelegate?
+	// Used to keep track of a ChatRoom callback without having to worry about life cycle
+	// Init will add the delegate, deinit will remove it
+	class ChatRoomDelegateHolder {
+		var chatRoom: ChatRoom
+		var chatRoomDelegate: ChatRoomDelegate
+		init (chatroom: ChatRoom, delegate: ChatRoomDelegate) {
+			chatroom.addDelegate(delegate: delegate)
+			self.chatRoom = chatroom
+			self.chatRoomDelegate = delegate
+		}
+		deinit {
+			self.chatRoom.removeDelegate(delegate: chatRoomDelegate)
+		}
+	}
+	private var chatRoomDelegateHolder: ChatRoomDelegateHolder?
 	
 	// Used to keep track of a ChatMessage callback without having to worry about life cycle
 	// Init will add the delegate, deinit will remove it
 	class ChatMessageDelegateHolder {
 		var chatMessage: ChatMessage
 		var chatMessageDelegate: ChatMessageDelegate
-		
 		init (message: ChatMessage, delegate: ChatMessageDelegate) {
 			message.addDelegate(delegate: delegate)
-			chatMessage = message
-			chatMessageDelegate = delegate
+			self.chatMessage = message
+			self.chatMessageDelegate = delegate
 		}
-		
 		deinit {
-			chatMessage.removeDelegate(delegate: chatMessageDelegate)
+			self.chatMessage.removeDelegate(delegate: chatMessageDelegate)
 		}
 	}
 	
@@ -95,15 +107,15 @@ class ConversationViewModel: ObservableObject {
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				self.chatRoomDelegate = ChatRoomDelegateStub( onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
+			if let chatroom = self.displayedConversation?.chatRoom {
+				let chatRoomDelegate = ChatRoomDelegateStub( onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
 					self.computeComposingLabel()
 				}, onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
 					self.getNewMessages(eventLogs: eventLogs)
 				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
 				})
-				self.displayedConversation?.chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
+				self.chatRoomDelegateHolder = ChatRoomDelegateHolder(chatroom: chatroom, delegate: chatRoomDelegate)
 			}
 		}
 	}
@@ -198,14 +210,10 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeConversationDelegate() {
-		if let crDelegate = self.chatRoomDelegate {
-			if self.displayedConversation != nil {
-				self.displayedConversation!.chatRoom.removeDelegate(delegate: crDelegate)
-			}
+		coreContext.doOnCoreQueue { _ in
+			self.chatRoomDelegateHolder = nil
+			self.chatMessageDelegateHolders.removeAll()
 		}
-		self.chatRoomDelegate = nil
-		self.chatMessageDelegateHolders.removeAll()
-		self.displayedConversation = nil
 	}
 	
 	func getHistorySize() {
@@ -283,7 +291,7 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func getMessages() {
+		func getMessages() {
 		self.getHistorySize()
 		self.getUnreadMessagesCount()
 		self.getParticipantConversationModel()
@@ -1376,7 +1384,14 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func changeDisplayedChatRoom(conversationModel: ConversationModel) {
-		self.displayedConversation = conversationModel
+		self.selectedMessage = nil
+		self.resetMessage()
+		self.removeConversationDelegate()
+		withAnimation {
+			self.displayedConversation = conversationModel
+		}
+		self.addConversationDelegate()
+		self.getMessages()
 	}
 	
 	func resetDisplayedChatRoom(conversationsList: [ConversationModel]) {
@@ -1792,28 +1807,20 @@ class ConversationViewModel: ObservableObject {
 			do {
 				let stringAddrCleaned = stringAddr.components(separatedBy: ";gr=")
 				let address = try Factory.Instance.createAddress(addr: stringAddrCleaned[0])
-					if let dispChatRoom = conversationsList.first(where: {$0.chatRoom.peerAddress != nil && $0.chatRoom.peerAddress!.equal(address2: address)}) {
-						if self.displayedConversation != nil {
-							if dispChatRoom.id != self.displayedConversation!.id {
-								DispatchQueue.main.async {
-									self.removeConversationDelegate()
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-										self.selectedMessage = nil
-										self.resetMessage()
-										self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
-										self.getMessages()
-									}
-								}
-							}
-						} else {
-							DispatchQueue.main.async {
-								self.selectedMessage = nil
+				if let dispChatRoom = conversationsList.first(where: {$0.chatRoom.peerAddress != nil && $0.chatRoom.peerAddress!.equal(address2: address)}) {
+					if self.displayedConversation != nil {
+						if dispChatRoom.id != self.displayedConversation!.id {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 								self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
 							}
 						}
+					} else {
+						DispatchQueue.main.async {
+							self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
+						}
 					}
+				}
 			} catch {
-				
 			}
 		}
 	}
