@@ -216,7 +216,11 @@
 			BOOL success = FALSE;
 			if(granted){
 				LOGD(@"CNContactStore authorization granted");
-				
+				dispatch_async(dispatch_get_main_queue(), ^{
+					if (bctbx_list_size(linphone_core_get_account_list(LC)) == 0 && ![LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence_requested"]) {
+						[SwiftUtil requestRLSPresenceAllowance];
+					}
+				});
 				NSError *contactError;
 				CNContactStore* store = [[CNContactStore alloc] init];
 				[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];

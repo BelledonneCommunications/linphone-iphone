@@ -131,7 +131,42 @@ import linphonesw
 		} else {
 			Log.e("Invalid URL \(urlString)")
 		}
+	}
+	
+	@objc static func requestRLSPresenceAllowance() {
+		let rls = UIAlertController(
+			title: VoipTexts.accept_rls_title,
+			message: VoipTexts.accept_rls,
+			preferredStyle: .actionSheet)
 
+		let accept = UIAlertAction(
+			title: VoipTexts.dialog_accept,
+			style: .default,
+			handler: { action in
+				Core.get().config?.setInt(section: "app", key: "use_rls_presence", value: 1)
+				Core.get().config?.setInt(section: "app", key: "use_rls_presence_requested", value: 1)
+				Core.get().friendListSubscriptionEnabled = true
+			})
+		let refuse = UIAlertAction(
+			title: VoipTexts.dialog_later,
+			style: .default,
+			handler: { action in
+				Core.get().config?.setInt(section: "app", key: "use_rls_presence", value: 0)
+				Core.get().config?.setInt(section: "app", key: "use_rls_presence_requested", value: 1)
+				Core.get().friendListSubscriptionEnabled = false
+			})
+		let pp = UIAlertAction(
+			title: VoipTexts.dialog_privacy_policy,
+			style: .default,
+			handler: { action in
+				openUrl(urlString: "https://www.linphone.org/privacy-policy")
+			})
+
+		rls.addAction(accept)
+		rls.addAction(pp)
+		rls.addAction(refuse)
+		rls.popoverPresentationController?.sourceView = PhoneMainView.instance().mainViewController.statusBarView
+		PhoneMainView.instance()?.present(rls, animated: true)
 	}
 
 }

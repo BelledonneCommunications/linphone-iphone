@@ -1452,8 +1452,18 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_conference_state_changed(cbs, linphone_iphone_conference_state_changed);
 
 
+	bool reEnableRls = false;
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence_requested"] && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]) {
+		[LinphoneManager.instance lpConfigSetBool:false forKey:@"use_rls_presence"];
+		reEnableRls = true;
+	}
 
 	theLinphoneCore = linphone_factory_create_shared_core_with_config(factory, _configDb, NULL, [kLinphoneMsgNotificationAppGroupId UTF8String], true);
+	
+	if (bctbx_list_size(linphone_core_get_account_list(theLinphoneCore)) > 0 && reEnableRls) { // Do not request rls allowance for users who had it before.
+		[LinphoneManager.instance lpConfigSetBool:true forKey:@"use_rls_presence"];
+	}
+	
 	linphone_core_enable_auto_iterate(theLinphoneCore, true);
 	linphone_core_set_chat_messages_aggregation_enabled(theLinphoneCore, false);
 	linphone_core_add_callbacks(theLinphoneCore, cbs);

@@ -250,4 +250,11 @@ import UIKit
 	static let conference_info_confirm_removal_delete = NSLocalizedString("DELETE",comment:"")
 	static let conference_unable_to_share_via_calendar = NSLocalizedString("Unable to add event to calendar. Check permissions",comment:"")
 	static let screenshot_restrictions = NSLocalizedString("Can't take a screenshot due to app restrictions", comment: "")
+	
+	
+	@objc static let dialog_later = NSLocalizedString("Maybe later",comment:"")
+	@objc static let dialog_privacy_policy = NSLocalizedString("Privacy policy",comment:"")
+	@objc static let accept_rls_title = NSLocalizedString("Enable smart address book", comment:"")
+	@objc static let accept_rls = NSLocalizedString("To provide the best experience, your contacts phone numbers will be uploaded to our secure servers. We value your privacy, and this data will only be used as outlined in our privacy policy. You can disable this option any time in application settings",comment:"")
+
 }
