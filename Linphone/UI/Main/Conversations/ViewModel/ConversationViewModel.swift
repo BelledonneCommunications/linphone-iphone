@@ -1416,7 +1416,7 @@ class ConversationViewModel: ObservableObject {
 								
 								if eventLogLast != nil {
 									eventLogList.append(eventLogLast!)
-									if !eventLogList.isEmpty && self.conversationMessagesSection[0].rows.first?.message.id != eventLogLast!.chatMessage?.messageId {
+									if !eventLogList.isEmpty && (self.conversationMessagesSection[0].rows.first?.eventModel.eventLog.chatMessage?.messageId != eventLogLast!.chatMessage?.messageId) {
 										self.getNewMessages(eventLogs: eventLogList)
 									}
 								}
