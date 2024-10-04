@@ -837,19 +837,19 @@ class ConversationViewModel: ObservableObject {
 			}
 			
 			let isFirstMessageIncomingTmp = index > 0
-			? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly()
+			? addressPrecCleaned != nil && addressCleaned != nil && addressPrecCleaned!.asStringUriOnly() != addressCleaned!.asStringUriOnly()
 			: (
 				self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty
 				? true
-				: self.conversationMessagesSection[0].rows[0].message.address != addressCleaned?.asStringUriOnly()
+				: addressCleaned != nil && self.conversationMessagesSection[0].rows[0].message.address != addressCleaned!.asStringUriOnly()
 			)
 			
 			let isFirstMessageOutgoingTmp = index <= eventLogs.count - 2
-			? addressNextCleaned?.asStringUriOnly() == addressCleaned?.asStringUriOnly()
+			? addressNextCleaned != nil && addressCleaned != nil && addressNextCleaned!.asStringUriOnly() == addressCleaned!.asStringUriOnly()
 			: (
 				self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty
 				? true
-				: !self.conversationMessagesSection[0].rows[0].message.isOutgoing || self.conversationMessagesSection[0].rows[0].message.address == addressCleaned?.asStringUriOnly()
+				: !self.conversationMessagesSection[0].rows[0].message.isOutgoing || (addressCleaned != nil && self.conversationMessagesSection[0].rows[0].message.address == addressCleaned!.asStringUriOnly())
 			)
 			
 			let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
@@ -906,7 +906,7 @@ class ConversationViewModel: ObservableObject {
 				
 				replyMessageTmp = ReplyMessage(
 					id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
-					address: addressReplyCleaned?.asStringUriOnly() ?? "",
+					address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
 					isFirstMessage: false,
 					text: contentReplyText,
 					isOutgoing: false,
@@ -925,7 +925,7 @@ class ConversationViewModel: ObservableObject {
 						status: statusTmp,
 						isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
 						dateReceived: eventLog.chatMessage?.time ?? 0,
-						address: addressCleaned?.asStringUriOnly() ?? "",
+						address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
 						isFirstMessage: isFirstMessageTmp,
 						text: contentText,
 						attachmentsNames: attachmentNameList,
