@@ -125,10 +125,16 @@ class NotificationService: UNNotificationServiceExtension {
 						Log.info("chat room invite received")
 						bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 						if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-							if chatRoom.peerAddress?.displayName?.isEmpty != true {
-								bestAttemptContent.body = chatRoom.peerAddress!.displayName!
+							if chatRoom.peerAddress != nil {
+								if chatRoom.peerAddress!.displayName != nil && chatRoom.peerAddress!.displayName!.isEmpty != true {
+									bestAttemptContent.body = chatRoom.peerAddress!.displayName!
+								} else if chatRoom.peerAddress!.username != nil {
+									bestAttemptContent.body = chatRoom.peerAddress!.username!
+								} else {
+									bestAttemptContent.body = "Peer Address Error"
+								}
 							} else {
-								bestAttemptContent.body = chatRoom.peerAddress!.username!
+								bestAttemptContent.body = "Peer Address Error"
 							}
 						} else {
 							bestAttemptContent.body = chatRoom.subject!
