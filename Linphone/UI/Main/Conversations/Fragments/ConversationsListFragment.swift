@@ -152,7 +152,8 @@ struct ConversationsListFragment: View {
 							
 							enteredForeground = false
 							
-							if navigationManager.peerAddr != nil 
+							if navigationManager.peerAddr != nil
+								&& index < conversationsListViewModel.conversationsList.count
 								&& conversationsListViewModel.conversationsList[index].remoteSipUri.contains(navigationManager.peerAddr!) {
 								conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
 								navigationManager.peerAddr = nil
