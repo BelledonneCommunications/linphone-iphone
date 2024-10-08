@@ -144,7 +144,7 @@ class ConversationViewModel: ObservableObject {
 						if indexMessage < self.conversationMessagesSection[0].rows.count && self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
 							DispatchQueue.main.async {
 								self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp
+								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
 							}
 						}
 					}
@@ -173,7 +173,7 @@ class ConversationViewModel: ObservableObject {
 						DispatchQueue.main.async {
 							if indexMessage != nil {
 								self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp
+								self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp ?? .error
 							}
 						}
 					}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
