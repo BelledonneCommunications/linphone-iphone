@@ -233,7 +233,7 @@ struct UIList: UIViewRepresentable {
 			tableView.insertSections([section], with: .top)
 			
 		case .delete(let section, let row):
-			tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: .top)
+			tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: .left)
 		case .insert(let section, let row):
 			tableView.insertRows(at: [IndexPath(row: row, section: section)], with: .top)
 		case .edit(let section, let row):

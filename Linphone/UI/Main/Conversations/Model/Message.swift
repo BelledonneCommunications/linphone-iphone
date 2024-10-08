@@ -80,6 +80,10 @@ public struct Message: Identifiable, Hashable {
 	public var isForward: Bool
 	public var ownReaction: String
 	public var reactions: [String]
+	
+	public var isEphemeral: Bool
+	public var ephemeralExpireTime: Int
+	public var ephemeralLifetime: Int
 
 	public init(
 		id: String,
@@ -97,7 +101,10 @@ public struct Message: Identifiable, Hashable {
 		replyMessage: ReplyMessage? = nil,
 		isForward: Bool = false,
 		ownReaction: String = "",
-		reactions: [String] = []
+		reactions: [String] = [],
+		isEphemeral: Bool = false,
+		ephemeralExpireTime: Int = 0,
+		ephemeralLifetime: Int = 0
 	) {
 		self.id = id
 		self.appData = appData
@@ -115,6 +122,9 @@ public struct Message: Identifiable, Hashable {
 		self.isForward = isForward
 		self.ownReaction = ownReaction
 		self.reactions = reactions
+		self.isEphemeral = isEphemeral
+		self.ephemeralExpireTime = ephemeralExpireTime
+		self.ephemeralLifetime = ephemeralLifetime
 	}
 
 	public static func makeMessage(
@@ -167,7 +177,7 @@ extension Message {
 
 extension Message: Equatable {
 	public static func == (lhs: Message, rhs: Message) -> Bool {
-		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions
+		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions && lhs.ephemeralExpireTime == rhs.ephemeralExpireTime
 	}
 }
 

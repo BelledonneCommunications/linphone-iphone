@@ -34,6 +34,9 @@ struct ChatBubbleView: View {
 	@State private var isPressed: Bool = false
 	@State private var timePassed: TimeInterval?
 	
+	@State private var timer: Timer?
+	@State private var ephemeralLifetime: String = ""
+	
 	var body: some View {
 		HStack {
 			if eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage {
@@ -165,6 +168,28 @@ struct ChatBubbleView: View {
 												}
 												
 												HStack(alignment: .center) {
+													if eventLogMessage.message.isEphemeral && eventLogMessage.message.isOutgoing {
+														Text(ephemeralLifetime)
+															.foregroundStyle(Color.grayMain2c500)
+															.default_text_style_300(styleSize: 14)
+															.padding(.top, 1)
+															.onAppear {
+																updateEphemeralTimer()
+															}
+															.onChange(of: eventLogMessage.message.ephemeralExpireTime) { ephemeralExpireTimeTmp in
+																if ephemeralExpireTimeTmp > 0 {
+																	updateEphemeralTimer()
+																}
+															}
+														
+														Image("clock-countdown")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c500)
+															.frame(width: 15, height: 15)
+															.padding(.top, 1)
+													}
+													
 													Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
 														.foregroundStyle(Color.grayMain2c500)
 														.default_text_style_300(styleSize: 14)
@@ -186,6 +211,29 @@ struct ChatBubbleView: View {
 																.frame(width: 15, height: 15)
 																.padding(.top, 1)
 														}
+													}
+													
+													if eventLogMessage.message.isEphemeral && !eventLogMessage.message.isOutgoing {
+														Image("clock-countdown")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c500)
+															.frame(width: 15, height: 15)
+															.padding(.top, 1)
+															.padding(.trailing, -4)
+														
+														Text(ephemeralLifetime)
+															.foregroundStyle(Color.grayMain2c500)
+															.default_text_style_300(styleSize: 14)
+															.padding(.top, 1)
+															.onAppear {
+																updateEphemeralTimer()
+															}
+															.onChange(of: eventLogMessage.message.ephemeralExpireTime) { ephemeralExpireTimeTmp in
+																if ephemeralExpireTimeTmp > 0 {
+																	updateEphemeralTimer()
+																}
+															}
 													}
 												}
 												.onTapGesture {
@@ -549,6 +597,30 @@ struct ChatBubbleView: View {
 			return "download-simple"
 		} else {
 			return "file"
+		}
+	}
+	
+	private func updateEphemeralTimer() {
+		if eventLogMessage.message.isEphemeral {
+			if eventLogMessage.message.ephemeralExpireTime == 0 {
+				// Message hasn't been read by all participants yet
+				self.ephemeralLifetime = eventLogMessage.message.ephemeralLifetime.convertDurationToString()
+			} else {
+				let remaining = eventLogMessage.message.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
+				self.ephemeralLifetime = remaining.convertDurationToString()
+				
+				if timer == nil {
+					timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+						let updatedRemaining = eventLogMessage.message.ephemeralExpireTime - Int(Date().timeIntervalSince1970)
+						if updatedRemaining <= 0 {
+							timer?.invalidate()
+							timer = nil
+						} else {
+							self.ephemeralLifetime = updatedRemaining.convertDurationToString()
+						}
+					}
+				}
+			}
 		}
 	}
 }

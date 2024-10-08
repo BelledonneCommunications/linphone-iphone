@@ -114,6 +114,8 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: eventLogs)
 				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
+				}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
+					self.removeMessage(eventLog)
 				})
 				self.chatRoomDelegateHolder = ChatRoomDelegateHolder(chatroom: chatroom, delegate: chatRoomDelegate)
 			}
@@ -139,12 +141,22 @@ class ConversationViewModel: ObservableObject {
 					statusTmp = .sending
 				}
 				
+				let ephemeralExpireTimeTmp = message.ephemeralExpireTime
+				
 				if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
 					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId}) {
-						if indexMessage < self.conversationMessagesSection[0].rows.count && self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
-							DispatchQueue.main.async {
-								//self.objectWillChange.send()
-								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
+						if indexMessage < self.conversationMessagesSection[0].rows.count {
+							if self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
+								DispatchQueue.main.async {
+									//self.objectWillChange.send()
+									self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
+									self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+								}
+							} else {
+								DispatchQueue.main.async {
+									//self.objectWillChange.send()
+									self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+								}
 							}
 						}
 					}
@@ -201,7 +213,18 @@ class ConversationViewModel: ObservableObject {
 								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
 							}
 						}
+					}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
+						let ephemeralExpireTimeTmp = message.ephemeralExpireTime
+						
+						DispatchQueue.main.async {
+							if indexMessage != nil {
+								self.objectWillChange.send()
+								self.conversationMessagesSection[0].rows[indexMessage!].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+							}
+						}
 					})
+					
 					self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 				}
 			}
@@ -480,7 +503,10 @@ class ConversationViewModel: ObservableObject {
 									replyMessage: replyMessageTmp,
 									isForward: eventLog.chatMessage?.isForward ?? false,
 									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-									reactions: reactionsTmp
+									reactions: reactionsTmp,
+									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
+									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
+									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
 								)
 							)
 						)
@@ -700,7 +726,10 @@ class ConversationViewModel: ObservableObject {
 									replyMessage: replyMessageTmp,
 									isForward: eventLog.chatMessage?.isForward ?? false,
 									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-									reactions: reactionsTmp
+									reactions: reactionsTmp,
+									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
+									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
+									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
 								)
 							), at: 0
 						)
@@ -932,7 +961,10 @@ class ConversationViewModel: ObservableObject {
 						replyMessage: replyMessageTmp,
 						isForward: eventLog.chatMessage?.isForward ?? false,
 						ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-						reactions: reactionsTmp
+						reactions: reactionsTmp,
+						isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
+						ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
+						ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
 					)
 				)
 				
@@ -1210,7 +1242,10 @@ class ConversationViewModel: ObservableObject {
 											replyMessage: replyMessageTmp,
 											isForward: eventLog.chatMessage?.isForward ?? false,
 											ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-											reactions: reactionsTmp
+											reactions: reactionsTmp,
+											isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
+									  		ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
+											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
 										)
 									), at: 0
 								)
@@ -1253,6 +1288,34 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 				}
+			}
+		}
+	}
+	
+	func removeMessage(_ eventLog: EventLog) {
+		/*
+		if let found = self.conversationMessagesSection[0].rows.first(where: { $0.message.id == eventLog.chatMessage?.messageId }) {
+			var updatedList = self.conversationMessagesSection[0].rows
+			
+			print("Removing message from conversation events list")
+			if let index = updatedList.firstIndex(where: { $0.message.id == found.message.id }) {
+				updatedList.remove(at: index)
+			}
+			
+			DispatchQueue.main.async {
+				self.conversationMessagesSection[0].rows = updatedList
+			}
+		} else {
+			print("Failed to find matching message in conversation events list")
+		}
+		*/
+		
+		if let index = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.message.id == eventLog.chatMessage?.messageId }) {
+			DispatchQueue.main.async {
+				if index > 0 && self.conversationMessagesSection[0].rows[index - 1].message.address == self.conversationMessagesSection[0].rows[index].message.address {
+					self.conversationMessagesSection[0].rows[index - 1].message.isFirstMessage = self.conversationMessagesSection[0].rows[index].message.isFirstMessage
+				}
+				self.conversationMessagesSection[0].rows.remove(at: index)
 			}
 		}
 	}
