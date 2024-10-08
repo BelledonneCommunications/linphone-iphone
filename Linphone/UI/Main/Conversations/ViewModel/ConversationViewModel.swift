@@ -1406,10 +1406,13 @@ class ConversationViewModel: ObservableObject {
 						
 						if self.displayedConversation != nil {
 							CoreContext.shared.doOnCoreQueue { _ in
+								Log.info("debugtrace -- resetDisplayedChatRoom -- eventLogFirst")
 								let eventLogFirst =	self.displayedConversation!.chatRoom.findEventLog(messageId: self.conversationMessagesSection[0].rows.first!.eventModel.eventLog.chatMessage!.messageId)
 								
+								Log.info("debugtrace -- resetDisplayedChatRoom -- eventLogLast")
 								let eventLogLast = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first
 								
+								Log.info("debugtrace -- resetDisplayedChatRoom -- eventLogList")
 								var eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeBetween(
 									firstEvent: eventLogFirst,
 									lastEvent: eventLogLast,
@@ -1417,12 +1420,16 @@ class ConversationViewModel: ObservableObject {
 								)
 								
 								if eventLogLast != nil {
+									Log.info("debugtrace -- resetDisplayedChatRoom -- eventLogList.append(eventLogLast!)")
 									eventLogList.append(eventLogLast!)
 									if !eventLogList.isEmpty && (self.conversationMessagesSection[0].rows.first?.eventModel.eventLog.chatMessage?.messageId != eventLogLast!.chatMessage?.messageId) {
+										
+										Log.info("debugtrace -- resetDisplayedChatRoom -- getNewMessage")
 										self.getNewMessages(eventLogs: eventLogList)
 									}
 								}
 								
+								Log.info("debugtrace -- addConversationDelegate -- eventLogList.append(eventLogLast!)")
 								self.addConversationDelegate()
 							}
 						}
