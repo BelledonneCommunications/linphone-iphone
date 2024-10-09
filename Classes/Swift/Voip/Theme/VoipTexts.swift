@@ -255,6 +255,6 @@ import UIKit
 	@objc static let dialog_later = NSLocalizedString("Maybe later",comment:"")
 	@objc static let dialog_privacy_policy = NSLocalizedString("Privacy policy",comment:"")
 	@objc static let accept_rls_title = NSLocalizedString("Enable smart address book", comment:"")
-	@objc static let accept_rls = NSLocalizedString("To provide the best experience, your contacts phone numbers will be uploaded to our secure servers. We value your privacy, and this data will only be used as outlined in our privacy policy. You can disable this option any time in application settings",comment:"")
+	@objc static let accept_rls = NSLocalizedString("To improve your experience, we’ll store your contacts' phone numbers to show you which friends are using the app. Your data will be securely stored and only used according to our privacy policy.\n You can disable this at any time.",comment:"")
 
 }
