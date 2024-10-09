@@ -68,7 +68,7 @@ struct ChatBubbleView: View {
 									&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
 									Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address})?.name ?? "")
 										.default_text_style(styleSize: 12)
-										.padding(.top, 10)
+										.padding(.top, 5)
 										.padding(.bottom, 2)
 								}
 								
@@ -119,12 +119,12 @@ struct ChatBubbleView: View {
 												if !eventLogMessage.message.replyMessage!.text.isEmpty {
 													Text(eventLogMessage.message.replyMessage!.text)
 														.foregroundStyle(Color.grayMain2c700)
-														.default_text_style(styleSize: 16)
+														.default_text_style(styleSize: 14)
 														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
 												} else if !eventLogMessage.message.replyMessage!.attachmentsNames.isEmpty {
 													Text(eventLogMessage.message.replyMessage!.attachmentsNames)
 														.foregroundStyle(Color.grayMain2c700)
-														.default_text_style(styleSize: 16)
+														.default_text_style(styleSize: 14)
 														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
 												}
 											}
@@ -164,15 +164,16 @@ struct ChatBubbleView: View {
 												if !eventLogMessage.message.text.isEmpty {
 													Text(eventLogMessage.message.text)
 														.foregroundStyle(Color.grayMain2c700)
-														.default_text_style(styleSize: 16)
+														.default_text_style(styleSize: 14)
 												}
 												
 												HStack(alignment: .center) {
 													if eventLogMessage.message.isEphemeral && eventLogMessage.message.isOutgoing {
 														Text(ephemeralLifetime)
 															.foregroundStyle(Color.grayMain2c500)
-															.default_text_style_300(styleSize: 14)
+															.default_text_style_300(styleSize: 12)
 															.padding(.top, 1)
+															.padding(.trailing, -4)
 															.onAppear {
 																updateEphemeralTimer()
 															}
@@ -192,8 +193,9 @@ struct ChatBubbleView: View {
 													
 													Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
 														.foregroundStyle(Color.grayMain2c500)
-														.default_text_style_300(styleSize: 14)
+														.default_text_style_300(styleSize: 12)
 														.padding(.top, 1)
+														.padding(.trailing, -4)
 													
 													if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup)
 														|| eventLogMessage.message.isOutgoing {
@@ -224,7 +226,7 @@ struct ChatBubbleView: View {
 														
 														Text(ephemeralLifetime)
 															.foregroundStyle(Color.grayMain2c500)
-															.default_text_style_300(styleSize: 14)
+															.default_text_style_300(styleSize: 12)
 															.padding(.top, 1)
 															.onAppear {
 																updateEphemeralTimer()
@@ -256,14 +258,14 @@ struct ChatBubbleView: View {
 													ForEach(0..<eventLogMessage.message.reactions.count, id: \.self) { index in
 														if eventLogMessage.message.reactions.firstIndex(of: eventLogMessage.message.reactions[index]) == index {
 															Text(eventLogMessage.message.reactions[index])
-																.default_text_style(styleSize: 14)
+																.default_text_style(styleSize: 12)
 																.padding(.horizontal, -2)
 														}
 													}
 													
 													if containsDuplicates(strings: eventLogMessage.message.reactions) {
 														Text("\(eventLogMessage.message.reactions.count)")
-															.default_text_style(styleSize: 14)
+															.default_text_style(styleSize: 12)
 															.padding(.horizontal, -2)
 													}
 												}
@@ -349,7 +351,7 @@ struct ChatBubbleView: View {
 					
 					Spacer()
 				}
-				.padding(.vertical, 4)
+				.padding(.vertical, 10)
 			}
 		}
 		.contentShape(Rectangle())
@@ -491,13 +493,13 @@ struct ChatBubbleView: View {
 					VStack {
 						Text(eventLogMessage.message.attachments.first!.name)
 							.foregroundStyle(Color.grayMain2c700)
-							.default_text_style_600(styleSize: 16)
+							.default_text_style_600(styleSize: 14)
 							.truncationMode(.middle)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.lineLimit(1)
 						
 						Text(eventLogMessage.message.attachments.first!.size.formatBytes())
-							.default_text_style_300(styleSize: 16)
+							.default_text_style_300(styleSize: 14)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.lineLimit(1)
 					}

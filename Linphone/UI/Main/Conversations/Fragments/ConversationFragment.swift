@@ -594,6 +594,7 @@ struct ConversationFragment: View {
 										if conversationViewModel.messageText.isEmpty {
 											Text("Say something...")
 												.padding(.leading, 4)
+												.lineLimit(1)
 												.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)
 												.foregroundStyle(Color.gray300)
 												.default_text_style(styleSize: 15)
@@ -723,6 +724,7 @@ struct ConversationFragment: View {
 								.background(conversationViewModel.selectedMessage?.message.ownReaction == "😢" ? Color.gray200 : .white)
 								.cornerRadius(10)
 								
+								/*
 								Button {
 								} label: {
 									Image("plus-circle")
@@ -732,6 +734,7 @@ struct ConversationFragment: View {
 										.frame(width: iconSize > 50 ? 50 : iconSize, height: iconSize > 50 ? 50 : iconSize, alignment: .leading)
 								}
 								.padding(.trailing, 5)
+								 */
 							}
 							.padding(.vertical, 5)
 							.padding(.horizontal, 10)
@@ -854,6 +857,7 @@ struct ConversationFragment: View {
 						}
 						.frame(maxWidth: .infinity)
 						.padding(.horizontal, 10)
+						.padding(.bottom, 20)
 						.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
 						.shadow(color: .black.opacity(0.1), radius: 10)
 					}
