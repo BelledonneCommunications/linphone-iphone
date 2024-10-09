@@ -103,7 +103,8 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Make calls with your friends</string>
+	<string>To improve your experience, we’ll store your contacts' phone numbers to show you which friends are using the app. Your data will be securely stored and only used according to our Privacy Policy. 
+You can disable this at any time.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Stream audio and video through the local network</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
