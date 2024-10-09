@@ -74,7 +74,7 @@ struct ConversationFragment: View {
 						.sheet(isPresented: $conversationViewModel.isShowSelectedMessageToDisplayDetails, onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}, content: {
-							imdnOrReactionsSheet()
+							ImdnOrReactionsSheet(conversationViewModel: conversationViewModel, selectedCategoryIndex: $selectedCategoryIndex)
 								.presentationDetents([.medium])
 				 				.presentationDragIndicator(.visible)
 						})
@@ -112,7 +112,7 @@ struct ConversationFragment: View {
 							conversationViewModel.removeConversationDelegate()
 						}
 						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetails) {
-							imdnOrReactionsSheet()
+							ImdnOrReactionsSheet(conversationViewModel: conversationViewModel, selectedCategoryIndex: $selectedCategoryIndex)
 						} onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}
@@ -893,9 +893,14 @@ struct ConversationFragment: View {
 	}
 	// swiftlint:enable cyclomatic_complexity
 	// swiftlint:enable function_body_length
+}
+
+struct ImdnOrReactionsSheet: View {
+	@ObservedObject var conversationViewModel: ConversationViewModel
 	
-	@ViewBuilder
-	func imdnOrReactionsSheet() -> some View {
+	@Binding var selectedCategoryIndex: Int
+	
+	var body: some View {
 		VStack {
 			Picker("Categories", selection: $selectedCategoryIndex) {
 				ForEach(0..<conversationViewModel.sheetCategories.count, id: \.self) { index in
