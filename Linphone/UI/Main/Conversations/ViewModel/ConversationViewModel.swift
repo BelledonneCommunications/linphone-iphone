@@ -506,7 +506,8 @@ class ConversationViewModel: ObservableObject {
 									reactions: reactionsTmp,
 									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
+									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
+									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
 								)
 							)
 						)
@@ -729,7 +730,8 @@ class ConversationViewModel: ObservableObject {
 									reactions: reactionsTmp,
 									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
+									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
+									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
 								)
 							), at: 0
 						)
@@ -964,7 +966,8 @@ class ConversationViewModel: ObservableObject {
 						reactions: reactionsTmp,
 						isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 						ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-						ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
+						ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
+						isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
 					)
 				)
 				
@@ -1245,7 +1248,8 @@ class ConversationViewModel: ObservableObject {
 											reactions: reactionsTmp,
 											isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 									  		ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0
+											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
+											isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
 										)
 									), at: 0
 								)
@@ -1887,6 +1891,75 @@ class ConversationViewModel: ObservableObject {
 			} catch {
 			}
 		}
+	}
+	
+	func parseConferenceInvite(content: Content) -> MessageConferenceInfo? {
+		
+		var meetingConferenceUri: URL?
+		var meetingSubject: String = ""
+		var meetingDescription: String = ""
+		var meetingUpdated: Bool = false
+		var meetingCancelled: Bool = false
+		var meetingDate: String = ""
+		var meetingTime: String = ""
+		var meetingDay: String = ""
+		var meetingDayNumber: String = ""
+		var meetingParticipants: String = ""
+		var meetingFound: Bool = false
+		
+		if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
+			
+			if let conferenceAddress = conferenceInfo.uri {
+				let conferenceUri = conferenceAddress.asStringUriOnly()
+				Log.info("Found conference info with URI [\(conferenceUri)] and subject [\(conferenceInfo.subject)]")
+				meetingConferenceUri = URL(string: conferenceAddress.asStringUriOnly())
+				meetingSubject = conferenceInfo.subject ?? ""
+				meetingDescription = conferenceInfo.description ?? ""
+				
+				meetingUpdated = (conferenceInfo.state == .Updated)
+				meetingCancelled = (conferenceInfo.state == .Cancelled)
+				
+				let timestamp = conferenceInfo.dateTime
+				let duration = conferenceInfo.duration
+				
+				let timeInterval = TimeInterval(timestamp)
+				let dateTmp = Date(timeIntervalSince1970: timeInterval)
+				let dateFormatter = DateFormatter()
+				dateFormatter.dateStyle = .full
+				dateFormatter.timeStyle = .none
+				
+				let date = dateFormatter.string(from: dateTmp)
+				
+				let timeFormatter = DateFormatter()
+				timeFormatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
+				let timeTmp = timeFormatter.string(from: dateTmp)
+				
+				/*
+				let timeBisInterval = TimeInterval(timestamp + (Int(duration) * 60))
+				let timeBis = Date(timeIntervalSince1970: timeBisInterval)
+				let endTime = timeFormatter.string(from: timeBis)
+				
+				let startTime = TimestampUtils.timeToString(timestamp)
+				let end = timestamp + (duration * 60)
+				let endTime = TimestampUtils.timeToString(end)
+				
+				meetingDate = date
+				meetingTime = "\(startTime) - \(endTime)"
+				meetingDay = TimestampUtils.dayOfWeek(timestamp)
+				meetingDayNumber = TimestampUtils.dayOfMonth(timestamp)
+				
+				let count = conferenceInfo.participantInfos.count
+				meetingParticipants = AppUtils.getStringWithPlural(R.plurals.conference_participants_list_title, count: count, countString: "\(count)")
+				 
+				meetingFound = true
+				*/
+				if meetingConferenceUri != nil {
+					return MessageConferenceInfo(id: UUID().uuidString, uri: meetingConferenceUri!, subject: meetingSubject, description: meetingDescription, state: .updated, dateTime: timeTmp)
+				}
+			}
+		}
+		
+		return nil
 	}
 }
 // swiftlint:enable line_length

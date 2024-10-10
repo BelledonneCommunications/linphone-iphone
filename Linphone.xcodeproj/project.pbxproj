@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
@@ -118,6 +118,7 @@
 		D76005F62B0798B00054B79A /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76005F52B0798B00054B79A /* IntExtension.swift */; };
 		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
 		D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D777DBB22AE12C5900565A99 /* ContactsManager.swift */; };
+		D77A080E2CB6BCAF0095D589 /* MessageConferenceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */; };
 		D78290B82ADD3910004AA85C /* ContactsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290B72ADD3910004AA85C /* ContactsFragment.swift */; };
 		D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */; };
 		D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */; };
@@ -305,6 +306,7 @@
 		D76005F52B0798B00054B79A /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		D777DBB22AE12C5900565A99 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
+		D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageConferenceInfo.swift; sourceTree = "<group>"; };
 		D78290B72ADD3910004AA85C /* ContactsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsFragment.swift; sourceTree = "<group>"; };
 		D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_default_values; sourceTree = "<group>"; };
@@ -373,7 +375,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */,
+				4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,6 +484,7 @@
 		D70959EF2B8DF33B0014AC0B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */,
 				D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */,
 				D7E6ADF22B9875C20009A2BC /* Message.swift */,
 				D7C2DA1C2CA44DE400A2441B /* EventModel.swift */,
@@ -1215,6 +1218,7 @@
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,
 				D7CEE03D2B7A23B200FD79B7 /* ConversationsListFragment.swift in Sources */,
 				D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */,
+				D77A080E2CB6BCAF0095D589 /* MessageConferenceInfo.swift in Sources */,
 				C6A5A9412C10B5D50070FEA4 /* EncodableExtension.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,
 				C62817342C1C7C7400DBA646 /* HelpView.swift in Sources */,

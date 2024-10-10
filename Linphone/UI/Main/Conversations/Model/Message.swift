@@ -84,6 +84,8 @@ public struct Message: Identifiable, Hashable {
 	public var isEphemeral: Bool
 	public var ephemeralExpireTime: Int
 	public var ephemeralLifetime: Int
+	
+	public var isIcalendar: Bool
 
 	public init(
 		id: String,
@@ -104,7 +106,8 @@ public struct Message: Identifiable, Hashable {
 		reactions: [String] = [],
 		isEphemeral: Bool = false,
 		ephemeralExpireTime: Int = 0,
-		ephemeralLifetime: Int = 0
+		ephemeralLifetime: Int = 0,
+		isIcalendar: Bool = false
 	) {
 		self.id = id
 		self.appData = appData
@@ -125,6 +128,7 @@ public struct Message: Identifiable, Hashable {
 		self.isEphemeral = isEphemeral
 		self.ephemeralExpireTime = ephemeralExpireTime
 		self.ephemeralLifetime = ephemeralLifetime
+		self.isIcalendar = isIcalendar
 	}
 
 	public static func makeMessage(
