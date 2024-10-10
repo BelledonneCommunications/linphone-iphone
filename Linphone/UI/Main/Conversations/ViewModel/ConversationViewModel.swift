@@ -507,7 +507,8 @@ class ConversationViewModel: ObservableObject {
 									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
+									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
+									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 								)
 							)
 						)
@@ -731,7 +732,8 @@ class ConversationViewModel: ObservableObject {
 									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
+									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
+									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 								)
 							), at: 0
 						)
@@ -967,7 +969,8 @@ class ConversationViewModel: ObservableObject {
 						isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 						ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 						ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-						isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
+						isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
+						messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 					)
 				)
 				
@@ -1249,7 +1252,8 @@ class ConversationViewModel: ObservableObject {
 											isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
 									  		ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-											isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false
+											isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
+											messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 										)
 									), at: 0
 								)
@@ -1894,30 +1898,30 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func parseConferenceInvite(content: Content) -> MessageConferenceInfo? {
-		
-		var meetingConferenceUri: URL?
-		var meetingSubject: String = ""
-		var meetingDescription: String = ""
-		var meetingUpdated: Bool = false
-		var meetingCancelled: Bool = false
-		var meetingDate: String = ""
-		var meetingTime: String = ""
-		var meetingDay: String = ""
-		var meetingDayNumber: String = ""
-		var meetingParticipants: String = ""
-		var meetingFound: Bool = false
+		var meetingConferenceUriTmp: URL?
+		var meetingSubjectTmp: String = ""
+		var meetingDescriptionTmp: String = ""
+		var meetingStateTmp: MessageConferenceState = .new
+		var meetingDateTmp: String = ""
+		var meetingTimeTmp: String = ""
+		var meetingDayTmp: String = ""
+		var meetingDayNumberTmp: String = ""
+		var meetingParticipantsTmp: String = ""
 		
 		if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: content) {
 			
 			if let conferenceAddress = conferenceInfo.uri {
 				let conferenceUri = conferenceAddress.asStringUriOnly()
-				Log.info("Found conference info with URI [\(conferenceUri)] and subject [\(conferenceInfo.subject)]")
-				meetingConferenceUri = URL(string: conferenceAddress.asStringUriOnly())
-				meetingSubject = conferenceInfo.subject ?? ""
-				meetingDescription = conferenceInfo.description ?? ""
+				Log.info("Found conference info with URI [\(conferenceUri)] and subject [\(conferenceInfo.subject ?? "")]")
+				meetingConferenceUriTmp = URL(string: conferenceAddress.asStringUriOnly())
+				meetingSubjectTmp = conferenceInfo.subject ?? ""
+				meetingDescriptionTmp = conferenceInfo.description ?? ""
 				
-				meetingUpdated = (conferenceInfo.state == .Updated)
-				meetingCancelled = (conferenceInfo.state == .Cancelled)
+				if conferenceInfo.state == .Updated {
+					meetingStateTmp = .updated
+				} else if conferenceInfo.state == .Cancelled {
+					meetingStateTmp = .cancelled
+				}
 				
 				let timestamp = conferenceInfo.dateTime
 				let duration = conferenceInfo.duration
@@ -1928,33 +1932,36 @@ class ConversationViewModel: ObservableObject {
 				dateFormatter.dateStyle = .full
 				dateFormatter.timeStyle = .none
 				
-				let date = dateFormatter.string(from: dateTmp)
+				meetingDateTmp = dateFormatter.string(from: dateTmp)
 				
 				let timeFormatter = DateFormatter()
 				timeFormatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
 				let timeTmp = timeFormatter.string(from: dateTmp)
 				
-				/*
 				let timeBisInterval = TimeInterval(timestamp + (Int(duration) * 60))
 				let timeBis = Date(timeIntervalSince1970: timeBisInterval)
 				let endTime = timeFormatter.string(from: timeBis)
 				
-				let startTime = TimestampUtils.timeToString(timestamp)
-				let end = timestamp + (duration * 60)
-				let endTime = TimestampUtils.timeToString(end)
+				meetingTimeTmp = "\(timeTmp) - \(endTime)"
 				
-				meetingDate = date
-				meetingTime = "\(startTime) - \(endTime)"
-				meetingDay = TimestampUtils.dayOfWeek(timestamp)
-				meetingDayNumber = TimestampUtils.dayOfMonth(timestamp)
+				meetingDayTmp = dateTmp.formatted(Date.FormatStyle().weekday(.abbreviated)).capitalized
+				meetingDayNumberTmp = dateTmp.formatted(Date.FormatStyle().day(.twoDigits))
 				
-				let count = conferenceInfo.participantInfos.count
-				meetingParticipants = AppUtils.getStringWithPlural(R.plurals.conference_participants_list_title, count: count, countString: "\(count)")
-				 
-				meetingFound = true
-				*/
-				if meetingConferenceUri != nil {
-					return MessageConferenceInfo(id: UUID().uuidString, uri: meetingConferenceUri!, subject: meetingSubject, description: meetingDescription, state: .updated, dateTime: timeTmp)
+				meetingParticipantsTmp = String(conferenceInfo.participantInfos.count)
+				
+				if meetingConferenceUriTmp != nil {
+					return MessageConferenceInfo(
+						id: UUID(),
+						meetingConferenceUri: meetingConferenceUriTmp!,
+						meetingSubject: meetingSubjectTmp,
+						meetingDescription: meetingDescriptionTmp,
+						meetingState: meetingStateTmp,
+						meetingDate: meetingDateTmp,
+						meetingTime: meetingTimeTmp,
+						meetingDay: meetingDayTmp,
+						meetingDayNumber: meetingDayNumberTmp,
+						meetingParticipants: meetingParticipantsTmp
+					)
 				}
 			}
 		}

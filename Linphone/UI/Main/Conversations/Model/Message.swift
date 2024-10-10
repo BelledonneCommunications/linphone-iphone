@@ -86,7 +86,8 @@ public struct Message: Identifiable, Hashable {
 	public var ephemeralLifetime: Int
 	
 	public var isIcalendar: Bool
-
+	public var messageConferenceInfo: MessageConferenceInfo?
+	
 	public init(
 		id: String,
 		appData: String = "",
@@ -107,7 +108,8 @@ public struct Message: Identifiable, Hashable {
 		isEphemeral: Bool = false,
 		ephemeralExpireTime: Int = 0,
 		ephemeralLifetime: Int = 0,
-		isIcalendar: Bool = false
+		isIcalendar: Bool = false,
+		messageConferenceInfo: MessageConferenceInfo? = nil
 	) {
 		self.id = id
 		self.appData = appData
@@ -129,6 +131,7 @@ public struct Message: Identifiable, Hashable {
 		self.ephemeralExpireTime = ephemeralExpireTime
 		self.ephemeralLifetime = ephemeralLifetime
 		self.isIcalendar = isIcalendar
+		self.messageConferenceInfo = messageConferenceInfo
 	}
 
 	public static func makeMessage(

@@ -167,6 +167,22 @@ struct ChatBubbleView: View {
 														.default_text_style(styleSize: 14)
 												}
 												
+												if eventLogMessage.message.isIcalendar {
+													VStack{
+														VStack {
+															
+														}
+														
+														VStack {
+															
+														}
+													}
+													
+													Text("Meeting invite !!")
+														.foregroundStyle(Color.grayMain2c500)
+														.default_text_style(styleSize: 12)
+												}
+												
 												HStack(alignment: .center) {
 													if eventLogMessage.message.isEphemeral && eventLogMessage.message.isOutgoing {
 														Text(ephemeralLifetime)
@@ -302,10 +318,6 @@ struct ChatBubbleView: View {
 						})
 						.padding(.leading, eventLogMessage.message.isOutgoing ? 40 : 0)
 						.padding(.trailing, !eventLogMessage.message.isOutgoing ? 40 : 0)
-					} else if eventLogMessage.message.isIcalendar {
-						Text("Meeting invite !!")
-							.foregroundStyle(Color.grayMain2c500)
-							.default_text_style(styleSize: 12)
 					}
 				}
 				.onTapGesture {}

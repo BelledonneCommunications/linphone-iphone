@@ -19,27 +19,34 @@
 
 import Foundation
 
-public enum MessageConferenceState {
+public enum MessageConferenceState: Codable {
+	case new
 	case updated
 	case cancelled
 }
 
-public struct MessageConferenceInfo {
-	public let id: String
-	var uri: URL
-	var subject: String
-	var description: String
-	var state: MessageConferenceState
-	var dateTime: String
-	//var duration: time_t
-	//var participantInfos: [ParticipantInfo]
+public struct MessageConferenceInfo: Codable, Identifiable, Hashable {
+	public let id: UUID
+	public let meetingConferenceUri: URL
+	public let meetingSubject: String
+	public let meetingDescription: String
+	public let meetingState: MessageConferenceState
+	public let meetingDate: String
+	public let meetingTime: String
+	public let meetingDay: String
+	public let meetingDayNumber: String
+	public let meetingParticipants: String
 
-	public init(id: String, uri: URL, subject: String, description: String, state: MessageConferenceState, dateTime: String) {
+	public init(id: UUID, meetingConferenceUri: URL, meetingSubject: String, meetingDescription: String, meetingState: MessageConferenceState, meetingDate: String, meetingTime: String, meetingDay: String, meetingDayNumber: String, meetingParticipants: String) {
 		self.id = id
-		self.uri = uri
-		self.subject = subject
-		self.description = description
-		self.state = state
-		self.dateTime = dateTime
+		self.meetingConferenceUri = meetingConferenceUri
+		self.meetingSubject = meetingSubject
+		self.meetingDescription = meetingDescription
+		self.meetingState = meetingState
+		self.meetingDate = meetingDate
+		self.meetingTime = meetingTime
+		self.meetingDay = meetingDay
+		self.meetingDayNumber = meetingDayNumber
+		self.meetingParticipants = meetingParticipants
 	}
 }
