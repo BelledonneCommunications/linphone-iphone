@@ -238,7 +238,7 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	func schedule() {
-		guard !subject.isEmpty && participants.isEmpty else {
+		guard !subject.isEmpty && !participants.isEmpty else {
 			Log.error("\(MeetingViewModel.TAG) Either no subject was set or no participant was selected, can't schedule meeting.")
 			DispatchQueue.main.async {
 				ToastViewModel.shared.toastMessage = "Failed_no_subject_or_participant"
