@@ -400,9 +400,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_settingsController dismiss:self];
 	// Set observer
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kIASKAppSettingChanged object:nil];
+	thiz = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+	thiz = self;
 	[super viewWillAppear:animated];
 
 	// Sync settings with linphone core settings
@@ -418,10 +420,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Account Creator callbacks
 
-void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
-	SettingsView *thiz = (__bridge SettingsView *)(linphone_account_creator_cbs_get_user_data(
-		linphone_account_creator_get_callbacks(creator)));
+static SettingsView *thiz = nil;
 
+void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, const char *resp) {
+	if (thiz == nil)
+		return;
 	switch (status) {
 		case LinphoneAccountCreatorStatusRequestOk:
 			[thiz updatePassword:creator];
@@ -954,15 +957,23 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																		 message:NSLocalizedString(@"Please enter and confirm your new password", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
 		
+		
 		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-			textField.placeholder = NSLocalizedString(@"Password", nil);
+			textField.placeholder = NSLocalizedString(@"Actual password", nil);
 			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 			textField.borderStyle = UITextBorderStyleRoundedRect;
 			textField.secureTextEntry = YES;
 		}];
 		
 		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-			textField.placeholder = NSLocalizedString(@"Confirm password", nil);
+			textField.placeholder = NSLocalizedString(@"New password", nil);
+			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+			textField.borderStyle = UITextBorderStyleRoundedRect;
+			textField.secureTextEntry = YES;
+		}];
+		
+		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+			textField.placeholder = NSLocalizedString(@"Confirm new password", nil);
 			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 			textField.borderStyle = UITextBorderStyleRoundedRect;
 			textField.secureTextEntry = YES;
@@ -975,8 +986,21 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Save", nil)
 																 style:UIAlertActionStyleDefault
 															   handler:^(UIAlertAction * action) {
-																   NSString * pwd = alertView.textFields[0].text;
-																   NSString * conf_pwd = alertView.textFields[1].text;
+																   NSString * oldpwd = alertView.textFields[0].text;
+																   NSString * pwd = alertView.textFields[1].text;
+																   NSString * conf_pwd = alertView.textFields[2].text;
+																	if (!oldpwd || [oldpwd isEqualToString:@""]) {
+																		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error while changing your password", nil)
+																																		 message:NSLocalizedString(@"Please enter your actual password", nil)
+																																  preferredStyle:UIAlertControllerStyleAlert];
+																		
+																		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+																															  handler:^(UIAlertAction * action) {}];
+																		
+																		[errView addAction:defaultAction];
+																		[self presentViewController:errView animated:YES completion:nil];
+																		return;
+																	}
 																   if (pwd && ![pwd isEqualToString:@""]) {
 																	   if ([pwd isEqualToString:conf_pwd]) {
 																		   _tmpPwd = pwd;
@@ -1030,25 +1054,17 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 																								completion:nil];
 																			   return;
 																		   }
-																		   linphone_account_creator_set_algorithm(account_creator, "");
+																		   linphone_account_creator_set_algorithm(account_creator, linphone_auth_info_get_algorithm(ai));
 																		   linphone_account_creator_set_username(account_creator, linphone_auth_info_get_username(ai));
-																		   if (linphone_auth_info_get_passwd(ai) && !(strcmp(linphone_auth_info_get_passwd(ai),"") == 0)) {
-																			   linphone_account_creator_set_password(account_creator, linphone_auth_info_get_passwd(ai));
-																		   } else {
-																			   linphone_account_creator_set_ha1(account_creator, linphone_auth_info_get_ha1(ai));
-																		   }
+																		   linphone_account_creator_set_password(account_creator, oldpwd.UTF8String);
 																		   
 																		   linphone_account_creator_set_domain(account_creator, linphone_auth_info_get_domain(ai));
 																		   linphone_account_creator_set_user_data(
 																			   account_creator, (void *)pwd.UTF8String);
-																		   linphone_account_creator_cbs_set_update_account(
-																			   linphone_account_creator_get_callbacks(
-																				   account_creator),
-																			   update_hash_cbs);
-																		   linphone_account_creator_cbs_set_user_data(
-																			   linphone_account_creator_get_callbacks(
-																				   account_creator),
-																			   (__bridge void *)(self));
+																		   LinphoneAccountCreatorCbs * cbs = linphone_factory_create_account_creator_cbs(linphone_factory_get());
+																		   linphone_account_creator_cbs_set_update_account(cbs, update_hash_cbs);
+																		   linphone_account_creator_cbs_set_user_data(cbs,(__bridge void *)(self));
+																		   linphone_account_creator_add_callbacks(account_creator, cbs);
 																		   linphone_account_creator_update_account(
 																			   account_creator);
 																	   } else {
