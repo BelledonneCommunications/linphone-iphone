@@ -2259,6 +2259,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	NSString *filter = @"*";
 	if ([self lpConfigBoolForKey:@"contact_filter_on_default_domain"]) {
 		LinphoneAccount *account = linphone_core_get_default_account(theLinphoneCore);
+		if (!account)
+			return filter;
 		LinphoneAccountParams const *accountParams = linphone_account_get_params(account);
 		if (account && linphone_account_params_get_server_addr(accountParams)) {
 			return [NSString stringWithCString:linphone_account_params_get_domain(accountParams)
