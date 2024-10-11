@@ -681,11 +681,11 @@
 			goto bad_proxy;
 		}
 		// use proxy as route if outbound_proxy is enabled
-		if (linphone_account_params_set_server_address(newAccountParams, proxy_addr) == -1) {
+		if (proxy_addr && linphone_account_params_set_server_address(newAccountParams, proxy_addr) == -1) {
 			error = NSLocalizedString(@"Invalid proxy address", nil);
 			goto bad_proxy;
 		}
-		if (linphone_account_params_set_routes_addresses(newAccountParams, isOutboundProxy ? bctbx_list_new((void*)proxy_addr) : NULL) == -1) {
+		if (proxy_addr && linphone_account_params_set_routes_addresses(newAccountParams, isOutboundProxy ? bctbx_list_new((void*)proxy_addr) : NULL) == -1) {
 			error = NSLocalizedString(@"Invalid route", nil);
 			goto bad_proxy;
 		}
