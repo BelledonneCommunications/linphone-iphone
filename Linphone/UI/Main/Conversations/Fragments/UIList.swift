@@ -439,7 +439,7 @@ struct UIList: UIViewRepresentable {
 						.padding(.horizontal, 10)
 						.onTapGesture { }
 				}
-				.minSize(width: 0, height: 0)
+				.minSize(width: 0, height: 50)
 				.margins(.all, 0)
 			}
 			

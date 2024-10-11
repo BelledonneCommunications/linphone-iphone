@@ -114,6 +114,14 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: eventLogs)
 				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
+				}, onParticipantAdded: { (_: ChatRoom, eventLogs: EventLog) in
+					self.getNewMessages(eventLogs: [eventLogs])
+				}, onParticipantRemoved: { (_: ChatRoom, eventLogs: EventLog) in
+					self.getNewMessages(eventLogs: [eventLogs])
+				}, onParticipantAdminStatusChanged: { (_: ChatRoom, eventLogs: EventLog) in
+					self.getNewMessages(eventLogs: [eventLogs])
+				}, onSubjectChanged: { (_: ChatRoom, eventLogs: EventLog) in
+					self.getNewMessages(eventLogs: [eventLogs])
 				}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
 					self.removeMessage(eventLog)
 				})
@@ -1024,6 +1032,8 @@ class ConversationViewModel: ObservableObject {
 				}
 			}
 		}
+		
+		getHistorySize()
 	}
 	
 	func resetMessage() {
@@ -1476,19 +1486,11 @@ class ConversationViewModel: ObservableObject {
 						
 						if self.displayedConversation != nil {
 							CoreContext.shared.doOnCoreQueue { _ in
-								let eventLogFirst =	self.displayedConversation!.chatRoom.findEventLog(messageId: self.conversationMessagesSection[0].rows.first!.eventModel.eventLog.chatMessage!.messageId)
-								
-								let eventLogLast = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 1).first
-								
-								var eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeBetween(
-									firstEvent: eventLogFirst,
-									lastEvent: eventLogLast,
-									filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
-								)
-								
-								if eventLogLast != nil {
-									eventLogList.append(eventLogLast!)
-									if !eventLogList.isEmpty && (self.conversationMessagesSection[0].rows.first?.eventModel.eventLog.chatMessage?.messageId != eventLogLast!.chatMessage?.messageId) {
+								let historyEventsSizeTmp = self.displayedConversation!.chatRoom.historyEventsSize
+								if self.displayedConversationHistorySize < historyEventsSizeTmp {
+									let eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
+									
+									if !eventLogList.isEmpty {
 										self.getNewMessages(eventLogs: eventLogList)
 									}
 								}
