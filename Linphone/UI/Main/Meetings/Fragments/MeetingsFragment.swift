@@ -137,7 +137,7 @@ struct MeetingsFragment: View {
 									Text("No meeting today")
 										.fontWeight(.bold)
 										.padding(.leading, 20)
-										.padding(.top, 10)
+										.padding(.top, 15)
 										.default_text_style_500(styleSize: 15)
 								} else {
 									createMeetingLine(model: itemModel)

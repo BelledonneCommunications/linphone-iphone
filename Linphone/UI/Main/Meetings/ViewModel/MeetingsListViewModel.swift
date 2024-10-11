@@ -108,6 +108,12 @@ class MeetingsListViewModel: ObservableObject {
 				}
 			}
 			
+			if !meetingForTodayFound && !meetingsListTmp.isEmpty {
+				// All meetings in the list happened in the past, add "Today" fake model at the end
+				meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
+				todayIdx = currentIdx
+			}
+			
 			DispatchQueue.main.sync {
 				self.todayIdx = todayIdx
 				self.meetingsList = meetingsListTmp
