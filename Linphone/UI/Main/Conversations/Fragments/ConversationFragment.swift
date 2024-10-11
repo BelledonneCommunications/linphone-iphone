@@ -58,6 +58,8 @@ struct ConversationFragment: View {
 	
 	@State private var selectedCategoryIndex = 0
 	
+	@Binding var enteredForeground: Bool
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -573,7 +575,7 @@ struct ConversationFragment: View {
 										.focused($isMessageTextFocused)
 										.padding(.vertical, 5)
 										.onChange(of: conversationViewModel.messageText) { text in
-											if !text.isEmpty {
+											if !text.isEmpty && !enteredForeground {
 												conversationViewModel.compose()
 											}
 										}
@@ -586,7 +588,7 @@ struct ConversationFragment: View {
 											.default_text_style(styleSize: 15)
 											.focused($isMessageTextFocused)
 											.onChange(of: conversationViewModel.messageText) { text in
-												if !text.isEmpty {
+												if !text.isEmpty && !enteredForeground {
 													conversationViewModel.compose()
 												}
 											}

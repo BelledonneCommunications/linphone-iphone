@@ -23,14 +23,14 @@ import linphonesw
 struct ConversationsListFragment: View {
 	
 	@EnvironmentObject var navigationManager: NavigationManager
-	@Environment(\.scenePhase) var scenePhase
-	@State private var enteredForeground: Bool = false
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
 	@Binding var text: String
+	
+	@Binding var enteredForeground: Bool
 	
 	var body: some View {
 		let pub = NotificationCenter.default
@@ -198,9 +198,6 @@ struct ConversationsListFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
-		.onChange(of: scenePhase) { newPhase in
-			enteredForeground = newPhase == .active
-		}
 	}
 }
 
@@ -209,6 +206,7 @@ struct ConversationsListFragment: View {
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 		showingSheet: .constant(false),
-		text: .constant("")
+		text: .constant(""),
+		enteredForeground: .constant(false)
 	)
 }

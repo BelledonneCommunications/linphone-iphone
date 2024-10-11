@@ -29,11 +29,13 @@ struct ConversationsFragment: View {
 	@State var showingSheet: Bool = false
 	@Binding var text: String
 	
+	@Binding var enteredForeground: Bool
+	
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
 				ConversationsListFragment(conversationViewModel: conversationViewModel,
-										  conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet, text: $text)
+										  conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet, text: $text, enteredForeground: $enteredForeground)
 					.sheet(isPresented: $showingSheet) {
 						ConversationsListBottomSheet(
 							conversationsListViewModel: conversationsListViewModel,
@@ -43,7 +45,7 @@ struct ConversationsFragment: View {
 					}
 			} else {
 				ConversationsListFragment(conversationViewModel: conversationViewModel,
-										  conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet, text: $text)
+										  conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet, text: $text, enteredForeground: $enteredForeground)
 					.halfSheet(showSheet: $showingSheet) {
 						ConversationsListBottomSheet(
 							conversationsListViewModel: conversationsListViewModel,
@@ -56,5 +58,5 @@ struct ConversationsFragment: View {
 }
 
 #Preview {
-	ConversationsFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel(), text: .constant(""))
+	ConversationsFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel(), text: .constant(""), enteredForeground: .constant(false))
 }

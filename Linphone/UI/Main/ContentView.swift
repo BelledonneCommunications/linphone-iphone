@@ -75,6 +75,8 @@ struct ContentView: View {
 	@State var isShowScheduleMeetingFragment = false
 	@State private var isShowLoginFragment: Bool = false
 	
+	@State private var enteredForeground: Bool = false
+	
 	var body: some View {
 		let pub = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ContactLoaded"))
@@ -597,7 +599,8 @@ struct ContentView: View {
 												conversationViewModel: conversationViewModel,
 												conversationsListViewModel: conversationsListViewModel,
 												text: $text,
-												isShowStartConversationFragment: $isShowStartConversationFragment
+												isShowStartConversationFragment: $isShowStartConversationFragment,
+												enteredForeground: $enteredForeground
 											)
 											.roundedCorner(25, corners: [.topRight, .topLeft])
 											.shadow(
@@ -861,7 +864,8 @@ struct ContentView: View {
 									conversationViewModel: conversationViewModel,
 									conversationsListViewModel: conversationsListViewModel,
 									conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-									isShowConversationFragment: $isShowConversationFragment
+									isShowConversationFragment: $isShowConversationFragment,
+									enteredForeground: $enteredForeground
 								)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
@@ -1176,7 +1180,8 @@ struct ContentView: View {
 							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
 							fullscreenVideo: $fullscreenVideo,
 							isShowStartCallFragment: $isShowStartCallFragment,
-							isShowConversationFragment: $isShowConversationFragment
+							isShowConversationFragment: $isShowConversationFragment,
+							enteredForeground: $enteredForeground
 						)
 						.zIndex(5)
 						.transition(.scale.combined(with: .move(edge: .top)))
@@ -1228,6 +1233,9 @@ struct ContentView: View {
 				self.focusedField = true
 			}
 			orientation = newOrientation
+		}
+		.onChange(of: scenePhase) { newPhase in
+			enteredForeground = newPhase == .active
 		}
 	}
 	
