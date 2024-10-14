@@ -156,7 +156,7 @@ class ControlsViewModel {
 				}
 			} else {
 				let state = currentCall.state
-				if (state == Call.State.End || state == Call.State.Released || state == Call.State.Error) {
+				if (state == Call.State.End || state == Call.State.Released || state == Call.State.Error || state == .PushIncomingReceived) {
 					return
 				}
 				isVideoUpdateInProgress.value = true
