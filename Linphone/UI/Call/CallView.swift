@@ -68,8 +68,6 @@ struct CallView: View {
 	
 	@State var buttonSize = 60.0
 	
-	@Binding var enteredForeground: Bool
-	
 	var body: some View {
 		GeometryReader { geo in
 			ZStack {
@@ -199,8 +197,7 @@ struct CallView: View {
 						conversationViewModel: conversationViewModel,
 						conversationsListViewModel: conversationsListViewModel,
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-						isShowConversationFragment: $isShowConversationFragment,
-						enteredForeground: $enteredForeground
+						isShowConversationFragment: $isShowConversationFragment
 					)
 					.frame(maxWidth: .infinity)
 					.background(Color.gray100)
@@ -2788,8 +2785,7 @@ struct PressedButtonStyle: ButtonStyle {
 		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
-		isShowConversationFragment: .constant(false),
-		enteredForeground: .constant(false)
+		isShowConversationFragment: .constant(false)
 	)
 }
 // swiftlint:enable type_body_length

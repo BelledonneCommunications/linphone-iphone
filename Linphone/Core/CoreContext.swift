@@ -41,6 +41,7 @@ final class CoreContext: ObservableObject {
 	@Published var loggingInProgress: Bool = false
 	@Published var coreIsStarted: Bool = false
 	@Published var accounts: [AccountModel] = []
+	@Published var enteredForeground = false
 	
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?

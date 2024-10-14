@@ -28,6 +28,7 @@ struct ConversationFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
@@ -57,8 +58,6 @@ struct ConversationFragment: View {
 	@Binding var isShowConversationFragment: Bool
 	
 	@State private var selectedCategoryIndex = 0
-	
-	@Binding var enteredForeground: Bool
 	
 	var body: some View {
 		NavigationView {
@@ -575,7 +574,7 @@ struct ConversationFragment: View {
 										.focused($isMessageTextFocused)
 										.padding(.vertical, 5)
 										.onChange(of: conversationViewModel.messageText) { text in
-											if !text.isEmpty && !enteredForeground {
+											if !text.isEmpty && !CoreContext.shared.enteredForeground {
 												conversationViewModel.compose()
 											}
 										}
@@ -588,7 +587,7 @@ struct ConversationFragment: View {
 											.default_text_style(styleSize: 15)
 											.focused($isMessageTextFocused)
 											.onChange(of: conversationViewModel.messageText) { text in
-												if !text.isEmpty && !enteredForeground {
+												if !text.isEmpty && !CoreContext.shared.enteredForeground {
 													conversationViewModel.compose()
 												}
 											}

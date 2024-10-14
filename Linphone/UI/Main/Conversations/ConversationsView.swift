@@ -27,12 +27,10 @@ struct ConversationsView: View {
 	
 	@Binding var isShowStartConversationFragment: Bool
 	
-	@Binding var enteredForeground: Bool
-	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text, enteredForeground: $enteredForeground)
+				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text)
 				
 				Button {
 					withAnimation {
@@ -64,7 +62,6 @@ struct ConversationsView: View {
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 	  	showingSheet: .constant(false),
-		text: .constant(""),
-		enteredForeground: .constant(false)
+		text: .constant("")
 	)
 }

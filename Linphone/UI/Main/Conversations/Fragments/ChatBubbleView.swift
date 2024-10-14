@@ -24,6 +24,8 @@ import WebKit
 // swiftlint:disable cyclomatic_complexity
 struct ChatBubbleView: View {
 	
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	let eventLogMessage: EventLogMessage
@@ -255,8 +257,10 @@ struct ChatBubbleView: View {
 													}
 												}
 												.onTapGesture {
-													conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
-													conversationViewModel.prepareBottomSheetForDeliveryStatus()
+													if !CoreContext.shared.enteredForeground {
+														conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+														conversationViewModel.prepareBottomSheetForDeliveryStatus()
+													}
 												}
 												.disabled(conversationViewModel.selectedMessage != nil)
 												.padding(.top, -4)

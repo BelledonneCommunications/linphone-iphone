@@ -75,8 +75,6 @@ struct ContentView: View {
 	@State var isShowScheduleMeetingFragment = false
 	@State private var isShowLoginFragment: Bool = false
 	
-	@State private var enteredForeground: Bool = false
-	
 	var body: some View {
 		let pub = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ContactLoaded"))
@@ -599,8 +597,7 @@ struct ContentView: View {
 												conversationViewModel: conversationViewModel,
 												conversationsListViewModel: conversationsListViewModel,
 												text: $text,
-												isShowStartConversationFragment: $isShowStartConversationFragment,
-												enteredForeground: $enteredForeground
+												isShowStartConversationFragment: $isShowStartConversationFragment
 											)
 											.roundedCorner(25, corners: [.topRight, .topLeft])
 											.shadow(
@@ -864,8 +861,7 @@ struct ContentView: View {
 									conversationViewModel: conversationViewModel,
 									conversationsListViewModel: conversationsListViewModel,
 									conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-									isShowConversationFragment: $isShowConversationFragment,
-									enteredForeground: $enteredForeground
+									isShowConversationFragment: $isShowConversationFragment
 								)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
@@ -1180,8 +1176,7 @@ struct ContentView: View {
 							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
 							fullscreenVideo: $fullscreenVideo,
 							isShowStartCallFragment: $isShowStartCallFragment,
-							isShowConversationFragment: $isShowConversationFragment,
-							enteredForeground: $enteredForeground
+							isShowConversationFragment: $isShowConversationFragment
 						)
 						.zIndex(5)
 						.transition(.scale.combined(with: .move(edge: .top)))
@@ -1235,7 +1230,7 @@ struct ContentView: View {
 			orientation = newOrientation
 		}
 		.onChange(of: scenePhase) { newPhase in
-			enteredForeground = newPhase == .active
+			CoreContext.shared.enteredForeground = newPhase == .active
 		}
 	}
 	

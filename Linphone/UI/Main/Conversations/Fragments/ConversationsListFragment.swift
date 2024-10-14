@@ -30,8 +30,6 @@ struct ConversationsListFragment: View {
 	@Binding var showingSheet: Bool
 	@Binding var text: String
 	
-	@Binding var enteredForeground: Bool
-	
 	var body: some View {
 		let pub = NotificationCenter.default
 				.publisher(for: NSNotification.Name("ChatRoomsComputed"))
@@ -143,14 +141,14 @@ struct ConversationsListFragment: View {
 						.listRowSeparator(.hidden)
 						.background(.white)
 						.onReceive(pub) { _ in
-							if enteredForeground && conversationViewModel.displayedConversation != nil
+							if CoreContext.shared.enteredForeground && conversationViewModel.displayedConversation != nil
 								&& (navigationManager.peerAddr == nil || navigationManager.peerAddr == conversationViewModel.displayedConversation!.remoteSipUri) {
 								if conversationViewModel.displayedConversation != nil {
 									conversationViewModel.resetDisplayedChatRoom(conversationsList: conversationsListViewModel.conversationsList)
 								}
 							}
 							
-							enteredForeground = false
+							CoreContext.shared.enteredForeground = false
 							
 							if navigationManager.peerAddr != nil
 								&& index < conversationsListViewModel.conversationsList.count
@@ -206,7 +204,6 @@ struct ConversationsListFragment: View {
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 		showingSheet: .constant(false),
-		text: .constant(""),
-		enteredForeground: .constant(false)
+		text: .constant("")
 	)
 }
