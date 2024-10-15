@@ -209,23 +209,25 @@ extension ProviderDelegate: CXProviderDelegate {
 		let callId = callInfo?.callId
 		Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: answer call with call-id: \(String(describing: callId)) and UUID: \(uuid.description).")
 
-		let call = CallManager.instance().callByCallId(callId: callId)
-		
-		if (UIApplication.shared.applicationState != .active) {
-			CallManager.instance().backgroundContextCall = call
-			CallManager.instance().backgroundContextCameraIsEnabled = call?.params?.videoEnabled == true || call?.callLog?.wasConference() == true
-			/*if #available(iOS 16.0, *) {
-				if (call?.cameraEnabled == true) {
-					call?.cameraEnabled = AVCaptureSession().isMultitaskingCameraAccessSupported
-				}
-			} else {
-				call?.cameraEnabled = false // Disable camera while app is not on foreground
-			}*/
+		if let call = CallManager.instance().callByCallId(callId: callId) {
+			if (UIApplication.shared.applicationState != .active) {
+				CallManager.instance().backgroundContextCall = call
+				CallManager.instance().backgroundContextCameraIsEnabled = call.params?.videoEnabled == true || call.callLog?.wasConference() == true
+				/*if #available(iOS 16.0, *) {
+				 if (call?.cameraEnabled == true) {
+				 call?.cameraEnabled = AVCaptureSession().isMultitaskingCameraAccessSupported
+				 }
+				 } else {
+				 call?.cameraEnabled = false // Disable camera while app is not on foreground
+				 }*/
+			}
+			CallManager.instance().callkitAudioSessionActivated = false
+			CallManager.instance().lc?.configureAudioSession()
+			CallManager.instance().acceptCall(call: call, hasVideo: call.params?.videoEnabled ?? false)
+			action.fulfill()
+		} else {
+			endCall(uuid: uuid)
 		}
-		CallManager.instance().callkitAudioSessionActivated = false
-		CallManager.instance().lc?.configureAudioSession()
-		CallManager.instance().acceptCall(call: call!, hasVideo: call!.params?.videoEnabled ?? false)
-		action.fulfill()
 	}
 
 	func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {

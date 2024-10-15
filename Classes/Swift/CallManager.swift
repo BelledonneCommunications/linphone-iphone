@@ -271,12 +271,11 @@ import AVFoundation
 	
 	// for outgoing call. There is not yet callId
 	@objc func startCall(addr: OpaquePointer?, isSas: Bool, isVideo: Bool, isConference: Bool = false) {
-		if (addr == nil) {
+		guard addr != nil, let sAddr = Address.getSwiftObject(cObject: addr!).clone() else {
 			Log.i("Can not start a call with null address!")
 			return
 		}
 		
-		let sAddr = Address.getSwiftObject(cObject: addr!)
 		if (CallManager.callKitEnabled() && !CallManager.instance().nextCallIsTransfer && lc?.conference?.isIn != true) {
 			let uuid = UUID()
 			let name = FastAddressBook.displayName(for: addr) ?? "unknow"
