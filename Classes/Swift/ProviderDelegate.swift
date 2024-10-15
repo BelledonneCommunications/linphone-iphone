@@ -303,6 +303,7 @@ extension ProviderDelegate: CXProviderDelegate {
 			if (addr == nil) {
 				Log.directLog(BCTBX_LOG_ERROR, text: "CallKit: can not call a null address!")
 				action.fail()
+				return
 			}
 
 			CallManager.instance().lc?.configureAudioSession()
