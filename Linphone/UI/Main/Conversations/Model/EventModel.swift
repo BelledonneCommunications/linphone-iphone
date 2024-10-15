@@ -25,17 +25,19 @@ class EventModel: ObservableObject {
 	@Published var icon: Image?
 
 	var eventLog: EventLog
+	var eventLogId: String
 	var eventLogType: EventLog.Kind
 
 	init(eventLog: EventLog) {
 		self.eventLog = eventLog
+		self.eventLogId = eventLog.chatMessage != nil ? eventLog.chatMessage!.messageId : String(eventLog.notifyId)
 		self.eventLogType = eventLog.type
 		self.text = ""
 		self.icon = nil
-		setupEventData()
+		setupEventData(eventLog: eventLog)
 	}
-
-	private func setupEventData() {
+	
+	private func setupEventData(eventLog: EventLog) {
 		let address = eventLog.participantAddress ?? eventLog.peerAddress
 		if address != nil {
 			ContactsManager.shared.getFriendWithAddressInCoreQueue(address: address) { friendResult in
@@ -49,7 +51,7 @@ class EventModel: ObservableObject {
 				let textValue: String
 				let iconValue: Image?
 
-				switch self.eventLog.type {
+				switch eventLog.type {
 				case .ConferenceCreated:
 					textValue = NSLocalizedString("conversation_event_conference_created", comment: "")
 				case .ConferenceTerminated:
@@ -59,7 +61,7 @@ class EventModel: ObservableObject {
 				case .ConferenceParticipantRemoved:
 					textValue = String(format: NSLocalizedString("conversation_event_participant_removed", comment: ""), address != nil ? name : "<?>")
 				case .ConferenceSubjectChanged:
-					textValue = String(format: NSLocalizedString("conversation_event_subject_changed", comment: ""), self.eventLog.subject ?? "")
+					textValue = String(format: NSLocalizedString("conversation_event_subject_changed", comment: ""), eventLog.subject ?? "")
 				case .ConferenceParticipantSetAdmin:
 					textValue = String(format: NSLocalizedString("conversation_event_admin_set", comment: ""), address != nil ? name : "<?>")
 				case .ConferenceParticipantUnsetAdmin:
@@ -74,13 +76,13 @@ class EventModel: ObservableObject {
 					textValue = NSLocalizedString("conversation_event_ephemeral_messages_disabled", comment: "")
 				case .ConferenceEphemeralMessageLifetimeChanged:
 					textValue = String(format: NSLocalizedString("conversation_event_ephemeral_messages_lifetime_changed", comment: ""),
-									   self.formatEphemeralExpiration(duration: Int64(self.eventLog.ephemeralMessageLifetime)).lowercased())
+									   self.formatEphemeralExpiration(duration: Int64(eventLog.ephemeralMessageLifetime)).lowercased())
 				default:
-					textValue = String(self.eventLog.type.rawValue)
+					textValue = String(eventLog.type.rawValue)
 				}
 
 				// Icon assignment
-				switch self.eventLog.type {
+				switch eventLog.type {
 				case .ConferenceEphemeralMessageEnabled, .ConferenceEphemeralMessageDisabled, .ConferenceEphemeralMessageLifetimeChanged:
 					iconValue = Image("clock-countdown")
 				case .ConferenceTerminated:

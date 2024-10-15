@@ -152,7 +152,11 @@ class ConversationViewModel: ObservableObject {
 				let ephemeralExpireTimeTmp = message.ephemeralExpireTime
 				
 				if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
-					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId}) {
+					if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
+						self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
+					}
+					
+					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
 						if indexMessage < self.conversationMessagesSection[0].rows.count {
 							if self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
 								DispatchQueue.main.async {
@@ -188,7 +192,11 @@ class ConversationViewModel: ObservableObject {
 							statusTmp = .sending
 						}
 						
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
+						if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
+							self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
+						}
+						
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {								// self.objectWillChange.send()
@@ -196,7 +204,7 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 						var reactionsTmp: [String] = []
 						message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
@@ -209,7 +217,7 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					}, onReactionRemoved: { (message: ChatMessage, _: Address) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 						var reactionsTmp: [String] = []
 						message.reactions.forEach({ chatMessageReaction in
 							reactionsTmp.append(chatMessageReaction.body)
@@ -222,7 +230,7 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.messageId})
+						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 						let ephemeralExpireTimeTmp = message.ephemeralExpireTime
 						
 						DispatchQueue.main.async {
@@ -982,7 +990,7 @@ class ConversationViewModel: ObservableObject {
 					)
 				)
 				
-				if self.conversationMessagesSection[0].rows.first?.eventModel.eventLog.chatMessage?.messageId != eventLog.chatMessage?.messageId {
+				if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != eventLog.chatMessage?.messageId {
 					self.addChatMessageDelegate(message: eventLog.chatMessage!)
 					
 					DispatchQueue.main.async {
@@ -1054,7 +1062,7 @@ class ConversationViewModel: ObservableObject {
 	func scrollToMessage(message: Message) {
 		coreContext.doOnCoreQueue { _ in
 			if message.replyMessage != nil {
-				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLog.chatMessage?.messageId == message.replyMessage!.id}) {
+				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.replyMessage!.id}) {
 					NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": indexMessage, "animated": true])
 				} else {
 					if self.conversationMessagesSection[0].rows.last != nil {
@@ -1339,128 +1347,130 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func sendMessage(audioRecorder: AudioRecorder? = nil) {
-		coreContext.doOnCoreQueue { _ in
-			do {
-				var message: ChatMessage?
-				if self.messageToReply != nil {
-					let chatMessageToReply = self.messageToReply!.eventModel.eventLog.chatMessage
-					if chatMessageToReply != nil {
-						message = try self.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
+		if self.displayedConversation != nil {
+			coreContext.doOnCoreQueue { _ in
+				do {
+					var message: ChatMessage?
+					if self.messageToReply != nil {
+						let chatMessageToReply = self.displayedConversation!.chatRoom.findEventLog(messageId: self.messageToReply!.eventModel.eventLogId)?.chatMessage
+						if chatMessageToReply != nil {
+							message = try self.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
+						}
+					} else {
+						message = try self.displayedConversation!.chatRoom.createEmptyMessage()
 					}
-					self.messageToReply = nil
-				} else {
-					message = try self.displayedConversation!.chatRoom.createEmptyMessage()
-				}
-				
-				let toSend = self.messageText.trimmingCharacters(in: .whitespacesAndNewlines)
-				if !toSend.isEmpty {
-					if message != nil {
-						message!.addUtf8TextContent(text: toSend)
-					}
-				}
-				
-				if audioRecorder != nil {
-					do {
-						audioRecorder!.stopVoiceRecorder()
-						let content = try audioRecorder!.linphoneAudioRecorder.createContent()
-						Log.info(
-							"[ConversationViewModel] Voice recording content created, file name is \(content.name ?? "") and duration is \(content.fileDuration)"
-						)
-						
+					
+					let toSend = self.messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+					if !toSend.isEmpty {
 						if message != nil {
-							message!.addContent(content: content)
+							message!.addUtf8TextContent(text: toSend)
 						}
 					}
-				} else {
-					self.mediasToSend.forEach { attachment in
+					
+					if audioRecorder != nil {
 						do {
-							let content = try Factory.Instance.createContent()
-							
-							switch attachment.type {
-							case .image:
-								content.type = "image"
-								/*
-								 case .audio:
-								 content.type = "audio"
-								 */
-							case .video:
-								content.type = "video"
-								/*
-								 case .pdf:
-								 content.type = "application"
-								 case .plainText:
-								 content.type = "text"
-								 */
-							default:
-								content.type = "file"
-							}
-							
-							// content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
-							content.subtype = attachment.full.pathExtension
-							
-							content.name = attachment.full.lastPathComponent
+							audioRecorder!.stopVoiceRecorder()
+							let content = try audioRecorder!.linphoneAudioRecorder.createContent()
+							Log.info(
+								"[ConversationViewModel] Voice recording content created, file name is \(content.name ?? "") and duration is \(content.fileDuration)"
+							)
 							
 							if message != nil {
-								
-								let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-								let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
-												  + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-								/*
-								 let data = try Data(contentsOf: path)
-								 let decodedData: () = try data.write(to: path)
-								 */
-								
-								do {
-									if FileManager.default.fileExists(atPath: newPath!.path) {
-										try FileManager.default.removeItem(atPath: newPath!.path)
-									}
-									try FileManager.default.moveItem(atPath: path.path, toPath: newPath!.path)
-									
-									let filePathTmp = newPath?.absoluteString
-									content.filePath = String(filePathTmp!.dropFirst(7))
-									message!.addFileContent(content: content)
-								} catch {
-									Log.error(error.localizedDescription)
-								}
+								message!.addContent(content: content)
 							}
-						} catch {
+						}
+					} else {
+						self.mediasToSend.forEach { attachment in
+							do {
+								let content = try Factory.Instance.createContent()
+								
+								switch attachment.type {
+								case .image:
+									content.type = "image"
+									/*
+									 case .audio:
+									 content.type = "audio"
+									 */
+								case .video:
+									content.type = "video"
+									/*
+									 case .pdf:
+									 content.type = "application"
+									 case .plainText:
+									 content.type = "text"
+									 */
+								default:
+									content.type = "file"
+								}
+								
+								// content.subtype = attachment.type == .plainText ? "plain" : FileUtils.getExtensionFromFileName(attachment.fileName)
+								content.subtype = attachment.full.pathExtension
+								
+								content.name = attachment.full.lastPathComponent
+								
+								if message != nil {
+									
+									let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+									let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
+													  + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+									/*
+									 let data = try Data(contentsOf: path)
+									 let decodedData: () = try data.write(to: path)
+									 */
+									
+									do {
+										if FileManager.default.fileExists(atPath: newPath!.path) {
+											try FileManager.default.removeItem(atPath: newPath!.path)
+										}
+										try FileManager.default.moveItem(atPath: path.path, toPath: newPath!.path)
+										
+										let filePathTmp = newPath?.absoluteString
+										content.filePath = String(filePathTmp!.dropFirst(7))
+										message!.addFileContent(content: content)
+									} catch {
+										Log.error(error.localizedDescription)
+									}
+								}
+							} catch {
+							}
 						}
 					}
-				}
-				
-				if message != nil && !message!.contents.isEmpty {
-					Log.info("[ConversationViewModel] Sending message")
-					message!.send()
-				}
-				
-				Log.info("[ConversationViewModel] Message sent, re-setting defaults")
-				
-				DispatchQueue.main.async {
-					withAnimation {
-						self.mediasToSend.removeAll()
+					
+					if message != nil && !message!.contents.isEmpty {
+						Log.info("[ConversationViewModel] Sending message")
+						message!.send()
 					}
-					self.messageText = ""
+					
+					Log.info("[ConversationViewModel] Message sent, re-setting defaults")
+					
+					DispatchQueue.main.async {
+						self.messageToReply = nil
+						withAnimation {
+							self.mediasToSend.removeAll()
+						}
+						self.messageText = ""
+					}
+					
+					/*
+					 isReplying.postValue(false)
+					 isFileAttachmentsListOpen.postValue(false)
+					 isParticipantsListOpen.postValue(false)
+					 isEmojiPickerOpen.postValue(false)
+					 
+					 if (::voiceMessageRecorder.isInitialized) {
+					 stopVoiceRecorder()
+					 }
+					 isVoiceRecording.postValue(false)
+					 
+					 // Warning: do not delete files
+					 val attachmentsList = arrayListOf<FileModel>()
+					 attachments.postValue(attachmentsList)
+					 
+					 chatMessageToReplyTo = null
+					 */
+				} catch {
+					
 				}
-				
-				/*
-				 isReplying.postValue(false)
-				 isFileAttachmentsListOpen.postValue(false)
-				 isParticipantsListOpen.postValue(false)
-				 isEmojiPickerOpen.postValue(false)
-				 
-				 if (::voiceMessageRecorder.isInitialized) {
-				 stopVoiceRecorder()
-				 }
-				 isVoiceRecording.postValue(false)
-				 
-				 // Warning: do not delete files
-				 val attachmentsList = arrayListOf<FileModel>()
-				 attachments.postValue(attachmentsList)
-				 
-				 chatMessageToReplyTo = null
-				 */
-			} catch {
-				
 			}
 		}
 	}
@@ -1597,26 +1607,28 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeReaction() {
-		coreContext.doOnCoreQueue { _ in
-			if self.selectedMessageToDisplayDetails != nil {
-				Log.info("[ConversationViewModel] Remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
-				let messageToSendReaction = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage
-				if messageToSendReaction != nil {
-					do {
-						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: "")
-						reaction.send()
-						
-						let indexMessageSelected = self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessageToDisplayDetails!)
-						
-						DispatchQueue.main.async {
-							if indexMessageSelected != nil {
-								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = ""
+		if self.displayedConversation != nil {
+			coreContext.doOnCoreQueue { _ in
+				if self.selectedMessageToDisplayDetails != nil {
+					Log.info("[ConversationViewModel] Remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
+					let messageToSendReaction = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
+					if messageToSendReaction != nil {
+						do {
+							let reaction = try messageToSendReaction!.createReaction(utf8Reaction: "")
+							reaction.send()
+							
+							let indexMessageSelected = self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessageToDisplayDetails!)
+							
+							DispatchQueue.main.async {
+								if indexMessageSelected != nil {
+									self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = ""
+								}
+								self.selectedMessageToDisplayDetails = nil
+								self.isShowSelectedMessageToDisplayDetails = false
 							}
-							self.selectedMessageToDisplayDetails = nil
-							self.isShowSelectedMessageToDisplayDetails = false
+						} catch {
+							Log.info("[ConversationViewModel] Error: Can't remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
 						}
-					} catch {
-						Log.info("[ConversationViewModel] Error: Can't remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
 					}
 				}
 			}
@@ -1627,7 +1639,7 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.selectedMessage != nil {
 				Log.info("[ConversationViewModel] Sending reaction \(emoji) to message with ID \(self.selectedMessage!.message.id)")
-				let messageToSendReaction = self.selectedMessage!.eventModel.eventLog.chatMessage
+				let messageToSendReaction = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
 				if messageToSendReaction != nil {
 					do {
 						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji)
@@ -1651,9 +1663,10 @@ class ConversationViewModel: ObservableObject {
 	
 	func resend() {
 		coreContext.doOnCoreQueue { _ in
-			if self.selectedMessage != nil && self.selectedMessage!.eventModel.eventLog.chatMessage != nil {
-				Log.info("[ConversationViewModel] Re-sending message with ID \(self.selectedMessage!.eventModel.eventLog.chatMessage!)")
-				self.selectedMessage!.eventModel.eventLog.chatMessage!.send()
+			let chatMessageToResend = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
+			if self.selectedMessage != nil && chatMessageToResend != nil {
+				Log.info("[ConversationViewModel] Re-sending message with ID \(chatMessageToResend!)")
+				chatMessageToResend!.send()
 			}
 		}
 	}
@@ -1661,9 +1674,10 @@ class ConversationViewModel: ObservableObject {
 	func prepareBottomSheetForDeliveryStatus() {
 		self.sheetCategories.removeAll()
 		coreContext.doOnCoreQueue { _ in
-			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage != nil {
+			let chatMessageToDisplay = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
+			if self.selectedMessageToDisplayDetails != nil && chatMessageToDisplay != nil {
 				
-				let participantsImdnDisplayed = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .Displayed)
+				let participantsImdnDisplayed = chatMessageToDisplay!.getParticipantsByImdnState(state: .Displayed)
 				var participantListDisplayed: [InnerSheetCategory] = []
 				participantsImdnDisplayed.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1674,7 +1688,7 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				let participantsImdnDeliveredToUser = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .DeliveredToUser)
+				let participantsImdnDeliveredToUser = chatMessageToDisplay!.getParticipantsByImdnState(state: .DeliveredToUser)
 				var participantListDeliveredToUser: [InnerSheetCategory] = []
 				participantsImdnDeliveredToUser.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1685,7 +1699,7 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				let participantsImdnDelivered = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .Delivered)
+				let participantsImdnDelivered = chatMessageToDisplay!.getParticipantsByImdnState(state: .Delivered)
 				var participantListDelivered: [InnerSheetCategory] = []
 				participantsImdnDelivered.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1696,7 +1710,7 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				let participantsImdnNotDelivered = self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.getParticipantsByImdnState(state: .NotDelivered)
+				let participantsImdnNotDelivered = chatMessageToDisplay!.getParticipantsByImdnState(state: .NotDelivered)
 				var participantListNotDelivered: [InnerSheetCategory] = []
 				participantsImdnNotDelivered.forEach({ participantImdn in
 					if participantImdn.participant != nil && participantImdn.participant!.address != nil {
@@ -1722,7 +1736,8 @@ class ConversationViewModel: ObservableObject {
 	func prepareBottomSheetForReactions() {
 		self.sheetCategories.removeAll()
 		coreContext.doOnCoreQueue { core in
-			if self.selectedMessageToDisplayDetails != nil && self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage != nil {
+			let chatMessageToDisplay = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
+			if self.selectedMessageToDisplayDetails != nil && chatMessageToDisplay != nil {
 				let dispatchGroup = DispatchGroup()
 				
 				var sheetCategoriesTmp: [SheetCategory] = []
@@ -1730,7 +1745,7 @@ class ConversationViewModel: ObservableObject {
 				var participantList: [[InnerSheetCategory]] = [[]]
 				var reactionList: [String] = []
 				
-				self.selectedMessageToDisplayDetails!.eventModel.eventLog.chatMessage!.reactions.forEach { chatMessageReaction in
+				chatMessageToDisplay!.reactions.forEach { chatMessageReaction in
 					if chatMessageReaction.fromAddress != nil {
 						dispatchGroup.enter()
 						ContactAvatarModel.getAvatarModelFromAddress(address: chatMessageReaction.fromAddress!) { avatarResult in

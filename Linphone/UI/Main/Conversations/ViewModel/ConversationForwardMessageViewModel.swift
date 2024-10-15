@@ -280,7 +280,8 @@ class ConversationForwardMessageViewModel: ObservableObject {
 	func forwardMessage() {
 		CoreContext.shared.doOnCoreQueue { _ in
 			if self.displayedConversation != nil && self.selectedMessage != nil {
-				if let messageToForward = self.selectedMessage!.eventModel.eventLog.chatMessage {
+				let chatMessageToDisplay = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
+				if let messageToForward = chatMessageToDisplay {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 						do {
 							let forwardedMessage = try self.displayedConversation!.chatRoom.createForwardMessage(message: messageToForward)
