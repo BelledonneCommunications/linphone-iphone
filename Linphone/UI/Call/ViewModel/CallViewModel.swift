@@ -696,7 +696,7 @@ class CallViewModel: ObservableObject {
 						} else if params.videoDirection == .SendOnly {
 							params.videoDirection = .Inactive
 						} else if params.videoDirection == .Inactive {
-							params.videoDirection = .SendOnly
+							params.videoDirection = .SendRecv
 						}
 					}
 					
