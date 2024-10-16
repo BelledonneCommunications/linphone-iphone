@@ -1915,7 +1915,7 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func parseConferenceInvite(content: Content) -> MessageConferenceInfo? {
-		var meetingConferenceUriTmp: URL?
+		var meetingConferenceUriTmp: String = ""
 		var meetingSubjectTmp: String = ""
 		var meetingDescriptionTmp: String = ""
 		var meetingStateTmp: MessageConferenceState = .new
@@ -1930,7 +1930,7 @@ class ConversationViewModel: ObservableObject {
 			if let conferenceAddress = conferenceInfo.uri {
 				let conferenceUri = conferenceAddress.asStringUriOnly()
 				Log.info("Found conference info with URI [\(conferenceUri)] and subject [\(conferenceInfo.subject ?? "")]")
-				meetingConferenceUriTmp = URL(string: conferenceAddress.asStringUriOnly())
+				meetingConferenceUriTmp = conferenceAddress.asStringUriOnly()
 				meetingSubjectTmp = conferenceInfo.subject ?? ""
 				meetingDescriptionTmp = conferenceInfo.description ?? ""
 				
@@ -1949,7 +1949,7 @@ class ConversationViewModel: ObservableObject {
 				dateFormatter.dateStyle = .full
 				dateFormatter.timeStyle = .none
 				
-				meetingDateTmp = dateFormatter.string(from: dateTmp)
+				meetingDateTmp = dateFormatter.string(from: dateTmp).capitalized
 				
 				let timeFormatter = DateFormatter()
 				timeFormatter.dateFormat = Locale.current.identifier == "fr_FR" ? "HH:mm" : "h:mm a"
@@ -1962,14 +1962,14 @@ class ConversationViewModel: ObservableObject {
 				meetingTimeTmp = "\(timeTmp) - \(endTime)"
 				
 				meetingDayTmp = dateTmp.formatted(Date.FormatStyle().weekday(.abbreviated)).capitalized
-				meetingDayNumberTmp = dateTmp.formatted(Date.FormatStyle().day(.twoDigits))
+				meetingDayNumberTmp = dateTmp.formatted(Date.FormatStyle().day(.defaultDigits))
 				
-				meetingParticipantsTmp = String(conferenceInfo.participantInfos.count)
+				meetingParticipantsTmp = String(conferenceInfo.participantInfos.count) + " participant" + (conferenceInfo.participantInfos.count > 1 ? "s" : "")
 				
-				if meetingConferenceUriTmp != nil {
+				if !meetingConferenceUriTmp.isEmpty {
 					return MessageConferenceInfo(
 						id: UUID(),
-						meetingConferenceUri: meetingConferenceUriTmp!,
+						meetingConferenceUri: meetingConferenceUriTmp,
 						meetingSubject: meetingSubjectTmp,
 						meetingDescription: meetingDescriptionTmp,
 						meetingState: meetingStateTmp,
@@ -1984,6 +1984,14 @@ class ConversationViewModel: ObservableObject {
 		}
 		
 		return nil
+	}
+	
+	func joinMeetingInvite(addressUri: String) {
+		coreContext.doOnCoreQueue { _ in
+			if let address = try? Factory.Instance.createAddress(addr: addressUri) {
+				TelecomManager.shared.doCallOrJoinConf(address: address)
+			}
+		}
 	}
 }
 // swiftlint:enable line_length

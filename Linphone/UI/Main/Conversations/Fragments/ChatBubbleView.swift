@@ -43,7 +43,7 @@ struct ChatBubbleView: View {
 		HStack {
 			if eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage {
 				VStack {
-					if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty {
+					if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty || eventLogMessage.message.isIcalendar {
 						HStack(alignment: .top, content: {
 							if eventLogMessage.message.isOutgoing {
 								Spacer()
@@ -159,7 +159,7 @@ struct ChatBubbleView: View {
 										
 										VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
 											VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
-												if !eventLogMessage.message.attachments.isEmpty {
+												if !eventLogMessage.message.attachments.isEmpty && !eventLogMessage.message.isIcalendar {
 													messageAttachments()
 												}
 												
@@ -169,20 +169,129 @@ struct ChatBubbleView: View {
 														.default_text_style(styleSize: 14)
 												}
 												
-												if eventLogMessage.message.isIcalendar {
-													VStack{
+												if eventLogMessage.message.isIcalendar && eventLogMessage.message.messageConferenceInfo != nil {
+													VStack(spacing: 0) {
 														VStack {
+															if eventLogMessage.message.messageConferenceInfo!.meetingState != .new {
+																if eventLogMessage.message.messageConferenceInfo!.meetingState == .updated {
+																	Text("conversation_message_meeting_updated_label")
+																		.foregroundStyle(Color.orangeWarning600)
+																		.default_text_style_600(styleSize: 12)
+																		.lineLimit(1)
+																		.frame(maxWidth: .infinity, alignment: .leading)
+																		.padding(.bottom, 5)
+																} else {
+																	Text("conversation_message_meeting_cancelled_label")
+																		.foregroundStyle(Color.redDanger500)
+																		.default_text_style_600(styleSize: 12)
+																		.lineLimit(1)
+																		.frame(maxWidth: .infinity, alignment: .leading)
+																		.padding(.bottom, 5)
+																}
+															}
 															
+															HStack {
+																VStack(spacing: 0) {
+																	Text(eventLogMessage.message.messageConferenceInfo!.meetingDay)
+																		.default_text_style(styleSize: 16)
+																	
+																	Text(eventLogMessage.message.messageConferenceInfo!.meetingDayNumber)
+																		.foregroundStyle(.white)
+																		.default_text_style_800(styleSize: 18)
+																		.lineLimit(1)
+																		.frame(width: 30, height: 30, alignment: .center)
+																		.background(Color.orangeMain500)
+																		.clipShape(Circle())
+																	
+																}
+																.padding(.all, 10)
+																.frame(width: 70, height: 70)
+																.background(.white)
+																.cornerRadius(15)
+																.shadow(color: .black.opacity(0.1), radius: 15)
+																
+																VStack {
+																	HStack {
+																		Image("video-conference")
+																			.renderingMode(.template)
+																			.resizable()
+																			.foregroundStyle(Color.grayMain2c600)
+																			.frame(width: 25, height: 25)
+																		
+																		Text(eventLogMessage.message.messageConferenceInfo!.meetingSubject)
+																			.default_text_style_800(styleSize: 15)
+																			.lineLimit(1)
+																			.frame(maxWidth: .infinity, alignment: .leading)
+																	}
+																	.frame(maxWidth: .infinity, alignment: .leading)
+																	
+																	Text(eventLogMessage.message.messageConferenceInfo!.meetingDate)
+																		.default_text_style_300(styleSize: 14)
+																		.lineLimit(1)
+																		.frame(maxWidth: .infinity, alignment: .leading)
+																	
+																	Text(eventLogMessage.message.messageConferenceInfo!.meetingTime)
+																		.default_text_style_300(styleSize: 14)
+																		.lineLimit(1)
+																		.frame(maxWidth: .infinity, alignment: .leading)
+																}
+																.padding(.leading, 5)
+															}
+															.frame(maxWidth: .infinity)
 														}
+														.padding(.all, 15)
+														.frame(maxWidth: .infinity)
+														.background(Color.gray100)
 														
-														VStack {
+														VStack(spacing: 2) {
+															if !eventLogMessage.message.messageConferenceInfo!.meetingDescription.isEmpty {
+																Text("Description")
+																	.default_text_style(styleSize: 14)
+																	.frame(maxWidth: .infinity, alignment: .leading)
+																
+																Text(eventLogMessage.message.messageConferenceInfo!.meetingDescription)
+																	.default_text_style_300(styleSize: 14)
+																	.frame(maxWidth: .infinity, alignment: .leading)
+															}
 															
+															if eventLogMessage.message.messageConferenceInfo!.meetingState != .cancelled {
+																HStack {
+																	Image("users")
+																		.renderingMode(.template)
+																		.resizable()
+																		.foregroundStyle(Color.grayMain2c600)
+																		.frame(width: 20, height: 20)
+																	
+																	Text(eventLogMessage.message.messageConferenceInfo!.meetingParticipants)
+																		.default_text_style(styleSize: 14)
+																		.frame(maxWidth: .infinity, alignment: .leading)
+																	
+																	Button(action: {
+																		conversationViewModel.joinMeetingInvite(addressUri: eventLogMessage.message.messageConferenceInfo!.meetingConferenceUri)
+																	}, label: {
+																		Text("meeting_waiting_room_join")
+																			.default_text_style_white_600(styleSize: 14)
+																	})
+																	.padding(.horizontal, 15)
+																	.padding(.vertical, 10)
+																	.background(Color.orangeMain500)
+																	.cornerRadius(60)
+																}
+																.padding(.top, !eventLogMessage.message.messageConferenceInfo!.meetingDescription.isEmpty ? 10 : 0)
+															}
 														}
+														.padding(.all,
+															eventLogMessage.message.messageConferenceInfo!.meetingState != .cancelled
+															|| !eventLogMessage.message.messageConferenceInfo!.meetingDescription.isEmpty
+															? 15
+															: 0
+														)
+														.frame(maxWidth: .infinity)
+														.background(.white)
 													}
-													
-													Text("Meeting invite !!")
-														.foregroundStyle(Color.grayMain2c500)
-														.default_text_style(styleSize: 12)
+													.frame(width: geometryProxy.size.width - 110)
+													.background(.white)
+													.cornerRadius(10)
 												}
 												
 												HStack(alignment: .center) {

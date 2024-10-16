@@ -357,7 +357,7 @@ struct HistoryContactFragment: View {
 												.background(Color.grayMain2c200)
 												.cornerRadius(40)
 												
-												Text("Rejoindre")
+												Text("meeting_waiting_room_join")
 													.default_text_style(styleSize: 14)
 													.frame(minWidth: 80)
 											}

@@ -299,8 +299,7 @@ struct MeetingFragment: View {
 				Spacer()
 				
 				Button(action: {
-					TelecomManager.shared.meetingWaitingRoomSelected = try? Factory.Instance.createAddress(addr: meetingViewModel.displayedMeeting?.address ?? "")
-					TelecomManager.shared.meetingWaitingRoomDisplayed = true
+					meetingViewModel.joinMeeting(addressUri: meetingViewModel.displayedMeeting?.address ?? "")
 				}, label: {
 					Text("Join the meeting now")
 						.bold()

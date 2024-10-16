@@ -171,8 +171,12 @@ class TelecomManager: ObservableObject {
 			do {
 				let meetingAddress = try Factory.Instance.createAddress(addr: address.asStringUriOnly())
 				
-				meetingWaitingRoomDisplayed = true
-				meetingWaitingRoomSelected = meetingAddress
+				DispatchQueue.main.async {
+					withAnimation {
+						self.meetingWaitingRoomDisplayed = true
+						self.meetingWaitingRoomSelected = meetingAddress
+					}
+				}
 			} catch {}
 		} else {
 			doCallWithCore(

@@ -1303,6 +1303,40 @@
         }
       }
     },
+    "conversation_message_meeting_cancelled_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been cancelled!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La réunion a été annulée"
+          }
+        }
+      }
+    },
+    "conversation_message_meeting_updated_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been updated"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La réunion a été mise à jour"
+          }
+        }
+      }
+    },
     "conversation_reply_to_message_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1383,6 +1417,9 @@
 
     },
     "Deny all" : {
+
+    },
+    "Description" : {
 
     },
     "Dialer" : {
@@ -1818,8 +1855,22 @@
     "Meeting added to iPhone calendar" : {
 
     },
-    "Meeting invite !!" : {
-
+    "meeting_waiting_room_join" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rejoindre"
+          }
+        }
+      }
     },
     "Meetings" : {
 
@@ -2238,9 +2289,6 @@
           }
         }
       }
-    },
-    "Rejoindre" : {
-
     },
     "Remove from favourites" : {
 

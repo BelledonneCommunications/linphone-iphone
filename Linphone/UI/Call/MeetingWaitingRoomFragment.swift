@@ -335,7 +335,7 @@ struct MeetingWaitingRoomFragment: View {
 						Button(action: {
 							meetingWaitingRoomViewModel.joinMeeting()
 						}, label: {
-							Text("Rejoindre")
+							Text("meeting_waiting_room_join")
 								.default_text_style_white_600(styleSize: 20)
 								.frame(height: 35)
 								.frame(maxWidth: .infinity)
@@ -356,7 +356,7 @@ struct MeetingWaitingRoomFragment: View {
 					Button(action: {
 						meetingWaitingRoomViewModel.joinMeeting()
 					}, label: {
-						Text("Rejoindre")
+						Text("meeting_waiting_room_join")
 							.default_text_style_white_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)

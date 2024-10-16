@@ -379,6 +379,14 @@ class MeetingViewModel: ObservableObject {
 			}
 		})
 	}
+	
+	func joinMeeting(addressUri: String) {
+		CoreContext.shared.doOnCoreQueue { _ in
+			if let address = try? Factory.Instance.createAddress(addr: addressUri) {
+				TelecomManager.shared.doCallOrJoinConf(address: address)
+			}
+		}
+	}
 }
 
 // swiftlint:enable type_body_length

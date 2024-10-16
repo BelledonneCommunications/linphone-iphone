@@ -27,7 +27,7 @@ public enum MessageConferenceState: Codable {
 
 public struct MessageConferenceInfo: Codable, Identifiable, Hashable {
 	public let id: UUID
-	public let meetingConferenceUri: URL
+	public let meetingConferenceUri: String
 	public let meetingSubject: String
 	public let meetingDescription: String
 	public let meetingState: MessageConferenceState
@@ -37,7 +37,7 @@ public struct MessageConferenceInfo: Codable, Identifiable, Hashable {
 	public let meetingDayNumber: String
 	public let meetingParticipants: String
 
-	public init(id: UUID, meetingConferenceUri: URL, meetingSubject: String, meetingDescription: String, meetingState: MessageConferenceState, meetingDate: String, meetingTime: String, meetingDay: String, meetingDayNumber: String, meetingParticipants: String) {
+	public init(id: UUID, meetingConferenceUri: String, meetingSubject: String, meetingDescription: String, meetingState: MessageConferenceState, meetingDate: String, meetingTime: String, meetingDay: String, meetingDayNumber: String, meetingParticipants: String) {
 		self.id = id
 		self.meetingConferenceUri = meetingConferenceUri
 		self.meetingSubject = meetingSubject
