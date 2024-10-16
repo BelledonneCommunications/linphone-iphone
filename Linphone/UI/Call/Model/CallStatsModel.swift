@@ -25,10 +25,13 @@ class CallStatsModel: ObservableObject {
 	
 	@Published var audioCodec = ""
 	@Published var audioBandwidth = ""
+	@Published var audioLossRate = ""
+	@Published var audioJitterBufferSize = ""
 	
 	@Published var isVideoEnabled = false
 	@Published var videoCodec = ""
 	@Published var videoBandwidth = ""
+	@Published var videoLossRate = ""
 	@Published var videoResolution = ""
 	@Published var videoFps = ""
 	
@@ -52,9 +55,17 @@ class CallStatsModel: ObservableObject {
 						let downloadBandwidth = Int(stats.downloadBandwidth.rounded())
 						let bandwidthLabel = "Bandwidth: " + "↑ \(uploadBandwidth) kbits/s ↓ \(downloadBandwidth) kbits/s"
 						
+						let senderLossRate = Int(stats.senderLossRate.rounded())
+						let receiverLossRate = Int(stats.receiverLossRate.rounded())
+						let lossRateLabel = "Lossrate: ↑ \(senderLossRate)% ↓ \(receiverLossRate)%"
+						
+						let jitterBufferSize = Int(stats.jitterBufferSizeMs.rounded())
+						let jitterBufferSizeLabel = "Jitter buffer: \(jitterBufferSize)ms"
 						DispatchQueue.main.async {
 							self.audioCodec = codecLabel
 							self.audioBandwidth = bandwidthLabel
+							self.audioLossRate = lossRateLabel
+							self.audioJitterBufferSize = jitterBufferSizeLabel
 						}
 					}
 				case .Video:
@@ -72,6 +83,10 @@ class CallStatsModel: ObservableObject {
 						let downloadBandwidth = Int(stats.downloadBandwidth.rounded())
 						let bandwidthLabel = "Bandwidth: " + "↑ \(uploadBandwidth) kbits/s ↓ \(downloadBandwidth) kbits/s"
 						
+						let senderLossRate = Int(stats.senderLossRate.rounded())
+						let receiverLossRate = Int(stats.receiverLossRate.rounded())
+						let lossRateLabel = "Lossrate: ↑ \(senderLossRate)% ↓ \(receiverLossRate)%"
+						
 						let sentResolution = call.currentParams!.sentVideoDefinition!.name
 						let receivedResolution = call.currentParams!.receivedVideoDefinition!.name
 						let resolutionLabel = "Resolution: " + "↑ \(sentResolution!) ↓ \(receivedResolution!)"
@@ -83,6 +98,7 @@ class CallStatsModel: ObservableObject {
 						DispatchQueue.main.async {
 							self.videoCodec = codecLabel
 							self.videoBandwidth = bandwidthLabel
+							self.videoLossRate = lossRateLabel
 							self.videoResolution = resolutionLabel
 							self.videoFps = fpsLabel
 						}

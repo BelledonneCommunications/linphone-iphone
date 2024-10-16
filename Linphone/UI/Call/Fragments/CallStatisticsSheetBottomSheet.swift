@@ -66,6 +66,16 @@ struct CallStatisticsSheetBottomSheet: View {
 			
 			Spacer()
 			
+			Text(callViewModel.callStatsModel.audioLossRate)
+				   .default_text_style_white(styleSize: 15)
+			   
+			Spacer()
+			
+			Text(callViewModel.callStatsModel.audioJitterBufferSize)
+				   .default_text_style_white(styleSize: 15)
+			   
+			Spacer()
+			
 			if callViewModel.callStatsModel.isVideoEnabled {
 				Text("Vidéo")
 					.default_text_style_white_600(styleSize: 15)
@@ -79,6 +89,11 @@ struct CallStatisticsSheetBottomSheet: View {
 				Spacer()
 				
 				Text(callViewModel.callStatsModel.videoBandwidth)
+					.default_text_style_white(styleSize: 15)
+				
+				Spacer()
+				
+				Text(callViewModel.callStatsModel.videoLossRate)
 					.default_text_style_white(styleSize: 15)
 				
 				Spacer()
