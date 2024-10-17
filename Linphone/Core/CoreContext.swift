@@ -363,10 +363,6 @@ final class CoreContext: ObservableObject {
 		mCore.removeDelegate(delegate: delegate)
 	}
 	
-	func getCorePublisher() -> CoreDelegatePublisher? {
-		return mCore.publisher
-	}
-	
 }
 
 // swiftlint:enable line_length
