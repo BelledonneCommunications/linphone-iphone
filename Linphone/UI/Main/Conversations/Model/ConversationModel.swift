@@ -50,6 +50,8 @@ class ConversationModel: ObservableObject {
 	@Published var unreadMessagesCount: Int
 	@Published var avatarModel: ContactAvatarModel
 	
+	private var conferenceSchedulerDelegate: ConferenceSchedulerDelegate?
+	
 	init(chatRoom: ChatRoom) {
 		self.chatRoom = chatRoom
 		
@@ -104,11 +106,95 @@ class ConversationModel: ObservableObject {
 	}
 	
 	func call() {
-		coreContext.doOnCoreQueue { _ in
-			if self.chatRoom.peerAddress != nil {
+		coreContext.doOnCoreQueue { core in
+			if self.chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) && !self.chatRoom.hasCapability(mask: ChatRoom.Capabilities.Conference.rawValue) {
 				TelecomManager.shared.doCallOrJoinConf(address: self.chatRoom.peerAddress!)
+			} else if self.chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) && self.chatRoom.hasCapability(mask: ChatRoom.Capabilities.Conference.rawValue) {
+				if self.chatRoom.participants.first != nil && self.chatRoom.participants.first!.address != nil {
+					TelecomManager.shared.doCallOrJoinConf(address: self.chatRoom.participants.first!.address!)
+				}
+			} else {
+				//self.createGroupCall(core: core)
 			}
 		}
+	}
+	
+	func createGroupCall(core: Core) {
+		let account = core.defaultAccount
+		if account == nil {
+			Log.error(
+				"\(ConversationModel.TAG) No default account found, can't create group call!"
+			)
+			return
+		}
+		
+		do {
+			let conferenceInfo = try Factory.Instance.createConferenceInfo()
+			conferenceInfo.organizer = account!.params?.identityAddress
+			conferenceInfo.subject = self.chatRoom.subject ?? "Conference"
+			
+			var participantsList: [ParticipantInfo] = []
+			self.chatRoom.participants.forEach { participant in
+				do {
+					let info = try Factory.Instance.createParticipantInfo(address: participant.address!)
+					// For meetings, all participants must have Speaker role
+					info.role = Participant.Role.Speaker
+					participantsList.append(info)
+				} catch let error {
+					Log.error(
+						"\(ConversationModel.TAG) Can't create ParticipantInfo: \(error)"
+					)
+				}
+			}
+			
+			conferenceInfo.addParticipantInfos(participantInfos: participantsList)
+			
+			Log.info(
+				"\(ConversationModel.TAG) Creating group call with subject \(self.chatRoom.subject ?? "Conference") and \(participantsList.count) participant(s)"
+			)
+			
+			let conferenceScheduler = try core.createConferenceScheduler()
+			self.conferenceAddDelegate(core: core, conferenceScheduler: conferenceScheduler)
+			conferenceScheduler.account = account
+			// Will trigger the conference creation/update automatically
+			conferenceScheduler.info = conferenceInfo
+		} catch let error {
+			Log.error(
+				"\(ConversationModel.TAG) createGroupCall: \(error)"
+			)
+		}
+	}
+	
+	func conferenceAddDelegate(core: Core, conferenceScheduler: ConferenceScheduler) {
+		self.conferenceSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
+			Log.info("\(ConversationModel.TAG) Conference scheduler state is \(state)")
+			if state == ConferenceScheduler.State.Ready {
+				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
+				self.conferenceSchedulerDelegate = nil
+				
+				let conferenceAddress = conferenceScheduler.info?.uri
+				if conferenceAddress != nil {
+					Log.info(
+						"\(ConversationModel.TAG) Conference info created, address is \(conferenceAddress?.asStringUriOnly() ?? "Error conference address")"
+					)
+					
+					TelecomManager.shared.doCallOrJoinConf(address: conferenceAddress!)
+				} else {
+					Log.error("\(ConversationModel.TAG) Conference info URI is null!")
+					
+					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
+					ToastViewModel.shared.displayToast = true
+				}
+			} else if state == ConferenceScheduler.State.Error {
+				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
+				self.conferenceSchedulerDelegate = nil
+				Log.error("\(ConversationModel.TAG) Failed to create group call!")
+				
+				ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
+				ToastViewModel.shared.displayToast = true
+			}
+		})
+		conferenceScheduler.addDelegate(delegate: self.conferenceSchedulerDelegate!)
 	}
 	
 	func getContentTextMessage() {

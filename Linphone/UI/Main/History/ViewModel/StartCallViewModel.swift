@@ -94,7 +94,9 @@ class StartCallViewModel: ObservableObject {
 					}
 				}
 				
-				self.participants.removeAll()
+				DispatchQueue.main.async {
+					self.participants.removeAll()
+				}
 				
 				conferenceInfo.addParticipantInfos(participantInfos: participantsList)
 				
@@ -102,7 +104,7 @@ class StartCallViewModel: ObservableObject {
 					"\(StartCallViewModel.TAG) Creating group call with subject \(self.messageText) and \(participantsList.count) participant(s)"
 				)
 				
-				let conferenceScheduler = try core.createConferenceScheduler()
+				let conferenceScheduler = try core.createConferenceScheduler(account: account)
 				self.conferenceAddDelegate(core: core, conferenceScheduler: conferenceScheduler)
 				conferenceScheduler.account = account
 				// Will trigger the conference creation/update automatically

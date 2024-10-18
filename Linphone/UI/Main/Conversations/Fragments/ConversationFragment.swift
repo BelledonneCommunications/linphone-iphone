@@ -190,6 +190,7 @@ struct ConversationFragment: View {
 						Spacer()
 						
 						Button {
+							conversationViewModel.displayedConversation!.call()
 						} label: {
 							Image("phone")
 								.renderingMode(.template)
