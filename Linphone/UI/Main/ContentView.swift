@@ -1231,6 +1231,7 @@ struct ContentView: View {
 		}
 		.onChange(of: scenePhase) { newPhase in
 			CoreContext.shared.enteredForeground = newPhase == .active
+			orientation = UIDevice.current.orientation
 		}
 	}
 	
