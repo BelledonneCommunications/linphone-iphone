@@ -1242,9 +1242,9 @@ struct ContentView: View {
 }
 
 class NavigationManager: ObservableObject {
-	@Published var selectedCallId: String? = nil
-	@Published var peerAddr: String? = nil
-	@Published var localAddr: String? = nil
+	@Published var selectedCallId: String?
+	@Published var peerAddr: String?
+	@Published var localAddr: String?
 	
 	func openChatRoom(callId: String, peerAddr: String, localAddr: String) {
 		self.selectedCallId = callId
