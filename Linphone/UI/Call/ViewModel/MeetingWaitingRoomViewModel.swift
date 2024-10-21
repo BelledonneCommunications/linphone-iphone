@@ -50,6 +50,11 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	
 	func resetMeetingRoomView() {
 		if self.telecomManager.meetingWaitingRoomSelected != nil {
+			do {
+				try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+			} catch _ {
+				
+			}
 			coreContext.doOnCoreQueue { core in
 				
 				let conf = core.findConferenceInformationFromUri(uri: self.telecomManager.meetingWaitingRoomSelected!)
@@ -73,10 +78,12 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
 						userNameTmp = friend!.address!.displayName!
 					} else {
-						if core.defaultAccount!.contactAddress!.displayName != nil {
-							userNameTmp = core.defaultAccount!.contactAddress!.displayName!
-						} else if core.defaultAccount!.contactAddress!.username != nil {
-							userNameTmp = core.defaultAccount!.contactAddress!.username!
+						if core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil {
+							if core.defaultAccount!.contactAddress!.displayName != nil {
+								userNameTmp = core.defaultAccount!.contactAddress!.displayName!
+							} else if core.defaultAccount!.contactAddress!.username != nil {
+								userNameTmp = core.defaultAccount!.contactAddress!.username!
+							}
 						}
 					}
 					
