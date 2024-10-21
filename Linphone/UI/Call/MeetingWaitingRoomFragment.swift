@@ -52,7 +52,9 @@ struct MeetingWaitingRoomFragment: View {
 					})
 					.onAppear {
 						meetingWaitingRoomViewModel.enableAVAudioSession()
-						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({
+							$0.portType.rawValue.contains("Bluetooth") || $0.portType.rawValue.contains("Headphones")
+						}).isEmpty {
 							do {
 								try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
 							} catch _ {
@@ -72,8 +74,9 @@ struct MeetingWaitingRoomFragment: View {
 					}
 					.onAppear {
 						meetingWaitingRoomViewModel.enableAVAudioSession()
-						
-						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+						if AVAudioSession.sharedInstance().currentRoute.outputs.filter({
+							$0.portType.rawValue.contains("Bluetooth") || $0.portType.rawValue.contains("Headphones")
+						}).isEmpty {
 							do {
 								try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
 							} catch _ {
