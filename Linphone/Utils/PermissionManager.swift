@@ -22,6 +22,7 @@ import Photos
 import Contacts
 import UserNotifications
 import SwiftUI
+import Network
 
 class PermissionManager: ObservableObject {
 	
@@ -32,18 +33,28 @@ class PermissionManager: ObservableObject {
 	@Published var cameraPermissionGranted = false
 	@Published var contactsPermissionGranted = false
 	@Published var microphonePermissionGranted = false
+	@Published var allPermissionsHaveBeenDisplayed = false
 	
 	private init() {}
 	
 	func getPermissions() {
-		pushNotificationRequestPermission()
-		microphoneRequestPermission()
-		photoLibraryRequestPermission()
-		cameraRequestPermission()
-		contactsRequestPermission()
+		pushNotificationRequestPermission {
+			let dispatchGroup = DispatchGroup()
+			
+			dispatchGroup.enter()
+			self.microphoneRequestPermission()
+			self.photoLibraryRequestPermission()
+			self.cameraRequestPermission()
+			self.contactsRequestPermission(group: dispatchGroup)
+			
+			dispatchGroup.notify(queue: .main) {
+				// Now request local network authorization last
+				self.requestLocalNetworkAuthorization()
+			}
+		}
 	}
 	
-	func pushNotificationRequestPermission() {
+	func pushNotificationRequestPermission(completion: @escaping () -> Void) {
 		let options: UNAuthorizationOptions = [.alert, .sound, .badge]
 		UNUserNotificationCenter.current().requestAuthorization(options: options) { (granted, error) in
 			if let error = error {
@@ -52,6 +63,7 @@ class PermissionManager: ObservableObject {
 			DispatchQueue.main.async {
 				self.pushPermissionGranted = granted
 			}
+			completion()
 		}
 	}
 	
@@ -79,12 +91,39 @@ class PermissionManager: ObservableObject {
 		})
 	}
 	
-	func contactsRequestPermission() {
+	func contactsRequestPermission(group: DispatchGroup) {
 		let store = CNContactStore()
 		store.requestAccess(for: .contacts) { success, _ in
 			DispatchQueue.main.async {
 				self.contactsPermissionGranted = success
 			}
+			group.leave()
+		}
+	}
+	
+	func requestLocalNetworkAuthorization() {
+		// Use a general UDP broadcast endpoint to attempt triggering the authorization request
+		let host = NWEndpoint.Host("255.255.255.255") // Broadcast on the local network
+		let port = NWEndpoint.Port(12345) // Choose an arbitrary port
+		
+		let params = NWParameters.udp
+		let connection = NWConnection(host: host, port: port, using: params)
+		
+		connection.stateUpdateHandler = { newState in
+			switch newState {
+			case .ready:
+				print("Connection ready")
+				connection.cancel() // Close the connection after establishing it
+			case .failed(let error):
+				print("Connection failed: \(error)")
+				connection.cancel()
+			default:
+				break
+			}
+		}
+		connection.start(queue: .main)
+		DispatchQueue.main.async {
+			self.allPermissionsHaveBeenDisplayed = true
 		}
 	}
 }
