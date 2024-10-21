@@ -235,6 +235,7 @@ struct CallView: View {
 				}
 			}
 			.onAppear {
+				UIApplication.shared.endEditing()
 				fullscreenVideo = false
 				if geo.size.width < 350 || geo.size.height < 350 {
 					buttonSize = 45.0
