@@ -194,7 +194,7 @@ struct PermissionsFragment: View {
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 		.navigationBarHidden(true)
-		.onReceive(permissionManager.$contactsPermissionGranted, perform: { (granted) in
+		.onReceive(permissionManager.$allPermissionsHaveBeenDisplayed, perform: { (granted) in
 			if granted {
 				withAnimation {
 					sharedMainViewModel.changeWelcomeView()
