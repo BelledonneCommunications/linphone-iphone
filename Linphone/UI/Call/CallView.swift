@@ -517,14 +517,8 @@ struct CallView: View {
 						}
 					}
 					.frame(
-						width:
-							angleDegree == 0
-						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
-						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom),
-						height:
-							angleDegree == 0
-						? (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
-						: (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8)
+						width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
+						height: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
 					.scaledToFill()
 					.clipped()
@@ -711,6 +705,7 @@ struct CallView: View {
 		)
 		.background(Color.gray900)
 		.cornerRadius(20)
+		.padding(.top, callViewModel.isOneOneCall && fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.safeAreaInsets.bottom + 10 : 0)
 		.padding(.horizontal, fullscreenVideo && !telecomManager.isPausedByRemote ? 0 : 4)
 		.onRotate { newOrientation in
 			let oldOrientation = orientation
