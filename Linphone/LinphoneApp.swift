@@ -22,6 +22,7 @@ import linphonesw
 import UserNotifications
 
 let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
+var displayedChatroomPeerAddr: String?
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
 	
@@ -79,6 +80,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 		}
 		
 		completionHandler()
+	}
+	
+	// Display notifications on foreground
+	func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+		let userInfo = notification.request.content.userInfo
+		Log.info("Received push notification in foreground, payload= \(userInfo)")
+		
+		 if let callId = userInfo["CallId"] as? String, let peerAddr = userInfo["peer_addr"] as? String, let localAddr = userInfo["local_addr"] as? String {
+			 // Only display notification if we're not in the chatroom they come from
+			 if displayedChatroomPeerAddr != peerAddr {
+				 completionHandler([.banner, .sound])
+			 }
+		}
 	}
 	
 	func applicationWillTerminate(_ application: UIApplication) {

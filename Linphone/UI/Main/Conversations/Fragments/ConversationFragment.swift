@@ -69,7 +69,13 @@ struct ConversationFragment: View {
 						.onRotate { newOrientation in
 							orientation = newOrientation
 						}
+						.onAppear() {
+							displayedChatroomPeerAddr = conversationViewModel.displayedConversation?.remoteSipUri
+							Log.info("debugtrace = onAppear: displayedChatroomPeerAddr = \(displayedChatroomPeerAddr)")
+						}
 						.onDisappear {
+							displayedChatroomPeerAddr = nil
+							Log.info("debugtrace = onDisappear: displayedChatroomPeerAddr = nil")
 							conversationViewModel.removeConversationDelegate()
 						}
 						.sheet(isPresented: $conversationViewModel.isShowSelectedMessageToDisplayDetails, onDismiss: {
@@ -109,7 +115,13 @@ struct ConversationFragment: View {
 						.onRotate { newOrientation in
 							orientation = newOrientation
 						}
+						.onAppear() {
+							displayedChatroomPeerAddr = conversationViewModel.displayedConversation?.remoteSipUri
+							Log.info("debugtrace = onAppear: displayedChatroomPeerAddr = \(displayedChatroomPeerAddr)")
+						}
 						.onDisappear {
+							displayedChatroomPeerAddr = nil
+							Log.info("debugtrace = onDisappear: displayedChatroomPeerAddr = nil")
 							conversationViewModel.removeConversationDelegate()
 						}
 						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetails) {
