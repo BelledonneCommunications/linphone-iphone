@@ -164,9 +164,7 @@ struct ChatBubbleView: View {
 												}
 												
 												if !eventLogMessage.message.text.isEmpty {
-													Text(eventLogMessage.message.text)
-														.foregroundStyle(Color.grayMain2c700)
-														.default_text_style(styleSize: 14)
+													DynamicLinkText(text: eventLogMessage.message.text)
 												}
 												
 												if eventLogMessage.message.isIcalendar && eventLogMessage.message.messageConferenceInfo != nil {
@@ -753,6 +751,44 @@ struct ChatBubbleView: View {
 				}
 			}
 		}
+	}
+}
+
+struct DynamicLinkText: View {
+	let text: String
+	
+	var body: some View {
+		let components = text.components(separatedBy: " ")
+		
+		Text(makeAttributedString(from: components))
+			.fixedSize(horizontal: false, vertical: true)
+			.multilineTextAlignment(.leading)
+			.lineLimit(nil)
+			.foregroundStyle(Color.grayMain2c700)
+			.default_text_style(styleSize: 14)
+	}
+	
+	// Function to create an AttributedString with clickable links
+	private func makeAttributedString(from components: [String]) -> AttributedString {
+		var result = AttributedString("")
+		for (index, component) in components.enumerated() {
+			if let url = URL(string: component.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""),
+			   url.scheme == "http" || url.scheme == "https" {
+				var attributedText = AttributedString(component)
+				attributedText.link = url
+				attributedText.foregroundColor = .blue
+				attributedText.underlineStyle = .single
+				result.append(attributedText)
+			} else {
+				result.append(AttributedString(component))
+			}
+			
+			// Add space between words except for the last one
+			if index < components.count - 1 {
+				result.append(AttributedString(" "))
+			}
+		}
+		return result
 	}
 }
 

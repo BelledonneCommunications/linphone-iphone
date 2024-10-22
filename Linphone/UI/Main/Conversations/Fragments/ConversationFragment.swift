@@ -785,7 +785,7 @@ struct ConversationFragment: View {
 								if !conversationViewModel.selectedMessage!.message.text.isEmpty {
 									Button {
 										UIPasteboard.general.setValue(
-											conversationViewModel.selectedMessage!.message.text,
+											conversationViewModel.selectedMessage?.message.text ?? "Error_message_not_available",
 											forPasteboardType: UTType.plainText.identifier
 										)
 										
