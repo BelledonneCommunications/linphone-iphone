@@ -56,6 +56,7 @@ struct ConversationFragment: View {
 	@State private var isShowConversationForwardMessageFragment = false
 	
 	@Binding var isShowConversationFragment: Bool
+	@Binding var isShowStartCallGroupPopup: Bool
 	
 	@State private var selectedCategoryIndex = 0
 	
@@ -202,7 +203,11 @@ struct ConversationFragment: View {
 						Spacer()
 						
 						Button {
-							conversationViewModel.displayedConversation!.call()
+							if conversationViewModel.displayedConversation!.isGroup {
+								isShowStartCallGroupPopup.toggle()
+							} else {
+								conversationViewModel.displayedConversation!.call()
+							}
 						} label: {
 							Image("phone")
 								.renderingMode(.template)

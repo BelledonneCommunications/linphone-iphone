@@ -65,6 +65,7 @@ struct CallView: View {
 	@State var isShowParticipantsListFragment: Bool = false
 	@Binding var isShowStartCallFragment: Bool
 	@Binding var isShowConversationFragment: Bool
+	@Binding var isShowStartCallGroupPopup: Bool
 	
 	@State var buttonSize = 60.0
 	
@@ -197,7 +198,8 @@ struct CallView: View {
 						conversationViewModel: conversationViewModel,
 						conversationsListViewModel: conversationsListViewModel,
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-						isShowConversationFragment: $isShowConversationFragment
+						isShowConversationFragment: $isShowConversationFragment,
+						isShowStartCallGroupPopup: $isShowStartCallGroupPopup
 					)
 					.frame(maxWidth: .infinity)
 					.background(Color.gray100)
@@ -675,6 +677,13 @@ struct CallView: View {
 					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
 					maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 				)
+			} else if telecomManager.outgoingCallStarted {
+				ProgressView()
+					.progressViewStyle(CircularProgressViewStyle(tint: .white))
+					.frame(width: 60, height: 60, alignment: .center)
+					.onDisappear {
+						callViewModel.resetCallView()
+					}
 			}
 			
 			if callViewModel.isRecording {
@@ -2781,7 +2790,8 @@ struct PressedButtonStyle: ButtonStyle {
 		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
-		isShowConversationFragment: .constant(false)
+		isShowConversationFragment: .constant(false),
+		isShowStartCallGroupPopup: .constant(false)
 	)
 }
 // swiftlint:enable type_body_length

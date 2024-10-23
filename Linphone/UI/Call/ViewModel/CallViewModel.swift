@@ -98,6 +98,10 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func resetCallView() {
+		DispatchQueue.main.async {
+			self.displayName = ""
+		}
+		
 		coreContext.doOnCoreQueue { core in
 			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
 				if self.callDelegate != nil {
@@ -123,12 +127,16 @@ class CallViewModel: ObservableObject {
 					
 				}
 				
+				var displayNameTmp = ""
+				
 				var isOneOneCallTmp = false
 				if self.currentCall?.remoteAddress != nil {
 					let conf = self.currentCall!.conference
 					let confInfo = core.findConferenceInformationFromUri(uri: self.currentCall!.remoteAddress!)
 					if conf == nil && confInfo == nil {
 						isOneOneCallTmp = true
+					} else {
+						displayNameTmp = confInfo?.subject ?? "Conference-focus"
 					}
 				}
 				
@@ -151,7 +159,6 @@ class CallViewModel: ObservableObject {
 				
 				let remoteAddressStringTmp = remoteAddressTmp != nil ? String(remoteAddressTmp!.asStringUriOnly().dropFirst(4)) : ""
 				
-				var displayNameTmp = ""
 				if self.currentCall?.conference != nil {
 					displayNameTmp = self.currentCall?.conference?.subject ?? ""
 				} else if self.currentCall?.remoteAddress != nil {
@@ -161,7 +168,7 @@ class CallViewModel: ObservableObject {
 					} else {
 						if self.currentCall!.remoteAddress!.displayName != nil {
 							displayNameTmp = self.currentCall!.remoteAddress!.displayName!
-						} else if self.currentCall!.remoteAddress!.username != nil {
+						} else if self.currentCall!.remoteAddress!.username != nil && displayNameTmp.isEmpty {
 							displayNameTmp = self.currentCall!.remoteAddress!.username!
 						}
 					}

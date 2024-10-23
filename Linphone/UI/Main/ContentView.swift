@@ -66,6 +66,7 @@ struct ContentView: View {
 	@State var isShowStartConversationFragment = false
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
+	@State var isShowStartCallGroupPopup = false
 	@State var isShowSipAddressesPopup = false
 	@State var isShowSipAddressesPopupType = 0 // 0 to call, 1  to message, 2 to video call
 	@State var isShowConversationFragment = false
@@ -861,7 +862,8 @@ struct ContentView: View {
 									conversationViewModel: conversationViewModel,
 									conversationsListViewModel: conversationsListViewModel,
 									conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-									isShowConversationFragment: $isShowConversationFragment
+									isShowConversationFragment: $isShowConversationFragment,
+									isShowStartCallGroupPopup: $isShowStartCallGroupPopup
 								)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
@@ -1159,6 +1161,30 @@ struct ContentView: View {
 						}
 					}
 					
+					if isShowStartCallGroupPopup {
+						PopupView(
+							isShowPopup: $isShowStartCallGroupPopup,
+							title: Text("conversation_info_confirm_start_group_call_dialog_title"),
+							content: Text("conversation_info_confirm_start_group_call_dialog_message"),
+							titleFirstButton: Text("Cancel"),
+							actionFirstButton: {
+								self.isShowStartCallGroupPopup.toggle()
+							},
+							titleSecondButton: Text("Confirm"),
+							actionSecondButton: {
+								if conversationViewModel.displayedConversation != nil {
+									conversationViewModel.displayedConversation!.createGroupCall()
+								}
+								self.isShowStartCallGroupPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowStartCallGroupPopup.toggle()
+						}
+					}
+					
 					if telecomManager.meetingWaitingRoomDisplayed {
 						MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: meetingWaitingRoomViewModel)
 							.zIndex(3)
@@ -1176,7 +1202,8 @@ struct ContentView: View {
 							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
 							fullscreenVideo: $fullscreenVideo,
 							isShowStartCallFragment: $isShowStartCallFragment,
-							isShowConversationFragment: $isShowConversationFragment
+							isShowConversationFragment: $isShowConversationFragment,
+							isShowStartCallGroupPopup: $isShowStartCallGroupPopup
 						)
 						.zIndex(5)
 						.transition(.scale.combined(with: .move(edge: .top)))

@@ -1252,6 +1252,40 @@
         }
       }
     },
+    "conversation_info_confirm_start_group_call_dialog_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All participants will receive a call."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tous les participants de la conversation recevront un appel."
+          }
+        }
+      }
+    },
+    "conversation_info_confirm_start_group_call_dialog_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start a group call?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer un appel de groupe ?"
+          }
+        }
+      }
+    },
     "conversation_invalid_participant_due_to_security_mode_toast" : {
       "extractionState" : "manual",
       "localizations" : {

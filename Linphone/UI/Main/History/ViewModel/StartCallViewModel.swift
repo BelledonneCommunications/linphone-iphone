@@ -37,6 +37,7 @@ class StartCallViewModel: ObservableObject {
 	
 	@Published var operationInProgress: Bool = false
 	
+	private var conferenceScheduler: ConferenceScheduler?
 	private var conferenceSchedulerDelegate: ConferenceSchedulerDelegate?
 	
 	init() {
@@ -104,11 +105,12 @@ class StartCallViewModel: ObservableObject {
 					"\(StartCallViewModel.TAG) Creating group call with subject \(self.messageText) and \(participantsList.count) participant(s)"
 				)
 				
-				let conferenceScheduler = try core.createConferenceScheduler(account: account)
-				self.conferenceAddDelegate(core: core, conferenceScheduler: conferenceScheduler)
-				conferenceScheduler.account = account
-				// Will trigger the conference creation/update automatically
-				conferenceScheduler.info = conferenceInfo
+				self.conferenceScheduler = try core.createConferenceScheduler(account: account)
+				if self.conferenceScheduler != nil {
+					self.conferenceAddDelegate(core: core, conferenceScheduler: self.conferenceScheduler!)
+					// Will trigger the conference creation/update automatically
+					self.conferenceScheduler!.info = conferenceInfo
+				}
 			} catch let error {
 				Log.error(
 					"\(StartCallViewModel.TAG) createGroupCall: \(error)"
