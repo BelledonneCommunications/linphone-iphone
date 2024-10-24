@@ -223,10 +223,12 @@ struct ConversationFragment: View {
 								isMenuOpen = false
 							} label: {
 								HStack {
-									Text("See contact")
+									Text("conversation_menu_go_to_info")
 									Spacer()
-									Image("user-circle")
+									Image("info")
+										.renderingMode(.template)
 										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
 								}
@@ -236,23 +238,27 @@ struct ConversationFragment: View {
 								isMenuOpen = false
 							} label: {
 								HStack {
-									Text("Copy SIP address")
+									Text(conversationViewModel.displayedConversation!.isMuted ? "conversation_action_unmute" : "conversation_action_mute")
 									Spacer()
-									Image("copy")
+									Image(conversationViewModel.displayedConversation!.isMuted ? "bell-simple" : "bell-simple-slash")
+										.renderingMode(.template)
 										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
 								}
 							}
 							
-							Button(role: .destructive) {
+							Button {
 								isMenuOpen = false
 							} label: {
 								HStack {
-									Text("Delete history")
+									Text("conversation_menu_configure_ephemeral_messages")
 									Spacer()
-									Image("trash-simple-red")
+									Image("clock-countdown")
+										.renderingMode(.template)
 										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
 								}

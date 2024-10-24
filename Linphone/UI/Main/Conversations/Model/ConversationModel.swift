@@ -22,7 +22,7 @@ import linphonesw
 import Combine
 
 // swiftlint:disable line_length
-class ConversationModel: ObservableObject {
+class ConversationModel: ObservableObject, Identifiable {
 	
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
@@ -101,8 +101,11 @@ class ConversationModel: ObservableObject {
 	
 	func toggleMute() {
 		coreContext.doOnCoreQueue { _ in
+			let chatRoomMuted = self.chatRoom.muted
 			self.chatRoom.muted.toggle()
-			self.isMuted = self.chatRoom.muted
+			DispatchQueue.main.async {
+				self.isMuted = !chatRoomMuted
+			}
 		}
 	}
 	

@@ -928,6 +928,40 @@
         }
       }
     },
+    "conversation_action_mute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre en sourdine"
+          }
+        }
+      }
+    },
+    "conversation_action_unmute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un-mute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlever la sourdine"
+          }
+        }
+      }
+    },
     "conversation_composing_label_multiple" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1299,6 +1333,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé."
+          }
+        }
+      }
+    },
+    "conversation_menu_configure_ephemeral_messages" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ephemeral messages"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messages éphémères"
+          }
+        }
+      }
+    },
+    "conversation_menu_go_to_info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation info"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informations"
           }
         }
       }
