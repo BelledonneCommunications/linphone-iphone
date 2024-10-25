@@ -160,13 +160,11 @@ class ConversationViewModel: ObservableObject {
 						if indexMessage < self.conversationMessagesSection[0].rows.count {
 							if self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
 								DispatchQueue.main.async {
-									//self.objectWillChange.send()
 									self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
 									self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
 								}
 							} else {
 								DispatchQueue.main.async {
-									//self.objectWillChange.send()
 									self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
 								}
 							}
@@ -199,7 +197,7 @@ class ConversationViewModel: ObservableObject {
 						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 						
 						DispatchQueue.main.async {
-							if indexMessage != nil {								// self.objectWillChange.send()
+							if indexMessage != nil {
 								self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp ?? .error
 							}
 						}
@@ -212,7 +210,6 @@ class ConversationViewModel: ObservableObject {
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {
-								//self.objectWillChange.send()
 								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
 							}
 						}
@@ -225,7 +222,6 @@ class ConversationViewModel: ObservableObject {
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {
-								//		self.objectWillChange.send()
 								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
 							}
 						}
@@ -235,7 +231,6 @@ class ConversationViewModel: ObservableObject {
 						
 						DispatchQueue.main.async {
 							if indexMessage != nil {
-								self.objectWillChange.send()
 								self.conversationMessagesSection[0].rows[indexMessage!].message.ephemeralExpireTime = ephemeralExpireTimeTmp
 							}
 						}

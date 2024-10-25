@@ -56,7 +56,6 @@ struct ConversationsListBottomSheet: View {
 			
 			Button {
 				if conversationsListViewModel.selectedConversation != nil {
-					conversationsListViewModel.objectWillChange.send()
 					conversationsListViewModel.markAsReadSelectedConversation()
 					conversationsListViewModel.updateUnreadMessagesCount()
 				}
@@ -96,7 +95,6 @@ struct ConversationsListBottomSheet: View {
 			
 			Button {
 				if conversationsListViewModel.selectedConversation != nil {
-					conversationsListViewModel.objectWillChange.send()
 					conversationsListViewModel.selectedConversation!.toggleMute()
 				}
 				

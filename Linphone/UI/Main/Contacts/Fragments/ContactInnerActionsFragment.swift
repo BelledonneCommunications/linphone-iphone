@@ -275,7 +275,6 @@ struct ContactInnerActionsFragment: View {
 			
 			Button {
 				if contactAvatarModel.friend != nil {
-					contactViewModel.objectWillChange.send()
 					contactAvatarModel.friend!.edit()
 					contactAvatarModel.friend!.starred.toggle()
 					contactAvatarModel.friend!.done()
