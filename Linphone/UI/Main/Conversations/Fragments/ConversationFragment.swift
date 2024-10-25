@@ -35,6 +35,7 @@ struct ConversationFragment: View {
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
 	@State var isMenuOpen = false
+	@State private var isMuted: Bool = false
 	
 	@FocusState var isMessageTextFocused: Bool
 	
@@ -236,11 +237,13 @@ struct ConversationFragment: View {
 							
 							Button {
 								isMenuOpen = false
+								conversationViewModel.displayedConversation!.toggleMute()
+								isMuted = !isMuted
 							} label: {
 								HStack {
-									Text(conversationViewModel.displayedConversation!.isMuted ? "conversation_action_unmute" : "conversation_action_mute")
+									Text(isMuted ? "conversation_action_unmute" : "conversation_action_mute")
 									Spacer()
-									Image(conversationViewModel.displayedConversation!.isMuted ? "bell-simple" : "bell-simple-slash")
+									Image(isMuted ? "bell-simple" : "bell-simple-slash")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(Color.grayMain2c500)
@@ -271,6 +274,10 @@ struct ConversationFragment: View {
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 								.padding(.top, 4)
+								.onChange(of: isMuted) { _ in }
+								.onAppear {
+									isMuted = conversationViewModel.displayedConversation!.isMuted
+								}
 						}
 						.onTapGesture {
 							isMenuOpen = true
