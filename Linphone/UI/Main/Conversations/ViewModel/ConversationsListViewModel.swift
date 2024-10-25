@@ -44,7 +44,7 @@ class ConversationsListViewModel: ObservableObject {
 	func computeChatRoomsList(filter: String) {
 		coreContext.doOnCoreQueue { core in
 			let account = core.defaultAccount
-			let chatRooms = account?.chatRooms != nil ? account!.chatRooms : core.chatRooms
+			let chatRooms = account != nil ? account!.chatRooms : core.chatRooms
 			
 			self.conversationsListTmp = []
 			
