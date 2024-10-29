@@ -195,11 +195,36 @@ struct ConversationFragment: View {
 						Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 50)
 							.padding(.top, 4)
 						
-						Text(conversationViewModel.displayedConversation!.subject)
-							.default_text_style(styleSize: 16)
-							.frame(maxWidth: .infinity, alignment: .leading)
-							.padding(.top, 4)
-							.lineLimit(1)
+						VStack(spacing: 1) {
+							Text(conversationViewModel.displayedConversation!.subject)
+								.default_text_style(styleSize: 16)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.padding(.top, 4)
+								.lineLimit(1)
+							
+							if isMuted || conversationViewModel.displayedConversation!.isEphemeral {
+								HStack {
+									if isMuted {
+										Image("bell-slash")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 16, height: 16, alignment: .trailing)
+									}
+									
+									if conversationViewModel.displayedConversation!.isEphemeral {
+										Image("clock-countdown")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 16, height: 16, alignment: .trailing)
+									}
+									
+									Spacer()
+								}
+							}
+						}
+						.padding(.vertical, 10)
 						
 						Spacer()
 						
