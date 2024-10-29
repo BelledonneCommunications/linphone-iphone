@@ -87,12 +87,24 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 		let userInfo = notification.request.content.userInfo
 		Log.info("Received push notification in foreground, payload= \(userInfo)")
 		
-		 if let callId = userInfo["CallId"] as? String, let peerAddr = userInfo["peer_addr"] as? String, let localAddr = userInfo["local_addr"] as? String {
-			 // Only display notification if we're not in the chatroom they come from
-			 if displayedChatroomPeerAddr != peerAddr {
-				 completionHandler([.banner, .sound])
-			 }
+		let strPeerAddr = userInfo["peer_addr"] as? String
+		if strPeerAddr == nil {
+			completionHandler([.banner, .sound])
+		} else {
+			// Only display notification if we're not in the chatroom they come from
+			if displayedChatroomPeerAddr != strPeerAddr {
+				CoreContext.shared.doOnCoreQueue { core in
+					let nilParams: ConferenceParams? = nil
+					if 	let peerAddr = try? Factory.Instance.createAddress(addr: strPeerAddr!)
+							, let chatroom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: peerAddr, participants: nil), chatroom.muted {
+						Log.info("message comes from a muted chatroom, ignore it")
+						return
+					}
+					completionHandler([.banner, .sound])
+				}
+			}
 		}
+			
 	}
 	
 	func applicationWillTerminate(_ application: UIApplication) {

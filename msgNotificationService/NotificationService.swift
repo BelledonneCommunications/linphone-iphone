@@ -147,6 +147,14 @@ class NotificationService: UNNotificationServiceExtension {
 					let message = lc!.getNewMessageFromCallid(callId: callId)
 					
 					if let message = message {
+						let nilParams: ConferenceParams? = nil
+						if let peerAddr = message.peerAddr
+							, let chatroom = lc!.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: peerAddr, participants: nil), chatroom.muted {
+							Log.info("message comes from a muted chatroom, ignore it")
+							stopCore()
+							contentHandler(UNNotificationContent())
+							return
+						}
 						let msgData = parseMessage(message: message)
 						
 						// Extension only upates app's badge when main shared core is Off = extension's core is On.
