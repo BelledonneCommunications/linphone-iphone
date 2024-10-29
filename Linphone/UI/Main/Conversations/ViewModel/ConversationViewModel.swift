@@ -23,6 +23,7 @@ import SwiftUI
 import AVFoundation
 
 // swiftlint:disable line_length
+// swiftlint:disable file_length
 // swiftlint:disable type_body_length
 // swiftlint:disable cyclomatic_complexity
 
@@ -36,6 +37,9 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var messageText: String = ""
 	@Published var composingLabel: String = ""
+	
+	@Published var isEphemeral: Bool = false
+	@Published var ephemeralTime: String = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
 	
 	// Used to keep track of a ChatRoom callback without having to worry about life cycle
 	// Init will add the delegate, deinit will remove it
@@ -121,6 +125,8 @@ class ConversationViewModel: ObservableObject {
 				}, onParticipantAdminStatusChanged: { (_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
 				}, onSubjectChanged: { (_: ChatRoom, eventLogs: EventLog) in
+					self.getNewMessages(eventLogs: [eventLogs])
+				}, onEphemeralEvent: {(_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
 				}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
 					self.removeMessage(eventLog)
@@ -329,6 +335,7 @@ class ConversationViewModel: ObservableObject {
 		self.getUnreadMessagesCount()
 		self.getParticipantConversationModel()
 		self.computeComposingLabel()
+		self.getEphemeralTime()
 		
 		self.mediasToSend.removeAll()
 		self.messageToReply = nil
@@ -1990,6 +1997,70 @@ class ConversationViewModel: ObservableObject {
 			}
 		}
 	}
+	
+	func setEphemeralTime(lifetimeString: String) {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				var lifetime: Int = 0
+				
+				switch lifetimeString {
+				case NSLocalizedString("conversation_ephemeral_messages_duration_one_minute", comment: ""):
+					lifetime = 60
+				case NSLocalizedString("conversation_ephemeral_messages_duration_one_hour", comment: ""):
+					lifetime = 3600
+				case NSLocalizedString("conversation_ephemeral_messages_duration_one_day", comment: ""):
+					lifetime = 86400
+				case NSLocalizedString("conversation_ephemeral_messages_duration_three_days", comment: ""):
+					lifetime = 259200
+				case NSLocalizedString("conversation_ephemeral_messages_duration_one_week", comment: ""):
+					lifetime = 604800
+				default:
+					lifetime = 0
+				}
+				
+				if lifetime == 0 {
+					self.displayedConversation!.chatRoom.ephemeralEnabled = false
+					self.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
+				} else {
+					self.displayedConversation!.chatRoom.ephemeralEnabled = true
+					self.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
+				}
+				
+				self.getEphemeralTime()
+			}
+		}
+	}
+	
+	func getEphemeralTime() {
+		coreContext.doOnCoreQueue { _ in
+			if self.displayedConversation != nil {
+				
+				let lifetime = self.displayedConversation!.chatRoom.ephemeralLifetime
+				DispatchQueue.main.async {
+					switch lifetime {
+					case 60:
+						self.isEphemeral = true
+						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_minute", comment: "")
+					case 3600:
+						self.isEphemeral = true
+						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_hour", comment: "")
+					case 86400:
+						self.isEphemeral = true
+						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_day", comment: "")
+					case 259200:
+						self.isEphemeral = true
+						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_three_days", comment: "")
+					case 604800:
+						self.isEphemeral = true
+						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_week", comment: "")
+					default:
+						self.isEphemeral = false
+						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
+					}
+				}
+			}
+		}
+	}
 }
 // swiftlint:enable line_length
 // swiftlint:enable type_body_length
@@ -2278,3 +2349,4 @@ class AudioRecorder: NSObject, ObservableObject {
 		return headsetCard ?? bluetoothCard ?? microphoneCard
 	}
 }
+// swiftlint:enable file_length

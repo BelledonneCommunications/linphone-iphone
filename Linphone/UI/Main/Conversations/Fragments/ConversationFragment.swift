@@ -55,6 +55,7 @@ struct ConversationFragment: View {
 	@State private var voiceRecordingInProgress = false
 	
 	@State private var isShowConversationForwardMessageFragment = false
+	@State private var isShowEphemeralFragment = false
 	
 	@Binding var isShowConversationFragment: Bool
 	@Binding var isShowStartCallGroupPopup: Bool
@@ -202,7 +203,7 @@ struct ConversationFragment: View {
 								.padding(.top, 4)
 								.lineLimit(1)
 							
-							if isMuted || conversationViewModel.displayedConversation!.isEphemeral {
+							if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
 								HStack {
 									if isMuted {
 										Image("bell-slash")
@@ -212,12 +213,18 @@ struct ConversationFragment: View {
 											.frame(width: 16, height: 16, alignment: .trailing)
 									}
 									
-									if conversationViewModel.displayedConversation!.isEphemeral {
+									if conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
 										Image("clock-countdown")
 											.renderingMode(.template)
 											.resizable()
 											.foregroundStyle(Color.orangeMain500)
 											.frame(width: 16, height: 16, alignment: .trailing)
+										
+										Text(conversationViewModel.ephemeralTime)
+											.default_text_style(styleSize: 12)
+											.padding(.leading, -2)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.lineLimit(1)
 									}
 									
 									Spacer()
@@ -279,6 +286,9 @@ struct ConversationFragment: View {
 							
 							Button {
 								isMenuOpen = false
+								withAnimation {
+									isShowEphemeralFragment = true
+								}
 							} label: {
 								HStack {
 									Text("conversation_menu_configure_ephemeral_messages")
@@ -942,6 +952,15 @@ struct ConversationFragment: View {
 					conversationsListViewModel: conversationsListViewModel,
 					conversationForwardMessageViewModel: conversationForwardMessageViewModel,
 					isShowConversationForwardMessageFragment: $isShowConversationForwardMessageFragment
+				)
+				.zIndex(5)
+				.transition(.move(edge: .trailing))
+			}
+			
+			if isShowEphemeralFragment {
+				EphemeralFragment(
+					conversationViewModel: conversationViewModel,
+					isShowEphemeralFragment: $isShowEphemeralFragment
 				)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))

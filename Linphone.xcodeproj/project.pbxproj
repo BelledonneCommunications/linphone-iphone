@@ -169,6 +169,7 @@
 		D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D0502AEBDBD500A57AAF /* ContactsListBottomSheet.swift */; };
 		D7E6D0552AEBFCCE00A57AAF /* ContactsInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D0542AEBFCCE00A57AAF /* ContactsInnerFragment.swift */; };
 		D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */; };
+		D7EFD1E42CD11F70005E67CD /* EphemeralFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7EFD1E32CD11F53005E67CD /* EphemeralFragment.swift */; };
 		D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */; };
 		D7F5F6412C359F3B007FCF2F /* SipAddressesPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */; };
 		D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */; };
@@ -358,6 +359,7 @@
 		D7E6D0502AEBDBD500A57AAF /* ContactsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListBottomSheet.swift; sourceTree = "<group>"; };
 		D7E6D0542AEBFCCE00A57AAF /* ContactsInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsInnerFragment.swift; sourceTree = "<group>"; };
 		D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsFragment.swift; sourceTree = "<group>"; };
+		D7EFD1E32CD11F53005E67CD /* EphemeralFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralFragment.swift; sourceTree = "<group>"; };
 		D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListFragment.swift; sourceTree = "<group>"; };
 		D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SipAddressesPopup.swift; sourceTree = "<group>"; };
 		D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterFragment.swift; sourceTree = "<group>"; };
@@ -845,6 +847,7 @@
 		D7CEE0392B7A232200FD79B7 /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D7EFD1E32CD11F53005E67CD /* EphemeralFragment.swift */,
 				D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */,
 				D7CEE03C2B7A23B200FD79B7 /* ConversationsListFragment.swift */,
 				D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */,
@@ -1168,6 +1171,7 @@
 				D75759322B56D40900E7AC10 /* ZRTPPopup.swift in Sources */,
 				D78E062E2BEA69F400CE3783 /* AudioRouteBottomSheet.swift in Sources */,
 				D7A0ACBB2C415D630043AE79 /* StartGroupConversationFragment.swift in Sources */,
+				D7EFD1E42CD11F70005E67CD /* EphemeralFragment.swift in Sources */,
 				D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */,
 				D7A03FC62ACC458A0081A588 /* SplashScreen.swift in Sources */,
 				D70C82A52C85EDCA0087F43F /* ConversationForwardMessageFragment.swift in Sources */,
