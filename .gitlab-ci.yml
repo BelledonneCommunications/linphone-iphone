@@ -71,10 +71,10 @@
 
 
 variables:
-  archive_scheme: linphone
-  archive_path: linphone.xcarchive
-  export_path: linphone-adhoc-ipa
-  export_options_plist: linphone-adhoc.plist
+  archive_scheme: Linphone
+  archive_path: Linphone.xcarchive
+  export_path: Linphone-adhoc-ipa
+  export_options_plist: Linphone-adhoc.plist
 
 job-ios:
 
@@ -85,7 +85,7 @@ job-ios:
     - pod install --repo-update
     - pwd
     - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
-    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
+    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./Linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
     - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
 
 
