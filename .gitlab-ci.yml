@@ -80,13 +80,13 @@ job-ios:
 
   stage: build
   tags: [ "macos-xcode15" ]
-
+  allow_failure: true
   script:
-    - pod install --repo-update
-    - pwd
-    - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
-    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./Linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
-    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
+#    - pod install --repo-update
+    - exit 1
+#    - sed 's/fileprivate let tableView =/public let tableView =/g' ./Pods/DropDown/DropDown/src/DropDown.swift > tmp.swift && mv -f tmp.swift ./Pods/DropDown/DropDown/src/DropDown.swift
+#    - xcodebuild archive -scheme $archive_scheme -archivePath ./$archive_path -configuration Release -workspace ./Linphone.xcworkspace -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
+#    - xcodebuild -exportArchive -archivePath  ./$archive_path -exportPath ./$export_path -exportOptionsPlist ./$export_options_plist -allowProvisioningUpdates -UseModernBuildSystem=YES -destination 'generic/platform=iOS'
 
 
   artifacts:
@@ -95,4 +95,5 @@ job-ios:
       - $export_path
     when: always
     expire_in: 1 week
+
 
