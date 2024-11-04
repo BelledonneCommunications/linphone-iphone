@@ -36,7 +36,7 @@ class ConversationModel: ObservableObject, Identifiable {
 	let localSipUri: String
 	let remoteSipUri: String
 	let isGroup: Bool
-	let isReadOnly: Bool
+	@Published var isReadOnly: Bool
 	@Published var subject: String
 	@Published var participantsAddress: [String] = []
 	@Published var isComposing: Bool

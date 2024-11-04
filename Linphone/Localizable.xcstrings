@@ -875,6 +875,23 @@
     "Connexion à la réunion" : {
 
     },
+    "contact_details_actions_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other actions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autres actions"
+          }
+        }
+      }
+    },
     "contact_dialog_pick_phone_number_or_sip_address_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -924,6 +941,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continuer"
+          }
+        }
+      }
+    },
+    "conversation_action_call" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appeler"
+          }
+        }
+      }
+    },
+    "conversation_action_configure_ephemeral_messages" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure ephemeral messages"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurer les messages éphémères"
+          }
+        }
+      }
+    },
+    "conversation_action_leave_group" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave the group"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitter le groupe"
           }
         }
       }
@@ -1428,6 +1496,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Démarrer un appel de groupe ?"
+          }
+        }
+      }
+    },
+    "conversation_info_delete_history_action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete history"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'historique"
+          }
+        }
+      }
+    },
+    "conversation_info_menu_go_to_contact" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See contact profile"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir le contact"
           }
         }
       }
@@ -2068,6 +2170,23 @@
     },
     "Meeting added to iPhone calendar" : {
 
+    },
+    "meeting_schedule_meeting_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réunion"
+          }
+        }
+      }
     },
     "meeting_waiting_room_join" : {
       "extractionState" : "manual",

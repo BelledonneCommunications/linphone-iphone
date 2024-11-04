@@ -54,88 +54,11 @@ struct ConversationsListBottomSheet: View {
 			
 			Spacer()
 			
-			Button {
-				if conversationsListViewModel.selectedConversation != nil {
-					conversationsListViewModel.markAsReadSelectedConversation()
-					conversationsListViewModel.updateUnreadMessagesCount()
-				}
-				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
-					} else {
-						showingSheet.toggle()
-						dismiss()
-					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
-				}
-			} label: {
-				HStack {
-					Image("envelope-simple")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text("Marquer comme non lu")
-					.default_text_style(styleSize: 16)
-					Spacer()
-				}
-				.frame(maxHeight: .infinity)
-			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
-			
-			Button {
-				if conversationsListViewModel.selectedConversation != nil {
-					conversationsListViewModel.selectedConversation!.toggleMute()
-				}
-				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
-					} else {
-						showingSheet.toggle()
-						dismiss()
-					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
-				}
-			} label: {
-				HStack {
-					Image(conversationsListViewModel.selectedConversation!.isMuted ? "bell" : "bell-slash")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text(conversationsListViewModel.selectedConversation!.isMuted ? "Réactiver les notifications" : "Mettre en sourdine")
-					.default_text_style(styleSize: 16)
-					Spacer()
-				}
-				.frame(maxHeight: .infinity)
-			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
-			
-			if conversationsListViewModel.selectedConversation != nil
-				&& !conversationsListViewModel.selectedConversation!.isGroup {
+			if conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly {
 				Button {
-					if !conversationsListViewModel.selectedConversation!.isGroup {
-						conversationsListViewModel.selectedConversation!.call()
+					if conversationsListViewModel.selectedConversation != nil {
+						conversationsListViewModel.markAsReadSelectedConversation()
+						conversationsListViewModel.updateUnreadMessagesCount()
 					}
 					
 					if #available(iOS 16.0, *) {
@@ -149,16 +72,15 @@ struct ConversationsListBottomSheet: View {
 						showingSheet.toggle()
 						dismiss()
 					}
-					
 				} label: {
 					HStack {
-						Image("phone")
+						Image("envelope-simple")
 							.renderingMode(.template)
 							.resizable()
 							.foregroundStyle(Color.grayMain2c500)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
-						Text("Appel")
+						Text("Marquer comme non lu")
 							.default_text_style(styleSize: 16)
 						Spacer()
 					}
@@ -171,9 +93,89 @@ struct ConversationsListBottomSheet: View {
 					Divider()
 				}
 				.frame(maxWidth: .infinity)
+				
+				Button {
+					if conversationsListViewModel.selectedConversation != nil {
+						conversationsListViewModel.selectedConversation!.toggleMute()
+					}
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
+					} else {
+						showingSheet.toggle()
+						dismiss()
+					}
+				} label: {
+					HStack {
+						Image(conversationsListViewModel.selectedConversation!.isMuted ? "bell" : "bell-slash")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+						Text(conversationsListViewModel.selectedConversation!.isMuted ? "Réactiver les notifications" : "Mettre en sourdine")
+							.default_text_style(styleSize: 16)
+						Spacer()
+					}
+					.frame(maxHeight: .infinity)
+				}
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
+				
+				VStack {
+					Divider()
+				}
+				.frame(maxWidth: .infinity)
+				
+				if conversationsListViewModel.selectedConversation != nil
+					&& !conversationsListViewModel.selectedConversation!.isGroup {
+					Button {
+						if !conversationsListViewModel.selectedConversation!.isGroup {
+							conversationsListViewModel.selectedConversation!.call()
+						}
+						
+						if #available(iOS 16.0, *) {
+							if idiom != .pad {
+								showingSheet.toggle()
+							} else {
+								showingSheet.toggle()
+								dismiss()
+							}
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
+						
+					} label: {
+						HStack {
+							Image("phone")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.all, 10)
+							Text("Appel")
+								.default_text_style(styleSize: 16)
+							Spacer()
+						}
+						.frame(maxHeight: .infinity)
+					}
+					.padding(.horizontal, 30)
+					.background(Color.gray100)
+					
+					VStack {
+						Divider()
+					}
+					.frame(maxWidth: .infinity)
+				}
 			}
 			
-			Button {	
+			Button {
 				conversationsListViewModel.selectedConversation!.deleteChatRoom()
 				conversationsListViewModel.computeChatRoomsList(filter: "")
 				
@@ -206,43 +208,46 @@ struct ConversationsListBottomSheet: View {
 			.padding(.horizontal, 30)
 			.background(Color.gray100)
 			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
-			
-			Button {
-				if conversationsListViewModel.selectedConversation != nil {
-					conversationsListViewModel.selectedConversation!.leave()
+			if conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly {
+				VStack {
+					Divider()
 				}
+				.frame(maxWidth: .infinity)
 				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
+				Button {
+					if conversationsListViewModel.selectedConversation != nil {
+						conversationsListViewModel.selectedConversation!.leave()
+						conversationsListViewModel.selectedConversation!.isReadOnly = true
+					}
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
 						dismiss()
 					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
+				} label: {
+					HStack {
+						Image("sign-out")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+						Text("Quitter la conversation")
+							.default_text_style(styleSize: 16)
+						Spacer()
+					}
+					.frame(maxHeight: .infinity)
 				}
-			} label: {
-				HStack {
-					Image("sign-out")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text("Quitter la conversation")
-					.default_text_style(styleSize: 16)
-					Spacer()
-				}
-				.frame(maxHeight: .infinity)
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
 			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
 		}
 		.background(Color.gray100)
 		.frame(maxWidth: .infinity)

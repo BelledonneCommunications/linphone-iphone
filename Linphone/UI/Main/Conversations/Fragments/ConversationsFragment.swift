@@ -39,7 +39,11 @@ struct ConversationsFragment: View {
 							conversationsListViewModel: conversationsListViewModel,
 							showingSheet: $showingSheet
 						)
-						.presentationDetents([.fraction(0.4)])
+						.presentationDetents(
+							conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly
+							? [.fraction(0.4)]
+							: [.fraction(0.1)]
+						)
 					}
 			} else {
 				ConversationsListFragment(conversationViewModel: conversationViewModel,
