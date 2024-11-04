@@ -1,0 +1,2603 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    " et " : {
+
+    },
+    " has reacted by " : {
+
+    },
+    " or " : {
+
+    },
+    " to: " : {
+
+    },
+    "." : {
+
+    },
+    "[Forgotten password?](https://subscribe.linphone.org/)" : {
+
+    },
+    "[linphone.org/contact](https://linphone.org/contact)" : {
+
+    },
+    "[nos conditions d’utilisation](https://linphone.org/general-terms)" : {
+
+    },
+    "[notre politique de confidentialité](https://linphone.org/privacy-policy)" : {
+
+    },
+    "*" : {
+
+    },
+    "**%@**" : {
+
+    },
+    "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
+
+    },
+    "**Company :** %@" : {
+
+    },
+    "**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone." : {
+
+    },
+    "**Job :** %@" : {
+
+    },
+    "**Micro** : Pour permettre à vos correspondants de vous entendre." : {
+
+    },
+    "**Notifications** : Pour vous informer quand vous recevez un message ou un appel." : {
+
+    },
+    "#" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ meeting" : {
+
+    },
+    "%lld" : {
+
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "%lld appels" : {
+
+    },
+    "%lld Book (Example)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "needs_review",
+                  "value" : "%lld Book"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Books"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "No Book"
+                }
+              }
+            }
+          }
+        },
+        "fr" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Livre"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Livres"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Pas de Livre"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld selected participants" : {
+
+    },
+    "+" : {
+
+    },
+    "|" : {
+
+    },
+    "❤️" : {
+
+    },
+    "👍" : {
+
+    },
+    "📅 Meeting has been cancelled" : {
+
+    },
+    "📅 Meeting has been modified" : {
+
+    },
+    "📅 You are invited to a meeting" : {
+
+    },
+    "😂" : {
+
+    },
+    "😢" : {
+
+    },
+    "😮" : {
+
+    },
+    "0" : {
+
+    },
+    "1" : {
+
+    },
+    "2" : {
+
+    },
+    "3" : {
+
+    },
+    "4" : {
+
+    },
+    "5" : {
+
+    },
+    "6" : {
+
+    },
+    "7" : {
+
+    },
+    "8" : {
+
+    },
+    "9" : {
+
+    },
+    "A subject and at least one participant is required to create a meeting" : {
+
+    },
+    "Accept all" : {
+
+    },
+    "Account successfully logged out" : {
+
+    },
+    "Active" : {
+
+    },
+    "Add a description" : {
+
+    },
+    "Add a picture" : {
+
+    },
+    "Add participants" : {
+
+    },
+    "Add the contact" : {
+
+    },
+    "Add to calendar" : {
+
+    },
+    "Add to contacts" : {
+
+    },
+    "Add to favourites" : {
+
+    },
+    "Administrateur" : {
+
+    },
+    "All calls will be removed from the history." : {
+
+    },
+    "All contacts" : {
+
+    },
+    "All modifications will be canceled." : {
+
+    },
+    "Annuler" : {
+
+    },
+    "Appel" : {
+
+    },
+    "assistant_account_create" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer"
+          }
+        }
+      }
+    },
+    "assistant_account_creation_sms_confirmation_explanation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We have sent a verification code on your phone number %@.  Please enter the verification code below:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On vous a envoyé un code de vérification par SMS au numéro %@.  Merci de le saisir ci-dessous :"
+          }
+        }
+      }
+    },
+    "assistant_account_creation_wrong_phone_number" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong number?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mauvais numéro ?"
+          }
+        }
+      }
+    },
+    "assistant_account_login" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login en FR"
+          }
+        }
+      }
+    },
+    "assistant_account_register" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Register"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’inscrire"
+          }
+        }
+      }
+    },
+    "assistant_account_register_push_notification_not_received_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push notification with auth token not received in 5 seconds, please try again later"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La notification poussée avec le jeton d\\'authentification n'a pas été reçue dans les 5 secondes, merci de réessayer plus tard"
+          }
+        }
+      }
+    },
+    "assistant_account_register_unexpected_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unexpected error occurred, please try again later"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un erreur inattendue est survenue, merci de réessayer plus tard"
+          }
+        }
+      }
+    },
+    "assistant_already_have_an_account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Already have an account?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez déjà un compte ?"
+          }
+        }
+      }
+    },
+    "assistant_create_account_using_email_on_our_web_platform" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create an account with your email on:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créez un compte avec votre email ici :"
+          }
+        }
+      }
+    },
+    "assistant_dialog_confirm_phone_number_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to use %@ phone number?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sûr de vouloir utiliser le numéro de téléphone %@ ?"
+          }
+        }
+      }
+    },
+    "assistant_dialog_confirm_phone_number_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm phone number"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmez votre numéro de téléphone"
+          }
+        }
+      }
+    },
+    "Attended transfer" : {
+
+    },
+    "Audio" : {
+
+    },
+    "Audio seulement" : {
+
+    },
+    "Block the address" : {
+
+    },
+    "Block the number" : {
+
+    },
+    "Bluetooth" : {
+
+    },
+    "Call failed" : {
+
+    },
+    "Call has been successfully transferred" : {
+
+    },
+    "Call history" : {
+
+    },
+    "Call is being transferred" : {
+
+    },
+    "Call list" : {
+
+    },
+    "Call transfer failed!" : {
+
+    },
+    "call_action_hang_up" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hang up"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raccrocher"
+          }
+        }
+      }
+    },
+    "call_can_be_trusted_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authenticated device"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil authentifié"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_security_alert_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This call confidentiality may be compromise!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La confidentialité de votre appel peut être compromise !"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_security_alert_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Security alert"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alerte de sécurité"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_security_alert_try_again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayer"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_letters_do_not_match" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing matches"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune correspondance"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_local_code_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your code:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre code :"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For your safety, we need to authenticate your correspondent device. Please exchange your codes:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour garantir le chiffrement, nous avons besoin d’authentifier l’appareil de votre correspondant. Veuillez échanger vos codes :"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_remote_code_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correspondent code:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code correspondant :"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Validate the device"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification de sécurité"
+          }
+        }
+      }
+    },
+    "call_dialog_zrtp_validate_trust_warning_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For your safety, we need to re-authenticate your correspondent device. Please re-exchange your codes:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour garantir le chiffrement, nous avons besoin de réauthentifier l’appareil de votre correspondant. Veuillez ré-échanger vos codes :"
+          }
+        }
+      }
+    },
+    "call_not_encrypted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call is not encrypted"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel non chiffré"
+          }
+        }
+      }
+    },
+    "call_srtp_point_to_point_encrypted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Point-to-point encrypted by SRTP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel chiffré de point à point"
+          }
+        }
+      }
+    },
+    "call_waiting_for_encryption_info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for encryption…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente du chiffrement…"
+          }
+        }
+      }
+    },
+    "call_zrtp_end_to_end_encrypted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End-to-end encrypted by ZRTP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel chiffré de bout en bout"
+          }
+        }
+      }
+    },
+    "call_zrtp_sas_validation_required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Validation required"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vérification nécessaire"
+          }
+        }
+      }
+    },
+    "call_zrtp_sas_validation_skip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer"
+          }
+        }
+      }
+    },
+    "Calls" : {
+
+    },
+    "calls_list_dialog_merge_into_conference_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create conference"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une conférence"
+          }
+        }
+      }
+    },
+    "calls_list_dialog_merge_into_conference_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge all calls into conference?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fusionner les appels en une conférence ?"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        }
+      }
+    },
+    "Cancel for me only" : {
+
+    },
+    "Cancelled" : {
+
+    },
+    "Categories" : {
+
+    },
+    "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
+
+    },
+    "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
+
+    },
+    "Chiffrement du média" : {
+
+    },
+    "Clear Logs" : {
+
+    },
+    "Close" : {
+
+    },
+    "Company" : {
+
+    },
+    "Conditions de service" : {
+
+    },
+    "conference_failed_to_create_group_call_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to create a group call!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'appel de groupe n'a pas pu être créé!"
+          }
+        }
+      }
+    },
+    "Configuration failed" : {
+
+    },
+    "Configuration successfully applied" : {
+
+    },
+    "Confirm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmer"
+          }
+        }
+      }
+    },
+    "Connexion à la réunion" : {
+
+    },
+    "contact_dialog_pick_phone_number_or_sip_address_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a number or a SIP address"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez un numéro ou adresse SIP"
+          }
+        }
+      }
+    },
+    "Contacts" : {
+
+    },
+    "contacts_list_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No contact for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun contact pour le moment…"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
+          }
+        }
+      }
+    },
+    "conversation_action_mute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre en sourdine"
+          }
+        }
+      }
+    },
+    "conversation_action_unmute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un-mute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlever la sourdine"
+          }
+        }
+      }
+    },
+    "conversation_composing_label_multiple" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ are composing…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ sont en train d'écrire…"
+          }
+        }
+      }
+    },
+    "conversation_composing_label_single" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is composing…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ est en train d'écrire…"
+          }
+        }
+      }
+    },
+    "conversation_dialog_set_subject" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set conversation subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nommer la conversation"
+          }
+        }
+      }
+    },
+    "conversation_dialog_subject_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de la conversation"
+          }
+        }
+      }
+    },
+    "conversation_ephemeral_messages_duration_disabled" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_day" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_hour" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_minute" : {
+
+    },
+    "conversation_ephemeral_messages_duration_one_week" : {
+
+    },
+    "conversation_ephemeral_messages_duration_three_days" : {
+
+    },
+    "conversation_event_admin_set" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is admin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ est maintenant administrateur"
+          }
+        }
+      }
+    },
+    "conversation_event_admin_unset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is no longer admin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ n'est plus administrateur"
+          }
+        }
+      }
+    },
+    "conversation_event_conference_created" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have joined the group"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez rejoint le groupe"
+          }
+        }
+      }
+    },
+    "conversation_event_conference_destroyed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have left the group"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez quitté le groupe"
+          }
+        }
+      }
+    },
+    "conversation_event_device_added" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New device for %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvel appareil pour %@"
+          }
+        }
+      }
+    },
+    "conversation_event_device_removed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device for %@ removed"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appareil supprimé pour %@"
+          }
+        }
+      }
+    },
+    "conversation_event_ephemeral_messages_disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ephemeral messages have been disabled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les messages éphémères ont été désactivés"
+          }
+        }
+      }
+    },
+    "conversation_event_ephemeral_messages_enabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ephemeral messages have been enabled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les messages éphémères ont été activés"
+          }
+        }
+      }
+    },
+    "conversation_event_ephemeral_messages_lifetime_changed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ephemeral lifetime is now %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La durée des messages éphémères est de %@"
+          }
+        }
+      }
+    },
+    "conversation_event_participant_added" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ has joined"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a rejoint le groupe"
+          }
+        }
+      }
+    },
+    "conversation_event_participant_removed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ has left"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a quitté le groupe"
+          }
+        }
+      }
+    },
+    "conversation_event_subject_changed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New subject: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le groupe a été renommé : %@"
+          }
+        }
+      }
+    },
+    "conversation_failed_to_create_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to create conversation!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la création de la conversation !"
+          }
+        }
+      }
+    },
+    "conversation_forward_message_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forward message to…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transférer à…"
+          }
+        }
+      }
+    },
+    "conversation_info_confirm_start_group_call_dialog_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All participants will receive a call."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tous les participants de la conversation recevront un appel."
+          }
+        }
+      }
+    },
+    "conversation_info_confirm_start_group_call_dialog_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start a group call?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer un appel de groupe ?"
+          }
+        }
+      }
+    },
+    "conversation_invalid_participant_due_to_security_mode_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't create conversation with a participant not on the same domain due to security restrictions!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé."
+          }
+        }
+      }
+    },
+    "conversation_menu_configure_ephemeral_messages" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ephemeral messages"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messages éphémères"
+          }
+        }
+      }
+    },
+    "conversation_menu_go_to_info" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation info"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informations"
+          }
+        }
+      }
+    },
+    "conversation_message_forward_cancelled_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message forward was cancelled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfert du message abandonné"
+          }
+        }
+      }
+    },
+    "conversation_message_forwarded_toast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message was forwarded"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le message a été transféré"
+          }
+        }
+      }
+    },
+    "conversation_message_meeting_cancelled_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been cancelled!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La réunion a été annulée"
+          }
+        }
+      }
+    },
+    "conversation_message_meeting_updated_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been updated"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La réunion a été mise à jour"
+          }
+        }
+      }
+    },
+    "conversation_reply_to_message_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replying to: "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En réponse à : "
+          }
+        }
+      }
+    },
+    "Conversations" : {
+
+    },
+    "conversations_list_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No conversation for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune conversation pour le moment…"
+          }
+        }
+      }
+    },
+    "Copy address" : {
+
+    },
+    "Copy number" : {
+
+    },
+    "Copy SIP address" : {
+
+    },
+    "Could not send ICS invitations to meeting to any participant" : {
+
+    },
+    "D'accord" : {
+
+    },
+    "Default" : {
+
+    },
+    "Default mode" : {
+
+    },
+    "Delete" : {
+
+    },
+    "Delete %@?" : {
+
+    },
+    "Delete all history" : {
+
+    },
+    "Delete history" : {
+
+    },
+    "Delete this contact" : {
+
+    },
+    "Delete this meeting" : {
+
+    },
+    "Demande d’autorisations" : {
+
+    },
+    "Deny all" : {
+
+    },
+    "Description" : {
+
+    },
+    "Dialer" : {
+
+    },
+    "Display Name" : {
+
+    },
+    "Disposition" : {
+
+    },
+    "Do you really want to delete all calls history?" : {
+
+    },
+    "Domain" : {
+
+    },
+    "Don’t save modifications?" : {
+
+    },
+    "drawer_menu_account_connection_status_cleared" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_connected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecté"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_progress" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cours de connexion…"
+          }
+        }
+      }
+    },
+    "drawer_menu_account_connection_status_refreshing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refreshing ..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En cours de rafraîchissement…"
+          }
+        }
+      }
+    },
+    "drawer_menu_add_account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add an account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter un compte"
+          }
+        }
+      }
+    },
+    "drawer_menu_no_account_configured_yet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No account configured yet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun compte configuré"
+          }
+        }
+      }
+    },
+    "Earpiece" : {
+
+    },
+    "Edit" : {
+
+    },
+    "Edit contact" : {
+
+    },
+    "Edit Contact" : {
+
+    },
+    "Edit picture" : {
+
+    },
+    "En attente d'autres participants..." : {
+
+    },
+    "En continuant, vous acceptez ces conditions, " : {
+
+    },
+    "En pause" : {
+
+    },
+    "Error" : {
+
+    },
+    "Error Name" : {
+
+    },
+    "Etes-vous sûr de vouloir supprimer %@ ?" : {
+
+    },
+    "Faire la validation à nouveau" : {
+
+    },
+    "Favourites" : {
+
+    },
+    "First Name" : {
+
+    },
+    "First name*" : {
+
+    },
+    "GC_MSG" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have been added to a chat room"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez été ajouté à une conversation"
+          }
+        }
+      }
+    },
+    "Hang up call" : {
+
+    },
+    "Headphones" : {
+
+    },
+    "help_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aide"
+          }
+        }
+      }
+    },
+    "History has been deleted" : {
+
+    },
+    "history_call_start_create_group_call" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a group call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer un appel de groupe"
+          }
+        }
+      }
+    },
+    "history_call_start_search_bar_filter_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search contact or history call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cherchez un contact ou une suggestion"
+          }
+        }
+      }
+    },
+    "history_call_start_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvel appel"
+          }
+        }
+      }
+    },
+    "history_group_call_start_dialog_set_subject" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set group call subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nommer l'appel de groupe"
+          }
+        }
+      }
+    },
+    "history_group_call_start_dialog_subject_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group call subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l'appel de groupe"
+          }
+        }
+      }
+    },
+    "history_list_empty_history" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No call for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun appel dans votre historique…"
+          }
+        }
+      }
+    },
+    "history_list_empty_with_filter_history" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No entries match your search"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aucune entrée ne correspond à votre recherche"
+          }
+        }
+      }
+    },
+    "I prefere create an account" : {
+
+    },
+    "I understand" : {
+
+    },
+    "IM_MSG" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have received a message"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous avez reçu un message"
+          }
+        }
+      }
+    },
+    "Information" : {
+
+    },
+    "Interoperable" : {
+
+    },
+    "Interoperable mode" : {
+
+    },
+    "Invalid QR code!" : {
+
+    },
+    "Invalide URI" : {
+
+    },
+    "Invitation" : {
+
+    },
+    "Job title" : {
+
+    },
+    "Join the meeting now" : {
+
+    },
+    "Joining..." : {
+
+    },
+    "Last name" : {
+
+    },
+    "Linphone" : {
+
+    },
+    "list_filter_no_result_found" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No result found…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun résultat…"
+          }
+        }
+      }
+    },
+    "Log out" : {
+
+    },
+    "Login" : {
+
+    },
+    "Logout" : {
+
+    },
+    "Logs cleared" : {
+
+    },
+    "Logs URL copied into clipboard" : {
+
+    },
+    "Marquer comme non lu" : {
+
+    },
+    "Meeting added to iPhone calendar" : {
+
+    },
+    "meeting_waiting_room_join" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rejoindre"
+          }
+        }
+      }
+    },
+    "Meetings" : {
+
+    },
+    "meetings_list_empty" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No meeting for the moment…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune réunion pour le moment…"
+          }
+        }
+      }
+    },
+    "menu_copy_chat_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier le texte"
+          }
+        }
+      }
+    },
+    "menu_delete_selected_item" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        }
+      }
+    },
+    "menu_forward_chat_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forward"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transférer"
+          }
+        }
+      }
+    },
+    "menu_reply_to_chat_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reply"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Répondre"
+          }
+        }
+      }
+    },
+    "menu_resend_chat_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Re-send"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ré-envoyer"
+          }
+        }
+      }
+    },
+    "Message" : {
+
+    },
+    "Message copied into clipboard" : {
+
+    },
+    "Message received" : {
+
+    },
+    "message_delivery_info_error_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En erreur"
+          }
+        }
+      }
+    },
+    "message_delivery_info_read_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lu"
+          }
+        }
+      }
+    },
+    "message_delivery_info_received_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Received"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reçu"
+          }
+        }
+      }
+    },
+    "message_delivery_info_sent_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sent"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Envoyé"
+          }
+        }
+      }
+    },
+    "message_forwarded_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forwarded"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transféré"
+          }
+        }
+      }
+    },
+    "message_reaction_click_to_remove_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click to remove"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cliquez pour supprimer"
+          }
+        }
+      }
+    },
+    "message_reactions_info_all_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reactions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réactions"
+          }
+        }
+      }
+    },
+    "Messages" : {
+
+    },
+    "Mettre en sourdine" : {
+
+    },
+    "Missed call" : {
+
+    },
+    "Mosaïque" : {
+
+    },
+    "Network is not reachable" : {
+
+    },
+    "Network is now reachable again" : {
+
+    },
+    "New call" : {
+
+    },
+    "New contact" : {
+
+    },
+    "new_conversation_create_group" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a group conversation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une conversation de groupe"
+          }
+        }
+      }
+    },
+    "new_conversation_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New conversation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer une conversation"
+          }
+        }
+      }
+    },
+    "Next" : {
+
+    },
+    "No meeting today" : {
+
+    },
+    "No participant for the moment..." : {
+
+    },
+    "Non" : {
+
+    },
+    "Not account yet?" : {
+
+    },
+    "Ok" : {
+
+    },
+    "Open source" : {
+
+    },
+    "Opération en cours..." : {
+
+    },
+    "Organizer" : {
+
+    },
+    "Other actions" : {
+
+    },
+    "Oui" : {
+
+    },
+    "Partage d'écran" : {
+
+    },
+    "Partager le lien" : {
+
+    },
+    "Participant actif" : {
+
+    },
+    "Participants" : {
+
+    },
+    "password" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password en FR"
+          }
+        }
+      }
+    },
+    "Pause" : {
+
+    },
+    "Paused" : {
+
+    },
+    "Paused by remote" : {
+
+    },
+    "Personnalize your profil mode" : {
+
+    },
+    "Phone :" : {
+
+    },
+    "Phone (%@) :" : {
+
+    },
+    "Phone number" : {
+
+    },
+    "Plus tard" : {
+
+    },
+    "Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :" : {
+
+    },
+    "QR code validated!" : {
+
+    },
+    "Quitter la conversation" : {
+
+    },
+    "Réactiver les notifications" : {
+
+    },
+    "Record" : {
+
+    },
+    "recordings_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recordings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrements"
+          }
+        }
+      }
+    },
+    "Register" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S’inscrire"
+          }
+        }
+      }
+    },
+    "Remove from favourites" : {
+
+    },
+    "Remove picture" : {
+
+    },
+    "Resume" : {
+
+    },
+    "Resuming" : {
+
+    },
+    "Say something..." : {
+
+    },
+    "Scan QR code" : {
+
+    },
+    "Search contact" : {
+
+    },
+    "Sécurisé" : {
+
+    },
+    "See all" : {
+
+    },
+    "See contact" : {
+
+    },
+    "See Linphone contact" : {
+
+    },
+    "Select %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Select %1$@ %2$@"
+          }
+        }
+      }
+    },
+    "Send cancellation notifications" : {
+
+    },
+    "Send invitations to participants" : {
+
+    },
+    "Send Logs" : {
+
+    },
+    "Send notification to participants ?" : {
+
+    },
+    "settings_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
+    },
+    "Share" : {
+
+    },
+    "SIP address" : {
+
+    },
+    "SIP address :" : {
+
+    },
+    "SIP address copied into clipboard" : {
+
+    },
+    "sip.linphone.org" : {
+
+    },
+    "Skip" : {
+
+    },
+    "Speaker" : {
+
+    },
+    "Start" : {
+
+    },
+    "Subject" : {
+
+    },
+    "subscribe.linphone.org" : {
+
+    },
+    "Successfully removed meeting" : {
+
+    },
+    "Suggestions" : {
+
+    },
+    "Supprimer la conversation" : {
+
+    },
+    "Supprimer un participant" : {
+
+    },
+    "TCP" : {
+
+    },
+    "Temp Help" : {
+
+    },
+    "The meeting will be cancelled" : {
+
+    },
+    "The user name or password is incorrects" : {
+
+    },
+    "This contact will be deleted definitively." : {
+
+    },
+    "Time Zone: %@" : {
+
+    },
+    "TLS" : {
+
+    },
+    "to Linphone" : {
+
+    },
+    "Transfer" : {
+
+    },
+    "Transfer call to" : {
+
+    },
+    "Transport" : {
+
+    },
+    "UDP" : {
+
+    },
+    "Unable to call, invalid address" : {
+
+    },
+    "Unable to retrieve configuration, invalid address" : {
+
+    },
+    "Une application de communication **sécurisée**, **open source** et **française**." : {
+
+    },
+    "Une application open source et un **service gratuit** depuis **2001**." : {
+
+    },
+    "Use a SIP account" : {
+
+    },
+    "Use SIP Account" : {
+
+    },
+    "username" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username en FR"
+          }
+        }
+      }
+    },
+    "Username error" : {
+
+    },
+    "Vidéo" : {
+
+    },
+    "Video Call" : {
+
+    },
+    "Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**." : {
+
+    },
+    "Vous allez rejoindre la réunion dans quelques instants..." : {
+
+    },
+    "Welcome" : {
+
+    },
+    "You will change this mode later" : {
+
+    }
+  },
+  "version" : "1.0"
+}
