@@ -79,7 +79,7 @@ variables:
 job-ios:
 
   stage: build
-  tags: [ "macos-xcode13" ]
+  tags: [ "macos-xcode15" ]
 
   script:
     - pod install --repo-update
