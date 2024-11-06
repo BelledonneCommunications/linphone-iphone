@@ -68,7 +68,6 @@ class ConversationsListViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			let account = core.defaultAccount
 			let chatRoomsCounter = account?.chatRooms != nil ? account!.chatRooms.count : core.chatRooms.count
-			var counter = 0
 			
 			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
 				self.computeChatRoomsList(filter: "")
@@ -76,24 +75,15 @@ class ConversationsListViewModel: ObservableObject {
 				self.computeChatRoomsList(filter: "")
 			}, onChatRoomRead: { (_: Core, _: ChatRoom) in
 				self.computeChatRoomsList(filter: "")
-			}, onChatRoomStateChanged: { (_: Core, chatRoom: ChatRoom, state: ChatRoom.State) in
+			}, onChatRoomStateChanged: { (core: Core, chatRoom: ChatRoom, state: ChatRoom.State) in
 				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
-				switch state {
-				case ChatRoom.State.Created:
-					if !(chatRoom.isEmpty && chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue)) {
-						counter += 1
-					}
-					
-					if counter >= chatRoomsCounter {
+				if core.globalState == .On {
+					switch state {
+					case .Created, .Deleted, .Terminated:
 						self.computeChatRoomsList(filter: "")
-						counter = 0
+					default:
+						break
 					}
-				case ChatRoom.State.Deleted:
-					self.computeChatRoomsList(filter: "")
-					// ToastViewModel.shared.toastMessage = "toast_conversation_deleted"
-					// ToastViewModel.shared.displayToast = true
-				default:
-					break
 				}
 			})
 			core.addDelegate(delegate: self.coreConversationDelegate!)

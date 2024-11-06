@@ -126,6 +126,20 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: [eventLogs])
 				}, onSubjectChanged: { (_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
+				}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
+					self.getNewMessages(eventLogs: [eventLog])
+					if self.displayedConversation != nil {
+						DispatchQueue.main.async {
+							self.displayedConversation!.isReadOnly = false
+						}
+					}
+				}, onConferenceLeft: {(_: ChatRoom, eventLog: EventLog) in
+					self.getNewMessages(eventLogs: [eventLog])
+					if self.displayedConversation != nil {
+						DispatchQueue.main.async {
+							self.displayedConversation!.isReadOnly = true
+						}
+					}
 				}, onEphemeralEvent: {(_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
 				}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
