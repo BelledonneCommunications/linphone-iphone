@@ -1862,48 +1862,50 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func computeComposingLabel() {
-		let composing = self.displayedConversation!.chatRoom.isRemoteComposing
-		
-		if !composing {
-			DispatchQueue.main.async {
-				withAnimation {
-					self.composingLabel = ""
+		if self.displayedConversation != nil {
+			let composing = self.displayedConversation!.chatRoom.isRemoteComposing
+			
+			if !composing {
+				DispatchQueue.main.async {
+					withAnimation {
+						self.composingLabel = ""
+					}
+				}
+				return
+			}
+			
+			var composingFriends: [String] = []
+			var label = ""
+			
+			for address in self.displayedConversation!.chatRoom.composingAddresses {
+				if let addressCleaned = address.clone() {
+					addressCleaned.clean()
+					
+					if let avatar = self.participantConversationModel.first(where: {$0.address == addressCleaned.asStringUriOnly()}) {
+						let name = avatar.name
+						composingFriends.append(name)
+						label += "\(name), "
+					}
 				}
 			}
-			return
-		}
-		
-		var composingFriends: [String] = []
-		var label = ""
-		
-		for address in self.displayedConversation!.chatRoom.composingAddresses {
-			if let addressCleaned = address.clone() {
-				addressCleaned.clean()
+			
+			if !composingFriends.isEmpty {
+				label = String(label.dropLast(2))
 				
-				if let avatar = self.participantConversationModel.first(where: {$0.address == addressCleaned.asStringUriOnly()}) {
-					let name = avatar.name
-					composingFriends.append(name)
-					label += "\(name), "
+				let format = composingFriends.count > 1
+				? String(format: NSLocalizedString("conversation_composing_label_multiple", comment: ""), label)
+				: String(format: NSLocalizedString("conversation_composing_label_single", comment: ""), label)
+				
+				DispatchQueue.main.async {
+					withAnimation {
+						self.composingLabel = format
+					}
 				}
-			}
-		}
-		
-		if !composingFriends.isEmpty {
-			label = String(label.dropLast(2))
-			
-			let format = composingFriends.count > 1
-			? String(format: NSLocalizedString("conversation_composing_label_multiple", comment: ""), label)
-			: String(format: NSLocalizedString("conversation_composing_label_single", comment: ""), label)
-			
-			DispatchQueue.main.async {
-				withAnimation {
-					self.composingLabel = format
-				}
-			}
-		} else {
-			DispatchQueue.main.async {
-				withAnimation {
-					self.composingLabel = ""
+			} else {
+				DispatchQueue.main.async {
+					withAnimation {
+						self.composingLabel = ""
+					}
 				}
 			}
 		}
