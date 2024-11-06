@@ -306,7 +306,10 @@ class ConversationModel: ObservableObject, Identifiable {
 	
 	func getUnreadMessagesCount() {
 		coreContext.doOnCoreQueue { _ in
-			self.unreadMessagesCount = self.chatRoom.unreadMessagesCount
+			let unreadMessagesCountTmp = self.chatRoom.unreadMessagesCount
+			DispatchQueue.main.async {
+				self.unreadMessagesCount = unreadMessagesCountTmp
+			}
 		}
 	}
 	
