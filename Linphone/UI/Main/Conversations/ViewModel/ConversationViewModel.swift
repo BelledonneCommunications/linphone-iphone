@@ -76,6 +76,8 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var participantConversationModel: [ContactAvatarModel] = []
+	@Published var participantConversationModelAdmin: ContactAvatarModel?
+	@Published var isUserAdmin: Bool = false
 	
 	@Published var mediasToSend: [Attachment] = []
 	var maxMediaCount = 12
@@ -310,12 +312,24 @@ class ConversationViewModel: ObservableObject {
 	func getParticipantConversationModel() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
+				DispatchQueue.main.async {
+					self.isUserAdmin = false
+					self.participantConversationModelAdmin = nil
+					self.participantConversationModel.removeAll()
+				}
 				self.displayedConversation!.chatRoom.participants.forEach { participant in
 					if participant.address != nil {
 						ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!) { avatarResult in
 							let avatarModelTmp = avatarResult
-							DispatchQueue.main.async {
-								self.participantConversationModel.append(avatarModelTmp)
+							if participant.isAdmin {
+								DispatchQueue.main.async {
+									self.participantConversationModelAdmin = avatarModelTmp
+									self.participantConversationModel.append(avatarModelTmp)
+								}
+							} else {
+								DispatchQueue.main.async {
+									self.participantConversationModel.append(avatarModelTmp)
+								}
 							}
 						}
 					}
@@ -324,8 +338,16 @@ class ConversationViewModel: ObservableObject {
 				if self.displayedConversation!.chatRoom.me != nil {
 					ContactAvatarModel.getAvatarModelFromAddress(address: self.displayedConversation!.chatRoom.me!.address!) { avatarResult in
 						let avatarModelTmp = avatarResult
-						DispatchQueue.main.async {
-							self.participantConversationModel.append(avatarModelTmp)
+						if self.displayedConversation!.chatRoom.me!.isAdmin {
+							DispatchQueue.main.async {
+								self.isUserAdmin = true
+								self.participantConversationModelAdmin = avatarModelTmp
+								self.participantConversationModel.append(avatarModelTmp)
+							}
+						} else {
+							DispatchQueue.main.async {
+								self.participantConversationModel.append(avatarModelTmp)
+							}
 						}
 					}
 				}
@@ -338,7 +360,9 @@ class ConversationViewModel: ObservableObject {
 			ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
 				let avatarModelTmp = avatarResult
 				DispatchQueue.main.async {
-					self.participantConversationModel.append(avatarModelTmp)
+					if self.participantConversationModel.first(where: {$0.address == avatarModelTmp.address}) == nil {
+						self.participantConversationModel.append(avatarModelTmp)
+					}
 				}
 			}
 		}

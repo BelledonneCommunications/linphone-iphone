@@ -33,6 +33,8 @@ struct ConversationFragment: View {
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
+	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@State var isMenuOpen = false
 	@State private var isMuted: Bool = false
@@ -62,6 +64,9 @@ struct ConversationFragment: View {
 	@Binding var isShowStartCallGroupPopup: Bool
 	
 	@State private var selectedCategoryIndex = 0
+	
+	@Binding var isShowEditContactFragment: Bool
+	@Binding var indexPage: Int
 	
 	var body: some View {
 		NavigationView {
@@ -977,10 +982,14 @@ struct ConversationFragment: View {
 				ConversationInfoFragment(
 					conversationViewModel: conversationViewModel,
 					conversationsListViewModel: conversationsListViewModel,
+					contactViewModel: contactViewModel,
+					editContactViewModel: editContactViewModel,
 					isMuted: $isMuted,
 					isShowEphemeralFragment: $isShowEphemeralFragment,
 					isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
-					isShowInfoConversationFragment: $isShowInfoConversationFragment
+					isShowInfoConversationFragment: $isShowInfoConversationFragment,
+					isShowEditContactFragment: $isShowEditContactFragment,
+					indexPage: $indexPage
 				)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))

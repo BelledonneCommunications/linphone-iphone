@@ -86,7 +86,6 @@ struct HistoryContactFragment: View {
 											let friendIndex = contactsManager.lastSearch.firstIndex(
 												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall!.asStringUriOnly()})})
 											if friendIndex != nil {
-												
 												withAnimation {
 													historyViewModel.displayedCall = nil
 													indexPage = 0

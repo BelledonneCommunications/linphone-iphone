@@ -21,7 +21,7 @@ import Foundation
 import linphonesw
 import Combine
 
-class ContactAvatarModel: ObservableObject {
+class ContactAvatarModel: ObservableObject, Identifiable {
 	
 	let friend: Friend?
 	
