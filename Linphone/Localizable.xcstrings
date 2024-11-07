@@ -1466,6 +1466,23 @@
         }
       }
     },
+    "conversation_info_add_participants_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add participants"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter des membres"
+          }
+        }
+      }
+    },
     "conversation_info_confirm_start_group_call_dialog_message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1517,6 +1534,23 @@
         }
       }
     },
+    "conversation_info_menu_add_to_contacts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to contacts"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter aux contacts"
+          }
+        }
+      }
+    },
     "conversation_info_menu_go_to_contact" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1530,6 +1564,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Voir le contact"
+          }
+        }
+      }
+    },
+    "conversation_info_participant_is_admin_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Admin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Administrateur"
+          }
+        }
+      }
+    },
+    "conversation_info_participants_list_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group members"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membres du groupe"
           }
         }
       }

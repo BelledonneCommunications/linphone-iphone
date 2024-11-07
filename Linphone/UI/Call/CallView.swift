@@ -37,6 +37,8 @@ struct CallView: View {
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
+	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
 	
@@ -70,6 +72,9 @@ struct CallView: View {
 	@Binding var isShowStartCallGroupPopup: Bool
 	
 	@State var buttonSize = 60.0
+	
+	@Binding var isShowEditContactFragment: Bool
+	@Binding var indexPage: Int
 	
 	var body: some View {
 		GeometryReader { geo in
@@ -200,8 +205,12 @@ struct CallView: View {
 						conversationViewModel: conversationViewModel,
 						conversationsListViewModel: conversationsListViewModel,
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+						contactViewModel: contactViewModel,
+						editContactViewModel: editContactViewModel,
 						isShowConversationFragment: $isShowConversationFragment,
-						isShowStartCallGroupPopup: $isShowStartCallGroupPopup
+						isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
+						isShowEditContactFragment: $isShowEditContactFragment,
+						indexPage: $indexPage
 					)
 					.frame(maxWidth: .infinity)
 					.background(Color.gray100)
@@ -2825,10 +2834,14 @@ struct PressedButtonStyle: ButtonStyle {
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
+		contactViewModel: ContactViewModel(),
+		editContactViewModel: EditContactViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
 		isShowConversationFragment: .constant(false),
-		isShowStartCallGroupPopup: .constant(false)
+		isShowStartCallGroupPopup: .constant(false),
+		isShowEditContactFragment: .constant(false),
+		indexPage: .constant(0)
 	)
 }
 // swiftlint:enable type_body_length

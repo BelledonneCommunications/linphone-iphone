@@ -862,8 +862,12 @@ struct ContentView: View {
 									conversationViewModel: conversationViewModel,
 									conversationsListViewModel: conversationsListViewModel,
 									conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+									contactViewModel: contactViewModel,
+						   			editContactViewModel: editContactViewModel,
 									isShowConversationFragment: $isShowConversationFragment,
-									isShowStartCallGroupPopup: $isShowStartCallGroupPopup
+									isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
+									isShowEditContactFragment: $isShowEditContactFragment,
+									indexPage: $index
 								)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
@@ -1200,10 +1204,14 @@ struct ContentView: View {
 							conversationViewModel: conversationViewModel,
 							conversationsListViewModel: conversationsListViewModel,
 							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+							contactViewModel: contactViewModel,
+						 	editContactViewModel: editContactViewModel,
 							fullscreenVideo: $fullscreenVideo,
 							isShowStartCallFragment: $isShowStartCallFragment,
 							isShowConversationFragment: $isShowConversationFragment,
-							isShowStartCallGroupPopup: $isShowStartCallGroupPopup
+							isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
+							isShowEditContactFragment: $isShowEditContactFragment,
+							indexPage: $index
 						)
 						.zIndex(5)
 						.transition(.scale.combined(with: .move(edge: .top)))
