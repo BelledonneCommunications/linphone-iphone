@@ -59,6 +59,7 @@ struct CallView: View {
 	@State private var pointingUp: CGFloat = 0.0
 	@State private var currentOffset: CGFloat = 0.0
 	@State var displayVideo = false
+	@State private var previewVideoLocation = CGPoint(x: 0, y: 0)
 	
 	@Binding var fullscreenVideo: Bool
 	@State var isShowCallsListFragment: Bool = false
@@ -554,23 +555,28 @@ struct CallView: View {
 						Spacer()
 						VStack {
 							Spacer()
-							LinphoneVideoViewHolder { view in
-								coreContext.doOnCoreQueue { core in
-									core.nativePreviewWindow = view
+							HStack {
+								LinphoneVideoViewHolder { view in
+									coreContext.doOnCoreQueue { core in
+										core.nativePreviewWindow = view
+									}
 								}
+								.aspectRatio(callViewModel.callStatsModel.sentVideoWindow.widthFactor/callViewModel.callStatsModel.sentVideoWindow.heightFactor, contentMode: .fill)
+								.frame(maxWidth: callViewModel.callStatsModel.sentVideoWindow.widthFactor * 256,
+									   maxHeight: callViewModel.callStatsModel.sentVideoWindow.heightFactor * 256)
+								.clipped()
 							}
 							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
 							.cornerRadius(20)
-							.padding(10)
-							.padding(.trailing, abs(angleDegree/2))
 						}
+						.padding(10)
+						.padding(.trailing, abs(angleDegree/2))
 					}
 					.frame(
 						maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,
 						maxHeight: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom
 					)
 				}
-				
 				if telecomManager.outgoingCallStarted {
 					VStack {
 						ActivityIndicator(color: .white)
@@ -662,16 +668,22 @@ struct CallView: View {
 					Spacer()
 					VStack {
 						Spacer()
-						LinphoneVideoViewHolder { view in
-							coreContext.doOnCoreQueue { core in
-								core.nativePreviewWindow = view
+						HStack {
+							LinphoneVideoViewHolder { view in
+								coreContext.doOnCoreQueue { core in
+									core.nativePreviewWindow = view
+								}
 							}
+							.aspectRatio(callViewModel.callStatsModel.sentVideoWindow.widthFactor/callViewModel.callStatsModel.sentVideoWindow.heightFactor, contentMode: .fill)
+							.frame(maxWidth: callViewModel.callStatsModel.sentVideoWindow.widthFactor * 256,
+								   maxHeight: callViewModel.callStatsModel.sentVideoWindow.heightFactor * 256)
+							.clipped()
 						}
 						.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
 						.cornerRadius(20)
-						.padding(10)
-						.padding(.trailing, abs(angleDegree/2))
 					}
+					.padding(10)
+					.padding(.trailing, abs(angleDegree/2))
 				}
 				.frame(
 					maxWidth: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width : geometry.size.width - 8,

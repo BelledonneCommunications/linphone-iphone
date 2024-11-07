@@ -20,6 +20,20 @@
 import Foundation
 import linphonesw
 
+class SentVideoWindow: ObservableObject {
+	var widthFactor: CGFloat = 1
+	var heightFactor: CGFloat = 1
+	var isVertical = true
+	init(videoWidth: UInt, videoHeight: UInt) {
+		self.isVertical = videoWidth < videoHeight
+		if isVertical {
+			self.widthFactor = videoHeight == 0 ? 1 : CGFloat(videoWidth) / CGFloat(videoHeight)
+		} else {
+			self.heightFactor = videoWidth == 0 ? 1 : CGFloat(videoHeight) / CGFloat(videoWidth)
+		}
+	}
+}
+
 class CallStatsModel: ObservableObject {
 	var coreContext = CoreContext.shared
 	
@@ -32,6 +46,7 @@ class CallStatsModel: ObservableObject {
 	@Published var videoCodec = ""
 	@Published var videoBandwidth = ""
 	@Published var videoLossRate = ""
+	@Published var sentVideoWindow = SentVideoWindow(videoWidth: 480, videoHeight: 640)
 	@Published var videoResolution = ""
 	@Published var videoFps = ""
 	
@@ -88,6 +103,8 @@ class CallStatsModel: ObservableObject {
 						let lossRateLabel = "Lossrate: ↑ \(senderLossRate)% ↓ \(receiverLossRate)%"
 						
 						let sentResolution = call.currentParams!.sentVideoDefinition!.name
+						let sentVideoWindow = SentVideoWindow(videoWidth: call.currentParams!.sentVideoDefinition!.width
+															  , videoHeight: call.currentParams!.sentVideoDefinition!.height)
 						let receivedResolution = call.currentParams!.receivedVideoDefinition!.name
 						let resolutionLabel = "Resolution: " + "↑ \(sentResolution!) ↓ \(receivedResolution!)"
 						
@@ -99,6 +116,7 @@ class CallStatsModel: ObservableObject {
 							self.videoCodec = codecLabel
 							self.videoBandwidth = bandwidthLabel
 							self.videoLossRate = lossRateLabel
+							self.sentVideoWindow = sentVideoWindow
 							self.videoResolution = resolutionLabel
 							self.videoFps = fpsLabel
 						}
