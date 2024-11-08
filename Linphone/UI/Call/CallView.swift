@@ -59,7 +59,8 @@ struct CallView: View {
 	@State private var pointingUp: CGFloat = 0.0
 	@State private var currentOffset: CGFloat = 0.0
 	@State var displayVideo = false
-	@State private var previewVideoLocation = CGPoint(x: 0, y: 0)
+	@State private var previewVideoOffset = CGSize.zero
+	@State private var previewVideoOffsetPreviousDrag = CGSize.zero
 	
 	@Binding var fullscreenVideo: Bool
 	@State var isShowCallsListFragment: Bool = false
@@ -566,8 +567,20 @@ struct CallView: View {
 									   maxHeight: callViewModel.callStatsModel.sentVideoWindow.heightFactor * 256)
 								.clipped()
 							}
-							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+							.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2) // 144*192
 							.cornerRadius(20)
+							.gesture(
+								DragGesture(coordinateSpace: .global)
+									.onChanged { value in
+										previewVideoOffset = CGSize(width: previewVideoOffsetPreviousDrag.width + value.translation.width,
+																	height: previewVideoOffsetPreviousDrag.height + value.translation.height)
+									}
+									.onEnded { _ in
+										previewVideoOffsetPreviousDrag = previewVideoOffset
+									}
+							)
+										
+							.offset(x: previewVideoOffset.width, y: previewVideoOffset.height)
 						}
 						.padding(10)
 						.padding(.trailing, abs(angleDegree/2))
@@ -679,8 +692,20 @@ struct CallView: View {
 								   maxHeight: callViewModel.callStatsModel.sentVideoWindow.heightFactor * 256)
 							.clipped()
 						}
-						.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
+						.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2) // 144*192
 						.cornerRadius(20)
+						.gesture(
+							DragGesture(coordinateSpace: .global)
+								.onChanged { value in
+									previewVideoOffset = CGSize(width: previewVideoOffsetPreviousDrag.width + value.translation.width,
+																height: previewVideoOffsetPreviousDrag.height + value.translation.height)
+								}
+								.onEnded { _ in
+									previewVideoOffsetPreviousDrag = previewVideoOffset
+								}
+						)
+									
+						.offset(x: previewVideoOffset.width, y: previewVideoOffset.height)
 					}
 					.padding(10)
 					.padding(.trailing, abs(angleDegree/2))
