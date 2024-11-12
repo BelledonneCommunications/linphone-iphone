@@ -1064,6 +1064,23 @@
         }
       }
     },
+    "conversation_dialog_edit_subject" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit conversation subject"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renommer la conversation"
+          }
+        }
+      }
+    },
     "conversation_dialog_set_subject" : {
       "extractionState" : "manual",
       "localizations" : {
