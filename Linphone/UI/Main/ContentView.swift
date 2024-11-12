@@ -1189,6 +1189,39 @@ struct ContentView: View {
 						}
 					}
 					
+					if isShowStartCallGroupPopup {
+						PopupView(
+							isShowPopup: $isShowStartCallGroupPopup,
+							title: Text("conversation_info_confirm_start_group_call_dialog_title"),
+							content: Text("conversation_info_confirm_start_group_call_dialog_message"),
+							titleFirstButton: Text("Cancel"),
+							actionFirstButton: {
+								self.isShowStartCallGroupPopup.toggle()
+							},
+							titleSecondButton: Text("Confirm"),
+							actionSecondButton: {
+								if conversationViewModel.displayedConversation != nil {
+									conversationViewModel.displayedConversation!.createGroupCall()
+								}
+								self.isShowStartCallGroupPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowStartCallGroupPopup.toggle()
+						}
+					}
+					
+					if conversationViewModel.isShowConversationInfoPopup {
+						PopupViewWithTextField(conversationViewModel: conversationViewModel)
+							.background(.black.opacity(0.65))
+							.zIndex(3)
+							.onTapGesture {
+								conversationViewModel.isShowConversationInfoPopup = false
+							}
+					}
+					
 					if telecomManager.meetingWaitingRoomDisplayed {
 						MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: meetingWaitingRoomViewModel)
 							.zIndex(3)

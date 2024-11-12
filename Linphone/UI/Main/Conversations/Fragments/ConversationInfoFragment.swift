@@ -132,6 +132,7 @@ struct ConversationInfoFragment: View {
 												if conversationViewModel.isUserAdmin {
 													Button(
 														action: {
+															conversationViewModel.isShowConversationInfoPopup = true
 														},
 														label: {
 															Image("pencil-simple")

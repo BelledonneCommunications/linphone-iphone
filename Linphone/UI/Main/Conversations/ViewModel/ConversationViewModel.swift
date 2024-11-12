@@ -41,6 +41,9 @@ class ConversationViewModel: ObservableObject {
 	@Published var isEphemeral: Bool = false
 	@Published var ephemeralTime: String = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
 	
+	@Published var isShowConversationInfoPopup: Bool = false
+	@Published var conversationInfoPopupText: String = ""
+	
 	// Used to keep track of a ChatRoom callback without having to worry about life cycle
 	// Init will add the delegate, deinit will remove it
 	class ChatRoomDelegateHolder {
@@ -377,6 +380,8 @@ class ConversationViewModel: ObservableObject {
 		
 		self.mediasToSend.removeAll()
 		self.messageToReply = nil
+		
+		self.conversationInfoPopupText = displayedConversation?.subject ?? ""
 		
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
@@ -2068,6 +2073,24 @@ class ConversationViewModel: ObservableObject {
 				
 				self.getEphemeralTime()
 			}
+		}
+	}
+	
+	func setNewChatRoomSubject() {
+		if self.displayedConversation != nil && self.conversationInfoPopupText != self.displayedConversation!.subject {
+			
+			coreContext.doOnCoreQueue { _ in
+				self.displayedConversation!.chatRoom.subject = self.conversationInfoPopupText
+			}
+			
+			self.displayedConversation!.subject = self.conversationInfoPopupText
+			self.displayedConversation!.avatarModel = ContactAvatarModel(
+				friend: self.displayedConversation!.avatarModel.friend,
+				name: self.conversationInfoPopupText,
+				address: self.displayedConversation!.avatarModel.address,
+				withPresence: false
+			)
+			self.isShowConversationInfoPopup = false
 		}
 	}
 	
