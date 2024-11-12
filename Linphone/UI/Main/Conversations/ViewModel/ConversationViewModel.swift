@@ -29,6 +29,8 @@ import AVFoundation
 
 class ConversationViewModel: ObservableObject {
 	
+	static let TAG = "[ConversationViewModel]"
+	
 	private var coreContext = CoreContext.shared
 	
 	@Published var displayedConversation: ConversationModel?
@@ -79,8 +81,10 @@ class ConversationViewModel: ObservableObject {
 	
 	@Published var conversationMessagesSection: [MessagesSection] = []
 	@Published var participantConversationModel: [ContactAvatarModel] = []
-	@Published var participantConversationModelAdmin: ContactAvatarModel?
+	@Published var participantConversationModelAdmin: [ContactAvatarModel] = []
+	@Published var myParticipantConversationModel: ContactAvatarModel? = nil
 	@Published var isUserAdmin: Bool = false
+	@Published var participants: [SelectedAddressModel] = []
 	
 	@Published var mediasToSend: [Attachment] = []
 	var maxMediaCount = 12
@@ -125,10 +129,13 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: [eventLog])
 				}, onParticipantAdded: { (_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
+					self.getParticipantConversationModel()
 				}, onParticipantRemoved: { (_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
+					self.getParticipantConversationModel()
 				}, onParticipantAdminStatusChanged: { (_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
+					self.getParticipantConversationModel()
 				}, onSubjectChanged: { (_: ChatRoom, eventLogs: EventLog) in
 					self.getNewMessages(eventLogs: [eventLogs])
 				}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
@@ -317,7 +324,7 @@ class ConversationViewModel: ObservableObject {
 			if self.displayedConversation != nil {
 				DispatchQueue.main.async {
 					self.isUserAdmin = false
-					self.participantConversationModelAdmin = nil
+					self.participantConversationModelAdmin.removeAll()
 					self.participantConversationModel.removeAll()
 				}
 				self.displayedConversation!.chatRoom.participants.forEach { participant in
@@ -326,7 +333,7 @@ class ConversationViewModel: ObservableObject {
 							let avatarModelTmp = avatarResult
 							if participant.isAdmin {
 								DispatchQueue.main.async {
-									self.participantConversationModelAdmin = avatarModelTmp
+									self.participantConversationModelAdmin.append(avatarModelTmp)
 									self.participantConversationModel.append(avatarModelTmp)
 								}
 							} else {
@@ -344,12 +351,14 @@ class ConversationViewModel: ObservableObject {
 						if self.displayedConversation!.chatRoom.me!.isAdmin {
 							DispatchQueue.main.async {
 								self.isUserAdmin = true
-								self.participantConversationModelAdmin = avatarModelTmp
+								self.participantConversationModelAdmin.append(avatarModelTmp)
 								self.participantConversationModel.append(avatarModelTmp)
+								self.myParticipantConversationModel = avatarModelTmp
 							}
 						} else {
 							DispatchQueue.main.async {
 								self.participantConversationModel.append(avatarModelTmp)
+								self.myParticipantConversationModel = avatarModelTmp
 							}
 						}
 					}
@@ -2076,24 +2085,6 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func setNewChatRoomSubject() {
-		if self.displayedConversation != nil && self.conversationInfoPopupText != self.displayedConversation!.subject {
-			
-			coreContext.doOnCoreQueue { _ in
-				self.displayedConversation!.chatRoom.subject = self.conversationInfoPopupText
-			}
-			
-			self.displayedConversation!.subject = self.conversationInfoPopupText
-			self.displayedConversation!.avatarModel = ContactAvatarModel(
-				friend: self.displayedConversation!.avatarModel.friend,
-				name: self.conversationInfoPopupText,
-				address: self.displayedConversation!.avatarModel.address,
-				withPresence: false
-			)
-			self.isShowConversationInfoPopup = false
-		}
-	}
-	
 	func getEphemeralTime() {
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
@@ -2121,6 +2112,111 @@ class ConversationViewModel: ObservableObject {
 						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
 					}
 				}
+			}
+		}
+	}
+	
+	func setNewChatRoomSubject() {
+		if self.displayedConversation != nil && self.conversationInfoPopupText != self.displayedConversation!.subject {
+			
+			coreContext.doOnCoreQueue { _ in
+				self.displayedConversation!.chatRoom.subject = self.conversationInfoPopupText
+			}
+			
+			self.displayedConversation!.subject = self.conversationInfoPopupText
+			self.displayedConversation!.avatarModel = ContactAvatarModel(
+				friend: self.displayedConversation!.avatarModel.friend,
+				name: self.conversationInfoPopupText,
+				address: self.displayedConversation!.avatarModel.address,
+				withPresence: false
+			)
+			self.isShowConversationInfoPopup = false
+		}
+	}
+	
+	func getParticipants() {
+		self.participants = []
+		var list: [SelectedAddressModel] = []
+		for participant in participantConversationModel {
+			let addr = try? Factory.Instance.createAddress(addr: participant.address)
+			if addr != nil {
+				if let found = list.first(where: { $0.address.weakEqual(address2: addr!) }) {
+					Log.info("\(ConversationViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
+					continue
+				}
+				
+				if self.displayedConversation!.chatRoom.me != nil && self.displayedConversation!.chatRoom.me!.address != nil && !self.displayedConversation!.chatRoom.me!.address!.weakEqual(address2: addr!) {
+					list.append(SelectedAddressModel(addr: addr!, avModel: participant))
+					Log.info("\(ConversationViewModel.TAG) Added participant \(addr!.asStringUriOnly())")
+				}
+			}
+		}
+		
+		self.participants = list
+		
+		Log.info("\(ConversationViewModel.TAG) \(list.count) participants added to chat room")
+	}
+	
+	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
+		var list: [SelectedAddressModel] = []
+		for selectedAddr in participantsToAdd {
+			if let found = list.first(where: { $0.address.weakEqual(address2: selectedAddr.address) }) {
+				Log.info("\(ConversationViewModel.TAG) Participant \(found.address.asStringUriOnly()) already in list, skipping")
+				continue
+			}
+			
+			list.append(selectedAddr)
+			Log.info("\(ConversationViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
+		}
+		
+		let participantsAddress = self.displayedConversation!.chatRoom.participants.map { $0.address?.asStringUriOnly() }
+		let listAddress = list.map { $0.address.asStringUriOnly() }
+		
+		let differences = participantsAddress.difference(from: listAddress)
+		
+		if !differences.isEmpty {
+			let differenceAddresses = differences.compactMap { change -> String? in
+				switch change {
+				case .insert(_, let element, _), .remove(_, let element, _):
+					return element
+				}
+			}
+			
+			let filteredParticipants = self.displayedConversation!.chatRoom.participants.filter { participant in
+				differenceAddresses.contains(participant.address!.asStringUriOnly())
+			}
+			
+			coreContext.doOnCoreQueue { _ in
+				_ = self.displayedConversation!.chatRoom.addParticipants(addresses: list.map { $0.address })
+				self.displayedConversation!.chatRoom.removeParticipants(participants: filteredParticipants)
+			}
+		} else {
+			coreContext.doOnCoreQueue { _ in
+				_ = self.displayedConversation!.chatRoom.addParticipants(addresses: list.map { $0.address })
+			}
+		}
+		
+		Log.info("\(ConversationViewModel.TAG) \(list.count) participants added to chat room")
+	}
+	
+	func toggleAdminRights(address: String) {
+		if self.displayedConversation != nil {
+			coreContext.doOnCoreQueue { _ in
+				if let participant = self.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
+					self.displayedConversation!.chatRoom.setParticipantAdminStatus(participant: participant, isAdmin: !participant.isAdmin)
+				}
+				
+			}
+		}
+	}
+	
+	func removeParticipant(address: String) {
+		if self.displayedConversation != nil {
+			coreContext.doOnCoreQueue { _ in
+				if let participant = self.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
+					self.displayedConversation!.chatRoom.removeParticipant(participant: participant)
+				}
+				
 			}
 		}
 	}

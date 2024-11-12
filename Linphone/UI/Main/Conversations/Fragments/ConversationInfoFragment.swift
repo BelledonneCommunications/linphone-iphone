@@ -19,6 +19,7 @@
 
 import SwiftUI
 
+// swiftlint:disable type_body_length
 struct ConversationInfoFragment: View {
 	@State private var orientation = UIDevice.current.orientation
 	
@@ -29,6 +30,8 @@ struct ConversationInfoFragment: View {
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	
+	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	
 	@Binding var isMuted: Bool
 	@Binding var isShowEphemeralFragment: Bool
@@ -282,12 +285,119 @@ struct ConversationInfoFragment: View {
 																.frame(maxWidth: .infinity, alignment: .leading)
 																.lineLimit(1)
 															
-															if conversationViewModel.participantConversationModelAdmin != nil && participantConversationModel.address == conversationViewModel.participantConversationModelAdmin!.address {
+															let participantConversationModelIsAdmin = conversationViewModel.participantConversationModelAdmin.first(
+																where: {$0.address == participantConversationModel.address})
+															
+															if participantConversationModelIsAdmin != nil {
 																Text("conversation_info_participant_is_admin_label")
 																	.foregroundStyle(Color.grayMain2c400)
 																	.default_text_style(styleSize: 12)
 																	.frame(maxWidth: .infinity, alignment: .leading)
 																	.lineLimit(1)
+															}
+														}
+														
+														if conversationViewModel.myParticipantConversationModel != nil && conversationViewModel.myParticipantConversationModel!.address != participantConversationModel.address {
+															Menu {
+																Button(
+																	action: {
+																		let addressConv = participantConversationModel.address
+																		
+																		let friendIndex = contactsManager.lastSearch.firstIndex(
+																			where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+																		if friendIndex != nil {
+																			withAnimation {
+																				conversationViewModel.displayedConversation = nil
+																				indexPage = 0
+																				contactViewModel.indexDisplayedFriend = friendIndex
+																			}
+																		} else {
+																			withAnimation {
+																				conversationViewModel.displayedConversation = nil
+																				indexPage = 0
+																				
+																				isShowEditContactFragment.toggle()
+																				editContactViewModel.sipAddresses.removeAll()
+																				editContactViewModel.sipAddresses.append(String(participantConversationModel.address.dropFirst(4) ?? ""))
+																				editContactViewModel.sipAddresses.append("")
+																			}
+																		}
+																	},
+																	label: {
+																		HStack {
+																			let addressConv = participantConversationModel.address
+																			
+																			let friendIndex = contactsManager.lastSearch.firstIndex(
+																				where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+																			if friendIndex != nil {
+																				Image("address-book")
+																					.renderingMode(.template)
+																					.resizable()
+																					.foregroundStyle(Color.grayMain2c600)
+																					.frame(width: 25, height: 25)
+																				
+																				Text("conversation_info_menu_go_to_contact")
+																					.default_text_style(styleSize: 16)
+																					.frame(maxWidth: .infinity, alignment: .leading)
+																					.lineLimit(1)
+																			} else {
+																				Image("user-plus")
+																					.renderingMode(.template)
+																					.resizable()
+																					.foregroundStyle(Color.grayMain2c600)
+																					.frame(width: 25, height: 25)
+																				
+																				Text("conversation_info_menu_add_to_contacts")
+																					.default_text_style(styleSize: 16)
+																					.frame(maxWidth: .infinity, alignment: .leading)
+																					.lineLimit(1)
+																			}
+																		}
+																	}
+																)
+																
+																if conversationViewModel.isUserAdmin {
+																	let participantConversationModelIsAdmin = conversationViewModel.participantConversationModelAdmin.first(
+																		where: {$0.address == participantConversationModel.address})
+																	
+																	Button {
+																		conversationViewModel.toggleAdminRights(address: participantConversationModel.address)
+																	} label: {
+																		HStack {
+																			Text(participantConversationModelIsAdmin != nil ? "conversation_info_admin_menu_unset_participant_admin" : "conversation_info_admin_menu_set_participant_admin")
+																			Spacer()
+																			Image("user-circle")
+																				.renderingMode(.template)
+																				.resizable()
+																				.foregroundStyle(Color.grayMain2c500)
+																				.frame(width: 25, height: 25, alignment: .leading)
+																				.padding(.all, 10)
+																		}
+																	}
+																	
+																	Button(role: .destructive) {
+																		conversationViewModel.removeParticipant(address: participantConversationModel.address)
+																	} label: {
+																		HStack {
+																			Text("conversation_info_admin_menu_remove_participant")
+																			Spacer()
+																			Image("trash-simple-red")
+																				.renderingMode(.template)
+																				.resizable()
+																				.foregroundStyle(Color.grayMain2c500)
+																				.frame(width: 25, height: 25, alignment: .leading)
+																				.padding(.all, 10)
+																		}
+																	}
+																}
+															} label: {
+																Image("dots-three-vertical")
+																	.renderingMode(.template)
+																	.resizable()
+																	.foregroundStyle(Color.grayMain2c500)
+																	.frame(width: 25, height: 25, alignment: .leading)
+																	.padding(.all, 10)
+																	.padding(.top, 4)
 															}
 														}
 													}
@@ -296,6 +406,34 @@ struct ConversationInfoFragment: View {
 												}
 												
 												if conversationViewModel.isUserAdmin {
+													NavigationLink(destination: {
+														AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: conversationViewModel.addParticipants)
+															.onAppear {
+																conversationViewModel.getParticipants()
+																addParticipantsViewModel.participantsToAdd = conversationViewModel.participants
+															}
+													}, label: {
+														HStack {
+															Image("plus-circle")
+																.renderingMode(.template)
+																.resizable()
+																.foregroundStyle(Color.orangeMain500)
+																.frame(width: 20, height: 20)
+															
+															Text("conversation_info_add_participants_label")
+																.default_text_style_orange_500(styleSize: 14)
+																.frame(height: 35)
+														}
+														
+													})
+													.padding(.horizontal, 20)
+													.padding(.vertical, 5)
+													.background(Color.orangeMain100)
+													.cornerRadius(60)
+													.padding(.top, 10)
+													.padding(.bottom, 20)
+													
+													/*
 													Button(
 														action: {
 														},
@@ -319,6 +457,7 @@ struct ConversationInfoFragment: View {
 													.cornerRadius(60)
 													.padding(.top, 10)
 													.padding(.bottom, 20)
+													 */
 												}
 											}
 											.background(.white)
@@ -513,6 +652,7 @@ struct ConversationInfoFragment: View {
 		conversationsListViewModel: ConversationsListViewModel(),
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
+		addParticipantsViewModel: AddParticipantsViewModel(),
 		isMuted: .constant(false),
 		isShowEphemeralFragment: .constant(false),
 		isShowStartCallGroupPopup: .constant(false),
@@ -521,3 +661,4 @@ struct ConversationInfoFragment: View {
 		indexPage: .constant(0)
 	)
 }
+// swiftlint:enable type_body_length
