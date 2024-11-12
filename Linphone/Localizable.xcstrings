@@ -1500,6 +1500,57 @@
         }
       }
     },
+    "conversation_info_admin_menu_remove_participant" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from the group"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer du groupe"
+          }
+        }
+      }
+    },
+    "conversation_info_admin_menu_set_participant_admin" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Give admin rights"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Donner les privilèges administrateur"
+          }
+        }
+      }
+    },
+    "conversation_info_admin_menu_unset_participant_admin" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove admin rights"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer les privilèges administrateur"
+          }
+        }
+      }
+    },
     "conversation_info_confirm_start_group_call_dialog_message" : {
       "extractionState" : "manual",
       "localizations" : {
