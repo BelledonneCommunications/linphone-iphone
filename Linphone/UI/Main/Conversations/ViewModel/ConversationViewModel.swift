@@ -103,6 +103,8 @@ class ConversationViewModel: ObservableObject {
 	@Published var isPlaying = false
 	@Published var progress: Double = 0.0
 	
+	@Published var attachments: [Attachment] = []
+	
 	struct SheetCategory: Identifiable {
 		let id = UUID()
 		let name: String
@@ -392,6 +394,8 @@ class ConversationViewModel: ObservableObject {
 		
 		self.conversationInfoPopupText = displayedConversation?.subject ?? ""
 		
+		self.attachments.removeAll()
+		
 		coreContext.doOnCoreQueue { _ in
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
@@ -454,6 +458,11 @@ class ConversationViewModel: ObservableObject {
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
+											if typeTmp != .voiceRecording {
+												DispatchQueue.main.async {
+													self.attachments.append(attachment)
+												}
+											}
 										}
 									} else if content.type == "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -471,6 +480,9 @@ class ConversationViewModel: ObservableObject {
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
+											DispatchQueue.main.async {
+												self.attachments.append(attachment)
+											}
 										}
 									}
 								}
@@ -679,6 +691,11 @@ class ConversationViewModel: ObservableObject {
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
+											if typeTmp != .voiceRecording {
+												DispatchQueue.main.async {
+													self.attachments.append(attachment)
+												}
+											}
 										}
 									} else if content.type == "video" {
 										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -696,6 +713,9 @@ class ConversationViewModel: ObservableObject {
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
+											DispatchQueue.main.async {
+												self.attachments.append(attachment)
+											}
 										}
 									}
 								}
@@ -902,6 +922,11 @@ class ConversationViewModel: ObservableObject {
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
+										if typeTmp != .voiceRecording {
+											DispatchQueue.main.async {
+												self.attachments.append(attachment)
+											}
+										}
 									}
 								} else if content.type == "video" {
 									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -919,6 +944,9 @@ class ConversationViewModel: ObservableObject {
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
+										DispatchQueue.main.async {
+											self.attachments.append(attachment)
+										}
 									}
 								}
 							}
@@ -1203,6 +1231,11 @@ class ConversationViewModel: ObservableObject {
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
+													if typeTmp != .voiceRecording {
+														DispatchQueue.main.async {
+															self.attachments.append(attachment)
+														}
+													}
 												}
 											} else if content.type == "video" {
 												let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
@@ -1220,6 +1253,9 @@ class ConversationViewModel: ObservableObject {
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
+													DispatchQueue.main.async {
+														self.attachments.append(attachment)
+													}
 												}
 											}
 										}
@@ -2219,6 +2255,10 @@ class ConversationViewModel: ObservableObject {
 				
 			}
 		}
+	}
+	
+	func getAttachmentIndex(attachment: Attachment) -> Int {
+		return self.attachments.firstIndex(where: {$0.id == attachment.id}) ?? 0
 	}
 }
 // swiftlint:enable line_length
