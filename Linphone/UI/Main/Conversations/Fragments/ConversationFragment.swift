@@ -357,9 +357,11 @@ struct ConversationFragment: View {
 								sections: conversationViewModel.conversationMessagesSection
 							)
 						}
+						/*
 						.onAppear {
 							conversationViewModel.getMessages()
 						}
+						*/
 						.onDisappear {
 							conversationViewModel.resetMessage()
 						}
