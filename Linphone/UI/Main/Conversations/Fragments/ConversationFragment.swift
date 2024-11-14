@@ -35,6 +35,7 @@ struct ConversationFragment: View {
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	@State var isMenuOpen = false
 	@State private var isMuted: Bool = false
@@ -67,6 +68,8 @@ struct ConversationFragment: View {
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var indexPage: Int
+	
+	@Binding var isShowScheduleMeetingFragment: Bool
 	
 	var body: some View {
 		NavigationView {
@@ -984,12 +987,14 @@ struct ConversationFragment: View {
 					conversationsListViewModel: conversationsListViewModel,
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
+					meetingViewModel: meetingViewModel,
 					isMuted: $isMuted,
 					isShowEphemeralFragment: $isShowEphemeralFragment,
 					isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 					isShowInfoConversationFragment: $isShowInfoConversationFragment,
 					isShowEditContactFragment: $isShowEditContactFragment,
-					indexPage: $indexPage
+					indexPage: $indexPage,
+					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 				)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
