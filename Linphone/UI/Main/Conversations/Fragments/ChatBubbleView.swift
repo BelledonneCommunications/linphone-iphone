@@ -39,6 +39,9 @@ struct ChatBubbleView: View {
 	@State private var timer: Timer?
 	@State private var ephemeralLifetime: String = ""
 	
+	@State private var selectedAttachment: Bool = false
+	@State private var selectedAttachmentIndex: Int = 0
+	
 	var body: some View {
 		HStack {
 			if eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage {
@@ -488,6 +491,9 @@ struct ChatBubbleView: View {
 			}
 			UIApplication.shared.endEditing()
 		}
+		.fullScreenCover(isPresented: $selectedAttachment) {
+			QuickLookFullScreenView(conversationViewModel: conversationViewModel, currentIndex: $selectedAttachmentIndex)
+		}
 	}
 	
 	func containsDuplicates(strings: [String]) -> Bool {
@@ -554,6 +560,10 @@ struct ChatBubbleView: View {
 							}
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
+							.onTapGesture {
+								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
+								selectedAttachment.toggle()
+							}
 						} else {
 							AsyncImage(url: eventLogMessage.message.attachments.first!.thumbnail) { phase in
 								switch phase {
@@ -583,17 +593,29 @@ struct ChatBubbleView: View {
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 							.id(UUID())
+							.onTapGesture {
+								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
+								selectedAttachment.toggle()
+							}
 						}
 					} else if eventLogMessage.message.attachments.first!.type == .gif {
 						if #available(iOS 16.0, *) {
 							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
 								.layoutPriority(-1)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
+								.onTapGesture {
+									selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
+									selectedAttachment.toggle()
+							 	}
 						} else {
 							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
 								.id(UUID())
 								.layoutPriority(-1)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
+								.onTapGesture {
+									selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
+									selectedAttachment.toggle()
+								}
 						}
 					}
 				}
@@ -636,13 +658,17 @@ struct ChatBubbleView: View {
 				.frame(width: geometryProxy.size.width - 110, height: 100)
 				.background(.white)
 				.clipShape(RoundedRectangle(cornerRadius: 10))
+				.onTapGesture {
+					selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
+					selectedAttachment.toggle()
+				}
 			}
 		} else if eventLogMessage.message.attachments.count > 1 {
 			let isGroup = conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
 			LazyVGrid(columns: [
 				GridItem(.adaptive(minimum: 120), spacing: 1)
 			], spacing: 3) {
-				ForEach(eventLogMessage.message.attachments) { attachment in
+				ForEach(eventLogMessage.message.attachments, id: \.id) { attachment in
 					ZStack {
 						Rectangle()
 							.fill(Color(.white))
@@ -668,6 +694,10 @@ struct ChatBubbleView: View {
 								ProgressView()
 							}
 							.layoutPriority(-1)
+							.onTapGesture {
+								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: attachment)
+								selectedAttachment.toggle()
+							}
 						} else {
 							AsyncImage(url: attachment.thumbnail) { image in
 								ZStack {
@@ -689,6 +719,10 @@ struct ChatBubbleView: View {
 							}
 							.id(UUID())
 							.layoutPriority(-1)
+							.onTapGesture {
+								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: attachment)
+								selectedAttachment.toggle()
+							}
 						}
 					}
 					.clipShape(RoundedRectangle(cornerRadius: 4))
