@@ -409,7 +409,7 @@ class ConversationViewModel: ObservableObject {
 					
 					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
 						eventLog.chatMessage!.contents.forEach { content in
-							if content.isText {
+							if content.isText && content.name == nil {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
