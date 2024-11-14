@@ -30,6 +30,7 @@ struct ConversationInfoFragment: View {
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	
@@ -39,6 +40,8 @@ struct ConversationInfoFragment: View {
 	@Binding var isShowInfoConversationFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var indexPage: Int
+	
+	@Binding var isShowScheduleMeetingFragment: Bool
 	
 	@State private var participantListIsOpen = true
 	
@@ -217,7 +220,15 @@ struct ConversationInfoFragment: View {
 											Spacer()
 											
 											Button(action: {
-												// TODO Create Meeting
+												if conversationViewModel.displayedConversation != nil {
+													meetingViewModel.subject = conversationViewModel.displayedConversation!.subject
+													meetingViewModel.participants = conversationViewModel.participants
+													conversationViewModel.displayedConversation = nil
+													indexPage = 3
+													withAnimation {
+														isShowScheduleMeetingFragment = true
+													}
+												}
 											}, label: {
 												VStack {
 													HStack(alignment: .center) {
@@ -636,6 +647,9 @@ struct ConversationInfoFragment: View {
 					}
 					.background(.white)
 					.navigationBarHidden(true)
+					.onAppear {
+						conversationViewModel.getParticipants()
+					}
 					.onRotate { newOrientation in
 						orientation = newOrientation
 					}
@@ -652,13 +666,15 @@ struct ConversationInfoFragment: View {
 		conversationsListViewModel: ConversationsListViewModel(),
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
+		meetingViewModel: MeetingViewModel(),
 		addParticipantsViewModel: AddParticipantsViewModel(),
 		isMuted: .constant(false),
 		isShowEphemeralFragment: .constant(false),
 		isShowStartCallGroupPopup: .constant(false),
 		isShowInfoConversationFragment: .constant(true),
 		isShowEditContactFragment: .constant(false),
-		indexPage: .constant(0)
+		indexPage: .constant(0),
+		isShowScheduleMeetingFragment: .constant(false)
 	)
 }
 // swiftlint:enable type_body_length

@@ -39,6 +39,7 @@ struct CallView: View {
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
+	@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
 	
@@ -73,6 +74,8 @@ struct CallView: View {
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var indexPage: Int
+	
+	@Binding var isShowScheduleMeetingFragment: Bool
 	
 	var body: some View {
 		GeometryReader { geo in
@@ -205,10 +208,12 @@ struct CallView: View {
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
 						contactViewModel: contactViewModel,
 						editContactViewModel: editContactViewModel,
+						meetingViewModel: meetingViewModel,
 						isShowConversationFragment: $isShowConversationFragment,
 						isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 						isShowEditContactFragment: $isShowEditContactFragment,
-						indexPage: $indexPage
+						indexPage: $indexPage,
+						isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 					)
 					.frame(maxWidth: .infinity)
 					.background(Color.gray100)
@@ -2799,12 +2804,14 @@ struct PressedButtonStyle: ButtonStyle {
 		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
+		meetingViewModel: MeetingViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
 		isShowConversationFragment: .constant(false),
 		isShowStartCallGroupPopup: .constant(false),
 		isShowEditContactFragment: .constant(false),
-		indexPage: .constant(0)
+		indexPage: .constant(0),
+		isShowScheduleMeetingFragment: .constant(false)
 	)
 }
 // swiftlint:enable type_body_length
