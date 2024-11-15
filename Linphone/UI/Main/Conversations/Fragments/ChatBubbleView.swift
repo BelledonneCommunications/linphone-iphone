@@ -19,10 +19,13 @@
 
 import SwiftUI
 import WebKit
+import QuickLook
 
 // swiftlint:disable type_body_length
 // swiftlint:disable cyclomatic_complexity
 struct ChatBubbleView: View {
+	
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
@@ -41,6 +44,10 @@ struct ChatBubbleView: View {
 	
 	@State private var selectedAttachment: Bool = false
 	@State private var selectedAttachmentIndex: Int = 0
+	
+	@State private var selectedURLAttachment: URL?
+	
+	@State private var showShareSheet = false
 	
 	var body: some View {
 		HStack {
@@ -491,9 +498,7 @@ struct ChatBubbleView: View {
 			}
 			UIApplication.shared.endEditing()
 		}
-		.fullScreenCover(isPresented: $selectedAttachment) {
-			QuickLookFullScreenView(conversationViewModel: conversationViewModel, currentIndex: $selectedAttachmentIndex)
-		}
+		.quickLookPreview($selectedURLAttachment, in: conversationViewModel.attachments.map { $0.full })
 	}
 	
 	func containsDuplicates(strings: [String]) -> Bool {
@@ -561,8 +566,7 @@ struct ChatBubbleView: View {
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 							.onTapGesture {
-								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
-								selectedAttachment.toggle()
+								selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 							}
 						} else {
 							AsyncImage(url: eventLogMessage.message.attachments.first!.thumbnail) { phase in
@@ -594,8 +598,7 @@ struct ChatBubbleView: View {
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 							.id(UUID())
 							.onTapGesture {
-								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
-								selectedAttachment.toggle()
+								selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 							}
 						}
 					} else if eventLogMessage.message.attachments.first!.type == .gif {
@@ -603,18 +606,18 @@ struct ChatBubbleView: View {
 							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
 								.layoutPriority(-1)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
+								.contentShape(Rectangle())
 								.onTapGesture {
-									selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
-									selectedAttachment.toggle()
+									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 							 	}
 						} else {
 							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
 								.id(UUID())
 								.layoutPriority(-1)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
+								.contentShape(Rectangle())
 								.onTapGesture {
-									selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
-									selectedAttachment.toggle()
+									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 								}
 						}
 					}
@@ -659,8 +662,7 @@ struct ChatBubbleView: View {
 				.background(.white)
 				.clipShape(RoundedRectangle(cornerRadius: 10))
 				.onTapGesture {
-					selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: eventLogMessage.message.attachments.first!)
-					selectedAttachment.toggle()
+					selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 				}
 			}
 		} else if eventLogMessage.message.attachments.count > 1 {
@@ -695,8 +697,7 @@ struct ChatBubbleView: View {
 							}
 							.layoutPriority(-1)
 							.onTapGesture {
-								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: attachment)
-								selectedAttachment.toggle()
+								selectedURLAttachment = attachment.full
 							}
 						} else {
 							AsyncImage(url: attachment.thumbnail) { image in
@@ -720,8 +721,7 @@ struct ChatBubbleView: View {
 							.id(UUID())
 							.layoutPriority(-1)
 							.onTapGesture {
-								selectedAttachmentIndex = conversationViewModel.getAttachmentIndex(attachment: attachment)
-								selectedAttachment.toggle()
+								selectedURLAttachment = attachment.full
 							}
 						}
 					}
@@ -853,6 +853,7 @@ struct GifImageView: UIViewRepresentable {
 		if data != nil {
 			webview.load(data!, mimeType: "image/gif", characterEncodingName: "UTF-8", baseURL: url.deletingLastPathComponent())
 			webview.scrollView.isScrollEnabled = false
+			webview.isUserInteractionEnabled = false
 		}
 		return webview
 	}
