@@ -923,6 +923,7 @@ struct ConversationFragment: View {
 								Divider()
 								
 								Button {
+									conversationViewModel.deleteMessage()
 								} label: {
 									HStack {
 										Text("menu_delete_selected_item")

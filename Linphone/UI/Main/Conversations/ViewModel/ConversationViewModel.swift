@@ -2260,6 +2260,18 @@ class ConversationViewModel: ObservableObject {
 	func getAttachmentIndex(attachment: Attachment) -> Int {
 		return self.attachments.firstIndex(where: {$0.id == attachment.id}) ?? 0
 	}
+	
+	func deleteMessage() {
+		if self.displayedConversation != nil && selectedMessage != nil && selectedMessage!.eventModel.eventLog.chatMessage != nil {
+			coreContext.doOnCoreQueue { _ in
+				self.displayedConversation!.chatRoom.deleteMessage(message: self.selectedMessage!.eventModel.eventLog.chatMessage!)
+				DispatchQueue.main.async {
+					self.conversationMessagesSection[0].rows.remove(at: self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessage!)!)
+					self.selectedMessage = nil
+				}
+			}
+		}
+	}
 }
 // swiftlint:enable line_length
 // swiftlint:enable type_body_length
