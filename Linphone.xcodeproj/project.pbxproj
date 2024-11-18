@@ -70,6 +70,7 @@
 		D71707202AC5989C0037746F /* TextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071F2AC5989C0037746F /* TextExtension.swift */; };
 		D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */; };
 		D717630D2BD7BD0E00464097 /* ParticipantsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717630C2BD7BD0E00464097 /* ParticipantsListFragment.swift */; };
+		D717A10E2CEB772300849D92 /* ShareSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717A10D2CEB770D00849D92 /* ShareSheetController.swift */; };
 		D71968922B86369D00DF4459 /* ChatBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71968912B86369D00DF4459 /* ChatBubbleView.swift */; };
 		D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */; };
 		D719ABB92ABC67BF00B41C10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABB82ABC67BF00B41C10 /* ContentView.swift */; };
@@ -258,6 +259,7 @@
 		D717071F2AC5989C0037746F /* TextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtension.swift; sourceTree = "<group>"; };
 		D7173EBD2B7A5C0A00BCC481 /* LinphoneUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneUtils.swift; sourceTree = "<group>"; };
 		D717630C2BD7BD0E00464097 /* ParticipantsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsListFragment.swift; sourceTree = "<group>"; };
+		D717A10D2CEB770D00849D92 /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
 		D71968912B86369D00DF4459 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
 		D719ABB32ABC67BF00B41C10 /* Linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneApp.swift; sourceTree = "<group>"; };
@@ -500,6 +502,7 @@
 		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D717A10D2CEB770D00849D92 /* ShareSheetController.swift */,
 				66C491F72B24D25A00CEA16D /* Extensions */,
 				66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */,
 				D7ADF5FF2AFE356400212231 /* Avatar.swift */,
@@ -1114,6 +1117,7 @@
 				D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,
+				D717A10E2CEB772300849D92 /* ShareSheetController.swift in Sources */,
 				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
 				D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */,
 				C6DC4E3D2C199C4E009096FD /* BundleExtenion.swift in Sources */,
