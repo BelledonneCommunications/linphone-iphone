@@ -519,7 +519,7 @@ import AVFoundation
 	
 	func isConferenceCall(call:Call) -> Bool {
 		let remoteAddress = call.remoteAddress?.asStringUriOnly()
-		return remoteAddress?.contains("focus") == true || remoteAddress?.contains("audiovideo") == true
+		return remoteAddress?.contains("focus") == true || remoteAddress?.contains("audiovideo") == true || remoteAddress == lc?.defaultAccount?.params?.audioVideoConferenceFactoryAddress?.asStringUriOnly()
 	}
 	
 	func incomingDisplayName(call:Call) -> String {
@@ -535,10 +535,24 @@ import AVFoundation
 			return FastAddressBook.displayName(for: call.remoteAddress?.getCobject) ?? "Unknown"
 		}
 	}
-	
+	var reactivateAudioSessionWhenCallMerged = false
+
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
 		let callId = callLog?.callId ?? ""
+		
+		if (cstate == .Released && reactivateAudioSessionWhenCallMerged && core.callsNb == 1) {
+			reactivateAudioSessionWhenCallMerged = false
+			DispatchQueue.main.async {
+				Log.directLog(BCTBX_LOG_MESSAGE, text: "reactivating audio session in merge call scenario")
+				Core.get().activateAudioSession(activated: true)
+			}
+		}
+		
+		if (cstate == .Released && reactivateAudioSessionWhenCallMerged && core.callsNb == 0) {
+			reactivateAudioSessionWhenCallMerged = false
+		}
+		
 		if (cstate == .PushIncomingReceived) {
 			displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")
 		} else {
@@ -651,11 +665,13 @@ import AVFoundation
 					} else {
 						if CallManager.instance().isConferenceCall(call: call) {
 							let uuid = UUID()
+							Log.directLog(BCTBX_LOG_MESSAGE, text: "CallKit: outgoing call to conference server \(uuid) and callId \(callId)")
+							CallManager.instance().providerDelegate.uuids["\(call.callLog!.callId)"] = uuid;
 							let callInfo = CallInfo.newOutgoingCallInfo(addr: call.remoteAddress!, isSas: call.params?.mediaEncryption == .ZRTP, displayName: VoipTexts.conference_default_title, isVideo: call.params?.videoEnabled == true, isConference:true)
 							CallManager.instance().providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
 							CallManager.instance().providerDelegate.uuids.updateValue(uuid, forKey: "")
 							CallManager.instance().providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid)
-							Core.get().activateAudioSession(activated: true)
+							reactivateAudioSessionWhenCallMerged = true
 						} else {
 							CallManager.instance().referedToCall = callId
 						}
@@ -783,7 +799,7 @@ import AVFoundation
 	// Local Conference
 	
 	@objc func startLocalConference() {
-		if (CallManager.callKitEnabled()) {
+		if (CallManager.callKitEnabled() && lc?.defaultAccount?.params?.audioVideoConferenceFactoryAddress == nil) {
 			let calls = lc?.calls
 			if (calls == nil || calls!.isEmpty) {
 				return
@@ -809,15 +825,21 @@ import AVFoundation
 	}
 	
 	func addAllToLocalConference() {
-		do {
-			if let core = lc, let params = try? core.createConferenceParams(conference: nil) {
-				params.videoEnabled = false // We disable video for local conferencing (cf Android)
-				params.subject = VoipTexts.conference_local_title
-				let conference = core.conference != nil ? core.conference : try core.createConferenceWithParams(params: params)
-				try conference?.addParticipants(calls: core.calls)
+		if let currentCall = lc?.currentCall, currentCall.state == .StreamsRunning {
+			try? currentCall.pause()
+		}
+
+		DispatchQueue.main.async {
+			do {
+				if let core = self.lc, let params = try? core.createConferenceParams(conference: nil) {
+					params.videoEnabled = false // We disable video for local conferencing (cf Android)
+					params.subject = VoipTexts.conference_local_title
+					let conference = core.conference != nil ? core.conference : try core.createConferenceWithParams(params: params)
+					try conference?.addParticipants(calls: core.calls)
+				}
+			} catch {
+				Log.directLog(BCTBX_LOG_ERROR, text: "creating local conference failed \(error)")
 			}
-		} catch {
-			Log.directLog(BCTBX_LOG_ERROR, text: "accept call failed \(error)")
 		}
 	}
 	
