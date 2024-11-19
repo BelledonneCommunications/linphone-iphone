@@ -118,6 +118,9 @@ struct SideMenu: View {
 						.frame(height: 1)
 					
 					VStack(spacing: 19) {
+						ForEach(0..<CoreContext.shared.shortcuts.count, id: \.self) { index in
+							SideMenuShortcut(shortcutModel: CoreContext.shared.shortcuts[index])
+						}
 						SideMenuEntry(
 							iconName: "gear",
 							title: "settings_title"

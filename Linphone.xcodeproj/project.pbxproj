@@ -27,6 +27,8 @@
 		66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */; };
 		66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FE2B24D4AC00CEA16D /* FileUtils.swift */; };
 		66C492012B24DB6900CEA16D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C492002B24DB6900CEA16D /* Log.swift */; };
+		66CD1E602CEBA19F00898718 /* SideMenuShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD1E5F2CEBA19B00898718 /* SideMenuShortcut.swift */; };
+		66D382052CEB7E0A0063E1C5 /* ShortcutModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D382042CEB7E050063E1C5 /* ShortcutModel.swift */; };
 		66E50A492BD12B2300AD61CA /* MeetingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E50A482BD12B2300AD61CA /* MeetingsView.swift */; };
 		66E50A4B2BD12B7800AD61CA /* MeetingsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E50A4A2BD12B7800AD61CA /* MeetingsFragment.swift */; };
 		66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */; };
@@ -220,6 +222,8 @@
 		66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteUtils.swift; sourceTree = "<group>"; };
 		66C491FE2B24D4AC00CEA16D /* FileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUtils.swift; sourceTree = "<group>"; };
 		66C492002B24DB6900CEA16D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		66CD1E5F2CEBA19B00898718 /* SideMenuShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuShortcut.swift; sourceTree = "<group>"; };
+		66D382042CEB7E050063E1C5 /* ShortcutModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutModel.swift; sourceTree = "<group>"; };
 		66E50A482BD12B2300AD61CA /* MeetingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsView.swift; sourceTree = "<group>"; };
 		66E50A4A2BD12B7800AD61CA /* MeetingsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsFragment.swift; sourceTree = "<group>"; };
 		66E56BC82BA4A6D7006CE56F /* MeetingsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingsListViewModel.swift; sourceTree = "<group>"; };
@@ -427,6 +431,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		66D382032CEB7DB80063E1C5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				66D382042CEB7E050063E1C5 /* ShortcutModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		66E56BC52BA45E49006CE56F /* Meetings */ = {
 			isa = PBXGroup;
 			children = (
@@ -589,6 +601,7 @@
 				D74C9CFD2ACAEC150021626A /* Fragments */,
 				D7A03FBE2ACC2E010081A588 /* History */,
 				66E56BC52BA45E49006CE56F /* Meetings */,
+				66D382032CEB7DB80063E1C5 /* Models */,
 				D7A2EDD42AC180FE005D90FC /* Viewmodel */,
 				D719ABB82ABC67BF00B41C10 /* ContentView.swift */,
 			);
@@ -688,6 +701,7 @@
 				C62817332C1C7C7400DBA646 /* HelpView.swift */,
 				C6DC4E3E2C19C289009096FD /* SideMenuEntry.swift */,
 				C62817272C1B389700DBA646 /* SideMenuAccountRow.swift */,
+				66CD1E5F2CEBA19B00898718 /* SideMenuShortcut.swift */,
 				D7E6D04C2AEBD77600A57AAF /* CustomBottomSheet.swift */,
 				D7E2E69E2CE356C90080DA0D /* PopupViewWithTextField.swift */,
 			);
@@ -1105,6 +1119,7 @@
 				D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */,
 				D7C3650C2AF0084000FE6142 /* EditContactViewModel.swift in Sources */,
 				D78E062A2BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift in Sources */,
+				66CD1E602CEBA19F00898718 /* SideMenuShortcut.swift in Sources */,
 				D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */,
 				D71A0E192B485ADF0002C6CD /* ViewExtension.swift in Sources */,
 				D759CB642C3FBD4200AC35E8 /* StartConversationFragment.swift in Sources */,
@@ -1220,6 +1235,7 @@
 				D714DE602C1B3B34006C1F1D /* RegisterViewModel.swift in Sources */,
 				D70C82A72C85F5910087F43F /* ConversationForwardMessageViewModel.swift in Sources */,
 				D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */,
+				66D382052CEB7E0A0063E1C5 /* ShortcutModel.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */,
 				D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */,

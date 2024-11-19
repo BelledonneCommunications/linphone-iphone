@@ -42,7 +42,7 @@ final class CoreContext: ObservableObject {
 	@Published var coreIsStarted: Bool = false
 	@Published var accounts: [AccountModel] = []
 	@Published var enteredForeground = false
-	
+	@Published var shortcuts: [ShortcutModel] = []
 	private var mCore: Core!
 	private var mIterateSuscription: AnyCancellable?
 	
@@ -147,6 +147,33 @@ final class CoreContext: ObservableObject {
 			self.mCore.maxSizeForAutoDownloadIncomingFiles = 0
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
+			
+			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
+			if shortcutsCount > 0 {
+				var shortcuts: [ShortcutModel] = []
+				for i in 0...shortcutsCount {
+					let shortcutSection = "shortcut_\(i)"
+					let link = self.mCore.config!.getString(section: shortcutSection, key: "link", defaultString: "")
+					let linkUrl = URL(string: link)
+					let name = self.mCore.config!.getString(section: shortcutSection, key: "name", defaultString: "")
+					let iconLink = self.mCore.config!.getString(section: shortcutSection, key: "icon", defaultString: "")
+					let iconLinkUrl =  URL(string: iconLink)
+					
+					if linkUrl == nil {
+						Log.error("Could not add shortcut #\(i) pointing to \(name) because the link URL '\(link)' is invalid")
+						continue
+					}
+					if iconLinkUrl == nil {
+						Log.error("Could not add shortcut #\(i) pointing to \(name) because the icon link URL '\(iconLink)' is invalid")
+						continue
+					}
+					shortcuts.append(ShortcutModel(linkUrl: linkUrl!, name: name, iconLinkUrl: iconLinkUrl!))
+				}
+				
+				DispatchQueue.main.async {
+					self.shortcuts = shortcuts
+				}
+			}
 			
 			self.mCoreDelegate = CoreDelegateStub(onGlobalStateChanged: { (core: Core, state: GlobalState, _: String) in
 				if state == GlobalState.On {
