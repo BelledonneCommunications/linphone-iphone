@@ -88,6 +88,8 @@ public struct Message: Identifiable, Hashable {
 	public var isIcalendar: Bool
 	public var messageConferenceInfo: MessageConferenceInfo?
 	
+	public var isFileTransferInProgress: Bool
+	
 	public init(
 		id: String,
 		appData: String = "",
@@ -109,7 +111,8 @@ public struct Message: Identifiable, Hashable {
 		ephemeralExpireTime: Int = 0,
 		ephemeralLifetime: Int = 0,
 		isIcalendar: Bool = false,
-		messageConferenceInfo: MessageConferenceInfo? = nil
+		messageConferenceInfo: MessageConferenceInfo? = nil,
+		isFileTransferInProgress: Bool = false
 	) {
 		self.id = id
 		self.appData = appData
@@ -132,6 +135,7 @@ public struct Message: Identifiable, Hashable {
 		self.ephemeralLifetime = ephemeralLifetime
 		self.isIcalendar = isIcalendar
 		self.messageConferenceInfo = messageConferenceInfo
+		self.isFileTransferInProgress = isFileTransferInProgress
 	}
 
 	public static func makeMessage(

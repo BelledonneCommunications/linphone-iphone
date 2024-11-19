@@ -590,7 +590,8 @@ class ConversationViewModel: ObservableObject {
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
+									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
+									isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
 								)
 							)
 						)
@@ -823,7 +824,8 @@ class ConversationViewModel: ObservableObject {
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
+									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
+									isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
 								)
 							), at: 0
 						)
@@ -1069,7 +1071,8 @@ class ConversationViewModel: ObservableObject {
 							ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 							ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 							isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-							messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
+							messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
+							isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
 						)
 					)
 					
@@ -1363,7 +1366,8 @@ class ConversationViewModel: ObservableObject {
 									  		ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 											isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-											messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
+											messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
+											isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
 										)
 									), at: 0
 								)
@@ -1608,18 +1612,27 @@ class ConversationViewModel: ObservableObject {
 	
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
-		if !chatMessage.isFileTransferInProgress && (content.filePath == nil || content.filePath!.isEmpty) {
-			if let contentName = content.name {
-				// let isImage = FileUtil.isExtensionImage(path: contentName)
-				let file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-				// let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
-				content.filePath = String(file.dropFirst(7))
-				Log.info(
-					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
-				)
-				self.displayedConversation?.downloadContent(chatMessage: chatMessage, content: content)
-			} else {
-				Log.error("[ConversationViewModel] Content name is null, can't download it!")
+		if self.displayedConversation != nil {
+			if !chatMessage.isFileTransferInProgress && (content.filePath == nil || content.filePath!.isEmpty) {
+				if let contentName = content.name {
+					// let isImage = FileUtil.isExtensionImage(path: contentName)
+					var file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+					// let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
+					
+					var counter = 1
+					while FileManager.default.fileExists(atPath: file) {
+						file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + "\(counter)_" + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+						counter += 1
+					}
+					
+					content.filePath = String(file.dropFirst(7))
+					Log.info(
+						"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
+					)
+					self.displayedConversation!.downloadContent(chatMessage: chatMessage, content: content)
+				} else {
+					Log.error("[ConversationViewModel] Content name is null, can't download it!")
+				}
 			}
 		}
 	}
