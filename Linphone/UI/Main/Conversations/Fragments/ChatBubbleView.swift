@@ -641,6 +641,16 @@ struct ChatBubbleView: View {
 					}
 					.frame(width: 100, height: 100)
 					.background(Color.grayMain2c200)
+					.onTapGesture {
+						if eventLogMessage.message.attachments.first!.type == .fileTransfer && !eventLogMessage.message.isFileTransferInProgress {
+							CoreContext.shared.doOnCoreQueue { _ in
+								conversationViewModel.downloadContent(
+									chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
+									content: eventLogMessage.eventModel.eventLog.chatMessage!.contents.first!
+								)
+							}
+						}
+					}
 					
 					VStack {
 						Text(eventLogMessage.message.attachments.first!.name)
@@ -658,7 +668,6 @@ struct ChatBubbleView: View {
 					.padding(.horizontal, 10)
 					.frame(maxWidth: .infinity, alignment: .leading)
 				}
-				.frame(width: geometryProxy.size.width - 110, height: 100)
 				.background(.white)
 				.clipShape(RoundedRectangle(cornerRadius: 10))
 				.onTapGesture {
@@ -666,74 +675,126 @@ struct ChatBubbleView: View {
 				}
 			}
 		} else if eventLogMessage.message.attachments.count > 1 {
-			let isGroup = conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
-			LazyVGrid(columns: [
-				GridItem(.adaptive(minimum: 120), spacing: 1)
-			], spacing: 3) {
-				ForEach(eventLogMessage.message.attachments, id: \.id) { attachment in
-					ZStack {
-						Rectangle()
-							.fill(Color(.white))
-							.frame(width: 120, height: 120)
-						
-						if #available(iOS 16.0, *) {
-							AsyncImage(url: attachment.thumbnail) { image in
-								ZStack {
-									image
-										.resizable()
-										.interpolation(.medium)
-										.aspectRatio(contentMode: .fill)
-									
-									if attachment.type == .video {
-										Image("play-fill")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 40, height: 40, alignment: .leading)
+			let sizeCard = ((geometryProxy.size.width - 150)/2)-2
+			let columns = [
+				GridItem(.adaptive(minimum: sizeCard), spacing: 1)]
+			
+			LazyVStack {
+				LazyVGrid(columns: columns) {
+					ForEach(eventLogMessage.message.attachments, id: \.id) { attachment in
+						if attachment.type == .image || attachment.type == .gif
+							|| attachment.type == .video {
+							ZStack {
+								Rectangle()
+									.fill(Color(.white))
+									.frame(width: sizeCard, height: sizeCard)
+								
+								if #available(iOS 16.0, *) {
+									AsyncImage(url: attachment.thumbnail) { image in
+										ZStack {
+											image
+												.resizable()
+												.interpolation(.medium)
+												.aspectRatio(contentMode: .fill)
+											
+											if attachment.type == .video {
+												Image("play-fill")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(.white)
+													.frame(width: 40, height: 40, alignment: .leading)
+											}
+										}
+									} placeholder: {
+										ProgressView()
+									}
+									.layoutPriority(-1)
+									.onTapGesture {
+										selectedURLAttachment = attachment.full
+									}
+								} else {
+									AsyncImage(url: attachment.thumbnail) { image in
+										ZStack {
+											image
+												.resizable()
+												.interpolation(.medium)
+												.aspectRatio(contentMode: .fill)
+											
+											if attachment.type == .video {
+												Image("play-fill")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(.white)
+													.frame(width: 40, height: 40, alignment: .leading)
+											}
+										}
+									} placeholder: {
+										ProgressView()
+									}
+									.id(UUID())
+									.layoutPriority(-1)
+									.onTapGesture {
+										selectedURLAttachment = attachment.full
 									}
 								}
-							} placeholder: {
-								ProgressView()
 							}
-							.layoutPriority(-1)
-							.onTapGesture {
-								selectedURLAttachment = attachment.full
-							}
-						} else {
-							AsyncImage(url: attachment.thumbnail) { image in
-								ZStack {
-									image
-										.resizable()
-										.interpolation(.medium)
-										.aspectRatio(contentMode: .fill)
-									
-									if attachment.type == .video {
-										Image("play-fill")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(.white)
-											.frame(width: 40, height: 40, alignment: .leading)
-									}
-								}
-							} placeholder: {
-								ProgressView()
-							}
-							.id(UUID())
-							.layoutPriority(-1)
-							.onTapGesture {
-								selectedURLAttachment = attachment.full
-							}
+							.clipShape(RoundedRectangle(cornerRadius: 4))
+							.contentShape(Rectangle())
 						}
 					}
-					.clipShape(RoundedRectangle(cornerRadius: 4))
-					.contentShape(Rectangle())
+				}
+				
+				ForEach(eventLogMessage.message.attachments, id: \.id) { attachment in
+					if !(attachment.type == .image || attachment.type == .gif
+						 || attachment.type == .video) {
+						HStack {
+							VStack {
+								Image(getImageOfType(type: attachment.type))
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c700)
+									.frame(width: 60, height: 60, alignment: .leading)
+							}
+							.frame(width: 100, height: 100)
+							.background(Color.grayMain2c200)
+							.onTapGesture {
+								if attachment.type == .fileTransfer && !eventLogMessage.message.isFileTransferInProgress {
+									if let content = eventLogMessage.eventModel.eventLog.chatMessage!.contents.first(where: {$0.filePath == attachment.full.absoluteString}) {
+										CoreContext.shared.doOnCoreQueue { _ in
+											conversationViewModel.downloadContent(
+												chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
+												content: content
+											)
+										}
+									}
+								}
+							}
+							
+							VStack {
+								Text(attachment.name)
+									.foregroundStyle(Color.grayMain2c700)
+									.default_text_style_600(styleSize: 14)
+									.truncationMode(.middle)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+								
+								Text(attachment.size.formatBytes())
+									.default_text_style_300(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+							}
+							.padding(.horizontal, 10)
+							.frame(maxWidth: .infinity, alignment: .leading)
+						}
+						.background(.white)
+						.clipShape(RoundedRectangle(cornerRadius: 10))
+						.onTapGesture {
+							selectedURLAttachment = attachment.full
+						}
+					}
 				}
 			}
-			.frame( width: geometryProxy.size.width > 0
-					&& CGFloat(122 * eventLogMessage.message.attachments.count) > geometryProxy.size.width - 110 - (isGroup ? 40 : 0)
-				? 122 * floor(CGFloat(geometryProxy.size.width - 110 - (isGroup ? 40 : 0)) / 122)
-				: CGFloat(122 * eventLogMessage.message.attachments.count)
-			)
+			.frame(width: geometryProxy.size.width - 150)
 		}
 	}
 	
