@@ -2278,11 +2278,14 @@ class ConversationViewModel: ObservableObject {
 	
 	func deleteMessage() {
 		if self.displayedConversation != nil && selectedMessage != nil && selectedMessage!.eventModel.eventLog.chatMessage != nil {
-			coreContext.doOnCoreQueue { _ in
-				self.displayedConversation!.chatRoom.deleteMessage(message: self.selectedMessage!.eventModel.eventLog.chatMessage!)
-				DispatchQueue.main.async {
-					self.conversationMessagesSection[0].rows.remove(at: self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessage!)!)
-					self.selectedMessage = nil
+			let chatRoomTmp = self.displayedConversation!.chatRoom
+			if let chatMessageTmp = self.selectedMessage!.eventModel.eventLog.chatMessage {
+				coreContext.doOnCoreQueue { _ in
+					chatRoomTmp.deleteMessage(message: chatMessageTmp)
+					DispatchQueue.main.async {
+						self.conversationMessagesSection[0].rows.remove(at: self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessage!)!)
+						self.selectedMessage = nil
+					}
 				}
 			}
 		}
