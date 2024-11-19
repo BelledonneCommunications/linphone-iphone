@@ -199,7 +199,9 @@ class ConversationViewModel: ObservableObject {
 								}
 							} else {
 								DispatchQueue.main.async {
-									self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+									if indexMessage < self.conversationMessagesSection[0].rows.count {
+										self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+									}
 								}
 							}
 						}
