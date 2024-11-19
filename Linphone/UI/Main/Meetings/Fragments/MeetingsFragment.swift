@@ -85,7 +85,7 @@ struct MeetingsFragment: View {
 		.shadow(color: .black.opacity(0.2), radius: 4)
 		.onTapGesture {
 			withAnimation {
-				if let meetingModel = model.model {
+				if let meetingModel = model.model, meetingModel.confInfo.state != ConferenceInfo.State.Cancelled {
 					meetingViewModel.loadExistingMeeting(meeting: meetingModel)
 				}
 			}
