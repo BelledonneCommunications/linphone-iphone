@@ -432,7 +432,9 @@ class ConversationViewModel: ObservableObject {
 									}
 								} else {
 									if content.type != "video" {
-										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+										
 										var typeTmp: AttachmentType = .other
 										
 										switch content.type {
@@ -467,7 +469,8 @@ class ConversationViewModel: ObservableObject {
 											}
 										}
 									} else if content.type == "video" {
-										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
 										
 										if path != nil && pathThumbnail != nil {
@@ -666,7 +669,8 @@ class ConversationViewModel: ObservableObject {
 									}
 								} else {
 									if content.type != "video" {
-										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										var typeTmp: AttachmentType = .other
 										
 										switch content.type {
@@ -701,7 +705,8 @@ class ConversationViewModel: ObservableObject {
 											}
 										}
 									} else if content.type == "video" {
-										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
 										
 										if path != nil && pathThumbnail != nil {
@@ -898,7 +903,8 @@ class ConversationViewModel: ObservableObject {
 								}
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.type != "video" {
-									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+									let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 									var typeTmp: AttachmentType = .other
 									
 									switch content.type {
@@ -933,7 +939,8 @@ class ConversationViewModel: ObservableObject {
 										}
 									}
 								} else if content.type == "video" {
-									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+									let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 									
 									let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
 									if path != nil && pathThumbnail != nil {
@@ -1208,7 +1215,8 @@ class ConversationViewModel: ObservableObject {
 											}
 										} else {
 											if content.type != "video" {
-												let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+												let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										  		let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 												var typeTmp: AttachmentType = .other
 												
 												switch content.type {
@@ -1243,7 +1251,8 @@ class ConversationViewModel: ObservableObject {
 													}
 												}
 											} else if content.type == "video" {
-												let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+												let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										  		let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 												let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
 												
 												if path != nil && pathThumbnail != nil {
