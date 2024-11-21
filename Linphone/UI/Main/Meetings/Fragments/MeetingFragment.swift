@@ -55,7 +55,7 @@ struct MeetingFragment: View {
 				.padding(.leading, 10)
 				.padding(.trailing, 40)
 			
-			Text("Organizer")
+			Text("meeting_info_organizer_label")
 				.font(Font.custom("NotoSans-Light", size: 12))
 				.foregroundStyle(Color.grayMain2c600)
 				.opacity(participant.isOrganizer ? 1 : 0)
@@ -122,7 +122,7 @@ struct MeetingFragment: View {
 										.renderingMode(.template)
 										.resizable()
 										.frame(width: 25, height: 25, alignment: .leading)
-									Text("Add to calendar")
+									Text("meeting_info_export_as_calendar_event")
 										.default_text_style(styleSize: 16)
 									Spacer()
 								}
@@ -144,7 +144,7 @@ struct MeetingFragment: View {
 										.renderingMode(.template)
 										.resizable()
 										.frame(width: 25, height: 25, alignment: .leading)
-									Text("Delete this meeting")
+									Text("meeting_info_delete")
 										.foregroundStyle(Color.redDanger500)
 										.default_text_style(styleSize: 16)
 									Spacer()
@@ -301,7 +301,7 @@ struct MeetingFragment: View {
 				Button(action: {
 					meetingViewModel.joinMeeting(addressUri: meetingViewModel.displayedMeeting?.address ?? "")
 				}, label: {
-					Text("Join the meeting now")
+					Text("meeting_info_join_title")
 						.bold()
 						.default_text_style_white_500(styleSize: 16)
 						.frame(maxWidth: .infinity, maxHeight: 47, alignment: .center)

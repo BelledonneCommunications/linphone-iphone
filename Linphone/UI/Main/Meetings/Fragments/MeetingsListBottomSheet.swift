@@ -85,7 +85,7 @@ struct MeetingsListBottomSheet: View {
 						.foregroundStyle(Color.redDanger500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Delete this meeting")
+					Text("meeting_info_delete")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style(styleSize: 16)
 					Spacer()

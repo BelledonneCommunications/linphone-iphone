@@ -83,7 +83,7 @@ struct ScheduleMeetingFragment: View {
 								}
 							}
 						
-						Text("\(meetingViewModel.displayedMeeting != nil ? "Edit" : "New") meeting" )
+						Text(meetingViewModel.displayedMeeting != nil ? "meeting_schedule_edit_title" : "meeting_schedule_title" )
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 						
@@ -102,7 +102,7 @@ struct ScheduleMeetingFragment: View {
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							TextField("Subject", text: $meetingViewModel.subject)
+							TextField("meeting_schedule_subject_hint", text: $meetingViewModel.subject)
 								.focused($isSubjectTextFocused)
 								.default_text_style_700(styleSize: 20)
 								.frame(height: 29, alignment: .leading)
@@ -156,15 +156,18 @@ struct ScheduleMeetingFragment: View {
 							Spacer()
 						}
 						
-						
-						HStack(alignment: .center, spacing: 10) {
+						HStack(alignment: .center, spacing: 0) {
 							Image("earth")
 								.renderingMode(.template)
 								.resizable()
 								.foregroundStyle(Color.grayMain2c800)
 								.frame(width: 24, height: 24)
 								.padding(.leading, 15)
-							Text("Time Zone: \(meetingViewModel.selectedTimezone.formattedString())")
+								.padding(.trailing, 10)
+							Text("meeting_schedule_timezone_title")
+								.fontWeight(.bold)
+								.default_text_style_500(styleSize: 15)
+							Text(": \(meetingViewModel.selectedTimezone.formattedString())")
 								.fontWeight(.bold)
 								.default_text_style_500(styleSize: 15)
 								.onTapGesture {
@@ -202,7 +205,7 @@ struct ScheduleMeetingFragment: View {
 								.padding(.leading, 16)
 							
 							if #available(iOS 16.0, *) {
-								TextField("Add a description", text: $meetingViewModel.description, axis: .vertical)
+								TextField("meeting_schedule_description_hint", text: $meetingViewModel.description, axis: .vertical)
 									.default_text_style(styleSize: 15)
 									.focused($isDescriptionTextFocused)
 									.padding(.vertical, 5)
@@ -216,7 +219,7 @@ struct ScheduleMeetingFragment: View {
 										.focused($isDescriptionTextFocused)
 									
 									if meetingViewModel.description.isEmpty {
-										Text("Add a description")
+										Text("meeting_schedule_description_hint")
 											.padding(.leading, 5)
 											.foregroundStyle(Color.gray300)
 											.default_text_style(styleSize: 15)
@@ -248,7 +251,7 @@ struct ScheduleMeetingFragment: View {
 										.frame(width: 24, height: 24)
 										.padding(.leading, 16)
 									
-									Text("Add participants")
+									Text("meeting_schedule_add_participants_title")
 										.default_text_style_700(styleSize: 16)
 										.frame(height: 29, alignment: .leading)
 									Spacer()
@@ -293,7 +296,7 @@ struct ScheduleMeetingFragment: View {
 								.padding(.leading, 16)
 								.labelsHidden()
 								.tint(Color.orangeMain300)
-							Text("Send invitations to participants")
+							Text("meeting_schedule_send_invitations_title")
 								.default_text_style_500(styleSize: 14)
 							Spacer()
 						}

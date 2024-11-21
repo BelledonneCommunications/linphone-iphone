@@ -49,7 +49,7 @@ struct MeetingsFragment: View {
 	func createMeetingLine(model: MeetingsListItemModel) -> some View {
 		VStack(alignment: .leading, spacing: 0) {
 			if model.isToday {
-				Text("No meeting today")
+				Text("meetings_list_no_meeting_for_today")
 					.fontWeight(.bold)
 					.default_text_style_500(styleSize: 15)
 			} else {
@@ -71,7 +71,7 @@ struct MeetingsFragment: View {
 					// this time string is formatted for the current device timezone, we use the selected timezone only when displaying details
 						.default_text_style_500(styleSize: 15)
 				} else {
-					Text("Cancelled")
+					Text("meeting_info_cancelled_toast")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style_500(styleSize: 15)
 				}
@@ -134,7 +134,7 @@ struct MeetingsFragment: View {
 								}
 								.frame(width: 35)
 								if itemModel.isToday {
-									Text("No meeting today")
+									Text("meetings_list_no_meeting_for_today")
 										.fontWeight(.bold)
 										.padding(.leading, 20)
 										.padding(.top, 15)

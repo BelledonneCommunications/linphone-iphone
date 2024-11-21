@@ -16,6 +16,9 @@
     " to: " : {
 
     },
+    ": %@" : {
+
+    },
     "." : {
 
     },
@@ -59,9 +62,6 @@
 
     },
     "%@" : {
-
-    },
-    "%@ meeting" : {
 
     },
     "%lld" : {
@@ -208,9 +208,6 @@
     "Active" : {
 
     },
-    "Add a description" : {
-
-    },
     "Add a picture" : {
 
     },
@@ -218,9 +215,6 @@
 
     },
     "Add the contact" : {
-
-    },
-    "Add to calendar" : {
 
     },
     "Add to contacts" : {
@@ -239,9 +233,6 @@
 
     },
     "All modifications will be canceled." : {
-
-    },
-    "Annuler" : {
 
     },
     "Appel" : {
@@ -443,6 +434,22 @@
     "Bluetooth" : {
 
     },
+    "bottom_navigation_meetings_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meetings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Réunions"
+          }
+        }
+      }
+    },
     "Call failed" : {
 
     },
@@ -477,6 +484,9 @@
           }
         }
       }
+    },
+    "call_audio_device_type_speaker" : {
+
     },
     "call_can_be_trusted_toast" : {
       "extractionState" : "manual",
@@ -806,9 +816,6 @@
     "Cancel for me only" : {
 
     },
-    "Cancelled" : {
-
-    },
     "Categories" : {
 
     },
@@ -871,9 +878,6 @@
           }
         }
       }
-    },
-    "Connexion à la réunion" : {
-
     },
     "contact_details_actions_title" : {
       "extractionState" : "manual",
@@ -1862,9 +1866,6 @@
     "Delete this contact" : {
 
     },
-    "Delete this meeting" : {
-
-    },
     "Demande d’autorisations" : {
 
     },
@@ -2258,9 +2259,6 @@
     "Job title" : {
 
     },
-    "Join the meeting now" : {
-
-    },
     "Joining..." : {
 
     },
@@ -2307,6 +2305,134 @@
     "Meeting added to iPhone calendar" : {
 
     },
+    "meeting_info_cancelled_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been cancelled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "La réunion a été annulée"
+          }
+        }
+      }
+    },
+    "meeting_info_delete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete meeting"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Supprimer la réunion"
+          }
+        }
+      }
+    },
+    "meeting_info_export_as_calendar_event" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create calendar event"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter un évènement dans le calendrie"
+          }
+        }
+      }
+    },
+    "meeting_info_join_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join the meeting now"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Rejoindre la réunion"
+          }
+        }
+      }
+    },
+    "meeting_info_organizer_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Organizer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Organisateur"
+          }
+        }
+      }
+    },
+    "meeting_schedule_add_participants_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add participants"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter des participants"
+          }
+        }
+      }
+    },
+    "meeting_schedule_description_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add description"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter une description"
+          }
+        }
+      }
+    },
+    "meeting_schedule_edit_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit meeting"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modifier la réunion"
+          }
+        }
+      }
+    },
     "meeting_schedule_meeting_label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2320,6 +2446,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réunion"
+          }
+        }
+      }
+    },
+    "meeting_schedule_send_invitations_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send invitation to participants"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Envoyer une invitation aux participants"
+          }
+        }
+      }
+    },
+    "meeting_schedule_subject_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add title…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter un titre…"
+          }
+        }
+      }
+    },
+    "meeting_schedule_timezone_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timezone"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fuseau horaire"
+          }
+        }
+      }
+    },
+    "meeting_schedule_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New meeting"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Nouvelle réunion"
+          }
+        }
+      }
+    },
+    "meeting_waiting_room_cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Annuler"
           }
         }
       }
@@ -2341,6 +2547,38 @@
         }
       }
     },
+    "meeting_waiting_room_joining_subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You\\'ll be joining in a short moment"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Vous allez rejoindre la réunion dans quelques instants…"
+          }
+        }
+      }
+    },
+    "meeting_waiting_room_joining_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection in progress"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Connexion à la réunion"
+          }
+        }
+      }
+    },
     "Meetings" : {
 
     },
@@ -2356,6 +2594,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucune réunion pour le moment…"
+          }
+        }
+      }
+    },
+    "meetings_list_no_meeting_for_today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No meeting scheduled for today"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Aucune réunion aujourd\\'hui"
           }
         }
       }
@@ -2634,9 +2888,6 @@
     "Next" : {
 
     },
-    "No meeting today" : {
-
-    },
     "No participant for the moment..." : {
 
     },
@@ -2653,9 +2904,6 @@
 
     },
     "Opération en cours..." : {
-
-    },
-    "Organizer" : {
 
     },
     "Other actions" : {
@@ -2805,9 +3053,6 @@
     "Send cancellation notifications" : {
 
     },
-    "Send invitations to participants" : {
-
-    },
     "Send Logs" : {
 
     },
@@ -2855,9 +3100,6 @@
     "Start" : {
 
     },
-    "Subject" : {
-
-    },
     "subscribe.linphone.org" : {
 
     },
@@ -2886,9 +3128,6 @@
 
     },
     "This contact will be deleted definitively." : {
-
-    },
-    "Time Zone: %@" : {
 
     },
     "TLS" : {
@@ -2954,9 +3193,6 @@
 
     },
     "Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**." : {
-
-    },
-    "Vous allez rejoindre la réunion dans quelques instants..." : {
 
     },
     "Welcome" : {

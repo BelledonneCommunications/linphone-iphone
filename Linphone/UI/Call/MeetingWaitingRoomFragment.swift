@@ -376,12 +376,12 @@ struct MeetingWaitingRoomFragment: View {
 				VStack {
 					Spacer()
 					
-					Text("Connexion à la réunion")
+					Text("meeting_waiting_room_joining_title")
 						.default_text_style_white_600(styleSize: 24)
 						.multilineTextAlignment(.center)
 						.padding(.bottom, 10)
 					
-					Text("Vous allez rejoindre la réunion dans quelques instants...")
+					Text("meeting_waiting_room_joining_subtitle")
 						.default_text_style_white(styleSize: 16)
 						.multilineTextAlignment(.center)
 						.padding(.bottom, 20)
@@ -394,7 +394,7 @@ struct MeetingWaitingRoomFragment: View {
 					Button(action: {
 						meetingWaitingRoomViewModel.cancelMeeting()
 					}, label: {
-						Text("Annuler")
+						Text("meeting_waiting_room_cancel")
 							.default_text_style_white_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)
@@ -502,7 +502,7 @@ struct MeetingWaitingRoomFragment: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Speaker")
+					Text("call_audio_device_type_speaker")
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()
