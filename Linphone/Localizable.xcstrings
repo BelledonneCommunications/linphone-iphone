@@ -124,6 +124,9 @@
     "%lld selected participants" : {
 
     },
+    "%lld%%" : {
+
+    },
     "+" : {
 
     },

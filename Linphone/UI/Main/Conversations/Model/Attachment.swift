@@ -85,8 +85,9 @@ public struct Attachment: Codable, Identifiable, Hashable {
 	public let type: AttachmentType
 	public let duration: Int
 	public let size: Int
+	public var transferProgressIndication: Int
 
-	public init(id: String, name: String, thumbnail: URL, full: URL, type: AttachmentType, duration: Int = 0, size: Int = 0) {
+	public init(id: String, name: String, thumbnail: URL, full: URL, type: AttachmentType, duration: Int = 0, size: Int = 0, transferProgressIndication: Int = 0) {
 		self.id = id
 		self.name = name
 		self.thumbnail = thumbnail
@@ -94,9 +95,16 @@ public struct Attachment: Codable, Identifiable, Hashable {
 		self.type = type
 		self.duration = duration
 		self.size = size
+		self.transferProgressIndication = transferProgressIndication
 	}
 
-	public init(id: String, name: String, url: URL, type: AttachmentType, duration: Int = 0, size: Int = 0) {
-		self.init(id: id, name: name, thumbnail: url, full: url, type: type, duration: duration, size: size)
+	public init(id: String, name: String, url: URL, type: AttachmentType, duration: Int = 0, size: Int = 0, transferProgressIndication: Int = 0) {
+		self.init(id: id, name: name, thumbnail: url, full: url, type: type, duration: duration, size: size, transferProgressIndication: transferProgressIndication)
+	}
+}
+
+extension Attachment: Equatable {
+	public static func == (lhs: Attachment, rhs: Attachment) -> Bool {
+		lhs.id == rhs.id && lhs.transferProgressIndication == rhs.transferProgressIndication
 	}
 }

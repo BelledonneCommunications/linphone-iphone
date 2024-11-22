@@ -104,6 +104,7 @@ class ConversationViewModel: ObservableObject {
 	@Published var progress: Double = 0.0
 	
 	@Published var attachments: [Attachment] = []
+	@Published var attachmentTransferInProgress: Attachment?
 	
 	struct SheetCategory: Identifiable {
 		let id = UUID()
@@ -165,115 +166,231 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func addChatMessageDelegate(message: ChatMessage) {
-		DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-			if self.displayedConversation != nil {
-				var statusTmp: Message.Status? = .sending
-				switch message.state {
-				case .InProgress:
-					statusTmp = .sending
-				case .Delivered:
-					statusTmp = .sent
-				case .DeliveredToUser:
-					statusTmp = .received
-				case .Displayed:
-					statusTmp = .read
-				case .NotDelivered:
-					statusTmp = .error
-				default:
-					statusTmp = .sending
+		if self.displayedConversation != nil {
+			var statusTmp: Message.Status? = .sending
+			switch message.state {
+			case .InProgress:
+				statusTmp = .sending
+			case .Delivered:
+				statusTmp = .sent
+			case .DeliveredToUser:
+				statusTmp = .received
+			case .Displayed:
+				statusTmp = .read
+			case .NotDelivered:
+				statusTmp = .error
+			default:
+				statusTmp = .sending
+			}
+			
+			let ephemeralExpireTimeTmp = message.ephemeralExpireTime
+			
+			if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
+				if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
+					self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
 				}
 				
-				let ephemeralExpireTimeTmp = message.ephemeralExpireTime
-				
-				if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
-					if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
-						self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
-					}
-					
-					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
-						if indexMessage < self.conversationMessagesSection[0].rows.count {
-							if self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
-								DispatchQueue.main.async {
-									self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
+				if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
+					if indexMessage < self.conversationMessagesSection[0].rows.count {
+						if self.conversationMessagesSection[0].rows[indexMessage].message.status != statusTmp {
+							DispatchQueue.main.async {
+								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
+								self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+							}
+						} else {
+							DispatchQueue.main.async {
+								if indexMessage < self.conversationMessagesSection[0].rows.count {
 									self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
 								}
-							} else {
-								DispatchQueue.main.async {
-									if indexMessage < self.conversationMessagesSection[0].rows.count {
-										self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+							}
+						}
+					}
+				}
+			}
+			
+			self.coreContext.doOnCoreQueue { _ in
+				let chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, msgState: ChatMessage.State) in
+					var statusTmp: Message.Status?
+					switch message.state {
+					case .InProgress:
+						statusTmp = .sending
+					case .Delivered:
+						statusTmp = .sent
+					case .DeliveredToUser:
+						statusTmp = .received
+					case .Displayed:
+						statusTmp = .read
+					case .NotDelivered:
+						statusTmp = .error
+					default:
+						statusTmp = .sending
+					}
+					
+					if msgState == .FileTransferDone {
+						message.contents.forEach { content in
+							if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
+								if let contentIndex = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.firstIndex(where: {$0.name == content.name && $0.full.pathExtension.isEmpty && $0.full.absoluteString != content.filePath}) {
+									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+									let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex]
+									if let pathThumbnail = content.type == "video" ? URL(string: self.generateThumbnail(name: content.name ?? "")) : contentTmp.thumbnail {
+										if let path = URL(string: self.getNewFilePath(name: filePathSep[1])) {
+											if path != contentTmp.full {
+												
+												var typeTmp: AttachmentType = .other
+												
+												switch content.type {
+												case "image":
+													typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+												case "audio":
+													typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+												case "application":
+													typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+												case "text":
+													typeTmp = .text
+												case "video":
+													typeTmp = .video
+												default:
+													typeTmp = .other
+												}
+												
+												let newAttachment = Attachment(
+													id: UUID().uuidString,
+													name: content.name ?? contentTmp.name,
+													thumbnail: content.type == "video" ? pathThumbnail : path,
+													full: path,
+													type: typeTmp,
+													duration: contentTmp.duration,
+													size: contentTmp.size,
+													transferProgressIndication: 100
+												)
+												
+												DispatchQueue.main.async {
+													self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex] = newAttachment
+												}
+											}
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				
-				self.coreContext.doOnCoreQueue { _ in
-					let chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, msgState: ChatMessage.State) in
-						var statusTmp: Message.Status?
-						switch message.state {
-						case .InProgress:
-							statusTmp = .sending
-						case .Delivered:
-							statusTmp = .sent
-						case .DeliveredToUser:
-							statusTmp = .received
-						case .Displayed:
-							statusTmp = .read
-						case .NotDelivered:
-							statusTmp = .error
-						default:
-							statusTmp = .sending
+					
+					if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
+						self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
+					}
+					
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+					
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp ?? .error
 						}
-						
-						if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
-							self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
-						}
-						
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
-						
-						DispatchQueue.main.async {
-							if indexMessage != nil {
-								self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp ?? .error
-							}
-						}
-					}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
-						var reactionsTmp: [String] = []
-						message.reactions.forEach({ chatMessageReaction in
-							reactionsTmp.append(chatMessageReaction.body)
-						})
-						
-						DispatchQueue.main.async {
-							if indexMessage != nil {
-								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
-							}
-						}
-					}, onReactionRemoved: { (message: ChatMessage, _: Address) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
-						var reactionsTmp: [String] = []
-						message.reactions.forEach({ chatMessageReaction in
-							reactionsTmp.append(chatMessageReaction.body)
-						})
-						
-						DispatchQueue.main.async {
-							if indexMessage != nil {
-								self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
-							}
-						}
-					}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
-						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
-						let ephemeralExpireTimeTmp = message.ephemeralExpireTime
-						
-						DispatchQueue.main.async {
-							if indexMessage != nil {
-								self.conversationMessagesSection[0].rows[indexMessage!].message.ephemeralExpireTime = ephemeralExpireTimeTmp
-							}
-						}
+					}
+				}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+					var reactionsTmp: [String] = []
+					message.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
 					})
 					
-					self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
-				}
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
+						}
+					}
+				}, onReactionRemoved: { (message: ChatMessage, _: Address) in
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+					var reactionsTmp: [String] = []
+					message.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
+					})
+					
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
+						}
+					}
+				}, onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) in
+					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
+						
+						let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+						let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+						
+						if let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.first(where: {$0.full == path}) {
+							DispatchQueue.main.async {
+								self.attachmentTransferInProgress = contentTmp
+								self.attachmentTransferInProgress!.transferProgressIndication = ((offset * 100) / total)
+							}
+							
+							if ((offset * 100) / total) >= 100 {
+								DispatchQueue.main.async {
+									self.attachmentTransferInProgress = nil
+								}
+							}
+							/*
+							if ((offset * 100) / total) >= 100 {
+								
+								var typeTmp: AttachmentType = .other
+								
+								switch content.type {
+								case "image":
+									typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+								case "audio":
+									typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+								case "application":
+									typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+								case "text":
+									typeTmp = .text
+								case "video":
+									typeTmp = .video
+								default:
+									typeTmp = .other
+								}
+								
+								if let pathThumbnail = content.type == "video" ? URL(string: self.generateThumbnail(name: content.name ?? "")) : contentTmp.thumbnail {
+									if content.filePath != nil {
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										if let path = URL(string: self.getNewFilePath(name: filePathSep[1])) {
+											
+											let newAttachment = Attachment(
+												id: UUID().uuidString,
+												name: content.name ?? contentTmp.name,
+												thumbnail: content.type == "video" ? pathThumbnail : path,
+												full: path,
+												type: typeTmp,
+												duration: contentTmp.duration,
+												size: contentTmp.size,
+												transferProgressIndication: 100
+											)
+											
+											if let contentIndex = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.firstIndex(where: {$0.full == path}) {
+												DispatchQueue.main.async {
+									 				print("attachmentattachment ----------------")
+													print("attachmentattachment ---------------- \(content.name ?? "")")
+													print("attachmentattachment ---------------- \(filePathSep[1])")
+													print("attachmentattachment ----------------")
+													self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex] = newAttachment
+												}
+											}
+										}
+									}
+								}
+							}
+							*/
+						}
+					}
+				}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
+					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+					let ephemeralExpireTimeTmp = message.ephemeralExpireTime
+					
+					DispatchQueue.main.async {
+						if indexMessage != nil {
+							self.conversationMessagesSection[0].rows[indexMessage!].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+						}
+					}
+				})
+				
+				self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 			}
 		}
 	}
@@ -425,7 +542,8 @@ class ConversationViewModel: ObservableObject {
 											name: content.name!,
 											url: path!,
 											type: .fileTransfer,
-											size: content.fileSize
+											size: content.fileSize,
+											transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -458,7 +576,8 @@ class ConversationViewModel: ObservableObject {
 												url: path!,
 												type: typeTmp,
 												duration: typeTmp == .voiceRecording ? content.fileDuration : 0,
-												size: content.fileSize
+												size: content.fileSize,
+												transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -481,7 +600,8 @@ class ConversationViewModel: ObservableObject {
 												thumbnail: pathThumbnail!,
 												full: path!,
 												type: .video,
-												size: content.fileSize
+												size: content.fileSize,
+												transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -595,8 +715,7 @@ class ConversationViewModel: ObservableObject {
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
-									isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
+									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 								)
 							)
 						)
@@ -648,7 +767,7 @@ class ConversationViewModel: ObservableObject {
 					
 					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
 						eventLog.chatMessage!.contents.forEach { content in
-							if content.isText {
+							if content.isText && content.name == nil {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
@@ -662,7 +781,8 @@ class ConversationViewModel: ObservableObject {
 											name: content.name!,
 											url: path!,
 											type: .fileTransfer,
-											size: content.fileSize
+											size: content.fileSize,
+											transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -694,7 +814,8 @@ class ConversationViewModel: ObservableObject {
 												url: path!,
 												type: typeTmp,
 												duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
-												size: content.fileSize
+												size: content.fileSize,
+												transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -717,7 +838,8 @@ class ConversationViewModel: ObservableObject {
 												thumbnail: pathThumbnail!,
 												full: path!,
 												type: .video,
-												size: content.fileSize
+												size: content.fileSize,
+												transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
@@ -831,8 +953,7 @@ class ConversationViewModel: ObservableObject {
 									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
-									isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
+									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 								)
 							), at: 0
 						)
@@ -882,7 +1003,7 @@ class ConversationViewModel: ObservableObject {
 				
 				if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
 					eventLog.chatMessage!.contents.forEach { content in
-						if content.isText {
+						if content.isText && content.name == nil {
 							contentText = content.utf8Text ?? ""
 						} else {
 							if content.filePath == nil || content.filePath!.isEmpty {
@@ -896,7 +1017,8 @@ class ConversationViewModel: ObservableObject {
 										name: content.name ?? "???",
 										url: path!,
 										type: .fileTransfer,
-										size: content.fileSize
+										size: content.fileSize,
+										transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 									)
 									attachmentNameList += ", \(content.name ?? "???")"
 									attachmentList.append(attachment)
@@ -905,6 +1027,7 @@ class ConversationViewModel: ObservableObject {
 								if content.type != "video" {
 									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
 									let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+									
 									var typeTmp: AttachmentType = .other
 									
 									switch content.type {
@@ -928,7 +1051,8 @@ class ConversationViewModel: ObservableObject {
 											url: path!,
 											type: typeTmp,
 											duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
-											size: content.fileSize
+											size: content.fileSize,
+											transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -951,7 +1075,8 @@ class ConversationViewModel: ObservableObject {
 											thumbnail: pathThumbnail!,
 											full: path!,
 											type: .video,
-											size: content.fileSize
+											size: content.fileSize,
+											transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 										)
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
@@ -1059,6 +1184,7 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				if eventLog.chatMessage != nil {
+					
 					let message = EventLogMessage(
 						eventModel: EventModel(eventLog: eventLog),
 						message: Message(
@@ -1080,8 +1206,7 @@ class ConversationViewModel: ObservableObject {
 							ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 							ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 							isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-							messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
-							isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
+							messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 						)
 					)
 					
@@ -1194,7 +1319,7 @@ class ConversationViewModel: ObservableObject {
 							
 							if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
 								eventLog.chatMessage!.contents.forEach { content in
-									if content.isText {
+									if content.isText && content.name == nil {
 										contentText = content.utf8Text ?? ""
 									} else if content.name != nil && !content.name!.isEmpty {
 										if content.filePath == nil || content.filePath!.isEmpty {
@@ -1208,7 +1333,8 @@ class ConversationViewModel: ObservableObject {
 													name: content.name!,
 													url: path!,
 													type: .fileTransfer,
-													size: content.fileSize
+													size: content.fileSize,
+													transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 												)
 												attachmentNameList += ", \(content.name!)"
 												attachmentList.append(attachment)
@@ -1240,7 +1366,8 @@ class ConversationViewModel: ObservableObject {
 														url: path!,
 														type: typeTmp,
 														duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
-														size: content.fileSize
+														size: content.fileSize,
+														transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
@@ -1263,7 +1390,8 @@ class ConversationViewModel: ObservableObject {
 														thumbnail: pathThumbnail!,
 														full: path!,
 														type: .video,
-														size: content.fileSize
+														size: content.fileSize,
+														transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 													)
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
@@ -1377,8 +1505,7 @@ class ConversationViewModel: ObservableObject {
 									  		ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
 											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
 											isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-											messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil,
-											isFileTransferInProgress: eventLog.chatMessage!.isFileTransferInProgress
+											messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
 										)
 									), at: 0
 								)
@@ -1624,7 +1751,7 @@ class ConversationViewModel: ObservableObject {
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
 		if self.displayedConversation != nil {
-			if !chatMessage.isFileTransferInProgress && (content.filePath == nil || content.filePath!.isEmpty) {
+			if content.filePath == nil || content.filePath!.isEmpty {
 				if let contentName = content.name {
 					// let isImage = FileUtil.isExtensionImage(path: contentName)
 					var file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")

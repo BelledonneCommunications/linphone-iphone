@@ -88,8 +88,6 @@ public struct Message: Identifiable, Hashable {
 	public var isIcalendar: Bool
 	public var messageConferenceInfo: MessageConferenceInfo?
 	
-	public var isFileTransferInProgress: Bool
-	
 	public init(
 		id: String,
 		appData: String = "",
@@ -111,8 +109,7 @@ public struct Message: Identifiable, Hashable {
 		ephemeralExpireTime: Int = 0,
 		ephemeralLifetime: Int = 0,
 		isIcalendar: Bool = false,
-		messageConferenceInfo: MessageConferenceInfo? = nil,
-		isFileTransferInProgress: Bool = false
+		messageConferenceInfo: MessageConferenceInfo? = nil
 	) {
 		self.id = id
 		self.appData = appData
@@ -135,7 +132,6 @@ public struct Message: Identifiable, Hashable {
 		self.ephemeralLifetime = ephemeralLifetime
 		self.isIcalendar = isIcalendar
 		self.messageConferenceInfo = messageConferenceInfo
-		self.isFileTransferInProgress = isFileTransferInProgress
 	}
 
 	public static func makeMessage(
@@ -188,7 +184,7 @@ extension Message {
 
 extension Message: Equatable {
 	public static func == (lhs: Message, rhs: Message) -> Bool {
-		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions && lhs.ephemeralExpireTime == rhs.ephemeralExpireTime
+		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions && lhs.ephemeralExpireTime == rhs.ephemeralExpireTime && lhs.attachments == rhs.attachments
 	}
 }
 

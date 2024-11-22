@@ -538,68 +538,48 @@ struct ChatBubbleView: View {
 					
 					if eventLogMessage.message.attachments.first!.type == .image || eventLogMessage.message.attachments.first!.type == .video {
 						if #available(iOS 16.0, *) {
-							AsyncImage(url: eventLogMessage.message.attachments.first!.thumbnail) { phase in
-								switch phase {
-								case .empty:
-									ProgressView()
-								case .success(let image):
-									ZStack {
-										image
+							CachedAsyncImage(
+								url: eventLogMessage.message.attachments.first!.thumbnail,
+								placeholder: ProgressView(),
+								onImageTapped: {
+									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+								})
+							
+							.overlay(
+								Group {
+									if eventLogMessage.message.attachments.first!.type == .video {
+										Image("play-fill")
+											.renderingMode(.template)
 											.resizable()
-											.interpolation(.medium)
-											.aspectRatio(contentMode: .fill)
-										
-										if eventLogMessage.message.attachments.first!.type == .video {
-											Image("play-fill")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 40, height: 40, alignment: .leading)
-										}
+											.foregroundStyle(.white)
+											.frame(width: 40, height: 40)
 									}
-								case .failure:
-									Image("image-broken")
-								@unknown default:
-									EmptyView()
 								}
-							}
+							)
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
-							.onTapGesture {
-								selectedURLAttachment = eventLogMessage.message.attachments.first!.full
-							}
 						} else {
-							AsyncImage(url: eventLogMessage.message.attachments.first!.thumbnail) { phase in
-								switch phase {
-								case .empty:
-									ProgressView()
-								case .success(let image):
-									ZStack {
-										image
+							CachedAsyncImage(
+								url: eventLogMessage.message.attachments.first!.thumbnail,
+								placeholder: ProgressView(),
+								onImageTapped: {
+									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+								})
+							
+							.overlay(
+								Group {
+									if eventLogMessage.message.attachments.first!.type == .video {
+										Image("play-fill")
+											.renderingMode(.template)
 											.resizable()
-											.interpolation(.medium)
-											.aspectRatio(contentMode: .fill)
-										
-										if eventLogMessage.message.attachments.first!.type == .video {
-											Image("play-fill")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.white)
-												.frame(width: 40, height: 40, alignment: .leading)
-										}
+											.foregroundStyle(.white)
+											.frame(width: 40, height: 40)
 									}
-								case .failure:
-									Image("image-broken")
-								@unknown default:
-									EmptyView()
 								}
-							}
+							)
 							.layoutPriority(-1)
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 							.id(UUID())
-							.onTapGesture {
-								selectedURLAttachment = eventLogMessage.message.attachments.first!.full
-							}
 						}
 					} else if eventLogMessage.message.attachments.first!.type == .gif {
 						if #available(iOS 16.0, *) {
@@ -633,22 +613,29 @@ struct ChatBubbleView: View {
 			} else {
 				HStack {
 					VStack {
-						Image(getImageOfType(type: eventLogMessage.message.attachments.first!.type))
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c700)
-							.frame(width: 60, height: 60, alignment: .leading)
+						if conversationViewModel.attachmentTransferInProgress != nil && conversationViewModel.attachmentTransferInProgress!.id == eventLogMessage.message.attachments.first!.id {
+							CircularProgressView(progress: Double(conversationViewModel.attachmentTransferInProgress!.transferProgressIndication) / 100.0)
+								.frame(width: 80, height: 80)
+						} else {
+							Image(getImageOfType(type: eventLogMessage.message.attachments.first!.type))
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c700)
+								.frame(width: 60, height: 60, alignment: .leading)
+						}
 					}
 					.frame(width: 100, height: 100)
 					.background(Color.grayMain2c200)
 					.onTapGesture {
-						if eventLogMessage.message.attachments.first!.type == .fileTransfer && !eventLogMessage.message.isFileTransferInProgress {
+						if eventLogMessage.message.attachments.first!.type == .fileTransfer && eventLogMessage.message.attachments.first!.transferProgressIndication == -1 {
 							CoreContext.shared.doOnCoreQueue { _ in
 								conversationViewModel.downloadContent(
 									chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
 									content: eventLogMessage.eventModel.eventLog.chatMessage!.contents.first!
 								)
 							}
+						} else {
+							selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 						}
 					}
 					
@@ -676,121 +663,117 @@ struct ChatBubbleView: View {
 			}
 		} else if eventLogMessage.message.attachments.count > 1 {
 			let sizeCard = ((geometryProxy.size.width - 150)/2)-2
-			let columns = [
-				GridItem(.adaptive(minimum: sizeCard), spacing: 1)]
+			let columns = [GridItem(.adaptive(minimum: sizeCard), spacing: 1)]
 			
-			LazyVStack {
+			VStack {
 				LazyVGrid(columns: columns) {
-					ForEach(eventLogMessage.message.attachments, id: \.id) { attachment in
-						if attachment.type == .image || attachment.type == .gif
-							|| attachment.type == .video {
+					ForEach(eventLogMessage.message.attachments.filter({ $0.type == .image || $0.type == .gif
+						|| $0.type == .video }), id: \.id) { attachment in
 							ZStack {
 								Rectangle()
 									.fill(Color(.white))
 									.frame(width: sizeCard, height: sizeCard)
 								
 								if #available(iOS 16.0, *) {
-									AsyncImage(url: attachment.thumbnail) { image in
-										ZStack {
-											image
-												.resizable()
-												.interpolation(.medium)
-												.aspectRatio(contentMode: .fill)
-											
+									CachedAsyncImage(
+										url: attachment.thumbnail,
+										placeholder: ProgressView(),
+										onImageTapped: {
+											selectedURLAttachment = attachment.full
+										})
+									
+									.overlay(
+										Group {
 											if attachment.type == .video {
 												Image("play-fill")
 													.renderingMode(.template)
 													.resizable()
 													.foregroundStyle(.white)
-													.frame(width: 40, height: 40, alignment: .leading)
+													.frame(width: 40, height: 40)
 											}
 										}
-									} placeholder: {
-										ProgressView()
-									}
+									)
 									.layoutPriority(-1)
-									.onTapGesture {
-										selectedURLAttachment = attachment.full
-									}
 								} else {
-									AsyncImage(url: attachment.thumbnail) { image in
-										ZStack {
-											image
-												.resizable()
-												.interpolation(.medium)
-												.aspectRatio(contentMode: .fill)
-											
+									CachedAsyncImage(
+										url: attachment.thumbnail,
+										placeholder: ProgressView(),
+										onImageTapped: {
+											selectedURLAttachment = attachment.full
+										})
+									
+									.overlay(
+										Group {
 											if attachment.type == .video {
 												Image("play-fill")
 													.renderingMode(.template)
 													.resizable()
 													.foregroundStyle(.white)
-													.frame(width: 40, height: 40, alignment: .leading)
+													.frame(width: 40, height: 40)
 											}
 										}
-									} placeholder: {
-										ProgressView()
-									}
+									)
 									.id(UUID())
 									.layoutPriority(-1)
-									.onTapGesture {
-										selectedURLAttachment = attachment.full
-									}
 								}
 							}
 							.clipShape(RoundedRectangle(cornerRadius: 4))
 							.contentShape(Rectangle())
 						}
-					}
 				}
 				
-				ForEach(eventLogMessage.message.attachments, id: \.id) { attachment in
-					if !(attachment.type == .image || attachment.type == .gif
-						 || attachment.type == .video) {
-						HStack {
-							VStack {
+				ForEach(eventLogMessage.message.attachments.filter({ $0.type != .image && $0.type != .gif
+					&& $0.type != .video }), id: \.id) { attachment in
+					HStack {
+						VStack {
+							if conversationViewModel.attachmentTransferInProgress != nil && conversationViewModel.attachmentTransferInProgress!.id == attachment.id {
+								CircularProgressView(progress: Double(conversationViewModel.attachmentTransferInProgress!.transferProgressIndication) / 100.0)
+									.frame(width: 80, height: 80)
+							} else {
 								Image(getImageOfType(type: attachment.type))
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(Color.grayMain2c700)
 									.frame(width: 60, height: 60, alignment: .leading)
 							}
-							.frame(width: 100, height: 100)
-							.background(Color.grayMain2c200)
-							.onTapGesture {
-								if attachment.type == .fileTransfer && !eventLogMessage.message.isFileTransferInProgress {
-									if let content = eventLogMessage.eventModel.eventLog.chatMessage!.contents.first(where: {$0.filePath == attachment.full.absoluteString}) {
-										CoreContext.shared.doOnCoreQueue { _ in
-											conversationViewModel.downloadContent(
-												chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
-												content: content
-											)
-										}
+						}
+						.frame(width: 100, height: 100)
+						.background(Color.grayMain2c200)
+						.onTapGesture {
+							if attachment.type == .fileTransfer && attachment.transferProgressIndication == -1 {
+								CoreContext.shared.doOnCoreQueue { _ in
+									if let content = eventLogMessage.eventModel.eventLog.chatMessage!.contents.first(where: {$0.name == attachment.name}) {
+										conversationViewModel.downloadContent(
+											chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
+											content: content
+										)
 									}
 								}
+							} else {
+								selectedURLAttachment = attachment.full
 							}
+						}
+						
+						VStack {
+							Text(attachment.name)
+								.foregroundStyle(Color.grayMain2c700)
+								.default_text_style_600(styleSize: 14)
+								.truncationMode(.middle)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.lineLimit(1)
 							
-							VStack {
-								Text(attachment.name)
-									.foregroundStyle(Color.grayMain2c700)
-									.default_text_style_600(styleSize: 14)
-									.truncationMode(.middle)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-								
-								Text(attachment.size.formatBytes())
-									.default_text_style_300(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-							}
-							.padding(.horizontal, 10)
-							.frame(maxWidth: .infinity, alignment: .leading)
+							Text(attachment.size.formatBytes())
+								.default_text_style_300(styleSize: 14)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.lineLimit(1)
 						}
-						.background(.white)
-						.clipShape(RoundedRectangle(cornerRadius: 10))
-						.onTapGesture {
-							selectedURLAttachment = attachment.full
-						}
+						.padding(.horizontal, 10)
+						.frame(maxWidth: .infinity, alignment: .leading)
+					}
+					.background(.white)
+					.clipShape(RoundedRectangle(cornerRadius: 10))
+					.onTapGesture {
+						selectedURLAttachment = attachment.full
 					}
 				}
 			}
@@ -1080,6 +1063,82 @@ struct CustomSlider: View {
 	private func stopProgress() {
 		timer?.invalidate()
 		timer = nil
+	}
+}
+
+struct CircularProgressView: View {
+	var progress: Double
+
+	var body: some View {
+		ZStack {
+			Circle()
+				.stroke(Color(.systemGray4), lineWidth: 5)
+			Circle()
+				.trim(from: 0, to: progress)
+				.stroke(
+					Color.orangeMain500,
+					style: StrokeStyle(lineWidth: 5, lineCap: .round))
+				.rotationEffect(Angle(degrees: -90))
+				.animation(.easeInOut(duration: 0.5), value: progress)
+				.overlay(
+					Text("\(Int(progress * 100))%")
+						.font(.system(size: 15, weight: .bold, design: .rounded))
+						.foregroundColor(Color.orangeMain500)
+				)
+		}
+		.padding()
+	}
+}
+
+class ImageCache {
+	static let shared = NSCache<NSURL, UIImage>()
+}
+
+struct CachedAsyncImage<Placeholder: View>: View {
+	let url: URL
+	let placeholder: Placeholder
+	let onImageTapped: (() -> Void)?
+
+	@State private var image: UIImage?
+
+	var body: some View {
+		ZStack {
+			if let image = image {
+				Image(uiImage: image)
+					.resizable()
+					.interpolation(.medium)
+					.aspectRatio(contentMode: .fill)
+					.onTapGesture {
+						onImageTapped?()
+					}
+			} else {
+				placeholder
+					.onAppear {
+						loadImage()
+					}
+			}
+		}
+	}
+
+	private func loadImage() {
+		if let cachedImage = ImageCache.shared.object(forKey: url as NSURL) {
+			self.image = cachedImage
+			return
+		}
+
+		Task {
+			do {
+				let (data, _) = try await URLSession.shared.data(from: url)
+				if let downloadedImage = UIImage(data: data) {
+					ImageCache.shared.setObject(downloadedImage, forKey: url as NSURL)
+					await MainActor.run {
+						self.image = downloadedImage
+					}
+				}
+			} catch {
+				print("Error loading image: \(error.localizedDescription)")
+			}
+		}
 	}
 }
 
