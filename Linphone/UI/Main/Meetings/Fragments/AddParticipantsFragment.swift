@@ -65,7 +65,7 @@ struct AddParticipantsFragment: View {
 						}
 					
 					VStack(alignment: .leading, spacing: 3) {
-						Text("Add participants")
+						Text("conversation_add_participants_title")
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 							.padding(.top, 20)
@@ -106,7 +106,7 @@ struct AddParticipantsFragment: View {
 				.padding(.leading, 16)
 				
 				ZStack(alignment: .trailing) {
-					TextField("Search contact", text: $addParticipantsViewModel.searchField)
+					TextField("new_conversation_search_bar_filter_hint", text: $addParticipantsViewModel.searchField)
 						.default_text_style(styleSize: 15)
 						.frame(height: 25)
 						.focused($isSearchFieldFocused)

@@ -31,10 +31,10 @@ struct WelcomePage2Fragment: View {
 					.resizable()
 					.foregroundStyle(Color.orangeMain500)
 					.frame(width: 70, height: 100)
-				Text("Sécurisé")
+				Text("welcome_page_2_title")
 					.welcome_text_style_gray_800(styleSize: 30)
 					.padding(.bottom, 20)
-				Text("Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**.")
+				Text("welcome_page_2_message")
 					.welcome_text_style_gray(styleSize: 15)
 					.multilineTextAlignment(.center)
 				

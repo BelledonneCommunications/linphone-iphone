@@ -209,7 +209,7 @@ struct StartCallFragment: View {
 						ScrollView {
 							if !ContactsManager.shared.lastSearch.isEmpty {
 								HStack(alignment: .center) {
-									Text("All contacts")
+									Text("contacts_list_all_contacts_title")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()
@@ -270,7 +270,7 @@ struct StartCallFragment: View {
 							
 							if !contactsManager.lastSearchSuggestions.isEmpty {
 								HStack(alignment: .center) {
-									Text("Suggestions")
+									Text("generic_address_picker_suggestions_list_title")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()
@@ -433,7 +433,7 @@ struct StartCallFragment: View {
 				Button(action: {
 					startCallViewModel.participants.removeAll()
 				}, label: {
-					Text("Cancel")
+					Text("dialog_cancel")
 						.default_text_style_orange_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)

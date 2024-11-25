@@ -53,12 +53,12 @@ struct WelcomeView: View {
 										self.index = 2
 									}
 								)
-								Text("Welcome")
+								Text("welcome_page_title")
 									.welcome_text_style_white_800(styleSize: 35)
 									.padding(.trailing, 100)
 									.frame(width: geometry.size.width)
 									.padding(.bottom, -25)
-								Text("to Linphone")
+								Text(String(format: String(localized: "welcome_page_subtitle"), Bundle.main.displayName))
 									.welcome_text_style_white_800(styleSize: 25)
 									.padding(.leading, 100)
 									.frame(width: geometry.size.width)

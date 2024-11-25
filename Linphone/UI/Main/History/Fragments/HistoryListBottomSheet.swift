@@ -166,7 +166,7 @@ struct HistoryListBottomSheet: View {
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Copy SIP address")
+					Text("menu_copy_sip_address")
 						.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -204,7 +204,7 @@ struct HistoryListBottomSheet: View {
 						.foregroundStyle(Color.redDanger500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Delete")
+					Text("menu_delete_selected_item")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style(styleSize: 16)
 					Spacer()

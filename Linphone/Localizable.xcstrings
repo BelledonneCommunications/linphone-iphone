@@ -199,9 +199,6 @@
     "Add a picture" : {
 
     },
-    "Add participants" : {
-
-    },
     "Add the contact" : {
 
     },
@@ -1071,6 +1068,9 @@
     "Contacts" : {
 
     },
+    "contacts_list_all_contacts_title" : {
+
+    },
     "contacts_list_empty" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1188,6 +1188,9 @@
           }
         }
       }
+    },
+    "conversation_add_participants_title" : {
+
     },
     "conversation_composing_label_multiple" : {
       "extractionState" : "manual",
@@ -1991,9 +1994,6 @@
     "Copy number" : {
 
     },
-    "Copy SIP address" : {
-
-    },
     "Could not send ICS invitations to meeting to any participant" : {
 
     },
@@ -2022,6 +2022,9 @@
 
     },
     "Dialer" : {
+
+    },
+    "dialog_cancel" : {
 
     },
     "Display Name" : {
@@ -2218,6 +2221,9 @@
           }
         }
       }
+    },
+    "generic_address_picker_suggestions_list_title" : {
+
     },
     "Hang up call" : {
 
@@ -2425,9 +2431,6 @@
 
     },
     "Last name" : {
-
-    },
-    "Linphone" : {
 
     },
     "list_filter_no_result_found" : {
@@ -3088,6 +3091,9 @@
         }
       }
     },
+    "new_conversation_search_bar_filter_hint" : {
+
+    },
     "new_conversation_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3118,9 +3124,6 @@
 
     },
     "Ok" : {
-
-    },
-    "Open source" : {
 
     },
     "Opération en cours..." : {
@@ -3239,12 +3242,6 @@
     "Scan QR code" : {
 
     },
-    "Search contact" : {
-
-    },
-    "Sécurisé" : {
-
-    },
     "See all" : {
 
     },
@@ -3344,9 +3341,6 @@
     "TLS" : {
 
     },
-    "to Linphone" : {
-
-    },
     "Transfer" : {
 
     },
@@ -3363,12 +3357,6 @@
 
     },
     "Unable to retrieve configuration, invalid address" : {
-
-    },
-    "Une application de communication **sécurisée**, **open source** et **française**." : {
-
-    },
-    "Une application open source et un **service gratuit** depuis **2001**." : {
 
     },
     "Use a SIP account" : {
@@ -3403,11 +3391,117 @@
     "Video Call" : {
 
     },
-    "Vos communications sont en sécurité grâce aux **Chiffrement de bout en bout**." : {
-
+    "welcome_page_1_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A **secured**, **open source** and **French** communication app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Une application de communication **sécurisée**, **open source** et **française**."
+          }
+        }
+      }
     },
-    "Welcome" : {
-
+    "welcome_page_2_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your communications are safe thanks to our <b>end-to-end encryption</b>."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos communications sont en sécurité grâce au **chiffrement de bout en bout**."
+          }
+        }
+      }
+    },
+    "welcome_page_2_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Secured"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sécurisé"
+          }
+        }
+      }
+    },
+    "welcome_page_3_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A <b>free</b> and open source application since <b>2001</b>."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une application open source et un **service gratuit** depuis **2001**."
+          }
+        }
+      }
+    },
+    "welcome_page_3_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open source"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open source"
+          }
+        }
+      }
+    },
+    "welcome_page_subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sur %@"
+          }
+        }
+      }
+    },
+    "welcome_page_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue"
+          }
+        }
+      }
     },
     "You will change this mode later" : {
 

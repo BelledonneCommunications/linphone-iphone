@@ -31,10 +31,10 @@ struct WelcomePage1Fragment: View {
 					.resizable()
 					.foregroundStyle(Color.orangeMain500)
 					.frame(width: 100, height: 100)
-				Text("Linphone")
+				Text(Bundle.main.displayName)
 					.welcome_text_style_gray_800(styleSize: 30)
 					.padding(.bottom, 20)
-				Text("Une application de communication **sécurisée**, **open source** et **française**.")
+				Text("welcome_page_1_message")
 					.welcome_text_style_gray(styleSize: 15)
 					.multilineTextAlignment(.center)
 				

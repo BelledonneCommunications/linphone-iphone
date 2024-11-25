@@ -31,10 +31,10 @@ struct WelcomePage3Fragment: View {
 					.resizable()
 					.foregroundStyle(Color.orangeMain500)
 					.frame(width: 100, height: 100)
-				Text("Open source")
+				Text("welcome_page_3_title")
 					.welcome_text_style_gray_800(styleSize: 30)
 					.padding(.bottom, 20)
-				Text("Une application open source et un **service gratuit** depuis **2001**.")
+				Text("welcome_page_3_message")
 					.welcome_text_style_gray(styleSize: 15)
 					.multilineTextAlignment(.center)
 				
