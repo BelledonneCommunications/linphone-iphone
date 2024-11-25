@@ -205,9 +205,6 @@
     "Add the contact" : {
 
     },
-    "Add to contacts" : {
-
-    },
     "Add to favourites" : {
 
     },
@@ -286,10 +283,13 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login en FR"
+            "value" : "Connexion"
           }
         }
       }
+    },
+    "assistant_Account_login" : {
+
     },
     "assistant_account_register" : {
       "extractionState" : "manual",
@@ -532,6 +532,22 @@
         }
       }
     },
+    "assistant_web_platform_link" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "subscribe.linphone.org"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "subscribe.linphone.org"
+          }
+        }
+      }
+    },
     "Attended transfer" : {
 
     },
@@ -570,9 +586,6 @@
 
     },
     "Call has been successfully transferred" : {
-
-    },
-    "Call history" : {
 
     },
     "Call is being transferred" : {
@@ -995,6 +1008,16 @@
         }
       }
     },
+    "contact_call_action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call"
+          }
+        }
+      }
+    },
     "contact_details_actions_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1025,6 +1048,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choisissez un numéro ou adresse SIP"
+          }
+        }
+      }
+    },
+    "contact_message_action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Message"
           }
         }
       }
@@ -1973,9 +2012,6 @@
     "Delete all history" : {
 
     },
-    "Delete history" : {
-
-    },
     "Delete this contact" : {
 
     },
@@ -2325,6 +2361,22 @@
         }
       }
     },
+    "history_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call History"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historique d’appel"
+          }
+        }
+      }
+    },
     "I prefere create an account" : {
 
     },
@@ -2395,9 +2447,6 @@
       }
     },
     "Log out" : {
-
-    },
-    "Login" : {
 
     },
     "Logout" : {
@@ -2721,6 +2770,22 @@
         }
       }
     },
+    "menu_add_address_to_contacts" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to contacts"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter aux contacts"
+          }
+        }
+      }
+    },
     "menu_copy_chat_message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2734,6 +2799,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copier le texte"
+          }
+        }
+      }
+    },
+    "menu_copy_sip_address" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy SIP addres"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copier l\\'adresse SIP"
+          }
+        }
+      }
+    },
+    "menu_delete_history" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete history"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Supprimer l\\'historique d\\'appels"
           }
         }
       }
@@ -2802,6 +2899,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ré-envoyer"
+          }
+        }
+      }
+    },
+    "menu_see_existing_contact" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See contact"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Voir le contact"
           }
         }
       }
@@ -3199,9 +3312,6 @@
 
     },
     "Start" : {
-
-    },
-    "subscribe.linphone.org" : {
 
     },
     "Successfully removed meeting" : {

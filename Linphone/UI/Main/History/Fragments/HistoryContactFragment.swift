@@ -69,7 +69,7 @@ struct HistoryContactFragment: View {
 								}
 						}
 						
-						Text("Call history")
+						Text("history_title")
 							.default_text_style_orange_800(styleSize: 20)
 						
 						Spacer()
@@ -108,7 +108,7 @@ struct HistoryContactFragment: View {
 									
 								} label: {
 									HStack {
-										Text(historyViewModel.displayedCall!.addressFriend != nil ? "See contact" : "Add to contacts")
+										Text(historyViewModel.displayedCall!.addressFriend != nil ? "menu_see_existing_contact" : "menu_add_address_to_contacts")
 										Spacer()
 										Image(historyViewModel.displayedCall!.addressFriend != nil ? "user-circle" : "plus-circle")
 											.resizable()
@@ -138,7 +138,7 @@ struct HistoryContactFragment: View {
 								
 							} label: {
 								HStack {
-									Text("Copy SIP address")
+									Text("menu_copy_sip_address")
 									Spacer()
 									Image("copy")
 										.resizable()
@@ -160,7 +160,7 @@ struct HistoryContactFragment: View {
 								
 							} label: {
 								HStack {
-									Text("Delete history")
+									Text("menu_delete_history")
 									Spacer()
 									Image("trash-simple-red")
 										.resizable()
@@ -278,7 +278,7 @@ struct HistoryContactFragment: View {
 												.background(Color.grayMain2c200)
 												.cornerRadius(40)
 												
-												Text("Appel")
+												Text("contact_call_action")
 													.default_text_style(styleSize: 14)
 													.frame(minWidth: 80)
 											}
@@ -301,7 +301,7 @@ struct HistoryContactFragment: View {
 												.background(Color.grayMain2c200)
 												.cornerRadius(40)
 												
-												Text("Message")
+												Text("contact_message_action")
 													.default_text_style(styleSize: 14)
 													.frame(minWidth: 80)
 											}

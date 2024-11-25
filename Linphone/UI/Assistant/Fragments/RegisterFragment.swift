@@ -252,7 +252,7 @@ struct RegisterFragment: View {
 								Button(action: {
 									UIApplication.shared.open(URL(string: "https://subscribe.linphone.org/register/email")!)
 								}, label: {
-									Text("subscribe.linphone.org")
+									Text("assistant_web_platform_link")
 										.default_text_style_orange_600(styleSize: 15)
 										.frame(height: 35)
 								})
@@ -281,7 +281,7 @@ struct RegisterFragment: View {
 									Button(action: {
 										dismiss()
 									}, label: {
-										Text("Login")
+										Text("assistant_Account_login")
 											.default_text_style_white_600(styleSize: 20)
 											.frame(height: 35)
 									})
