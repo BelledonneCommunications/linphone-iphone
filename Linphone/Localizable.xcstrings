@@ -40,22 +40,10 @@
     "**%@**" : {
 
     },
-    "**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence." : {
-
-    },
     "**Company :** %@" : {
 
     },
-    "**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone." : {
-
-    },
     "**Job :** %@" : {
-
-    },
-    "**Micro** : Pour permettre à vos correspondants de vous entendre." : {
-
-    },
-    "**Notifications** : Pour vous informer quand vous recevez un message ou un appel." : {
 
     },
     "#" : {
@@ -412,6 +400,134 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Confirmez votre numéro de téléphone"
+          }
+        }
+      }
+    },
+    "assistant_permissions_access_camera_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Access camera:** To capture video during video calls and conferences."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "**Caméra :** Pour capturer votre vidéo lors des appels et des conférences."
+          }
+        }
+      }
+    },
+    "assistant_permissions_grant_all_of_them" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "assistant_permissions_post_notifications_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Post notifications:** To be informed when you receive a message or a call."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "**Notifications :** Pour vous informer quand vous recevez un message ou un appel."
+          }
+        }
+      }
+    },
+    "assistant_permissions_read_contacts_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Read contacts:** To display your contacts and find whom is using this app."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "**Contacts :** Pour vous afficher vos contacts et retrouver qui utilise cette application."
+          }
+        }
+      }
+    },
+    "assistant_permissions_record_audio_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Record audio:** So your correspondent can hear you and to record voice messages."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "**Microphone :** Pour permettre à vos correspondants de vous entendre."
+          }
+        }
+      }
+    },
+    "assistant_permissions_skip_permissions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do it later"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus tard"
+          }
+        }
+      }
+    },
+    "assistant_permissions_subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To fully enjoy %@ we need you to grant us the following permissions :"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour vous permettre de vous profitez pleinement de %@, nous avons besoin des autorisations suivantes :"
+          }
+        }
+      }
+    },
+    "assistant_permissions_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grant permissions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Donner les permissions"
           }
         }
       }
@@ -1842,9 +1958,6 @@
     "Could not send ICS invitations to meeting to any participant" : {
 
     },
-    "D'accord" : {
-
-    },
     "Default" : {
 
     },
@@ -1864,9 +1977,6 @@
 
     },
     "Delete this contact" : {
-
-    },
-    "Demande d’autorisations" : {
 
     },
     "Deny all" : {
@@ -2579,9 +2689,6 @@
         }
       }
     },
-    "Meetings" : {
-
-    },
     "meetings_list_empty" : {
       "localizations" : {
         "en" : {
@@ -2960,12 +3067,6 @@
 
     },
     "Phone number" : {
-
-    },
-    "Plus tard" : {
-
-    },
-    "Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :" : {
 
     },
     "QR code validated!" : {

@@ -60,14 +60,14 @@ struct PermissionsFragment: View {
 						}
 						.frame(width: geometry.size.width)
 						
-						Text("Demande d’autorisations")
+						Text("assistant_permissions_title")
 							.default_text_style_white_800(styleSize: 20)
 							.padding(.top, 20)
 					}
 					.padding(.top, 35)
 					.padding(.bottom, 10)
 					
-					Text("Pour vous permettre de vous profitez pleinement de Linphone nous avons besoin des autorisations suivantes :")
+					Text(String(format: String(localized: "assistant_permissions_subtitle"), Bundle.main.displayName))
 						.default_text_style(styleSize: 15)
 						.multilineTextAlignment(.center)
 					
@@ -86,7 +86,7 @@ struct PermissionsFragment: View {
 							.background(Color.grayMain2c200)
 							.cornerRadius(40)
 							
-							Text("**Notifications** : Pour vous informer quand vous recevez un message ou un appel.")
+							Text("assistant_permissions_post_notifications_title")
 								.default_text_style(styleSize: 15)
 								.padding(.leading, 10)
 						}
@@ -104,7 +104,7 @@ struct PermissionsFragment: View {
 							.background(Color.grayMain2c200)
 							.cornerRadius(40)
 							
-							Text("**Contacts** : Pour vous afficher vos contacts et retrouver qui utilise Linphone.")
+							Text("assistant_permissions_read_contacts_title")
 								.default_text_style(styleSize: 15)
 								.padding(.leading, 10)
 						}
@@ -122,7 +122,7 @@ struct PermissionsFragment: View {
 							.background(Color.grayMain2c200)
 							.cornerRadius(40)
 							
-							Text("**Micro** : Pour permettre à vos correspondants de vous entendre.")
+							Text("assistant_permissions_record_audio_title")
 								.default_text_style(styleSize: 15)
 								.padding(.leading, 10)
 						}
@@ -140,7 +140,7 @@ struct PermissionsFragment: View {
 							.background(Color.grayMain2c200)
 							.cornerRadius(40)
 							
-							Text("**Camera** : Pour capturer votre vidéo lors des appels vidéo et conférence.")
+							Text("assistant_permissions_access_camera_title")
 								.default_text_style(styleSize: 15)
 								.padding(.leading, 10)
 						}
@@ -157,7 +157,7 @@ struct PermissionsFragment: View {
 							sharedMainViewModel.changeWelcomeView()
 						}
 					}, label: {
-						Text("Plus tard")
+						Text("assistant_permissions_skip_permissions")
 							.default_text_style_orange_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)
@@ -176,7 +176,7 @@ struct PermissionsFragment: View {
 					Button {
 						permissionManager.getPermissions()
 					} label: {
-						Text("D'accord")
+						Text("assistant_permissions_grant_all_of_them")
 							.default_text_style_white_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)

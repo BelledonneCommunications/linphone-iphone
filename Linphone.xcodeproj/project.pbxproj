@@ -1539,6 +1539,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Linphone;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone usage is required for VOIP calls";
