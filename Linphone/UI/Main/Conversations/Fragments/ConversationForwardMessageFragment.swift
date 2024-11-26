@@ -143,7 +143,7 @@ struct ConversationForwardMessageFragment: View {
 						ScrollView {
 							if !conversationForwardMessageViewModel.conversationsList.isEmpty {
 								HStack(alignment: .center) {
-									Text("Conversations")
+									Text("bottom_navigation_conversations_label")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()
@@ -156,7 +156,7 @@ struct ConversationForwardMessageFragment: View {
 							
 							if !ContactsManager.shared.lastSearch.isEmpty {
 								HStack(alignment: .center) {
-									Text("All contacts")
+									Text("contacts_list_all_contacts_title")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()
@@ -176,7 +176,7 @@ struct ConversationForwardMessageFragment: View {
 							
 							if !contactsManager.lastSearchSuggestions.isEmpty {
 								HStack(alignment: .center) {
-									Text("Suggestions")
+									Text("generic_address_picker_suggestions_list_title")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()

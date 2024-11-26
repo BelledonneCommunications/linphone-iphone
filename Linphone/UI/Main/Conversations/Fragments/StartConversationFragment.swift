@@ -195,7 +195,7 @@ struct StartConversationFragment: View {
 							
 							if !contactsManager.lastSearchSuggestions.isEmpty {
 								HStack(alignment: .center) {
-									Text("Suggestions")
+									Text("generic_address_picker_suggestions_list_title")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()
@@ -332,7 +332,7 @@ struct StartConversationFragment: View {
 				Button(action: {
 					startConversationViewModel.participants.removeAll()
 				}, label: {
-					Text("Cancel")
+					Text("dialog_cancel")
 						.default_text_style_orange_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)
@@ -350,7 +350,7 @@ struct StartConversationFragment: View {
 				Button(action: {
 					startConversationViewModel.createGroupChatRoom()
 				}, label: {
-					Text("Confirm")
+					Text("dialog_ok")
 						.default_text_style_white_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)

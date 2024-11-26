@@ -159,7 +159,7 @@ struct ConversationsListBottomSheet: View {
 								.foregroundStyle(Color.grayMain2c500)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
-							Text("Appel")
+							Text("conversation_action_call")
 								.default_text_style(styleSize: 16)
 							Spacer()
 						}
@@ -198,7 +198,7 @@ struct ConversationsListBottomSheet: View {
 						.foregroundStyle(Color.redDanger500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Supprimer la conversation")
+					Text("conversation_action_delete")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style(styleSize: 16)
 					Spacer()
@@ -239,7 +239,7 @@ struct ConversationsListBottomSheet: View {
 							.foregroundStyle(Color.grayMain2c500)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
-						Text("Quitter la conversation")
+						Text("conversation_action_leave_group")
 							.default_text_style(styleSize: 16)
 						Spacer()
 					}

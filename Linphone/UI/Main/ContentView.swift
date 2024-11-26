@@ -235,10 +235,10 @@ struct ContentView: View {
 														.frame(width: 25, height: 25)
 													
 													if self.index == 2 {
-														Text("Conversations")
+														Text("bottom_navigation_conversations_label")
 															.default_text_style_700(styleSize: 10)
 													} else {
-														Text("Conversations")
+														Text("bottom_navigation_conversations_label")
 															.default_text_style(styleSize: 10)
 													}
 												}
@@ -313,7 +313,7 @@ struct ContentView: View {
 														openMenu()
 													}
 												
-												Text(index == 0 ? "Contacts" : (index == 1 ? "Calls" : (index == 2 ? "Conversations" : "bottom_navigation_meetings_label")))
+												Text(index == 0 ? "bottom_navigation_contacts_label" : (index == 1 ? "bottom_navigation_calls_label" : (index == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label")))
 													.default_text_style_white_800(styleSize: 20)
 													.padding(.leading, 10)
 												
@@ -768,10 +768,10 @@ struct ContentView: View {
 													.frame(width: 25, height: 25)
 												
 												if self.index == 2 {
-													Text("Conversations")
+													Text("bottom_navigation_conversations_label")
 														.default_text_style_700(styleSize: 9)
 												} else {
-													Text("Conversations")
+													Text("bottom_navigation_conversations_label")
 														.default_text_style(styleSize: 9)
 												}
 											}

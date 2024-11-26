@@ -660,7 +660,7 @@ struct ConversationFragment: View {
 								
 								HStack {
 									if #available(iOS 16.0, *) {
-										TextField("Say something...", text: $conversationViewModel.messageText, axis: .vertical)
+										TextField("conversation_text_field_hint", text: $conversationViewModel.messageText, axis: .vertical)
 											.default_text_style(styleSize: 15)
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
@@ -684,7 +684,7 @@ struct ConversationFragment: View {
 												}
 											
 											if conversationViewModel.messageText.isEmpty {
-												Text("Say something...")
+												Text("conversation_text_field_hint")
 													.padding(.leading, 4)
 													.lineLimit(1)
 													.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)

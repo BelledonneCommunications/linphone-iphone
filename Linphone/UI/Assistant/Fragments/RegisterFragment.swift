@@ -281,7 +281,7 @@ struct RegisterFragment: View {
 									Button(action: {
 										dismiss()
 									}, label: {
-										Text("assistant_Account_login")
+										Text("assistant_account_login")
 											.default_text_style_white_600(styleSize: 20)
 											.frame(height: 35)
 									})
