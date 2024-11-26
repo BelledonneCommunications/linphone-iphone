@@ -225,56 +225,93 @@ class ConversationViewModel: ObservableObject {
 					default:
 						statusTmp = .sending
 					}
-					
 					if msgState == .FileTransferDone {
-						message.contents.forEach { content in
-							if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
-								if let contentIndex = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.firstIndex(where: {$0.name == content.name && $0.full.pathExtension.isEmpty && $0.full.absoluteString != content.filePath}) {
-									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
-									let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex]
-									if let pathThumbnail = content.type == "video" ? URL(string: self.generateThumbnail(name: content.name ?? "")) : contentTmp.thumbnail {
-										if let path = URL(string: self.getNewFilePath(name: filePathSep[1])) {
-											if path != contentTmp.full {
-												
-												var typeTmp: AttachmentType = .other
-												
-												switch content.type {
-												case "image":
-													typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
-												case "audio":
-													typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
-												case "application":
-													typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
-												case "text":
-													typeTmp = .text
-												case "video":
-													typeTmp = .video
-												default:
-													typeTmp = .other
-												}
-												
-												let newAttachment = Attachment(
-													id: UUID().uuidString,
-													name: content.name ?? contentTmp.name,
-													thumbnail: content.type == "video" ? pathThumbnail : path,
-													full: path,
-													type: typeTmp,
-													duration: contentTmp.duration,
-													size: contentTmp.size,
-													transferProgressIndication: 100
-												)
-												
-												DispatchQueue.main.async {
-													self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex] = newAttachment
-												}
+						message.contents.enumerated().forEach { (contentIndex, content) in
+							guard
+								let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.eventModel.eventLogId == message.messageId }),
+								contentIndex < self.conversationMessagesSection[0].rows[indexMessage].message.attachments.count
+							else { return }
+							
+							let attachment = self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex]
+							
+							guard
+								attachment.name == content.name,
+								((attachment.full.pathExtension.isEmpty && attachment.full.absoluteString != content.filePath) ||
+								 (!attachment.full.pathExtension.isEmpty && attachment.type.rawValue == "fileTransfer")),
+								let filePath = content.filePath
+							else { return }
+							
+							let filePathSep = filePath.components(separatedBy: "/Library/Images/")
+							guard filePathSep.count > 1 else { return }
+							
+							let thumbnailURL = content.type == "video" ? URL(string: self.generateThumbnail(name: filePathSep[1])) : attachment.thumbnail
+							let fullPath = URL(string: self.getNewFilePath(name: filePathSep[1]))
+							
+							guard let pathThumbnail = thumbnailURL, let path = fullPath else { return }
+							
+							var typeTmp: AttachmentType = .other
+							
+							switch content.type {
+							case "image":
+								typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+							case "audio":
+								typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+							case "application":
+								typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+							case "text":
+								typeTmp = .text
+							case "video":
+								typeTmp = .video
+							default:
+								typeTmp = .other
+							}
+							
+							let newAttachment = Attachment(
+								id: UUID().uuidString,
+								name: content.name ?? attachment.name,
+								thumbnail: content.type == "video" ? pathThumbnail : path,
+								full: path,
+								type: typeTmp,
+								duration: attachment.duration,
+								size: attachment.size,
+								transferProgressIndication: 100
+							)
+							
+							DispatchQueue.main.async {
+								guard contentIndex < self.conversationMessagesSection[0].rows[indexMessage].message.attachments.count else {
+									Log.error("[ConversationViewModel] Invalid contentIndex")
+									return
+								}
+
+								self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex] = newAttachment
+								let attachmentIndex = self.getAttachmentIndex(attachment: newAttachment)
+								
+								if attachmentIndex >= 0 {
+									self.attachments[attachmentIndex] = newAttachment
+								} else {
+									if let messageAttachments = self.conversationMessagesSection.first?.rows[indexMessage].message.attachments {
+										let newAttachments = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.filter {
+											$0.transferProgressIndication >= 100 && !$0.full.pathExtension.isEmpty
+										}
+										if let indexFirst = self.attachments.firstIndex(where: { attachment in
+											messageAttachments.contains(where: { $0.id == attachment.id && !$0.full.pathExtension.isEmpty})
+										}) {
+											self.attachments.removeAll { attachment in
+												self.conversationMessagesSection[0].rows[indexMessage].message.attachments.contains { $0.id == attachment.id }
 											}
+											
+											self.attachments.insert(contentsOf: newAttachments, at: indexFirst)
+										} else {
+											self.attachments.append(contentsOf: newAttachments)
 										}
 									}
 								}
+								
+								Log.info("[ConversationViewModel] Updated attachments count: \(self.attachments.count), attachmentIndex: \(attachmentIndex)")
 							}
 						}
 					}
-					
+
 					if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
 						self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
 					}
@@ -315,8 +352,7 @@ class ConversationViewModel: ObservableObject {
 						
 						let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
 						let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-						
-						if let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.first(where: {$0.full == path}) {
+						if let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.first(where: {$0.full == path || ($0.name == content.name && $0.transferProgressIndication < 100)}) {
 							DispatchQueue.main.async {
 								self.attachmentTransferInProgress = contentTmp
 								self.attachmentTransferInProgress!.transferProgressIndication = ((offset * 100) / total)
@@ -327,56 +363,6 @@ class ConversationViewModel: ObservableObject {
 									self.attachmentTransferInProgress = nil
 								}
 							}
-							/*
-							if ((offset * 100) / total) >= 100 {
-								
-								var typeTmp: AttachmentType = .other
-								
-								switch content.type {
-								case "image":
-									typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
-								case "audio":
-									typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
-								case "application":
-									typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
-								case "text":
-									typeTmp = .text
-								case "video":
-									typeTmp = .video
-								default:
-									typeTmp = .other
-								}
-								
-								if let pathThumbnail = content.type == "video" ? URL(string: self.generateThumbnail(name: content.name ?? "")) : contentTmp.thumbnail {
-									if content.filePath != nil {
-										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
-										if let path = URL(string: self.getNewFilePath(name: filePathSep[1])) {
-											
-											let newAttachment = Attachment(
-												id: UUID().uuidString,
-												name: content.name ?? contentTmp.name,
-												thumbnail: content.type == "video" ? pathThumbnail : path,
-												full: path,
-												type: typeTmp,
-												duration: contentTmp.duration,
-												size: contentTmp.size,
-												transferProgressIndication: 100
-											)
-											
-											if let contentIndex = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.firstIndex(where: {$0.full == path}) {
-												DispatchQueue.main.async {
-									 				print("attachmentattachment ----------------")
-													print("attachmentattachment ---------------- \(content.name ?? "")")
-													print("attachmentattachment ---------------- \(filePathSep[1])")
-													print("attachmentattachment ----------------")
-													self.conversationMessagesSection[0].rows[indexMessage].message.attachments[contentIndex] = newAttachment
-												}
-											}
-										}
-									}
-								}
-							}
-							*/
 						}
 					}
 				}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
@@ -392,6 +378,23 @@ class ConversationViewModel: ObservableObject {
 				
 				self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 			}
+		}
+	}
+	
+	func determineAttachmentType(content: Content) -> AttachmentType {
+		switch content.type {
+		case "image":
+			return content.name?.lowercased().hasSuffix("gif") == true ? .gif : .image
+		case "audio":
+			return content.isVoiceRecording ? .voiceRecording : .audio
+		case "application":
+			return content.subtype.lowercased() == "pdf" ? .pdf : .other
+		case "text":
+			return .text
+		case "video":
+			return .video
+		default:
+			return .other
 		}
 	}
 	
@@ -583,14 +586,16 @@ class ConversationViewModel: ObservableObject {
 											attachmentList.append(attachment)
 											if typeTmp != .voiceRecording {
 												DispatchQueue.main.async {
-													self.attachments.append(attachment)
+													if !attachment.full.pathExtension.isEmpty {
+														self.attachments.append(attachment)
+													}
 												}
 											}
 										}
 									} else if content.type == "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 										
 										if path != nil && pathThumbnail != nil {
 											let attachment =
@@ -606,7 +611,9 @@ class ConversationViewModel: ObservableObject {
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
 											DispatchQueue.main.async {
-												self.attachments.append(attachment)
+												if !attachment.full.pathExtension.isEmpty {
+													self.attachments.append(attachment)
+												}
 											}
 										}
 									}
@@ -821,14 +828,16 @@ class ConversationViewModel: ObservableObject {
 											attachmentList.append(attachment)
 											if typeTmp != .voiceRecording {
 												DispatchQueue.main.async {
-													self.attachments.append(attachment)
+													if !attachment.full.pathExtension.isEmpty {
+														self.attachments.append(attachment)
+													}
 												}
 											}
 										}
 									} else if content.type == "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-										let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+										let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 										
 										if path != nil && pathThumbnail != nil {
 											let attachment =
@@ -844,7 +853,9 @@ class ConversationViewModel: ObservableObject {
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
 											DispatchQueue.main.async {
-												self.attachments.append(attachment)
+												if !attachment.full.pathExtension.isEmpty {
+													self.attachments.append(attachment)
+												}
 											}
 										}
 									}
@@ -1058,7 +1069,9 @@ class ConversationViewModel: ObservableObject {
 										attachmentList.append(attachment)
 										if typeTmp != .voiceRecording {
 											DispatchQueue.main.async {
-												self.attachments.append(attachment)
+												if !attachment.full.pathExtension.isEmpty {
+													self.attachments.append(attachment)
+												}
 											}
 										}
 									}
@@ -1066,7 +1079,7 @@ class ConversationViewModel: ObservableObject {
 									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
 									let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 									
-									let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+									let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 									if path != nil && pathThumbnail != nil {
 										let attachment =
 										Attachment(
@@ -1081,7 +1094,9 @@ class ConversationViewModel: ObservableObject {
 										attachmentNameList += ", \(content.name!)"
 										attachmentList.append(attachment)
 										DispatchQueue.main.async {
-											self.attachments.append(attachment)
+											if !attachment.full.pathExtension.isEmpty {
+												self.attachments.append(attachment)
+											}
 										}
 									}
 								}
@@ -1373,14 +1388,16 @@ class ConversationViewModel: ObservableObject {
 													attachmentList.append(attachment)
 													if typeTmp != .voiceRecording {
 														DispatchQueue.main.async {
-															self.attachments.append(attachment)
+															if !attachment.full.pathExtension.isEmpty {
+																self.attachments.append(attachment)
+															}
 														}
 													}
 												}
 											} else if content.type == "video" {
 												let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
 										  		let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-												let pathThumbnail = URL(string: self.generateThumbnail(name: content.name ?? ""))
+												let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 												
 												if path != nil && pathThumbnail != nil {
 													let attachment =
@@ -1396,7 +1413,9 @@ class ConversationViewModel: ObservableObject {
 													attachmentNameList += ", \(content.name!)"
 													attachmentList.append(attachment)
 													DispatchQueue.main.async {
-														self.attachments.append(attachment)
+														if !attachment.full.pathExtension.isEmpty {
+															self.attachments.append(attachment)
+														}
 													}
 												}
 											}
@@ -1751,26 +1770,30 @@ class ConversationViewModel: ObservableObject {
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
 		if self.displayedConversation != nil {
-			if content.filePath == nil || content.filePath!.isEmpty {
-				if let contentName = content.name {
-					// let isImage = FileUtil.isExtensionImage(path: contentName)
-					var file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-					// let file = FileUtil.getFileStoragePath(fileName: contentName ?? "", isImage: isImage)
-					
-					var counter = 1
-					while FileManager.default.fileExists(atPath: file) {
-						file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + "\(counter)_" + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-						counter += 1
-					}
-					
-					content.filePath = String(file.dropFirst(7))
-					Log.info(
-						"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
-					)
-					self.displayedConversation!.downloadContent(chatMessage: chatMessage, content: content)
-				} else {
-					Log.error("[ConversationViewModel] Content name is null, can't download it!")
+			if let contentName = content.name {
+				var file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+				var fileExists = FileUtil.sharedContainerUrl()
+					.appendingPathComponent("Library/Images")
+					.appendingPathComponent(contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+					.path
+				
+				var counter = 1
+				while FileManager.default.fileExists(atPath: fileExists) {
+					file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + "\(counter)_" + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+					fileExists = FileUtil.sharedContainerUrl()
+						.appendingPathComponent("Library/Images")
+						.appendingPathComponent("\(counter)_" + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
+						.path
+					counter += 1
 				}
+				
+				content.filePath = String(file.dropFirst(7))
+				Log.info(
+					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
+				)
+				self.displayedConversation!.downloadContent(chatMessage: chatMessage, content: content)
+			} else {
+				Log.error("[ConversationViewModel] Content name is null, can't download it!")
 			}
 		}
 	}
@@ -2409,7 +2432,7 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getAttachmentIndex(attachment: Attachment) -> Int {
-		return self.attachments.firstIndex(where: {$0.id == attachment.id}) ?? 0
+		return self.attachments.firstIndex(where: {$0.id == attachment.id}) ?? -1
 	}
 	
 	func deleteMessage() {

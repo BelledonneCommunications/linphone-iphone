@@ -740,17 +740,19 @@ struct ChatBubbleView: View {
 						.frame(width: 100, height: 100)
 						.background(Color.grayMain2c200)
 						.onTapGesture {
-							if attachment.type == .fileTransfer && attachment.transferProgressIndication == -1 {
-								CoreContext.shared.doOnCoreQueue { _ in
-									if let content = eventLogMessage.eventModel.eventLog.chatMessage!.contents.first(where: {$0.name == attachment.name}) {
-										conversationViewModel.downloadContent(
-											chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
-											content: content
-										)
+							if conversationViewModel.attachmentTransferInProgress == nil {
+								if attachment.type == .fileTransfer && attachment.transferProgressIndication == -1 {
+									CoreContext.shared.doOnCoreQueue { _ in
+										if let content = eventLogMessage.eventModel.eventLog.chatMessage!.contents.first(where: {$0.name == attachment.name && $0.isFileTransfer}) {
+											conversationViewModel.downloadContent(
+												chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
+												content: content
+											)
+										}
 									}
+								} else {
+									selectedURLAttachment = attachment.full
 								}
-							} else {
-								selectedURLAttachment = attachment.full
 							}
 						}
 						
