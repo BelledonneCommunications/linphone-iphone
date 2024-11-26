@@ -196,9 +196,6 @@
     "Active" : {
 
     },
-    "Add the contact" : {
-
-    },
     "Administrateur" : {
 
     },
@@ -2295,8 +2292,37 @@
     "Dialer" : {
 
     },
+    "dialog_call" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appeler"
+          }
+        }
+      }
+    },
     "dialog_cancel" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        }
+      }
     },
     "Display Name" : {
 
@@ -2476,7 +2502,20 @@
       }
     },
     "generic_address_picker_suggestions_list_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suggestions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suggestions"
+          }
+        }
+      }
     },
     "Hang up call" : {
 
@@ -3551,9 +3590,6 @@
     "Scan QR code" : {
 
     },
-    "See contact" : {
-
-    },
     "Select %@ %@" : {
       "localizations" : {
         "en" : {
@@ -3696,9 +3732,6 @@
 
     },
     "Vidéo" : {
-
-    },
-    "Video Call" : {
 
     },
     "welcome_page_1_message" : {

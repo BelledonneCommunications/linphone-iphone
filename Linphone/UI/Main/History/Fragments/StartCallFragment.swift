@@ -451,7 +451,7 @@ struct StartCallFragment: View {
 				Button(action: {
 					startCallViewModel.createGroupCall()
 				}, label: {
-					Text("Confirm")
+					Text("dialog_call")
 						.default_text_style_white_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)

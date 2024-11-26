@@ -324,7 +324,7 @@ struct HistoryContactFragment: View {
 												.background(Color.grayMain2c200)
 												.cornerRadius(40)
 												
-												Text("Video Call")
+												Text("contact_video_call_action")
 													.default_text_style(styleSize: 14)
 													.frame(minWidth: 80)
 											}
