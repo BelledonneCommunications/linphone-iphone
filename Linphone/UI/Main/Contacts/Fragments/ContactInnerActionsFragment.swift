@@ -41,8 +41,8 @@ struct ContactInnerActionsFragment: View {
 	
     var body: some View {
 		HStack(alignment: .center) {
-			Text("Information")
-				.default_text_style_800(styleSize: 16)
+			Text("contact_details_numbers_and_addresses_title")
+				.default_text_style_800(styleSize: 15)
 			
 			Spacer()
 			
@@ -69,7 +69,7 @@ struct ContactInnerActionsFragment: View {
 					HStack {
 						HStack {
 							VStack {
-								Text("SIP address :")
+								Text(String(localized: "sip_address") + ":")
 									.default_text_style_700(styleSize: 14)
 									.frame(maxWidth: .infinity, alignment: .leading)
 								Text(contactAvatarModel.addresses[index].dropFirst(4))
@@ -204,7 +204,7 @@ struct ContactInnerActionsFragment: View {
 		// TODO Medias Fragment
 		
 		HStack(alignment: .center) {
-			Text("Other actions")
+			Text("contact_details_actions_title")
 				.default_text_style_800(styleSize: 16)
 			
 			Spacer()
@@ -226,7 +226,7 @@ struct ContactInnerActionsFragment: View {
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
 						
-						Text("Edit")
+						Text("contact_details_edit")
 							.default_text_style(styleSize: 14)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.lineLimit(1)
@@ -250,7 +250,7 @@ struct ContactInnerActionsFragment: View {
 								.frame(width: 25, height: 25)
 								.padding(.all, 10)
 							
-							Text("Edit")
+							Text("contact_details_edit")
 								.default_text_style(styleSize: 14)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.lineLimit(1)
@@ -288,8 +288,8 @@ struct ContactInnerActionsFragment: View {
 					.frame(width: 25, height: 25)
 					.padding(.all, 10)
 					Text(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true
-						 ? "Remove from favourites"
-						 : "Add to favourites")
+						 ? "contact_details_remove_from_favourites"
+						 : "contact_details_add_to_favourites")
 					.default_text_style(styleSize: 14)
 					.frame(maxWidth: .infinity, alignment: .leading)
 					.lineLimit(1)
@@ -316,7 +316,7 @@ struct ContactInnerActionsFragment: View {
 						.frame(width: 25, height: 25)
 						.padding(.all, 10)
 					
-					Text("Share")
+					Text("contact_details_share")
 						.default_text_style(styleSize: 14)
 						.frame(maxWidth: .infinity, alignment: .leading)
 						.lineLimit(1)
@@ -343,7 +343,7 @@ struct ContactInnerActionsFragment: View {
 						.frame(width: 25, height: 25)
 						.padding(.all, 10)
 					
-					Text("Delete this contact")
+					Text("contact_details_delete")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style(styleSize: 14)
 						.frame(maxWidth: .infinity, alignment: .leading)

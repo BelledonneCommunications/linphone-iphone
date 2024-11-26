@@ -196,13 +196,7 @@
     "Active" : {
 
     },
-    "Add a picture" : {
-
-    },
     "Add the contact" : {
-
-    },
-    "Add to favourites" : {
 
     },
     "Administrateur" : {
@@ -960,9 +954,6 @@
     "Close" : {
 
     },
-    "Company" : {
-
-    },
     "Conditions de service" : {
 
     },
@@ -1012,6 +1003,12 @@
             "state" : "translated",
             "value" : "Call"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel"
+          }
         }
       }
     },
@@ -1028,6 +1025,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Autres actions"
+          }
+        }
+      }
+    },
+    "contact_details_add_to_favourites" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to favourites"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter aux favoris"
+          }
+        }
+      }
+    },
+    "contact_details_delete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        }
+      }
+    },
+    "contact_details_edit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier"
+          }
+        }
+      }
+    },
+    "contact_details_numbers_and_addresses_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phone numbers &amp; SIP addresses"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Numéros de téléphone et adresses SIP"
+          }
+        }
+      }
+    },
+    "contact_details_remove_from_favourites" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from favourites"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enlever des favoris"
+          }
+        }
+      }
+    },
+    "contact_details_share" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager"
           }
         }
       }
@@ -1049,6 +1142,86 @@
         }
       }
     },
+    "contact_edit_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit contact"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modifier contact"
+          }
+        }
+      }
+    },
+    "contact_editor_company" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Company"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entreprise"
+          }
+        }
+      }
+    },
+    "contact_editor_first_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "First name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prénom"
+          }
+        }
+      }
+    },
+    "contact_editor_job_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Job title"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poste"
+          }
+        }
+      }
+    },
+    "contact_editor_last_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de famille"
+          }
+        }
+      }
+    },
     "contact_message_action" : {
       "localizations" : {
         "en" : {
@@ -1065,11 +1238,56 @@
         }
       }
     },
+    "contact_new_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New contact"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau contact"
+          }
+        }
+      }
+    },
+    "contact_video_call_action" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel vidéo"
+          }
+        }
+      }
+    },
     "Contacts" : {
 
     },
     "contacts_list_all_contacts_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All contacts"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tous les contacts"
+          }
+        }
+      }
     },
     "contacts_list_empty" : {
       "extractionState" : "manual",
@@ -1084,6 +1302,71 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucun contact pour le moment…"
+          }
+        }
+      }
+    },
+    "contacts_list_favourites_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favourites"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoris"
+          }
+        }
+      }
+    },
+    "contacts_list_filter_popup_see_all" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See all"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir tous les contacts"
+          }
+        }
+      }
+    },
+    "contacts_list_filter_popup_see_linphone_only" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See %@ contacts"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir les contacts %@"
+          }
+        }
+      }
+    },
+    "content_description_click_for_more_info" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Click to have more information"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cliquez pour plus d’informations"
           }
         }
       }
@@ -1988,12 +2271,6 @@
         }
       }
     },
-    "Copy address" : {
-
-    },
-    "Copy number" : {
-
-    },
     "Could not send ICS invitations to meeting to any participant" : {
 
     },
@@ -2003,16 +2280,10 @@
     "Default mode" : {
 
     },
-    "Delete" : {
-
-    },
     "Delete %@?" : {
 
     },
     "Delete all history" : {
-
-    },
-    "Delete this contact" : {
 
     },
     "Deny all" : {
@@ -2163,16 +2434,7 @@
     "Earpiece" : {
 
     },
-    "Edit" : {
-
-    },
-    "Edit contact" : {
-
-    },
     "Edit Contact" : {
-
-    },
-    "Edit picture" : {
 
     },
     "En attente d'autres participants..." : {
@@ -2194,15 +2456,6 @@
 
     },
     "Faire la validation à nouveau" : {
-
-    },
-    "Favourites" : {
-
-    },
-    "First Name" : {
-
-    },
-    "First name*" : {
 
     },
     "GC_MSG" : {
@@ -2406,9 +2659,6 @@
         }
       }
     },
-    "Information" : {
-
-    },
     "Interoperable" : {
 
     },
@@ -2421,16 +2671,7 @@
     "Invalide URI" : {
 
     },
-    "Invitation" : {
-
-    },
-    "Job title" : {
-
-    },
     "Joining..." : {
-
-    },
-    "Last name" : {
 
     },
     "list_filter_no_result_found" : {
@@ -2460,6 +2701,54 @@
     },
     "Logs URL copied into clipboard" : {
 
+    },
+    "manage_account_add_picture" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a picture"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Ajouter une image"
+          }
+        }
+      }
+    },
+    "manage_account_edit_picture" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit picture"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Modifier l’image"
+          }
+        }
+      }
+    },
+    "manage_account_remove_picture" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove picture"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Enlever l’image"
+          }
+        }
+      }
     },
     "Marquer comme non lu" : {
 
@@ -2806,6 +3095,22 @@
         }
       }
     },
+    "menu_copy_phone_number" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy phone number"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Copier le numéro de téléphone"
+          }
+        }
+      }
+    },
     "menu_copy_sip_address" : {
       "localizations" : {
         "en" : {
@@ -2872,6 +3177,9 @@
         }
       }
     },
+    "menu_invite" : {
+
+    },
     "menu_reply_to_chat_message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2921,9 +3229,6 @@
           }
         }
       }
-    },
-    "Message" : {
-
     },
     "Message copied into clipboard" : {
 
@@ -3071,9 +3376,6 @@
     "New call" : {
 
     },
-    "New contact" : {
-
-    },
     "new_conversation_create_group" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3129,9 +3431,6 @@
     "Opération en cours..." : {
 
     },
-    "Other actions" : {
-
-    },
     "Oui" : {
 
     },
@@ -3185,6 +3484,22 @@
     "Phone number" : {
 
     },
+    "phone_number" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phone number"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Numéro de téléphone"
+          }
+        }
+      }
+    },
     "QR code validated!" : {
 
     },
@@ -3224,12 +3539,6 @@
         }
       }
     },
-    "Remove from favourites" : {
-
-    },
-    "Remove picture" : {
-
-    },
     "Resume" : {
 
     },
@@ -3242,13 +3551,7 @@
     "Scan QR code" : {
 
     },
-    "See all" : {
-
-    },
     "See contact" : {
-
-    },
-    "See Linphone contact" : {
 
     },
     "Select %@ %@" : {
@@ -3287,17 +3590,24 @@
         }
       }
     },
-    "Share" : {
-
-    },
-    "SIP address" : {
-
-    },
-    "SIP address :" : {
-
-    },
     "SIP address copied into clipboard" : {
 
+    },
+    "sip_address" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIP Address"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Adresse SIP"
+          }
+        }
+      }
     },
     "sip.linphone.org" : {
 

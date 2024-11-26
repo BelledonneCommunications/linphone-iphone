@@ -121,7 +121,7 @@ struct EditContactFragment: View {
 							}
 						}
 					
-					Text(editContactViewModel.selectedEditFriend == nil ? "New contact" : "Edit contact")
+					Text(editContactViewModel.selectedEditFriend == nil ? "contact_new_title" : "contact_edit_title")
 						.multilineTextAlignment(.leading)
 						.default_text_style_orange_800(styleSize: 16)
 					
@@ -192,7 +192,7 @@ struct EditContactFragment: View {
 													.resizable()
 													.frame(width: 20, height: 20)
 												
-												Text("Edit picture")
+												Text("manage_account_edit_picture")
 													.foregroundStyle(Color.grayMain2c700)
 													.multilineTextAlignment(.center)
 													.default_text_style(styleSize: 14)
@@ -226,7 +226,7 @@ struct EditContactFragment: View {
 													.resizable()
 													.frame(width: 20, height: 20)
 												
-												Text("Remove picture")
+												Text("manage_account_remove_picture")
 													.foregroundStyle(Color.grayMain2c700)
 													.multilineTextAlignment(.center)
 													.default_text_style(styleSize: 14)
@@ -245,7 +245,7 @@ struct EditContactFragment: View {
 												.resizable()
 												.frame(width: 20, height: 20)
 											
-											Text("Add a picture")
+											Text("manage_account_add_picture")
 												.foregroundStyle(Color.grayMain2c700)
 												.multilineTextAlignment(.center)
 												.default_text_style(styleSize: 14)
@@ -276,11 +276,11 @@ struct EditContactFragment: View {
 							.background(Color.gray100)
 							
 							VStack(alignment: .leading) {
-								Text("First name*")
+								Text(String(localized: "contact_editor_first_name") + "*")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								TextField("First Name", text: $editContactViewModel.firstName)
+								TextField("contact_editor_first_name", text: $editContactViewModel.firstName)
 									.default_text_style(styleSize: 15)
 									.frame(height: 25)
 									.padding(.horizontal, 20)
@@ -297,11 +297,11 @@ struct EditContactFragment: View {
 							}
 							
 							VStack(alignment: .leading) {
-								Text("Last name")
+								Text("contact_editor_last_name")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								TextField("Last name", text: $editContactViewModel.lastName)
+								TextField("contact_editor_last_name", text: $editContactViewModel.lastName)
 									.default_text_style(styleSize: 15)
 									.frame(height: 25)
 									.padding(.horizontal, 20)
@@ -318,14 +318,14 @@ struct EditContactFragment: View {
 							}
 							
 							VStack(alignment: .leading) {
-								Text("SIP address")
+								Text("sip_address")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
 								ForEach(0..<editContactViewModel.sipAddresses.count, id: \.self) { index in
 									
 									HStack(alignment: .center) {
-										TextField("SIP address", text: $editContactViewModel.sipAddresses[index])
+										TextField("sip_address", text: $editContactViewModel.sipAddresses[index])
 											.default_text_style(styleSize: 15)
 											.disableAutocorrection(true)
 									  		.autocapitalization(.none)
@@ -368,13 +368,13 @@ struct EditContactFragment: View {
 							.padding(.bottom)
 							
 							VStack(alignment: .leading) {
-								Text("Phone number")
+								Text("phone_number")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
 								ForEach(0..<editContactViewModel.phoneNumbers.count, id: \.self) { index in
 									HStack(alignment: .center) {
-										TextField("Phone number", text: $editContactViewModel.phoneNumbers[index])
+										TextField("phone_number", text: $editContactViewModel.phoneNumbers[index])
 											.default_text_style(styleSize: 15)
 											.textContentType(.oneTimeCode)
 		   									.keyboardType(.numberPad)
@@ -421,11 +421,11 @@ struct EditContactFragment: View {
 							.padding(.bottom)
 							
 							VStack(alignment: .leading) {
-								Text("Company")
+								Text("contact_editor_company")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								TextField("Company", text: $editContactViewModel.company)
+								TextField("contact_editor_company", text: $editContactViewModel.company)
 									.default_text_style(styleSize: 15)
 									.frame(height: 25)
 									.padding(.horizontal, 20)
@@ -442,11 +442,11 @@ struct EditContactFragment: View {
 							}
 							
 							VStack(alignment: .leading) {
-								Text("Job title")
+								Text("contact_editor_job_title")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								TextField("Job title", text: $editContactViewModel.jobTitle)
+								TextField("contact_editor_job_title", text: $editContactViewModel.jobTitle)
 									.default_text_style(styleSize: 15)
 									.frame(height: 25)
 									.padding(.horizontal, 20)

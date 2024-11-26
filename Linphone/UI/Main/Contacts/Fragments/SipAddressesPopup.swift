@@ -54,7 +54,7 @@ struct SipAddressesPopup: View {
 					HStack {
 						HStack {
 							VStack {
-								Text("SIP address :")
+								Text(String(localized: "sip_address") + ":")
 									.default_text_style_700(styleSize: 14)
 									.frame(maxWidth: .infinity, alignment: .leading)
 								Text(contactAvatarModel.addresses[index].dropFirst(4))

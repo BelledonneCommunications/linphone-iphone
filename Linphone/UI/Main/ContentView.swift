@@ -356,7 +356,7 @@ struct ContentView: View {
 																	sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 															} label: {
 																HStack {
-																	Text("See all")
+																	Text("contacts_list_filter_popup_see_all")
 																	Spacer()
 																	if magicSearch.allContact {
 																		Image("green-check")
@@ -375,7 +375,7 @@ struct ContentView: View {
 																	sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 															} label: {
 																HStack {
-																	Text("See Linphone contact")
+																	Text(String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
 																	Spacer()
 																	if !magicSearch.allContact {
 																		Image("green-check")

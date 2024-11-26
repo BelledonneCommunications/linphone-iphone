@@ -89,8 +89,8 @@ struct ContactsListBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
-						 ? "Remove from favourites"
-						 : "Add to favourites")
+						 ? "contact_details_add_to_favourites"
+						 : "contact_details_remove_from_favourites")
 					.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -131,7 +131,7 @@ struct ContactsListBottomSheet: View {
 						.foregroundStyle(Color.grayMain2c500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Share")
+					Text("contact_details_share")
 						.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -169,7 +169,7 @@ struct ContactsListBottomSheet: View {
 						.foregroundStyle(Color.redDanger500)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text("Delete")
+					Text("contact_details_delete")
 						.foregroundStyle(Color.redDanger500)
 						.default_text_style(styleSize: 16)
 					Spacer()

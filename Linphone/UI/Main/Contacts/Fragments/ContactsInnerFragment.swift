@@ -35,7 +35,7 @@ struct ContactsInnerFragment: View {
 		VStack(alignment: .leading) {
 			if !contactsManager.avatarListModel.filter({ $0.friend?.starred == true }).isEmpty {
 				HStack(alignment: .center) {
-					Text("Favourites")
+					Text("contacts_list_favourites_title")
 						.default_text_style_800(styleSize: 16)
 					
 					Spacer()
@@ -66,7 +66,7 @@ struct ContactsInnerFragment: View {
 				}
 				
 				HStack(alignment: .center) {
-					Text("All contacts")
+					Text("contacts_list_all_contacts_title")
 						.default_text_style_800(styleSize: 16)
 					
 					Spacer()

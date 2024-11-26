@@ -179,7 +179,7 @@ struct ContactInnerFragment: View {
 											.background(Color.grayMain2c200)
 											.cornerRadius(40)
 											
-											Text("Appel")
+											Text("contact_call_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
@@ -211,7 +211,7 @@ struct ContactInnerFragment: View {
 											.background(Color.grayMain2c200)
 											.cornerRadius(40)
 											
-											Text("Message")
+											Text("contact_message_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
@@ -243,7 +243,7 @@ struct ContactInnerFragment: View {
 											.background(Color.grayMain2c200)
 											.cornerRadius(40)
 											
-											Text("Video Call")
+											Text("contact_video_call_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
