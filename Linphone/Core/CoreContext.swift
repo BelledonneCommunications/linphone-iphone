@@ -187,10 +187,20 @@ final class CoreContext: ObservableObject {
 #else
 					let pushEnvironment = ""
 #endif
-					for account in core.accountList where account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+					for account in core.accountList {
+						
 						let newParams = account.params?.clone()
-						Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
-						newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
+						if account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+							Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
+							newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
+						}
+						
+						if account.params?.internationalPrefix == nil {
+							Log.info("Account \(account.displayName()): no international prefix set, adding 33 FRA by default: \(account.params?.internationalPrefix ?? "NIL")")
+							newParams?.internationalPrefix = "33"
+							newParams?.internationalPrefixIsoCountryCode = "FRA"
+							newParams?.useInternationalPrefixForCallsAndChats = true
+						}
 						account.params = newParams
 					}
 					

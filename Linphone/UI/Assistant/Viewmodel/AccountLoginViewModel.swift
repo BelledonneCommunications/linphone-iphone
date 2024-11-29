@@ -114,6 +114,10 @@ class AccountLoginViewModel: ObservableObject {
 #endif
 				accountParams.pushNotificationConfig?.provider = "apns" + pushEnvironment
 				
+				accountParams.internationalPrefix = "33"
+				accountParams.internationalPrefixIsoCountryCode = "FRA"
+				accountParams.useInternationalPrefixForCallsAndChats = true
+				
 				// Now that our AccountParams is configured, we can create the Account object
 				let account = try core.createAccount(params: accountParams)
 				
