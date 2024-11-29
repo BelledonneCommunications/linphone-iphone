@@ -469,21 +469,17 @@ class ConversationViewModel: ObservableObject {
 					}
 				}
 				
-				if self.displayedConversation!.chatRoom.me != nil {
-					ContactAvatarModel.getAvatarModelFromAddress(address: self.displayedConversation!.chatRoom.me!.address!) { avatarResult in
+				if let currentUser = self.displayedConversation?.chatRoom.me,
+				   let address = currentUser.address {
+					ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
 						let avatarModelTmp = avatarResult
-						if self.displayedConversation!.chatRoom.me!.isAdmin {
-							DispatchQueue.main.async {
+						DispatchQueue.main.async {
+							if currentUser.isAdmin {
 								self.isUserAdmin = true
 								self.participantConversationModelAdmin.append(avatarModelTmp)
-								self.participantConversationModel.append(avatarModelTmp)
-								self.myParticipantConversationModel = avatarModelTmp
 							}
-						} else {
-							DispatchQueue.main.async {
-								self.participantConversationModel.append(avatarModelTmp)
-								self.myParticipantConversationModel = avatarModelTmp
-							}
+							self.participantConversationModel.append(avatarModelTmp)
+							self.myParticipantConversationModel = avatarModelTmp
 						}
 					}
 				}
