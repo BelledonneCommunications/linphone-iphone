@@ -4,9 +4,6 @@
     "" : {
 
     },
-    " et " : {
-
-    },
     " has reacted by " : {
 
     },
@@ -19,19 +16,10 @@
     ": %@" : {
 
     },
-    "." : {
-
-    },
     "[Forgotten password?](https://subscribe.linphone.org/)" : {
 
     },
     "[linphone.org/contact](https://linphone.org/contact)" : {
-
-    },
-    "[nos conditions d’utilisation](https://linphone.org/general-terms)" : {
-
-    },
-    "[notre politique de confidentialité](https://linphone.org/privacy-policy)" : {
 
     },
     "*" : {
@@ -188,9 +176,6 @@
 
     },
     "A subject and at least one participant is required to create a meeting" : {
-
-    },
-    "Accept all" : {
 
     },
     "Account successfully logged out" : {
@@ -389,6 +374,70 @@
         }
       }
     },
+    "assistant_dialog_general_terms_and_privacy_policy_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By continuing, you accept our %@ and %@."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "En continuant, vous acceptez nos %@ et %@."
+          }
+        }
+      }
+    },
+    "assistant_dialog_general_terms_and_privacy_policy_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General terms & privacy policy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conditions de service & politique de confidentialité"
+          }
+        }
+      }
+    },
+    "assistant_dialog_general_terms_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "general terms"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "conditions de service"
+          }
+        }
+      }
+    },
+    "assistant_dialog_privacy_policy_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "privacy policy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "politique de confidentialité"
+          }
+        }
+      }
+    },
     "assistant_permissions_access_camera_title" : {
       "localizations" : {
         "en" : {
@@ -442,13 +491,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "**Read contacts:** To display your contacts and find whom is using this app."
+            "value" : "**Read contacts:** To display your contacts and find whom is using %@."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "**Contacts :** Pour vous afficher vos contacts et retrouver qui utilise cette application."
+            "state" : "translated",
+            "value" : "**Contacts :** Pour vous afficher vos contacts et retrouver qui utilise %@."
           }
         }
       }
@@ -1001,9 +1050,6 @@
 
     },
     "Close" : {
-
-    },
-    "Conditions de service" : {
 
     },
     "conference_failed_to_create_group_call_toast" : {
@@ -2360,14 +2406,27 @@
     "Delete all history" : {
 
     },
-    "Deny all" : {
-
-    },
     "Description" : {
 
     },
     "Dialer" : {
 
+    },
+    "dialog_accept" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accept"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepter"
+          }
+        }
+      }
     },
     "dialog_call" : {
       "localizations" : {
@@ -2397,6 +2456,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Annuler"
+          }
+        }
+      }
+    },
+    "dialog_deny" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deny"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refuser"
           }
         }
       }
@@ -2574,9 +2649,6 @@
 
     },
     "En attente d'autres participants..." : {
-
-    },
-    "En continuant, vous acceptez ces conditions, " : {
 
     },
     "En pause" : {
@@ -2784,6 +2856,12 @@
           }
         }
       }
+    },
+    "https://linphone.org/general-terms" : {
+
+    },
+    "https://linphone.org/privacy-policy" : {
+
     },
     "I prefere create an account" : {
 
@@ -3877,6 +3955,30 @@
     },
     "Vidéo" : {
 
+    },
+    "website_privacy_policy_url" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://linphone.org/privacy-policy"
+          }
+        }
+      },
+      "shouldTranslate" : false
+    },
+    "website_terms_and_conditions_url" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://linphone.org/general-terms"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "welcome_page_1_message" : {
       "localizations" : {

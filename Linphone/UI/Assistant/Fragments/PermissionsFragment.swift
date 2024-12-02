@@ -103,8 +103,7 @@ struct PermissionsFragment: View {
 							.padding(16)
 							.background(Color.grayMain2c200)
 							.cornerRadius(40)
-							
-							Text("assistant_permissions_read_contacts_title")
+							Text(.init(String(format: String(localized: "assistant_permissions_read_contacts_title"), Bundle.main.displayName)))
 								.default_text_style(styleSize: 15)
 								.padding(.leading, 10)
 						}

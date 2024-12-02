@@ -293,21 +293,38 @@ struct LoginFragment: View {
 					}
 					
 					if self.isShowPopup {
-						let contentPopup1 = Text("En continuant, vous acceptez ces conditions, ")
-						let contentPopup2 = Text("[notre politique de confidentialité](https://linphone.org/privacy-policy)").underline()
-						let contentPopup3 = Text(" et ")
-						let contentPopup4 = Text("[nos conditions d’utilisation](https://linphone.org/general-terms)").underline()
-						let contentPopup5 = Text(".")
-						PopupView(isShowPopup: $isShowPopup,
-								  title: Text("Conditions de service"),
-								  content: contentPopup1 + contentPopup2 + contentPopup3 + contentPopup4 + contentPopup5,
-								  titleFirstButton: Text("Deny all"),
-								  actionFirstButton: {self.isShowPopup.toggle()},
-								  titleSecondButton: Text("Accept all"),
-								  actionSecondButton: {acceptGeneralTerms()})
-						.background(.black.opacity(0.65))
-						.onTapGesture {
-							self.isShowPopup.toggle()
+						let generalTerms = String(format: "[%@](%@)", String(localized: "assistant_dialog_general_terms_label"), String(localized: "https://linphone.org/general-terms"))
+						let privacyPolicy = String(format: "[%@](%@)", String(localized: "assistant_dialog_privacy_policy_label"), String(localized: "https://linphone.org/privacy-policy"))
+						let splitMsg = String(localized: "assistant_dialog_general_terms_and_privacy_policy_message").components(separatedBy: "%@")
+						if splitMsg.count == 3 { // We expect form of  STRING %A STRING %@ STRING
+							let contentPopup1 = Text(.init(splitMsg[0]))
+							let contentPopup2 = Text(.init(generalTerms)).underline()
+							let contentPopup3 = Text(.init(splitMsg[1]))
+							let contentPopup4 = Text(.init(privacyPolicy)).underline()
+							let contentPopup5 = Text(.init(splitMsg[2]))
+							PopupView(isShowPopup: $isShowPopup,
+									  title: Text("assistant_dialog_general_terms_and_privacy_policy_title"),
+									  content: contentPopup1 + contentPopup2 + contentPopup3 + contentPopup4 + contentPopup5,
+									  titleFirstButton: Text("dialog_deny"),
+									  actionFirstButton: {self.isShowPopup.toggle()},
+									  titleSecondButton: Text("dialog_accept"),
+									  actionSecondButton: {acceptGeneralTerms()})
+							.background(.black.opacity(0.65))
+							.onTapGesture {
+								self.isShowPopup.toggle()
+							}
+						} else {  // backup just in case
+							PopupView(isShowPopup: $isShowPopup,
+									  title: Text("assistant_dialog_general_terms_and_privacy_policy_title"),
+									  content: Text(.init(String(format: String(localized: "assistant_dialog_general_terms_and_privacy_policy_message"), generalTerms, privacyPolicy))),
+									  titleFirstButton: Text("dialog_deny"),
+									  actionFirstButton: {self.isShowPopup.toggle()},
+									  titleSecondButton: Text("dialog_accept"),
+									  actionSecondButton: {acceptGeneralTerms()})
+							.background(.black.opacity(0.65))
+							.onTapGesture {
+								self.isShowPopup.toggle()
+							}
 						}
 					}
 				}
