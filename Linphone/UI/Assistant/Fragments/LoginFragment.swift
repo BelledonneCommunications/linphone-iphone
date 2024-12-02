@@ -167,7 +167,7 @@ struct LoginFragment: View {
 								.padding(.bottom)
 								
 								HStack {
-									Text("[Forgotten password?](https://subscribe.linphone.org/)")
+									Text(.init(String(format: ("[%@]](%@)"), String(localized: "assistant_forgotten_password"), "https://subscribe.linphone.org/")))
 										.underline()
 										.tint(Color.grayMain2c600)
 										.default_text_style_600(styleSize: 15)
@@ -180,7 +180,7 @@ struct LoginFragment: View {
 									VStack {
 										Divider()
 									}
-									Text(" or ")
+									Text("or")
 										.default_text_style(styleSize: 15)
 										.foregroundStyle(Color.grayMain2c500)
 									VStack {
@@ -199,7 +199,7 @@ struct LoginFragment: View {
 											.foregroundStyle(Color.orangeMain500)
 											.frame(width: 20, height: 20)
 										
-										Text("Scan QR code")
+										Text("assistant_scan_qr_code")
 											.default_text_style_orange_600(styleSize: 20)
 											.frame(height: 35)
 									}
@@ -219,7 +219,7 @@ struct LoginFragment: View {
 								NavigationLink(isActive: $isLinkSIPActive, destination: {
 									ThirdPartySipAccountWarningFragment(accountLoginViewModel: accountLoginViewModel)
 								}, label: {
-									Text("Use SIP Account")
+									Text("assistant_login_third_party_sip_account")
 										.default_text_style_orange_600(styleSize: 20)
 										.frame(height: 35)
 										.frame(maxWidth: .infinity)
@@ -254,12 +254,12 @@ struct LoginFragment: View {
 									
 									Spacer()
 									
-									Text("Not account yet?")
+									Text("assistant_no_account_yet")
 										.default_text_style(styleSize: 15)
 										.foregroundStyle(Color.grayMain2c700)
 										.padding(.horizontal, 10)
 									
-									NavigationLink(destination: RegisterFragment(registerViewModel: RegisterViewModel()), isActive: $isLinkREGActive, label: {Text("Register")
+									NavigationLink(destination: RegisterFragment(registerViewModel: RegisterViewModel()), isActive: $isLinkREGActive, label: { Text("assistant_account_register")
 											.default_text_style_white_600(styleSize: 20)
 											.frame(height: 35)
 									})

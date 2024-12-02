@@ -4,19 +4,7 @@
     "" : {
 
     },
-    " has reacted by " : {
-
-    },
-    " or " : {
-
-    },
-    " to: " : {
-
-    },
     ": %@" : {
-
-    },
-    "[Forgotten password?](https://subscribe.linphone.org/)" : {
 
     },
     "[linphone.org/contact](https://linphone.org/contact)" : {
@@ -438,6 +426,54 @@
         }
       }
     },
+    "assistant_forgotten_password" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forgotten password?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Mot de passe oublié ?"
+          }
+        }
+      }
+    },
+    "assistant_login_third_party_sip_account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use a third party SIP account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "J’ai un compte SIP tiers"
+          }
+        }
+      }
+    },
+    "assistant_no_account_yet" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No account yet?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas encore de compte ?"
+          }
+        }
+      }
+    },
     "assistant_permissions_access_camera_title" : {
       "localizations" : {
         "en" : {
@@ -562,6 +598,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Donner les permissions"
+          }
+        }
+      }
+    },
+    "assistant_scan_qr_code" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan QR code"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scanner un QR code"
           }
         }
       }
@@ -698,9 +750,15 @@
     },
     "call_audio_device_type_speaker" : {
       "localizations" : {
-        "fr" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Speaker"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "Haut parleur"
           }
         }
@@ -3692,13 +3750,29 @@
     "Non" : {
 
     },
-    "Not account yet?" : {
-
+    "notification_chat_message_reaction_received" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ reacted by %@ to: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ a réagi par %@ à : %@"
+          }
+        }
+      }
     },
     "Ok" : {
 
     },
     "Opération en cours..." : {
+
+    },
+    "or" : {
 
     },
     "Oui" : {
@@ -3728,7 +3802,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Password en FR"
+            "value" : "Mot de passe"
           }
         }
       }
@@ -3797,6 +3871,7 @@
       }
     },
     "Register" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -3810,9 +3885,6 @@
 
     },
     "Resuming" : {
-
-    },
-    "Scan QR code" : {
 
     },
     "Select %@ %@" : {
@@ -3930,9 +4002,6 @@
     "Use a SIP account" : {
 
     },
-    "Use SIP Account" : {
-
-    },
     "username" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3945,7 +4014,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Username en FR"
+            "value" : "Nom d’utilisateur"
           }
         }
       }
@@ -3955,30 +4024,6 @@
     },
     "Vidéo" : {
 
-    },
-    "website_privacy_policy_url" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://linphone.org/privacy-policy"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
-    "website_terms_and_conditions_url" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://linphone.org/general-terms"
-          }
-        }
-      },
-      "shouldTranslate" : false
     },
     "welcome_page_1_message" : {
       "localizations" : {

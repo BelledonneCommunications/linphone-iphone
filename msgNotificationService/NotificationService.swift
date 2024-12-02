@@ -249,7 +249,7 @@ class NotificationService: UNNotificationServiceExtension {
 			if reactionContent == nil {
 				msgData.body = (message.subject != nil ? "\(from): " : "") + content
 			} else {
-				msgData.body = from + NSLocalizedString(" has reacted by ", comment: "") + reactionContent! + NSLocalizedString(" to: ", comment: "") + content
+				msgData.body = String(format: String(localized: "notification_chat_message_reaction_received"), from, reactionContent!, content)
 			}
 		} else {
 			if let subject = message.subject {
