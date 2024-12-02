@@ -182,7 +182,7 @@ struct CallsListFragment: View {
                         
                         Text((callViewModel.selectedCall!.state == .PausedByRemote
                               || callViewModel.selectedCall!.state == .Pausing
-                              || callViewModel.selectedCall!.state == .Paused) ? "Resume" : "Pause")
+                              || callViewModel.selectedCall!.state == .Paused) ? "call_action_resume_call" : "call_action_pause_call")
                             .default_text_style(styleSize: 15)
                         
                         Spacer()

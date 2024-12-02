@@ -167,7 +167,7 @@ struct LoginFragment: View {
 								.padding(.bottom)
 								
 								HStack {
-									Text(.init(String(format: ("[%@]](%@)"), String(localized: "assistant_forgotten_password"), "https://subscribe.linphone.org/")))
+									Text(.init(String(format: ("[%@](%@)"), String(localized: "assistant_forgotten_password"), "https://subscribe.linphone.org/")))
 										.underline()
 										.tint(Color.grayMain2c600)
 										.default_text_style_600(styleSize: 15)
@@ -294,7 +294,7 @@ struct LoginFragment: View {
 					
 					if self.isShowPopup {
 						let generalTerms = String(format: "[%@](%@)", String(localized: "assistant_dialog_general_terms_label"), String(localized: "https://linphone.org/general-terms"))
-						let privacyPolicy = String(format: "[%@](%@)", String(localized: "assistant_dialog_privacy_policy_label"), String(localized: "https://linphone.org/privacy-policy"))
+						let privacyPolicy = String(format: "[%@](%@)", String(localized: "assistant_dialog_privacy_policy_label"), String(localized: "https://linphone.org/en/privacy-policy"))
 						let splitMsg = String(localized: "assistant_dialog_general_terms_and_privacy_policy_message").components(separatedBy: "%@")
 						if splitMsg.count == 3 { // We expect form of  STRING %A STRING %@ STRING
 							let contentPopup1 = Text(.init(splitMsg[0]))

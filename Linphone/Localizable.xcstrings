@@ -634,9 +634,6 @@
         }
       }
     },
-    "Attended transfer" : {
-
-    },
     "Audio" : {
 
     },
@@ -731,6 +728,70 @@
     "Call transfer failed!" : {
 
     },
+    "call_action_attended_transfer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attended transfer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfert"
+          }
+        }
+      }
+    },
+    "call_action_blind_transfer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfert"
+          }
+        }
+      }
+    },
+    "call_action_change_layout" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layout"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disposition"
+          }
+        }
+      }
+    },
+    "call_action_go_to_calls_list" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calls list"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liste des appels"
+          }
+        }
+      }
+    },
     "call_action_hang_up" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -744,6 +805,96 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Raccrocher"
+          }
+        }
+      }
+    },
+    "call_action_pause_call" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre en pause"
+          }
+        }
+      }
+    },
+    "call_action_record_call" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer"
+          }
+        }
+      }
+    },
+    "call_action_resume_call" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprendre"
+          }
+        }
+      }
+    },
+    "call_action_show_dialer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dialer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pavé"
+          }
+        }
+      }
+    },
+    "call_action_show_messages" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messages"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Messages"
+          }
+        }
+      }
+    },
+    "call_action_start_new_call" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvel appel"
           }
         }
       }
@@ -968,6 +1119,38 @@
         }
       }
     },
+    "call_state_paused" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En pause"
+          }
+        }
+      }
+    },
+    "call_state_paused_by_remote" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused by remote"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mis en pause par le correspondant"
+          }
+        }
+      }
+    },
     "call_waiting_for_encryption_info" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1110,6 +1293,54 @@
     "Close" : {
 
     },
+    "conference_action_screen_sharing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screen share"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partage d’écran"
+          }
+        }
+      }
+    },
+    "conference_action_show_participants" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Participants"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Participants"
+          }
+        }
+      }
+    },
+    "conference_call_empty" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for other participants…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attente d’autres participants…"
+          }
+        }
+      }
+    },
     "conference_failed_to_create_group_call_toast" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1123,6 +1354,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "L'appel de groupe n'a pas pu être créé!"
+          }
+        }
+      }
+    },
+    "conference_participant_joining_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joining…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En train de rejoindre…"
+          }
+        }
+      }
+    },
+    "conference_participant_paused_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En pause"
+          }
+        }
+      }
+    },
+    "conference_share_link_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share invitation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager le lien"
           }
         }
       }
@@ -2467,9 +2746,6 @@
     "Description" : {
 
     },
-    "Dialer" : {
-
-    },
     "dialog_accept" : {
       "localizations" : {
         "en" : {
@@ -2551,9 +2827,6 @@
       }
     },
     "Display Name" : {
-
-    },
-    "Disposition" : {
 
     },
     "Do you really want to delete all calls history?" : {
@@ -2704,12 +2977,6 @@
 
     },
     "Edit Contact" : {
-
-    },
-    "En attente d'autres participants..." : {
-
-    },
-    "En pause" : {
 
     },
     "Error" : {
@@ -2915,10 +3182,10 @@
         }
       }
     },
-    "https://linphone.org/general-terms" : {
+    "https://linphone.org/en/privacy-policy" : {
 
     },
-    "https://linphone.org/privacy-policy" : {
+    "https://linphone.org/general-terms" : {
 
     },
     "I prefere create an account" : {
@@ -2954,9 +3221,6 @@
 
     },
     "Invalide URI" : {
-
-    },
-    "Joining..." : {
 
     },
     "list_filter_no_result_found" : {
@@ -3670,9 +3934,6 @@
         }
       }
     },
-    "Messages" : {
-
-    },
     "Mettre en sourdine" : {
 
     },
@@ -3686,9 +3947,6 @@
 
     },
     "Network is now reachable again" : {
-
-    },
-    "New call" : {
 
     },
     "new_conversation_create_group" : {
@@ -3773,21 +4031,25 @@
 
     },
     "or" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "or"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ou"
+          }
+        }
+      }
     },
     "Oui" : {
 
     },
-    "Partage d'écran" : {
-
-    },
-    "Partager le lien" : {
-
-    },
     "Participant actif" : {
-
-    },
-    "Participants" : {
 
     },
     "password" : {
@@ -3807,13 +4069,7 @@
         }
       }
     },
-    "Pause" : {
-
-    },
     "Paused" : {
-
-    },
-    "Paused by remote" : {
 
     },
     "Personnalize your profil mode" : {
@@ -3850,9 +4106,6 @@
     "Réactiver les notifications" : {
 
     },
-    "Record" : {
-
-    },
     "recordings_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3880,9 +4133,6 @@
           }
         }
       }
-    },
-    "Resume" : {
-
     },
     "Resuming" : {
 
@@ -3979,9 +4229,6 @@
 
     },
     "TLS" : {
-
-    },
-    "Transfer" : {
 
     },
     "Transfer call to" : {

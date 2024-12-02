@@ -300,10 +300,10 @@ struct CallView: View {
 										}
 									
 									if callViewModel.isPaused {
-										Text("Paused")
+										Text("call_state_paused")
 											.default_text_style_white_800(styleSize: 16)
 									} else if telecomManager.isPausedByRemote {
-										Text("Paused by remote")
+										Text("call_state_paused_by_remote")
 											.default_text_style_white_800(styleSize: 16)
 									}
 								}
@@ -645,7 +645,7 @@ struct CallView: View {
 				VStack {
 					Spacer()
 					
-					Text("En attente d'autres participants...")
+					Text("conference_call_empty")
 						.frame(maxWidth: .infinity, alignment: .center)
 						.foregroundStyle(Color.white)
 						.default_text_style_300(styleSize: 25)
@@ -670,7 +670,7 @@ struct CallView: View {
 								.foregroundStyle(Color.grayMain2c400)
 								.frame(width: 30, height: 30)
 							
-							Text("Partager le lien")
+							Text("conference_share_link_title")
 								.foregroundStyle(Color.grayMain2c400)
 								.default_text_style(styleSize: 25)
 								.frame(height: 40)
@@ -829,7 +829,7 @@ struct CallView: View {
 							.foregroundStyle(.white)
 							.frame(width: 40, height: 40)
 						
-						Text("En pause")
+						Text("conference_participant_paused_text")
 							.frame(maxWidth: .infinity, alignment: .center)
 							.foregroundStyle(Color.white)
 							.default_text_style_500(styleSize: 14)
@@ -1015,7 +1015,7 @@ struct CallView: View {
 															.frame(width: 40, height: 40)
 															.padding(.bottom, 5)
 														
-														Text("Joining...")
+														Text("conference_participant_joining_text")
 															.frame(maxWidth: .infinity, alignment: .center)
 															.foregroundStyle(Color.white)
 															.default_text_style_500(styleSize: 14)
@@ -1034,7 +1034,7 @@ struct CallView: View {
 															.foregroundStyle(.white)
 															.frame(width: 40, height: 40)
 														
-														Text("En pause")
+														Text("conference_participant_paused_text")
 															.frame(maxWidth: .infinity, alignment: .center)
 															.foregroundStyle(Color.white)
 															.default_text_style_500(styleSize: 14)
@@ -1182,7 +1182,7 @@ struct CallView: View {
 														.frame(width: 40, height: 40)
 														.padding(.bottom, 5)
 													
-													Text("Joining...")
+													Text("conference_participant_joining_text")
 														.frame(maxWidth: .infinity, alignment: .center)
 														.foregroundStyle(Color.white)
 														.default_text_style_500(styleSize: 14)
@@ -1201,7 +1201,7 @@ struct CallView: View {
 														.foregroundStyle(.white)
 														.frame(width: 40, height: 40)
 													
-													Text("En pause")
+													Text("conference_participant_paused_text")
 														.frame(maxWidth: .infinity, alignment: .center)
 														.foregroundStyle(Color.white)
 														.default_text_style_500(styleSize: 14)
@@ -1325,7 +1325,7 @@ struct CallView: View {
 										.frame(width: maxValue/4, height: maxValue/4)
 										.padding(.bottom, 5)
 									
-									Text("Joining...")
+									Text("conference_participant_joining_text")
 										.frame(maxWidth: .infinity, alignment: .center)
 										.foregroundStyle(Color.white)
 										.default_text_style_500(styleSize: 14)
@@ -1344,7 +1344,7 @@ struct CallView: View {
 										.foregroundStyle(.white)
 										.frame(width: maxValue/4, height: maxValue/4)
 									
-									Text("En pause")
+									Text("conference_participant_paused_text")
 										.frame(maxWidth: .infinity, alignment: .center)
 										.foregroundStyle(Color.white)
 										.default_text_style_500(styleSize: 14)
@@ -1441,7 +1441,7 @@ struct CallView: View {
 											.frame(width: maxValue/4, height: maxValue/4)
 											.padding(.bottom, 5)
 										
-										Text("Joining...")
+										Text("conference_participant_joining_text")
 											.frame(maxWidth: .infinity, alignment: .center)
 											.foregroundStyle(Color.white)
 											.default_text_style_500(styleSize: 14)
@@ -1460,7 +1460,7 @@ struct CallView: View {
 											.foregroundStyle(.white)
 											.frame(width: maxValue/4, height: maxValue/4)
 										
-										Text("En pause")
+										Text("conference_participant_paused_text")
 											.frame(maxWidth: .infinity, alignment: .center)
 											.foregroundStyle(Color.white)
 											.default_text_style_500(styleSize: 14)
@@ -1561,7 +1561,7 @@ struct CallView: View {
 										.frame(width: maxValue/4, height: maxValue/4)
 										.padding(.bottom, 5)
 									
-									Text("Joining...")
+									Text("conference_participant_joining_text")
 										.frame(maxWidth: .infinity, alignment: .center)
 										.foregroundStyle(Color.white)
 										.default_text_style_500(styleSize: 14)
@@ -1580,7 +1580,7 @@ struct CallView: View {
 										.foregroundStyle(.white)
 										.frame(width: maxValue/4, height: maxValue/4)
 									
-									Text("En pause")
+									Text("conference_participant_paused_text")
 										.frame(maxWidth: .infinity, alignment: .center)
 										.foregroundStyle(Color.white)
 										.default_text_style_500(styleSize: 14)
@@ -1677,7 +1677,7 @@ struct CallView: View {
 											.frame(width: maxValue/4, height: maxValue/4)
 											.padding(.bottom, 5)
 										
-										Text("Joining...")
+										Text("conference_participant_joining_text")
 											.frame(maxWidth: .infinity, alignment: .center)
 											.foregroundStyle(Color.white)
 											.default_text_style_500(styleSize: 14)
@@ -1696,7 +1696,7 @@ struct CallView: View {
 											.foregroundStyle(.white)
 											.frame(width: maxValue/4, height: maxValue/4)
 										
-										Text("En pause")
+										Text("conference_participant_paused_text")
 											.frame(maxWidth: .infinity, alignment: .center)
 											.foregroundStyle(Color.white)
 											.default_text_style_500(styleSize: 14)
@@ -2035,7 +2035,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text(callViewModel.callsCounter < 2 ? "Transfer" : "Attended transfer")
+								Text(callViewModel.callsCounter < 2 ? "call_action_blind_transfer" : "call_action_attended_transfer")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2068,7 +2068,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("New call")
+								Text("call_action_start_new_call")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2091,7 +2091,7 @@ struct CallView: View {
 								.cornerRadius(40)
 								.disabled(true)
 								
-								Text("Partage d'écran")
+								Text("conference_action_screen_sharing")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2116,7 +2116,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("Participants")
+								Text("conference_action_show_participants")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2171,7 +2171,7 @@ struct CallView: View {
 								}
 							}
 							
-							Text("Call list")
+							Text("call_action_go_to_calls_list")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2201,7 +2201,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("Dialer")
+								Text("call_action_show_dialer")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2224,7 +2224,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("Disposition")
+								Text("call_action_change_layout")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2266,7 +2266,7 @@ struct CallView: View {
 							.cornerRadius(40)
 							.disabled(!callViewModel.isOneOneCall)
 							
-							Text("Messages")
+							Text("call_action_show_messages")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2290,7 +2290,7 @@ struct CallView: View {
 							.cornerRadius(40)
 							.disabled(telecomManager.isPausedByRemote)
 							
-							Text("Pause")
+							Text("call_action_pause_call")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2315,7 +2315,7 @@ struct CallView: View {
 								.cornerRadius(40)
 								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 								
-								Text("Record")
+								Text("call_action_record_call")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2338,7 +2338,7 @@ struct CallView: View {
 								.cornerRadius(40)
 								.disabled(true)
 								
-								Text("Record")
+								Text("call_action_record_call")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2361,7 +2361,7 @@ struct CallView: View {
 							.background(Color.gray500)
 							.cornerRadius(40)
 							
-							Text("Disposition")
+							Text("call_action_change_layout")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2404,7 +2404,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text(callViewModel.callsCounter < 2 ? "Transfer" : "Attended transfer")
+								Text(callViewModel.callsCounter < 2 ? "call_action_blind_transfer" : "call_action_attended_transfer")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2437,7 +2437,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("New call")
+								Text("call_action_start_new_call")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2461,7 +2461,7 @@ struct CallView: View {
 									.cornerRadius(40)
 									.disabled(true)
 									
-									Text("Partage d'écran")
+									Text("conference_action_screen_sharing")
 										.foregroundStyle(.white)
 										.default_text_style(styleSize: 15)
 								}
@@ -2487,7 +2487,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("Participants")
+								Text("conference_action_show_participants")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2543,7 +2543,7 @@ struct CallView: View {
 								}
 							}
 							
-							Text("Call list")
+							Text("call_action_go_to_calls_list")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2573,7 +2573,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("Dialer")
+								Text("call_action_show_dialer")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2596,7 +2596,7 @@ struct CallView: View {
 								.background(Color.gray500)
 								.cornerRadius(40)
 								
-								Text("Disposition")
+								Text("call_action_change_layout")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2635,7 +2635,7 @@ struct CallView: View {
 							.cornerRadius(40)
 							.disabled(!callViewModel.isOneOneCall)
 							
-							Text("Messages")
+							Text("call_action_show_messages")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2659,7 +2659,7 @@ struct CallView: View {
 							.cornerRadius(40)
 							.disabled(telecomManager.isPausedByRemote)
 							
-							Text("Pause")
+							Text("call_action_pause_call")
 								.foregroundStyle(.white)
 								.default_text_style(styleSize: 15)
 						}
@@ -2684,7 +2684,7 @@ struct CallView: View {
 								.cornerRadius(40)
 								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
 								
-								Text("Record")
+								Text("call_action_record_call")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
@@ -2707,7 +2707,7 @@ struct CallView: View {
 								.cornerRadius(40)
 								.disabled(true)
 								
-								Text("Record")
+								Text("call_action_record_call")
 									.foregroundStyle(.white)
 									.default_text_style(styleSize: 15)
 							}
