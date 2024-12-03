@@ -28,6 +28,7 @@ struct SideMenu: View {
 	let menuClose: () -> Void
 	let safeAreaInsets: EdgeInsets
 	@Binding var isShowLoginFragment: Bool
+	@Binding var isShowAccountProfileFragment: Bool
 	@State private var showHelp = false
 	
 	var body: some View {
@@ -66,7 +67,7 @@ struct SideMenu: View {
 					
 					List {
 						ForEach(0..<CoreContext.shared.accounts.count, id: \.self) { index in
-							SideMenuAccountRow(	model: CoreContext.shared.accounts[index])
+							SideMenuAccountRow(	model: CoreContext.shared.accounts[index], isShowAccountProfileFragment: $isShowAccountProfileFragment)
 							.background()
 							.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
 							.listRowSeparator(.hidden)
@@ -174,7 +175,8 @@ struct SideMenu: View {
 			isOpen: true,
 			menuClose: {},
 			safeAreaInsets: geometry.safeAreaInsets,
-			isShowLoginFragment: $triggerNavigateToLogin
+			isShowLoginFragment: $triggerNavigateToLogin,
+			isShowAccountProfileFragment: .constant(false)
 		)
 		.ignoresSafeArea(.all)
 		.zIndex(2)

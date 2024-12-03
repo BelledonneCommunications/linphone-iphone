@@ -144,6 +144,7 @@ struct LinphoneApp: App {
 	@State private var meetingsListViewModel: MeetingsListViewModel?
 	@State private var meetingViewModel: MeetingViewModel?
 	@State private var conversationForwardMessageViewModel: ConversationForwardMessageViewModel?
+	@State private var accountProfileViewModel: AccountProfileViewModel?
 	
 	var body: some Scene {
 		WindowGroup {
@@ -175,7 +176,8 @@ struct LinphoneApp: App {
 							&& conversationViewModel != nil 
 							&& meetingsListViewModel != nil
 							&& meetingViewModel != nil 
-							&& conversationForwardMessageViewModel != nil {
+							&& conversationForwardMessageViewModel != nil
+							&& accountProfileViewModel != nil {
 					ContentView(
 						contactViewModel: contactViewModel!,
 						editContactViewModel: editContactViewModel!,
@@ -189,7 +191,8 @@ struct LinphoneApp: App {
 						conversationViewModel: conversationViewModel!,
 						meetingsListViewModel: meetingsListViewModel!,
 						meetingViewModel: meetingViewModel!,
-						conversationForwardMessageViewModel: conversationForwardMessageViewModel!
+						conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
+						accountProfileViewModel: accountProfileViewModel!
 					)
 					.environmentObject(navigationManager)
 					.onAppear {
@@ -201,6 +204,8 @@ struct LinphoneApp: App {
 							// Notify the app to navigate to the chat room
 							navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
 						}
+						
+						accountProfileViewModel!.setAvatarModel()
 					}
 					.onOpenURL { url in
 						URIHandler.handleURL(url: url)
@@ -226,6 +231,7 @@ struct LinphoneApp: App {
 						meetingsListViewModel = MeetingsListViewModel()
 						meetingViewModel = MeetingViewModel()
 						conversationForwardMessageViewModel = ConversationForwardMessageViewModel()
+						accountProfileViewModel = AccountProfileViewModel()
 					}.onOpenURL { url in
 						URIHandler.handleURL(url: url)
 					}

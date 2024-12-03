@@ -23,9 +23,12 @@ import UniformTypeIdentifiers
 
 struct SideMenuAccountRow: View {
 	@ObservedObject var model: AccountModel
+	
+	@State private var navigateToOption = false
+	@Binding var isShowAccountProfileFragment: Bool
+	
 	var body: some View {
 		HStack {
-			
 			Avatar(contactAvatarModel:
 					ContactAvatarModel(friend: nil,
 									   name: model.displayName,
@@ -69,12 +72,23 @@ struct SideMenuAccountRow: View {
 						.cornerRadius(50)
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
-				Image("dots-three-vertical")
-					.renderingMode(.template)
-					.resizable()
-					.foregroundStyle(Color.grayMain2c600)
-					.scaledToFit()
-					.frame(height: 30)
+				
+				Menu {
+					Button {
+						withAnimation {
+							isShowAccountProfileFragment = true
+						}
+					} label: {
+						Label("drawer_menu_manage_account", systemImage: "arrow.right.circle")
+					}
+				} label: {
+					Image("dots-three-vertical")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundColor(Color.gray)
+						.scaledToFit()
+						.frame(height: 30)
+				}
 			}
 			.frame(width: 64, alignment: .trailing)
 			.padding(.top, 12)

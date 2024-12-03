@@ -164,6 +164,8 @@
 		D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */; };
 		D7DA67622ACCB2FA00E95002 /* LoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */; };
 		D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */; };
+		D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */; };
+		D7DC09712CFDBF9A00A6D47C /* AccountProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */; };
 		D7E2E69F2CE356C90080DA0D /* PopupViewWithTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E2E69E2CE356C90080DA0D /* PopupViewWithTextField.swift */; };
 		D7E6ADF32B9875C20009A2BC /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6ADF22B9875C20009A2BC /* Message.swift */; };
 		D7E6ADF52B9876ED0009A2BC /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6ADF42B9876ED0009A2BC /* Attachment.swift */; };
@@ -358,6 +360,8 @@
 		D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-ExtraBold.ttf"; sourceTree = "<group>"; };
 		D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFragment.swift; sourceTree = "<group>"; };
 		D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModeFragment.swift; sourceTree = "<group>"; };
+		D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountProfileFragment.swift; sourceTree = "<group>"; };
+		D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountProfileViewModel.swift; sourceTree = "<group>"; };
 		D7E2E69E2CE356C90080DA0D /* PopupViewWithTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewWithTextField.swift; sourceTree = "<group>"; };
 		D7E6ADF22B9875C20009A2BC /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		D7E6ADF42B9876ED0009A2BC /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -602,6 +606,7 @@
 				D7A03FBE2ACC2E010081A588 /* History */,
 				66E56BC52BA45E49006CE56F /* Meetings */,
 				66D382032CEB7DB80063E1C5 /* Models */,
+				D7DC096A2CFA192200A6D47C /* Settings */,
 				D7A2EDD42AC180FE005D90FC /* Viewmodel */,
 				D719ABB82ABC67BF00B41C10 /* ContentView.swift */,
 			);
@@ -909,6 +914,39 @@
 			path = Fragments;
 			sourceTree = "<group>";
 		};
+		D7DC096A2CFA192200A6D47C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D7DC096B2CFA192F00A6D47C /* Fragments */,
+				D7DC096C2CFA193B00A6D47C /* Models */,
+				D7DC096D2CFA194600A6D47C /* ViewModel */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		D7DC096B2CFA192F00A6D47C /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D7DC096C2CFA193B00A6D47C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D7DC096D2CFA194600A6D47C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1132,6 +1170,7 @@
 				D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,
+				D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */,
 				D717A10E2CEB772300849D92 /* ShareSheetController.swift in Sources */,
 				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
 				D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */,
@@ -1211,6 +1250,7 @@
 				D7CEE0382B7A214F00FD79B7 /* ConversationsListViewModel.swift in Sources */,
 				D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */,
 				66E56BCE2BA9A1F8006CE56F /* MeetingModel.swift in Sources */,
+				D7DC09712CFDBF9A00A6D47C /* AccountProfileViewModel.swift in Sources */,
 				D7E6D0552AEBFCCE00A57AAF /* ContactsInnerFragment.swift in Sources */,
 				D72343362AD037AF009AA24E /* ToastView.swift in Sources */,
 				D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */,

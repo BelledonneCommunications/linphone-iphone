@@ -52,8 +52,3 @@ struct SideMenuShortcut: View {
 		}
 	}
 }
-
-#Preview {
-	SideMenuShortcut(shortcutModel: ShortcutModel(linkUrl: URL("link")!, name: "name", iconLinkUrl: URL("icon")!)
-	)
-}

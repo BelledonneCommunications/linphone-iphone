@@ -2533,6 +2533,23 @@
         }
       }
     },
+    "drawer_menu_manage_account" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage the profile"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres du profil"
+          }
+        }
+      }
+    },
     "drawer_menu_no_account_configured_yet" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2878,6 +2895,23 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Enlever l’image"
+          }
+        }
+      }
+    },
+    "manage_account_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre compte"
           }
         }
       }
