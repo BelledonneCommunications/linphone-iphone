@@ -145,9 +145,13 @@ final class CoreContext: ObservableObject {
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
 			self.mCore.friendListSubscriptionEnabled = true
+			
+			// Migration
 			self.mCore.maxSizeForAutoDownloadIncomingFiles = 0
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
+			self.mCore.config!.setString(section: "misc", key: "log_collection_upload_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
+			self.mCore.config!.setString(section: "misc", key: "file_transfer_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
 			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
 			if shortcutsCount > 0 {
