@@ -31,6 +31,7 @@ struct ConversationInfoFragment: View {
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var meetingViewModel: MeetingViewModel
+	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	
@@ -287,7 +288,33 @@ struct ConversationInfoFragment: View {
 											VStack(spacing: 0) {
 												ForEach(conversationViewModel.participantConversationModel) { participantConversationModel in
 													HStack {
-														Avatar(contactAvatarModel: participantConversationModel, avatarSize: 50)
+														if conversationViewModel.myParticipantConversationModel != nil && conversationViewModel.myParticipantConversationModel!.address != participantConversationModel.address {
+															Avatar(contactAvatarModel: participantConversationModel, avatarSize: 50)
+														} else {
+															let avatarSize = 50.0
+															AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
+																switch image {
+																case .empty:
+																	ProgressView()
+																		.frame(width: avatarSize, height: avatarSize)
+																case .success(let image):
+																	image
+																		.resizable()
+																		.aspectRatio(contentMode: .fill)
+																		.frame(width: avatarSize, height: avatarSize)
+																		.clipShape(Circle())
+																case .failure:
+																	Image(uiImage: contactsManager.textToImage(
+																		firstName: accountProfileViewModel.avatarModel?.name ?? "",
+																		lastName: ""))
+																	.resizable()
+																	.frame(width: avatarSize, height: avatarSize)
+																	.clipShape(Circle())
+																@unknown default:
+																	EmptyView()
+																}
+															}
+														}
 														
 														VStack {
 															Text(participantConversationModel.name)
@@ -667,6 +694,7 @@ struct ConversationInfoFragment: View {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		meetingViewModel: MeetingViewModel(),
+		accountProfileViewModel: AccountProfileViewModel(),
 		addParticipantsViewModel: AddParticipantsViewModel(),
 		isMuted: .constant(false),
 		isShowEphemeralFragment: .constant(false),

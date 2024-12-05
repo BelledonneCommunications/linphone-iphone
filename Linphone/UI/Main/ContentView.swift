@@ -78,6 +78,8 @@ struct ContentView: View {
 	@State var isShowScheduleMeetingFragment = false
 	@State private var isShowLoginFragment: Bool = false
 	
+	private let avatarSize = 45.0
+	
 	var body: some View {
 		let pub = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ContactLoaded"))
@@ -307,13 +309,31 @@ struct ContentView: View {
 										VStack(spacing: 0) {
 											if searchIsActive == false {
 												HStack {
-													Image("profile-image-example")
-														.resizable()
-														.frame(width: 45, height: 45)
-														.clipShape(Circle())
-														.onTapGesture {
-															openMenu()
+													AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
+														switch image {
+														case .empty:
+															ProgressView()
+																.frame(width: avatarSize, height: avatarSize)
+														case .success(let image):
+															image
+																.resizable()
+																.aspectRatio(contentMode: .fill)
+																.frame(width: avatarSize, height: avatarSize)
+																.clipShape(Circle())
+														case .failure:
+															Image(uiImage: contactsManager.textToImage(
+																firstName: accountProfileViewModel.avatarModel?.name ?? "",
+																lastName: ""))
+															.resizable()
+															.frame(width: avatarSize, height: avatarSize)
+															.clipShape(Circle())
+														@unknown default:
+															EmptyView()
 														}
+													}
+													.onTapGesture {
+														openMenu()
+													}
 													
 													Text(String(localized: index == 0 ? "bottom_navigation_contacts_label" : (index == 1 ? "bottom_navigation_calls_label" : (index == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
 														.default_text_style_white_800(styleSize: 20)
@@ -867,6 +887,7 @@ struct ContentView: View {
 										contactViewModel: contactViewModel,
 										editContactViewModel: editContactViewModel,
 										meetingViewModel: meetingViewModel,
+										accountProfileViewModel: accountProfileViewModel,
 										isShowConversationFragment: $isShowConversationFragment,
 										isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 										isShowEditContactFragment: $isShowEditContactFragment,
@@ -909,6 +930,7 @@ struct ContentView: View {
 						}
 						
 						SideMenu(
+							accountProfileViewModel: accountProfileViewModel,
 							width: geometry.size.width / 5 * 4,
 							isOpen: self.sideMenuIsOpen,
 							menuClose: self.openMenu,
@@ -1253,6 +1275,7 @@ struct ContentView: View {
 								contactViewModel: contactViewModel,
 								editContactViewModel: editContactViewModel,
 								meetingViewModel: meetingViewModel,
+								accountProfileViewModel: accountProfileViewModel,
 								fullscreenVideo: $fullscreenVideo,
 								isShowStartCallFragment: $isShowStartCallFragment,
 								isShowConversationFragment: $isShowConversationFragment,

@@ -36,6 +36,7 @@ struct ConversationFragment: View {
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var meetingViewModel: MeetingViewModel
+	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State var isMenuOpen = false
 	@State private var isMuted: Bool = false
@@ -995,6 +996,7 @@ struct ConversationFragment: View {
 					contactViewModel: contactViewModel,
 					editContactViewModel: editContactViewModel,
 					meetingViewModel: meetingViewModel,
+					accountProfileViewModel: accountProfileViewModel,
 					isMuted: $isMuted,
 					isShowEphemeralFragment: $isShowEphemeralFragment,
 					isShowStartCallGroupPopup: $isShowStartCallGroupPopup,

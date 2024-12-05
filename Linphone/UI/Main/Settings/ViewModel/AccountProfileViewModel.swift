@@ -21,6 +21,8 @@ import linphonesw
 
 class AccountProfileViewModel: ObservableObject {
 	
+	let photoAvatarModelKey = "photo_avatar_model"
+	
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var photoAvatarModel: String?
 	
@@ -31,10 +33,38 @@ class AccountProfileViewModel: ObservableObject {
 			if core.defaultAccount != nil {
 				let displayNameTmp = core.defaultAccount!.displayName()
 				let contactAddressTmp = core.defaultAccount!.contactAddress?.asStringUriOnly() ?? ""
+				var photoAvatarModelTmp = ""
+				
+				let preferences = UserDefaults.standard
+				
+				if preferences.object(forKey: self.photoAvatarModelKey) == nil {
+					preferences.set(self.photoAvatarModel ?? "", forKey: self.photoAvatarModelKey)
+				} else {
+					photoAvatarModelTmp = preferences.string(forKey: self.photoAvatarModelKey)!
+				}
+				
 				DispatchQueue.main.async {
 					self.avatarModel = ContactAvatarModel(friend: nil, name: displayNameTmp, address: contactAddressTmp, withPresence: false)
+					self.photoAvatarModel = photoAvatarModelTmp
 				}
 			}
 		}
+	}
+	
+	func saveImage(image: UIImage, name: String, prefix: String) {
+		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
+			return
+		}
+		
+		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
+			UserDefaults.standard.set(result, forKey: self.photoAvatarModelKey)
+			self.photoAvatarModel = result
+		}
+	}
+	
+	func getImagePath() -> URL {
+		let imagePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(self.photoAvatarModel ?? "Error")
+		
+		return imagePath
 	}
 }

@@ -33,6 +33,8 @@ struct AccountProfileFragment: View {
 	@State private var selectedImage: UIImage?
 	@State private var removedImage = false
 	
+	private let avatarSize = 100.0
+	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 1) {
@@ -72,8 +74,6 @@ struct AccountProfileFragment: View {
 				.padding(.bottom, 4)
 				.background(.white)
 				
-				Spacer()
-				/*
 				ScrollView {
 					VStack(spacing: 0) {
 						VStack(spacing: 0) {
@@ -87,22 +87,43 @@ struct AccountProfileFragment: View {
 								VStack(spacing: 0) {
 									if accountProfileViewModel.avatarModel != nil
 										&& accountProfileViewModel.photoAvatarModel != nil
-										&& !accountProfileViewModel.photoAvatarModel!.isEmpty && selectedImage == nil && !removedImage {
-										Avatar(
-											contactAvatarModel: ContactAvatarModel(accountProfileViewModel.avatarModel!),
-											avatarSize: 100
-										)
+										&& !accountProfileViewModel.photoAvatarModel!.isEmpty
+										&& selectedImage == nil && !removedImage {
 										
+										AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
+											switch image {
+											case .empty:
+												ProgressView()
+													.frame(width: avatarSize, height: avatarSize)
+											case .success(let image):
+												image
+													.resizable()
+													.aspectRatio(contentMode: .fill)
+													.frame(width: avatarSize, height: avatarSize)
+													.clipShape(Circle())
+											case .failure:
+												Image(uiImage: contactsManager.textToImage(
+													firstName: accountProfileViewModel.avatarModel?.name ?? "",
+													lastName: ""))
+												.resizable()
+												.frame(width: avatarSize, height: avatarSize)
+												.clipShape(Circle())
+											@unknown default:
+												EmptyView()
+											}
+										}
 									} else if selectedImage == nil {
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 100, height: 100)
-											.clipShape(Circle())
+										Image(uiImage: contactsManager.textToImage(
+											firstName: accountProfileViewModel.avatarModel?.name ?? "",
+											lastName: ""))
+										.resizable()
+										.frame(width: avatarSize, height: avatarSize)
+										.clipShape(Circle())
 									} else {
 										Image(uiImage: selectedImage!)
 											.resizable()
 											.aspectRatio(contentMode: .fill)
-											.frame(width: 100, height: 100)
+											.frame(width: avatarSize, height: avatarSize)
 											.clipShape(Circle())
 									}
 									
@@ -140,6 +161,7 @@ struct AccountProfileFragment: View {
 															if let first = images.first {
 																selectedImage = first
 																removedImage = false
+																saveImage()
 															}
 														}
 													}
@@ -150,6 +172,7 @@ struct AccountProfileFragment: View {
 											Button(action: {
 												removedImage = true
 												selectedImage = nil
+												saveImage()
 											}, label: {
 												HStack {
 													Image("trash-simple")
@@ -192,6 +215,8 @@ struct AccountProfileFragment: View {
 														if let first = images.first {
 															selectedImage = first
 															removedImage = false
+															showPhotoPicker = false
+															saveImage()
 														}
 													}
 												}
@@ -248,11 +273,19 @@ struct AccountProfileFragment: View {
 					.padding(.top, 2)
 				}
 				.background(Color.gray100)
-				 */
 			}
 			.background(Color.gray100)
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+	}
+	
+	func saveImage() {
+		accountProfileViewModel.saveImage(
+			image: selectedImage
+			?? ContactsManager.shared.textToImage(
+				firstName: accountProfileViewModel.avatarModel!.name, lastName: ""),
+			name: accountProfileViewModel.avatarModel!.name,
+			prefix: ((selectedImage == nil) ? "-default" : ""))
 	}
 }

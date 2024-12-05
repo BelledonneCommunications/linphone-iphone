@@ -40,6 +40,7 @@ struct CallView: View {
 	@ObservedObject var contactViewModel: ContactViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var meetingViewModel: MeetingViewModel
+	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
 	
@@ -211,6 +212,7 @@ struct CallView: View {
 						contactViewModel: contactViewModel,
 						editContactViewModel: editContactViewModel,
 						meetingViewModel: meetingViewModel,
+						accountProfileViewModel: accountProfileViewModel,
 						isShowConversationFragment: $isShowConversationFragment,
 						isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 						isShowEditContactFragment: $isShowEditContactFragment,
@@ -2842,6 +2844,7 @@ struct PressedButtonStyle: ButtonStyle {
 		contactViewModel: ContactViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		meetingViewModel: MeetingViewModel(),
+		accountProfileViewModel: AccountProfileViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
 		isShowConversationFragment: .constant(false),

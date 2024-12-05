@@ -22,19 +22,40 @@ import linphonesw
 import UniformTypeIdentifiers
 
 struct SideMenuAccountRow: View {
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
 	@ObservedObject var model: AccountModel
+	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State private var navigateToOption = false
 	@Binding var isShowAccountProfileFragment: Bool
 	
+	private let avatarSize = 45.0
+	
 	var body: some View {
 		HStack {
-			Avatar(contactAvatarModel:
-					ContactAvatarModel(friend: nil,
-									   name: model.displayName,
-									   address: model.address,
-									   withPresence: true),
-				   avatarSize: 45)
+			AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
+				switch image {
+				case .empty:
+					ProgressView()
+						.frame(width: avatarSize, height: avatarSize)
+				case .success(let image):
+					image
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+						.frame(width: avatarSize, height: avatarSize)
+						.clipShape(Circle())
+				case .failure:
+					Image(uiImage: contactsManager.textToImage(
+						firstName: accountProfileViewModel.avatarModel?.name ?? "",
+						lastName: ""))
+					.resizable()
+					.frame(width: avatarSize, height: avatarSize)
+					.clipShape(Circle())
+				@unknown default:
+					EmptyView()
+				}
+			}
 			.padding(.leading, 6)
 			
 			VStack {
