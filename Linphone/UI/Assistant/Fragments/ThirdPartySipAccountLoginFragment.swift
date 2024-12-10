@@ -69,7 +69,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 						}
 						.frame(width: geometry.size.width)
 						
-						Text("Use a SIP account")
+						Text("assistant_login_third_party_sip_account")
 							.default_text_style_white_800(styleSize: 20)
 							.padding(.top, 20)
 					}
@@ -139,7 +139,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 						)
 						.padding(.bottom)
 						
-						Text(String(localized: "Domain")+"*")
+						Text(String(localized: "sip_address_domain")+"*")
 							.default_text_style_700(styleSize: 15)
 							.padding(.bottom, -5)
 						
@@ -160,11 +160,11 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.padding(.bottom)
 							.focused($isDomainFocused)
 						
-						Text(String(localized: "Display Name"))
+						Text(String(localized: "sip_address_display_name"))
 							.default_text_style_700(styleSize: 15)
 							.padding(.bottom, -5)
 						
-						TextField("Display Name", text: $accountLoginViewModel.displayName)
+						TextField("sip_address_display_name", text: $accountLoginViewModel.displayName)
 							.default_text_style(styleSize: 15)
 							.disableAutocorrection(true)
 							.autocapitalization(.none)
@@ -181,7 +181,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.padding(.bottom)
 							.focused($isDisplayNameFocused)
 						
-						Text(String(localized: "Transport"))
+						Text(String(localized: "assistant_sip_account_transport_protocol"))
 							.default_text_style_700(styleSize: 15)
 							.padding(.bottom, -5)
 						
@@ -215,7 +215,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 						Button(action: {
 							self.accountLoginViewModel.login()
 						}, label: {
-							Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
+							Text(coreContext.loggedIn ? "manage_account_delete" : "assistant_account_login")
 								.default_text_style_white_600(styleSize: 20)
 								.frame(height: 35)
 								.frame(maxWidth: .infinity)

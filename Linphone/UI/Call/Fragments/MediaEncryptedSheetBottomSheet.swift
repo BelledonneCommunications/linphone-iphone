@@ -37,7 +37,7 @@ struct MediaEncryptedSheetBottomSheet: View {
 				Spacer()
 				HStack {
 					Spacer()
-					Button("Close") {
+					Button("dialog_close") {
 						mediaEncryptedSheet = false
 						dismiss()
 					}
@@ -50,7 +50,7 @@ struct MediaEncryptedSheetBottomSheet: View {
 					.padding(15)
 			}
 			
-			Text("Chiffrement du média")
+			Text("call_stats_media_encryption_title")
 				.default_text_style_white_600(styleSize: 15)
 				.padding(.top, 10)
 			
@@ -92,7 +92,7 @@ struct MediaEncryptedSheetBottomSheet: View {
 				mediaEncryptedSheet = false
 				dismiss()
 			}, label: {
-				Text("Faire la validation à nouveau")
+				Text("call_do_zrtp_sas_validation_again")
 					.default_text_style_white_600(styleSize: 20)
 					.frame(height: 35)
 					.frame(maxWidth: .infinity)

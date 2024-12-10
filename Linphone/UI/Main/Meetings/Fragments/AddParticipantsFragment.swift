@@ -69,7 +69,7 @@ struct AddParticipantsFragment: View {
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 							.padding(.top, 20)
-						Text("\($addParticipantsViewModel.participantsToAdd.count) selected participants")
+						Text(String(format: String(localized: "selected_participants_count"), $addParticipantsViewModel.participantsToAdd.count))
 							.default_text_style_300(styleSize: 12)
 					}
 					Spacer()
@@ -217,7 +217,7 @@ struct AddParticipantsFragment: View {
 					}
 					
 					HStack(alignment: .center) {
-						Text("Suggestions")
+						Text("generic_address_picker_suggestions_list_title")
 							.default_text_style_800(styleSize: 16)
 						
 						Spacer()
@@ -278,7 +278,7 @@ struct AddParticipantsFragment: View {
 							.frame(width: 45, height: 45)
 							.clipShape(Circle())
 						
-						Text("Username error")
+						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.foregroundStyle(Color.orangeMain500)

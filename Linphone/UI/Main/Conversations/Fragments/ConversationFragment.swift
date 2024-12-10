@@ -1028,7 +1028,7 @@ struct ImdnOrReactionsSheet: View {
 	
 	var body: some View {
 		VStack {
-			Picker("Categories", selection: $selectedCategoryIndex) {
+			Picker("picker_categories", selection: $selectedCategoryIndex) {
 				ForEach(0..<conversationViewModel.sheetCategories.count, id: \.self) { index in
 					Text(conversationViewModel.sheetCategories[index].name)
 				}

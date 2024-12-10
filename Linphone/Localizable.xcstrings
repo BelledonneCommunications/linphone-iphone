@@ -16,12 +16,6 @@
     "**%@**" : {
 
     },
-    "**Company :** %@" : {
-
-    },
-    "**Job :** %@" : {
-
-    },
     "#" : {
 
     },
@@ -40,9 +34,6 @@
           }
         }
       }
-    },
-    "%lld appels" : {
-
     },
     "%lld Book (Example)" : {
       "extractionState" : "manual",
@@ -97,9 +88,6 @@
         }
       }
     },
-    "%lld selected participants" : {
-
-    },
     "%lld%%" : {
 
     },
@@ -113,15 +101,6 @@
 
     },
     "👍" : {
-
-    },
-    "📅 Meeting has been cancelled" : {
-
-    },
-    "📅 Meeting has been modified" : {
-
-    },
-    "📅 You are invited to a meeting" : {
 
     },
     "😂" : {
@@ -161,27 +140,6 @@
 
     },
     "9" : {
-
-    },
-    "A subject and at least one participant is required to create a meeting" : {
-
-    },
-    "Account successfully logged out" : {
-
-    },
-    "Active" : {
-
-    },
-    "Administrateur" : {
-
-    },
-    "All calls will be removed from the history." : {
-
-    },
-    "All contacts" : {
-
-    },
-    "All modifications will be canceled." : {
 
     },
     "assistant_account_create" : {
@@ -248,6 +206,9 @@
           }
         }
       }
+    },
+    "assistant_account_login_forbidden_error" : {
+
     },
     "assistant_account_register" : {
       "extractionState" : "manual",
@@ -442,6 +403,16 @@
         }
       }
     },
+    "assistant_invalid_uri_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid URI"
+          }
+        }
+      }
+    },
     "assistant_login_third_party_sip_account" : {
       "localizations" : {
         "en" : {
@@ -602,6 +573,16 @@
         }
       }
     },
+    "assistant_qr_code_invalid_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid QR code!"
+          }
+        }
+      }
+    },
     "assistant_scan_qr_code" : {
       "localizations" : {
         "en" : {
@@ -618,6 +599,18 @@
         }
       }
     },
+    "assistant_sip_account_transport_protocol" : {
+
+    },
+    "assistant_third_party_sip_account_create_linphone_account" : {
+
+    },
+    "assistant_third_party_sip_account_warning_explanation" : {
+
+    },
+    "assistant_third_party_sip_account_warning_ok" : {
+
+    },
     "assistant_web_platform_link" : {
       "localizations" : {
         "en" : {
@@ -633,21 +626,6 @@
           }
         }
       }
-    },
-    "Audio" : {
-
-    },
-    "Audio seulement" : {
-
-    },
-    "Block the address" : {
-
-    },
-    "Block the number" : {
-
-    },
-    "Bluetooth" : {
-
     },
     "bottom_navigation_calls_label" : {
       "localizations" : {
@@ -712,21 +690,6 @@
           }
         }
       }
-    },
-    "Call failed" : {
-
-    },
-    "Call has been successfully transferred" : {
-
-    },
-    "Call is being transferred" : {
-
-    },
-    "Call list" : {
-
-    },
-    "Call transfer failed!" : {
-
     },
     "call_action_attended_transfer" : {
       "localizations" : {
@@ -843,9 +806,15 @@
     },
     "call_action_resume_call" : {
       "localizations" : {
-        "fr" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "Resume"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
             "value" : "Reprendre"
           }
         }
@@ -899,6 +868,15 @@
         }
       }
     },
+    "call_audio_device_type_bluetooth" : {
+
+    },
+    "call_audio_device_type_earpiece" : {
+
+    },
+    "call_audio_device_type_headphones" : {
+
+    },
     "call_audio_device_type_speaker" : {
       "localizations" : {
         "en" : {
@@ -914,6 +892,9 @@
           }
         }
       }
+    },
+    "call_audio_incoming" : {
+
     },
     "call_can_be_trusted_toast" : {
       "extractionState" : "manual",
@@ -1085,6 +1066,19 @@
         }
       }
     },
+    "call_do_zrtp_sas_validation_again" : {
+
+    },
+    "call_history_deleted_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History has been deleted"
+          }
+        }
+      }
+    },
     "call_not_encrypted" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1102,6 +1096,9 @@
         }
       }
     },
+    "call_outgoing" : {
+
+    },
     "call_srtp_point_to_point_encrypted" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1118,6 +1115,9 @@
           }
         }
       }
+    },
+    "call_state_connected" : {
+
     },
     "call_state_paused" : {
       "localizations" : {
@@ -1147,6 +1147,44 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mis en pause par le correspondant"
+          }
+        }
+      }
+    },
+    "call_state_resuming" : {
+
+    },
+    "call_stats_audio_title" : {
+
+    },
+    "call_stats_media_encryption_title" : {
+
+    },
+    "call_stats_video_title" : {
+
+    },
+    "call_transfer_current_call_title" : {
+
+    },
+    "call_transfer_failed_toast" : {
+
+    },
+    "call_transfer_in_progress_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call is being transferred"
+          }
+        }
+      }
+    },
+    "call_transfer_successful_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call has been successfully transferred"
           }
         }
       }
@@ -1219,7 +1257,7 @@
         }
       }
     },
-    "Calls" : {
+    "calls_count_label" : {
 
     },
     "calls_list_dialog_merge_into_conference_label" : {
@@ -1256,41 +1294,13 @@
         }
       }
     },
-    "Cancel" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancel"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Annuler"
-          }
-        }
-      }
-    },
-    "Cancel for me only" : {
-
-    },
-    "Categories" : {
+    "calls_list_title" : {
 
     },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
 
     },
     "Chiffrement de bout en bout de tous vos échanges, grâce au mode default vos communications sont à l’abri des regards." : {
-
-    },
-    "Chiffrement du média" : {
-
-    },
-    "Clear Logs" : {
-
-    },
-    "Close" : {
 
     },
     "conference_action_screen_sharing" : {
@@ -1358,6 +1368,18 @@
         }
       }
     },
+    "conference_layout_active_speaker" : {
+
+    },
+    "conference_layout_audio_only" : {
+
+    },
+    "conference_layout_grid" : {
+
+    },
+    "conference_name_error" : {
+
+    },
     "conference_participant_joining_text" : {
       "localizations" : {
         "en" : {
@@ -1402,28 +1424,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Partager le lien"
-          }
-        }
-      }
-    },
-    "Configuration failed" : {
-
-    },
-    "Configuration successfully applied" : {
-
-    },
-    "Confirm" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirm"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirmer"
           }
         }
       }
@@ -1557,6 +1557,12 @@
         }
       }
     },
+    "contact_dialog_delete_message" : {
+
+    },
+    "contact_dialog_delete_title" : {
+
+    },
     "contact_dialog_pick_phone_number_or_sip_address_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1605,6 +1611,12 @@
           }
         }
       }
+    },
+    "contact_editor_dialog_abort_confirmation_message" : {
+
+    },
+    "contact_editor_dialog_abort_confirmation_title" : {
+
     },
     "contact_editor_first_name" : {
       "localizations" : {
@@ -1702,9 +1714,6 @@
         }
       }
     },
-    "Contacts" : {
-
-    },
     "contacts_list_all_contacts_title" : {
       "localizations" : {
         "en" : {
@@ -1786,22 +1795,6 @@
         }
       }
     },
-    "Continue" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Continue"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Continuer"
-          }
-        }
-      }
-    },
     "conversation_action_call" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1868,6 +1861,9 @@
           }
         }
       }
+    },
+    "conversation_action_mark_as_read" : {
+
     },
     "conversation_action_mute" : {
       "extractionState" : "manual",
@@ -2731,19 +2727,20 @@
     "Could not send ICS invitations to meeting to any participant" : {
 
     },
+    "debug_logs_copied_to_clipboard_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug logs copied to clipboard"
+          }
+        }
+      }
+    },
     "Default" : {
 
     },
     "Default mode" : {
-
-    },
-    "Delete %@?" : {
-
-    },
-    "Delete all history" : {
-
-    },
-    "Description" : {
 
     },
     "dialog_accept" : {
@@ -2794,6 +2791,12 @@
         }
       }
     },
+    "dialog_close" : {
+
+    },
+    "dialog_continue" : {
+
+    },
     "dialog_deny" : {
       "localizations" : {
         "en" : {
@@ -2809,6 +2812,9 @@
           }
         }
       }
+    },
+    "dialog_no" : {
+
     },
     "dialog_ok" : {
       "localizations" : {
@@ -2826,16 +2832,7 @@
         }
       }
     },
-    "Display Name" : {
-
-    },
-    "Do you really want to delete all calls history?" : {
-
-    },
-    "Domain" : {
-
-    },
-    "Don’t save modifications?" : {
+    "dialog_yes" : {
 
     },
     "drawer_menu_account_connection_status_cleared" : {
@@ -2973,22 +2970,7 @@
         }
       }
     },
-    "Earpiece" : {
-
-    },
-    "Edit Contact" : {
-
-    },
     "Error" : {
-
-    },
-    "Error Name" : {
-
-    },
-    "Etes-vous sûr de vouloir supprimer %@ ?" : {
-
-    },
-    "Faire la validation à nouveau" : {
 
     },
     "GC_MSG" : {
@@ -3024,12 +3006,6 @@
         }
       }
     },
-    "Hang up call" : {
-
-    },
-    "Headphones" : {
-
-    },
     "help_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3047,7 +3023,20 @@
         }
       }
     },
-    "History has been deleted" : {
+    "help_troubleshooting_clean_logs" : {
+
+    },
+    "help_troubleshooting_debug_logs_cleaned_toast_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug logs have been cleaned"
+          }
+        }
+      }
+    },
+    "help_troubleshooting_share_logs" : {
 
     },
     "history_call_start_create_group_call" : {
@@ -3099,6 +3088,12 @@
           }
         }
       }
+    },
+    "history_dialog_delete_all_call_logs_message" : {
+
+    },
+    "history_dialog_delete_all_call_logs_title" : {
+
     },
     "history_group_call_start_dialog_set_subject" : {
       "localizations" : {
@@ -3182,18 +3177,6 @@
         }
       }
     },
-    "https://linphone.org/en/privacy-policy" : {
-
-    },
-    "https://linphone.org/general-terms" : {
-
-    },
-    "I prefere create an account" : {
-
-    },
-    "I understand" : {
-
-    },
     "IM_MSG" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3217,12 +3200,6 @@
     "Interoperable mode" : {
 
     },
-    "Invalid QR code!" : {
-
-    },
-    "Invalide URI" : {
-
-    },
     "list_filter_no_result_found" : {
       "localizations" : {
         "en" : {
@@ -3239,18 +3216,6 @@
         }
       }
     },
-    "Log out" : {
-
-    },
-    "Logout" : {
-
-    },
-    "Logs cleared" : {
-
-    },
-    "Logs URL copied into clipboard" : {
-
-    },
     "manage_account_add_picture" : {
       "localizations" : {
         "en" : {
@@ -3266,6 +3231,9 @@
           }
         }
       }
+    },
+    "manage_account_delete" : {
+
     },
     "manage_account_edit_picture" : {
       "localizations" : {
@@ -3316,10 +3284,16 @@
         }
       }
     },
-    "Marquer comme non lu" : {
+    "meeting_call_remove_no_participants" : {
 
     },
-    "Meeting added to iPhone calendar" : {
+    "meeting_call_remove_participant_confirmation_message" : {
+
+    },
+    "meeting_call_remove_participant_confirmation_title" : {
+
+    },
+    "meeting_exported_as_calendar_event" : {
 
     },
     "meeting_info_cancelled_toast" : {
@@ -3350,6 +3324,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Supprimer la réunion"
+          }
+        }
+      }
+    },
+    "meeting_info_deleted_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been deleted"
           }
         }
       }
@@ -3418,6 +3402,12 @@
         }
       }
     },
+    "meeting_schedule_cancel_dialog_message" : {
+
+    },
+    "meeting_schedule_cancel_dialog_title" : {
+
+    },
     "meeting_schedule_description_hint" : {
       "localizations" : {
         "en" : {
@@ -3434,6 +3424,9 @@
         }
       }
     },
+    "meeting_schedule_description_title" : {
+
+    },
     "meeting_schedule_edit_title" : {
       "localizations" : {
         "en" : {
@@ -3446,6 +3439,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Modifier la réunion"
+          }
+        }
+      }
+    },
+    "meeting_schedule_failed_no_subject_or_participant_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A subject and at least one participant is required to create a meeting"
           }
         }
       }
@@ -3466,6 +3469,15 @@
           }
         }
       }
+    },
+    "meeting_schedule_pick_end_time_title" : {
+
+    },
+    "meeting_schedule_pick_start_date_title" : {
+
+    },
+    "meeting_schedule_pick_start_time_title" : {
+
     },
     "meeting_schedule_send_invitations_title" : {
       "localizations" : {
@@ -3644,6 +3656,12 @@
         }
       }
     },
+    "menu_block_address" : {
+
+    },
+    "menu_block_number" : {
+
+    },
     "menu_copy_chat_message" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3809,11 +3827,18 @@
         }
       }
     },
-    "Message copied into clipboard" : {
-
-    },
     "Message received" : {
 
+    },
+    "message_copied_to_clipboard_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message copied into clipboard"
+          }
+        }
+      }
     },
     "message_delivery_info_error_title" : {
       "extractionState" : "manual",
@@ -3900,6 +3925,54 @@
         }
       }
     },
+    "message_meeting_invitation_cancelled_notification" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Meeting has been cancelled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Réunion annulée"
+          }
+        }
+      }
+    },
+    "message_meeting_invitation_notification" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 You are invited to a meeting"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Invitation à une réunion"
+          }
+        }
+      }
+    },
+    "message_meeting_invitation_updated_notification" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Meeting has been updated"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅 Réunion mise à jour"
+          }
+        }
+      }
+    },
     "message_reaction_click_to_remove_label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3934,19 +4007,10 @@
         }
       }
     },
-    "Mettre en sourdine" : {
+    "network_not_reachable" : {
 
     },
-    "Missed call" : {
-
-    },
-    "Mosaïque" : {
-
-    },
-    "Network is not reachable" : {
-
-    },
-    "Network is now reachable again" : {
+    "network_not_reachable_again" : {
 
     },
     "new_conversation_create_group" : {
@@ -3999,13 +4063,7 @@
         }
       }
     },
-    "Next" : {
-
-    },
-    "No participant for the moment..." : {
-
-    },
-    "Non" : {
+    "next" : {
 
     },
     "notification_chat_message_reaction_received" : {
@@ -4024,10 +4082,13 @@
         }
       }
     },
-    "Ok" : {
+    "notification_chat_message_received_title" : {
 
     },
-    "Opération en cours..." : {
+    "notification_missed_call_title" : {
+
+    },
+    "operation_in_progress_overlay" : {
 
     },
     "or" : {
@@ -4046,12 +4107,6 @@
         }
       }
     },
-    "Oui" : {
-
-    },
-    "Participant actif" : {
-
-    },
     "password" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4069,19 +4124,7 @@
         }
       }
     },
-    "Paused" : {
-
-    },
     "Personnalize your profil mode" : {
-
-    },
-    "Phone :" : {
-
-    },
-    "Phone (%@) :" : {
-
-    },
-    "Phone number" : {
 
     },
     "phone_number" : {
@@ -4100,10 +4143,10 @@
         }
       }
     },
-    "QR code validated!" : {
+    "picker_categories" : {
 
     },
-    "Réactiver les notifications" : {
+    "qr_code_validated" : {
 
     },
     "recordings_title" : {
@@ -4134,26 +4177,7 @@
         }
       }
     },
-    "Resuming" : {
-
-    },
-    "Select %@ %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Select %1$@ %2$@"
-          }
-        }
-      }
-    },
-    "Send cancellation notifications" : {
-
-    },
-    "Send Logs" : {
-
-    },
-    "Send notification to participants ?" : {
+    "selected_participants_count" : {
 
     },
     "settings_title" : {
@@ -4173,9 +4197,6 @@
         }
       }
     },
-    "SIP address copied into clipboard" : {
-
-    },
     "sip_address" : {
       "localizations" : {
         "en" : {
@@ -4192,61 +4213,53 @@
         }
       }
     },
+    "sip_address_copied_to_clipboard_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIP address copied into clipboard"
+          }
+        }
+      }
+    },
+    "sip_address_display_name" : {
+
+    },
+    "sip_address_domain" : {
+
+    },
     "sip.linphone.org" : {
-
+      "shouldTranslate" : false
     },
-    "Skip" : {
-
-    },
-    "Speaker" : {
-
-    },
-    "Start" : {
-
-    },
-    "Successfully removed meeting" : {
-
-    },
-    "Suggestions" : {
-
-    },
-    "Supprimer un participant" : {
+    "start" : {
 
     },
     "TCP" : {
-
+      "shouldTranslate" : false
     },
     "Temp Help" : {
 
     },
-    "The meeting will be cancelled" : {
-
-    },
-    "The user name or password is incorrects" : {
-
-    },
-    "This contact will be deleted definitively." : {
-
-    },
     "TLS" : {
-
-    },
-    "Transfer call to" : {
-
-    },
-    "Transport" : {
-
+      "shouldTranslate" : false
     },
     "UDP" : {
+      "shouldTranslate" : false
+    },
+    "uri_handler_bad_call_address_failed_toast" : {
 
     },
-    "Unable to call, invalid address" : {
+    "uri_handler_bad_config_address_failed_toast" : {
 
     },
-    "Unable to retrieve configuration, invalid address" : {
+    "uri_handler_call_failed_toast" : {
 
     },
-    "Use a SIP account" : {
+    "uri_handler_config_failed_toast" : {
+
+    },
+    "uri_handler_config_success_toast" : {
 
     },
     "username" : {
@@ -4266,10 +4279,10 @@
         }
       }
     },
-    "Username error" : {
+    "username_error" : {
 
     },
-    "Vidéo" : {
+    "welcome_carousel_skip" : {
 
     },
     "welcome_page_1_message" : {

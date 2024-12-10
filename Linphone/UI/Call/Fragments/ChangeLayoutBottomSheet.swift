@@ -46,7 +46,7 @@ struct ChangeLayoutBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Mosaïque")
+					Text("conference_layout_grid")
 						.foregroundStyle(callViewModel.participantList.count > 5 ? Color.gray500 : .white)
 						.default_text_style_white(styleSize: 15)
 					
@@ -77,7 +77,7 @@ struct ChangeLayoutBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Participant actif")
+					Text("conference_layout_active_speaker")
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()
@@ -109,7 +109,7 @@ struct ChangeLayoutBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Audio seulement")
+					Text("conference_layout_audio_only")
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()

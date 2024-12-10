@@ -52,43 +52,43 @@ struct ToastView: View {
 					}
 					
 					switch toastViewModel.toastMessage {
-					case "Successful":
-						Text("QR code validated!")
+					case "Success_qr_code_validated":
+						Text("qr_code_validated")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_remove_call_logs":
-						Text("History has been deleted")
+						Text("call_history_deleted_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_clear_logs":
-						Text("Logs cleared")
+						Text("help_troubleshooting_debug_logs_cleaned_toast_message")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_send_logs":
-						Text("Logs URL copied into clipboard")
+						Text("debug_logs_copied_to_clipboard_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_address_copied_into_clipboard":
-						Text("SIP address copied into clipboard")
+						Text("sip_address_copied_to_clipboard_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_message_copied_into_clipboard":
-						Text("Message copied into clipboard")
+						Text("message_copied_to_clipboard_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
@@ -109,105 +109,98 @@ struct ToastView: View {
 							.padding(8)
 						
 					case "Failed":
-						Text("Invalid QR code!")
+						Text("assistant_qr_code_invalid_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Invalide URI":
-						Text("Invalide URI")
+						Text("assistant_invalid_uri_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Registration_failed":
-						Text("The user name or password is incorrects")
+						Text("assistant_account_login_forbidden_error")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Unavailable_network":
-						Text("Network is not reachable")
+						Text("network_not_reachable")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_toast_network_connected":
-						Text("Network is now reachable again")
-							.multilineTextAlignment(.center)
-							.foregroundStyle(Color.greenSuccess500)
-							.default_text_style(styleSize: 15)
-							.padding(8)
-						
-					case "Success_account_logged_out":
-						Text("Account successfully logged out")
+						Text("network_not_reachable_again")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_toast_call_transfer_successful":
-						Text("Call has been successfully transferred")
+						Text("call_transfer_successful_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_toast_call_transfer_in_progress":
-						Text("Call is being transferred")
+						Text("call_transfer_in_progress_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Success_toast_meeting_deleted":
-						Text("Successfully removed meeting")
+						Text("meeting_info_deleted_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Failed_toast_call_transfer_failed":
-						Text("Call transfer failed!")
+						Text("call_transfer_failed_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 			
 					case "Failed_uri_handler_call_failed":
-						Text("Call failed")
+						Text("uri_handler_call_failed_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Failed_uri_handler_config_failed":
-						Text("Configuration failed")
+						Text("uri_handler_config_failed_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "uri_handler_config_success":
-						Text("Configuration successfully applied")
+						Text("uri_handler_config_success_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 			
 					case "Failed_uri_handler_bad_call_address":
-						Text("Unable to call, invalid address")
+						Text("uri_handler_bad_call_address_failed_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
 					case "Failed_uri_handler_bad_config_address":
-						Text("Unable to retrieve configuration, invalid address")
+						Text("uri_handler_bad_config_address_failed_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
@@ -254,7 +247,7 @@ struct ToastView: View {
 							.foregroundStyle(Color.redDanger500)
 						
 					case "Meeting_added_to_calendar":
-						Text("Meeting added to iPhone calendar")
+						Text("meeting_exported_as_calendar_event")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
@@ -268,7 +261,7 @@ struct ToastView: View {
 							.padding(8)
 						
 					case "Failed_no_subject_or_participant":
-						Text("A subject and at least one participant is required to create a meeting")
+						Text("meeting_schedule_failed_no_subject_or_participant_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)

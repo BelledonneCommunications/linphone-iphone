@@ -137,13 +137,13 @@ struct SideMenu: View {
 							showHelp = true
 						}
 						.confirmationDialog("Temp Help", isPresented: $showHelp, titleVisibility: .visible) {
-							Button("Send Logs") {
+							Button("help_troubleshooting_share_logs") {
 								HelpView.sendLogs()
 							}
-							Button("Clear Logs") {
+							Button("help_troubleshooting_clean_logs") {
 								HelpView.clearLogs()
 							}
-							Button("Logout") {
+							Button("manage_account_delete") {
 								HelpView.logout()
 							}
 						}

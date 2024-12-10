@@ -55,7 +55,7 @@ struct AudioRouteBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text(!callViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
+					Text(!callViewModel.isHeadPhoneAvailable() ? "call_audio_device_type_earpiece" : "call_audio_device_type_headphones")
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()
@@ -87,7 +87,7 @@ struct AudioRouteBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Speaker")
+					Text("call_audio_device_type_speaker")
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()
@@ -121,7 +121,8 @@ struct AudioRouteBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Bluetooth")
+					Text(String(format: String(localized: "call_audio_device_type_bluetooth"),
+								AVAudioSession.sharedInstance().currentRoute.outputs.first?.portName ?? ""))
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()

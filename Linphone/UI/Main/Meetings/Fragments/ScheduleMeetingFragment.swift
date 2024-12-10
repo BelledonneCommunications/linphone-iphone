@@ -412,7 +412,9 @@ struct ScheduleMeetingFragment: View {
 	func getDatePopup(isTimeSelection: Bool) -> some View {
 		GeometryReader { geometry in
 			VStack(alignment: .leading) {
-				Text("Select \(setFromDate ? "start" : "end") \(isTimeSelection ? "time" : "date")")
+				Text(setFromDate ?
+					 (isTimeSelection ? String(localized: "meeting_schedule_pick_start_time_title") : String(localized: "meeting_schedule_pick_start_date_title"))
+					 : String(localized: "meeting_schedule_pick_end_time_title"))
 					.default_text_style_800(styleSize: 16)
 					.frame(alignment: .leading)
 					.padding(.bottom, 2)
@@ -433,7 +435,7 @@ struct ScheduleMeetingFragment: View {
 				
 				HStack {
 					Spacer()
-					Text("Cancel")
+					Text("dialog_cancel")
 						.default_text_style_orange_500(styleSize: 16)
 						.onTapGesture {
 							if isTimeSelection {
@@ -442,7 +444,7 @@ struct ScheduleMeetingFragment: View {
 								showDatePicker.toggle()
 							}
 						}
-					Text("Ok")
+					Text("dialog_ok")
 						.default_text_style_orange_500(styleSize: 16)
 						.onTapGesture {
 							pickDate()

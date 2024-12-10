@@ -176,7 +176,7 @@ struct StartConversationFragment: View {
 						ScrollView {
 							if !ContactsManager.shared.lastSearch.isEmpty {
 								HStack(alignment: .center) {
-									Text("All contacts")
+									Text("contacts_list_all_contacts_title")
 										.default_text_style_800(styleSize: 16)
 									
 									Spacer()
@@ -294,7 +294,7 @@ struct StartConversationFragment: View {
 							.frame(width: 45, height: 45)
 							.clipShape(Circle())
 						
-						Text("Username error")
+						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.foregroundStyle(Color.orangeMain500)

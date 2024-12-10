@@ -107,13 +107,13 @@ struct ParticipantsListFragment: View {
 				.background(.white)
 				
 				if self.isShowPopup {
-					let contentPopup = Text("Etes-vous sûr de vouloir supprimer \(callViewModel.participantList[indexToRemove].name) ?")
+					let contentPopup = Text(String(format: String(localized: "meeting_call_remove_participant_confirmation_message"), callViewModel.participantList[indexToRemove].name))
 					PopupView(isShowPopup: $isShowPopup,
-							  title: Text("Supprimer un participant"),
+							  title: Text("meeting_call_remove_participant_confirmation_title"),
 							  content: contentPopup,
-							  titleFirstButton: Text("Non"),
+							  titleFirstButton: Text("dialog_no"),
 							  actionFirstButton: {self.isShowPopup.toggle()},
-							  titleSecondButton: Text("Oui"),
+							  titleSecondButton: Text("dialog_yes"),
 							  actionSecondButton: {
 						callViewModel.removeParticipant(index: indexToRemove)
 						self.isShowPopup.toggle()
@@ -158,7 +158,7 @@ struct ParticipantsListFragment: View {
 							Spacer()
 							
 							if callViewModel.myParticipantModel!.isAdmin {
-								Text("Administrateur")
+								Text("conversation_info_participant_is_admin_label")
 									.foregroundStyle(Color.grayMain2c300)
 									.default_text_style(styleSize: 12)
 									.frame(maxWidth: .infinity, alignment: .trailing)
@@ -202,7 +202,7 @@ struct ParticipantsListFragment: View {
 								Spacer()
 								
 								if callViewModel.participantList[index].isAdmin {
-									Text("Administrateur")
+									Text("conversation_info_participant_is_admin_label")
 										.foregroundStyle(Color.grayMain2c300)
 										.default_text_style(styleSize: 12)
 										.frame(maxWidth: .infinity, alignment: .trailing)
@@ -250,7 +250,7 @@ struct ParticipantsListFragment: View {
 							.scaledToFit()
 							.clipped()
 							.padding(.all)
-						Text("No participant for the moment...")
+						Text("meeting_call_remove_no_participants")
 							.default_text_style_800(styleSize: 16)
 						Spacer()
 						Spacer()

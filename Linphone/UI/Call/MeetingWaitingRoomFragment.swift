@@ -470,7 +470,7 @@ struct MeetingWaitingRoomFragment: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text(!meetingWaitingRoomViewModel.isHeadPhoneAvailable() ? "Earpiece" : "Headphones")
+					Text(!meetingWaitingRoomViewModel.isHeadPhoneAvailable() ? "call_audio_device_type_earpiece" : "call_audio_device_type_headphones")
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()
@@ -536,7 +536,8 @@ struct MeetingWaitingRoomFragment: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					
-					Text("Bluetooth")
+					Text(String(format: String(localized: "call_audio_device_type_bluetooth"),
+								AVAudioSession.sharedInstance().currentRoute.outputs.first?.portName ?? ""))
 						.default_text_style_white(styleSize: 15)
 					
 					Spacer()

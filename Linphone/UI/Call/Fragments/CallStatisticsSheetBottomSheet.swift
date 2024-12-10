@@ -37,7 +37,7 @@ struct CallStatisticsSheetBottomSheet: View {
 				Spacer()
 				HStack {
 					Spacer()
-					Button("Close") {
+					Button("dialog_close") {
 						callStatisticsSheet = false
 						dismiss()
 					}
@@ -50,7 +50,7 @@ struct CallStatisticsSheetBottomSheet: View {
 					.padding(15)
 			}
 			
-			Text("Audio")
+			Text("call_stats_audio_title")
 				.default_text_style_white_600(styleSize: 15)
 				.padding(.top, 10)
 			
@@ -77,7 +77,7 @@ struct CallStatisticsSheetBottomSheet: View {
 			Spacer()
 			
 			if callViewModel.callStatsModel.isVideoEnabled {
-				Text("Vidéo")
+				Text("call_stats_video_title")
 					.default_text_style_white_600(styleSize: 15)
 					.padding(.top, 10)
 				

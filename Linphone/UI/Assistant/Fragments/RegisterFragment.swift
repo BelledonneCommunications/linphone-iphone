@@ -107,7 +107,7 @@ struct RegisterFragment: View {
 									.default_text_style_600(styleSize: 15)
 									.padding(.bottom)
 								
-								Text(String(localized: "Phone number")+"*")
+								Text(String(localized: "phone_number")+"*")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
@@ -133,7 +133,7 @@ struct RegisterFragment: View {
 									
 									Divider()
 									
-									TextField("Phone number", text: $registerViewModel.phoneNumber)
+									TextField("phone_number", text: $registerViewModel.phoneNumber)
 										.default_text_style(styleSize: 15)
 										.disableAutocorrection(true)
 										.autocapitalization(.none)
@@ -309,11 +309,11 @@ struct RegisterFragment: View {
 							isShowPopup: $isShowPopup,
 							title: titlePopup,
 							content: contentPopup,
-							titleFirstButton: Text("Cancel"),
+							titleFirstButton: Text("dialog_cancel"),
 							actionFirstButton: {
 								self.isShowPopup = false
 							},
-							titleSecondButton: Text("Continue"),
+							titleSecondButton: Text("dialog_continue"),
 							actionSecondButton: {
 								self.isShowPopup = false
 								registerViewModel.createInProgress = true

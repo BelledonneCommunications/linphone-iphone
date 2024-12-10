@@ -40,7 +40,7 @@ struct PopupViewWithTextField: View {
 				Button(action: {
 					conversationViewModel.isShowConversationInfoPopup = false
 				}, label: {
-					Text("Cancel")
+					Text("dialog_cancel")
 						.default_text_style_orange_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)
@@ -58,7 +58,7 @@ struct PopupViewWithTextField: View {
 				Button(action: {
 					conversationViewModel.setNewChatRoomSubject()
 				}, label: {
-					Text("Confirm")
+					Text("dialog_ok")
 						.default_text_style_white_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)

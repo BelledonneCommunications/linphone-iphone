@@ -61,7 +61,7 @@ struct CallsListFragment: View {
 							}
 						}
 					
-					Text("Call list")
+					Text("calls_list_title")
 						.multilineTextAlignment(.leading)
 						.default_text_style_orange_800(styleSize: 16)
 					
@@ -106,7 +106,7 @@ struct CallsListFragment: View {
 				PopupView(isShowPopup: $isShowPopup,
 						  title: Text("calls_list_dialog_merge_into_conference_title"),
 						  content: nil,
-						  titleFirstButton: Text("Cancel"),
+						  titleFirstButton: Text("dialog_cancel"),
 						  actionFirstButton: {self.isShowPopup.toggle()},
 						  titleSecondButton: Text("calls_list_dialog_merge_into_conference_label"),
 						  actionSecondButton: {
@@ -171,7 +171,7 @@ struct CallsListFragment: View {
                         HStack {
                             Image((callViewModel.selectedCall!.state == .PausedByRemote
                                     || callViewModel.selectedCall!.state == .Pausing
-                                    || callViewModel.selectedCall!.state == .Paused) ? "play" : "pause")
+								   || callViewModel.selectedCall!.state == .Paused) ? String(localized: "call_action_resume_call") : String(localized: "call_action_pause_call"))
                                 .resizable()
                                 .frame(width: 30, height: 30)
                             
@@ -217,7 +217,7 @@ struct CallsListFragment: View {
                         .background(Color.redDanger500)
                         .cornerRadius(40)
                         
-                        Text("Hang up call")
+                        Text("call_action_hang_up")
                             .foregroundStyle(Color.redDanger500)
                             .default_text_style_white(styleSize: 15)
                         
@@ -271,7 +271,7 @@ struct CallsListFragment: View {
 										.frame(maxWidth: .infinity, alignment: .leading)
 										.lineLimit(1)
 								} else {
-									Text(callViewModel.calls[index].callLog!.conferenceInfo!.subject ?? "Conference Name error")
+									Text(callViewModel.calls[index].callLog!.conferenceInfo!.subject ?? String(localized: "conference_name_error"))
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.lineLimit(1)
@@ -284,7 +284,7 @@ struct CallsListFragment: View {
 										|| callViewModel.calls[index].state == .Pausing
 										|| callViewModel.calls[index].state == .Paused
 										|| callViewModel.calls[index].state == .Resuming {
-										Text(callViewModel.calls[index].state == .Resuming ? "Resuming" : "Paused")
+										Text(callViewModel.calls[index].state == .Resuming ? String(localized: "call_state_resuming") : String(localized: "call_state_paused"))
 										.default_text_style_300(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .trailing)
 										.lineLimit(1)
@@ -294,7 +294,7 @@ struct CallsListFragment: View {
 											.resizable()
 											.frame(width: 25, height: 25)
 									} else {
-										Text("Active")
+										Text("call_state_connected")
 										.default_text_style_300(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .trailing)
 										.lineLimit(1)

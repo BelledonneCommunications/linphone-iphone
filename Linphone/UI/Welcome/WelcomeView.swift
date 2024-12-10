@@ -41,7 +41,7 @@ struct WelcomeView: View {
 								NavigationLink(destination: {
 									PermissionsFragment()
 								}, label: {
-									Text("Skip")
+									Text("welcome_carousel_skip")
 										.underline()
 										.default_text_style_600(styleSize: 15)
 									
@@ -98,7 +98,7 @@ struct WelcomeView: View {
 							NavigationLink(destination: {
 								PermissionsFragment()
 							}, label: {
-								Text("Start")
+								Text("start")
 									.default_text_style_white_600(styleSize: 20)
 									.frame(height: 35)
 									.frame(maxWidth: .infinity)
@@ -117,7 +117,7 @@ struct WelcomeView: View {
 									index += 1
 								}
 							}, label: {
-								Text("Next")
+								Text("next")
 									.default_text_style_white_600(styleSize: 20)
 									.frame(height: 35)
 									.frame(maxWidth: .infinity)

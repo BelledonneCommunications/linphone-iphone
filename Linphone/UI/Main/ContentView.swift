@@ -94,7 +94,7 @@ struct ContentView: View {
 								.padding(.leading, 10)
 							
 							if callViewModel.callsCounter > 1 {
-								Text("\(callViewModel.callsCounter) appels")
+								Text(String(format: String(localized: "calls_count_label"), callViewModel.callsCounter))
 									.default_text_style_white(styleSize: 16)
 							} else {
 								Text("\(callViewModel.displayName)")
@@ -104,7 +104,7 @@ struct ContentView: View {
 							Spacer()
 							
 							if callViewModel.callsCounter == 1 {
-								Text("\(callViewModel.isPaused || telecomManager.isPausedByRemote ? "En pause" : "Actif")")
+								Text(String(localized: "\(callViewModel.isPaused || telecomManager.isPausedByRemote ? "call_state_paused" : "call_state_connected")"))
 									.default_text_style_white(styleSize: 16)
 									.padding(.trailing, 10)
 							}
@@ -142,10 +142,10 @@ struct ContentView: View {
 														.foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
 														.frame(width: 25, height: 25)
 													if self.index == 0 {
-														Text("Contacts")
+														Text("bottom_navigation_contacts_label")
 															.default_text_style_700(styleSize: 10)
 													} else {
-														Text("Contacts")
+														Text("bottom_navigation_contacts_label")
 															.default_text_style(styleSize: 10)
 													}
 												}
@@ -190,10 +190,10 @@ struct ContentView: View {
 															.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
 															.frame(width: 25, height: 25)
 														if self.index == 1 {
-															Text("Calls")
+															Text("bottom_navigation_calls_label")
 																.default_text_style_700(styleSize: 10)
 														} else {
-															Text("Calls")
+															Text("bottom_navigation_calls_label")
 																.default_text_style(styleSize: 10)
 														}
 													}
@@ -315,7 +315,7 @@ struct ContentView: View {
 															openMenu()
 														}
 													
-													Text(index == 0 ? "bottom_navigation_contacts_label" : (index == 1 ? "bottom_navigation_calls_label" : (index == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label")))
+													Text(String(localized: index == 0 ? "bottom_navigation_contacts_label" : (index == 1 ? "bottom_navigation_calls_label" : (index == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
 														.default_text_style_white_800(styleSize: 20)
 														.padding(.leading, 10)
 													
@@ -393,7 +393,7 @@ struct ContentView: View {
 																	isShowDeleteAllHistoryPopup.toggle()
 																} label: {
 																	HStack {
-																		Text("Delete all history")
+																		Text("menu_delete_history")
 																		Spacer()
 																		Image("trash-simple-red")
 																			.resizable()
@@ -671,10 +671,10 @@ struct ContentView: View {
 													.foregroundStyle(self.index == 0 ? Color.orangeMain500 : Color.grayMain2c600)
 													.frame(width: 25, height: 25)
 												if self.index == 0 {
-													Text("Contacts")
+													Text("bottom_navigation_contacts_label")
 														.default_text_style_700(styleSize: 10)
 												} else {
-													Text("Contacts")
+													Text("bottom_navigation_contacts_label")
 														.default_text_style(styleSize: 10)
 												}
 											}
@@ -721,10 +721,10 @@ struct ContentView: View {
 														.foregroundStyle(self.index == 1 ? Color.orangeMain500 : Color.grayMain2c600)
 														.frame(width: 25, height: 25)
 													if self.index == 1 {
-														Text("Calls")
+														Text("bottom_navigation_calls_label")
 															.default_text_style_700(styleSize: 9)
 													} else {
-														Text("Calls")
+														Text("bottom_navigation_calls_label")
 															.default_text_style(styleSize: 9)
 													}
 												}
@@ -1004,17 +1004,16 @@ struct ContentView: View {
 						
 						if isShowDeleteContactPopup {
 							PopupView(isShowPopup: $isShowDeleteContactPopup,
-									  title: Text(
-										contactViewModel.selectedFriend != nil
-										? "Delete \(contactViewModel.selectedFriend!.name!)?"
+									  title: Text(String(format: String(localized: "contact_dialog_delete_title"), contactViewModel.selectedFriend != nil
+										? contactViewModel.selectedFriend!.name!
 										: (contactViewModel.indexDisplayedFriend != nil
-										   ? "Delete \(contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!)?"
-										   : "Error Name")),
-									  content: Text("This contact will be deleted definitively."),
-									  titleFirstButton: Text("Cancel"),
+										   ? contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!
+										   : "Error Name"))),
+									  content: Text("contact_dialog_delete_message"),
+									  titleFirstButton: Text("dialog_cancel"),
 									  actionFirstButton: {
 								self.isShowDeleteContactPopup.toggle()},
-									  titleSecondButton: Text("Ok"),
+									  titleSecondButton: Text("dialog_ok"),
 									  actionSecondButton: {
 								if contactViewModel.selectedFriendToDelete != nil {
 									if contactViewModel.indexDisplayedFriend != nil {
@@ -1046,14 +1045,14 @@ struct ContentView: View {
 						
 						if isShowDeleteAllHistoryPopup {
 							PopupView(isShowPopup: $isShowDeleteContactPopup,
-									  title: Text("Do you really want to delete all calls history?"),
-									  content: Text("All calls will be removed from the history."),
-									  titleFirstButton: Text("Cancel"),
+									  title: Text("history_dialog_delete_all_call_logs_title"),
+									  content: Text("history_dialog_delete_all_call_logs_message"),
+									  titleFirstButton: Text("dialog_cancel"),
 									  actionFirstButton: {
 								self.isShowDeleteAllHistoryPopup.toggle()
 								historyListViewModel.callLogsAddressToDelete = ""
 							},
-									  titleSecondButton: Text("Ok"),
+									  titleSecondButton: Text("dialog_ok"),
 									  actionSecondButton: {
 								historyListViewModel.removeCallLogs()
 								self.isShowDeleteAllHistoryPopup.toggle()
@@ -1071,11 +1070,11 @@ struct ContentView: View {
 						
 						if isShowDismissPopup {
 							PopupView(isShowPopup: $isShowDismissPopup,
-									  title: Text("Don’t save modifications?"),
-									  content: Text("All modifications will be canceled."),
-									  titleFirstButton: Text("Cancel"),
+									  title: Text("contact_editor_dialog_abort_confirmation_title"),
+									  content: Text("contact_editor_dialog_abort_confirmation_message"),
+									  titleFirstButton: Text("dialog_cancel"),
 									  actionFirstButton: {self.isShowDismissPopup.toggle()},
-									  titleSecondButton: Text("Ok"),
+									  titleSecondButton: Text("dialog_ok"),
 									  actionSecondButton: {
 								if editContactViewModel.selectedEditFriend == nil {
 									self.isShowDismissPopup.toggle()
@@ -1155,15 +1154,15 @@ struct ContentView: View {
 						
 						if isShowSendCancelMeetingNotificationPopup {
 							PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
-									  title: Text("The meeting will be cancelled"),
-									  content: Text("Send notification to participants ?"),
-									  titleFirstButton: Text("Cancel for me only"),
+									  title: Text("meeting_schedule_cancel_dialog_title"),
+									  content: Text("meeting_schedule_cancel_dialog_message"),
+									  titleFirstButton: Text("dialog_cancel"),
 									  actionFirstButton: {
 								meetingViewModel.displayedMeeting = nil
 								meetingsListViewModel.deleteSelectedMeeting()
 								self.isShowSendCancelMeetingNotificationPopup.toggle(
 								) },
-									  titleSecondButton: Text("Send cancellation notifications"),
+									  titleSecondButton: Text("dialog_ok"),
 									  actionSecondButton: {
 								meetingViewModel.displayedMeeting = nil
 								if let meetingToDelete = self.meetingsListViewModel.selectedMeetingToDelete {
@@ -1184,11 +1183,11 @@ struct ContentView: View {
 								isShowPopup: $isShowStartCallGroupPopup,
 								title: Text("conversation_info_confirm_start_group_call_dialog_title"),
 								content: Text("conversation_info_confirm_start_group_call_dialog_message"),
-								titleFirstButton: Text("Cancel"),
+								titleFirstButton: Text("dialog_cancel"),
 								actionFirstButton: {
 									self.isShowStartCallGroupPopup.toggle()
 								},
-								titleSecondButton: Text("Confirm"),
+								titleSecondButton: Text("dialog_ok"),
 								actionSecondButton: {
 									if conversationViewModel.displayedConversation != nil {
 										conversationViewModel.displayedConversation!.createGroupCall()
@@ -1208,11 +1207,11 @@ struct ContentView: View {
 								isShowPopup: $isShowStartCallGroupPopup,
 								title: Text("conversation_info_confirm_start_group_call_dialog_title"),
 								content: Text("conversation_info_confirm_start_group_call_dialog_message"),
-								titleFirstButton: Text("Cancel"),
+								titleFirstButton: Text("dialog_cancel"),
 								actionFirstButton: {
 									self.isShowStartCallGroupPopup.toggle()
 								},
-								titleSecondButton: Text("Confirm"),
+								titleSecondButton: Text("dialog_ok"),
 								actionSecondButton: {
 									if conversationViewModel.displayedConversation != nil {
 										conversationViewModel.displayedConversation!.createGroupCall()

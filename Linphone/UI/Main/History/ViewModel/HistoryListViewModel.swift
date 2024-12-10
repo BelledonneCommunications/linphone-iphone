@@ -148,23 +148,23 @@ class HistoryListViewModel: ObservableObject {
 		switch callStatus {
 		case Call.Status.Missed:
 			if isOutgoing {
-				"Outgoing Call"
+				String(localized: "call_outgoing")
 			} else {
-				"Missed Call"
+				String(localized: "notification_missed_call_title")
 			}
 			
 		case Call.Status.Success:
 			if isOutgoing {
-				"Outgoing Call"
+				String(localized: "call_outgoing")
 			} else {
-				"Incoming Call"
+				String(localized: "call_audio_incoming")
 			}
 			
 		default:
 			if isOutgoing {
-				"Outgoing Call"
+				String(localized: "call_outgoing")
 			} else {
-				"Incoming Call"
+				String(localized: "call_audio_incoming")
 			}
 		}
 	}

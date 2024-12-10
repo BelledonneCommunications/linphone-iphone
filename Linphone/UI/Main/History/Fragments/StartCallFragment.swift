@@ -82,7 +82,7 @@ struct StartCallFragment: View {
 								}
 							}
 						
-						Text(!callViewModel.isTransferInsteadCall ? "history_call_start_title" : "Transfer call to")
+						Text(!callViewModel.isTransferInsteadCall ? "history_call_start_title" : "call_transfer_current_call_title")
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 						
@@ -395,7 +395,7 @@ struct StartCallFragment: View {
 							.frame(width: 45, height: 45)
 							.clipShape(Circle())
 						
-						Text("Username error")
+						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.foregroundStyle(Color.orangeMain500)

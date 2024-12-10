@@ -124,7 +124,7 @@ struct ProfileModeFragment: View {
 					Button(action: {
 						sharedMainViewModel.changeHideProfileMode()
 					}, label: {
-						Text("Continue")
+						Text("dialog_continue")
 							.default_text_style_white_600(styleSize: 20)
 							.frame(height: 35)
 							.frame(maxWidth: .infinity)
@@ -156,7 +156,7 @@ struct ProfileModeFragment: View {
 							+ " Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."),
 						  titleFirstButton: nil,
 						  actionFirstButton: {},
-						  titleSecondButton: Text("Close"),
+						  titleSecondButton: Text("dialog_close"),
 						  actionSecondButton: {
 					self.isShowPopup.toggle()
 				}

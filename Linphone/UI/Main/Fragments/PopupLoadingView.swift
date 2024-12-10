@@ -34,7 +34,7 @@ struct PopupLoadingView: View {
 					.padding(.top)
 					.padding(.bottom)
 				
-				Text("Opération en cours...")
+				Text("operation_in_progress_overlay")
 					.tint(Color.grayMain2c600)
 					.default_text_style(styleSize: 15)
 					.frame(maxWidth: .infinity)

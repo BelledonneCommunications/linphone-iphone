@@ -240,7 +240,7 @@ final class CoreContext: ObservableObject {
 				}
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
-						ToastViewModel.shared.toastMessage = "Successful"
+						ToastViewModel.shared.toastMessage = "Success_qr_code_validated"
 						ToastViewModel.shared.displayToast = true
 						self.accounts = accountModels
 					}
@@ -298,8 +298,6 @@ final class CoreContext: ObservableObject {
 					} else if state == .Cleared {
 						self.loggingInProgress = false
 						self.loggedIn = false
-						ToastViewModel.shared.toastMessage = "Success_account_logged_out"
-						ToastViewModel.shared.displayToast = true
 					} else {
 						self.loggingInProgress = false
 						self.loggedIn = false

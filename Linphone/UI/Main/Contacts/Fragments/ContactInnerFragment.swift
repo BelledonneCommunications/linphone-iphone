@@ -278,7 +278,7 @@ struct ContactInnerFragment: View {
 				.fullScreenCover(isPresented: $presentingEditContact) {
 					NavigationView {
 						EditContactView(contact: $cnContact)
-							.navigationBarTitle("Edit Contact")
+							.navigationBarTitle("contact_edit_title")
 							.navigationBarTitleDisplayMode(.inline)
 							.edgesIgnoringSafeArea(.vertical)
 					}

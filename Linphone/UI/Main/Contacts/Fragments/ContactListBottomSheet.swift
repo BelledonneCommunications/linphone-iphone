@@ -42,7 +42,7 @@ struct ContactListBottomSheet: View {
 				Spacer()
 				HStack {
 					Spacer()
-					Button("Close") {
+					Button("dialog_close") {
 						if #available(iOS 16.0, *) {
 							showingSheet.toggle()
 						} else {
@@ -147,7 +147,7 @@ struct ContactListBottomSheet: View {
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					Text(contactViewModel.stringToCopy.prefix(4) == "sip:"
-						 ? "Block the address" : "Block the number")
+						 ? "menu_block_address" : "menu_block_number")
 						.default_text_style(styleSize: 16)
 					Spacer()
 				}

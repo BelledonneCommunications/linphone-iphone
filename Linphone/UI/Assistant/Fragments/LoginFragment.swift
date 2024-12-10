@@ -154,7 +154,7 @@ struct LoginFragment: View {
 									self.accountLoginViewModel.login()
 									coreContext.loggingInProgress = true
 								}, label: {
-									Text(coreContext.loggedIn ? "Log out" : "assistant_account_login")
+									Text(coreContext.loggedIn ? "manage_account_delete" : "assistant_account_login")
 										.default_text_style_white_600(styleSize: 20)
 										.frame(height: 35)
 										.frame(maxWidth: .infinity)
@@ -293,8 +293,8 @@ struct LoginFragment: View {
 					}
 					
 					if self.isShowPopup {
-						let generalTerms = String(format: "[%@](%@)", String(localized: "assistant_dialog_general_terms_label"), String(localized: "https://linphone.org/general-terms"))
-						let privacyPolicy = String(format: "[%@](%@)", String(localized: "assistant_dialog_privacy_policy_label"), String(localized: "https://linphone.org/en/privacy-policy"))
+						let generalTerms = String(format: "[%@](%@)", String(localized: "assistant_dialog_general_terms_label"), "https://www.linphone.org/en/terms-of-use/")
+						let privacyPolicy = String(format: "[%@](%@)", String(localized: "assistant_dialog_privacy_policy_label"), "https://linphone.org/en/privacy-policy")
 						let splitMsg = String(localized: "assistant_dialog_general_terms_and_privacy_policy_message").components(separatedBy: "%@")
 						if splitMsg.count == 3 { // We expect form of  STRING %A STRING %@ STRING
 							let contentPopup1 = Text(.init(splitMsg[0]))

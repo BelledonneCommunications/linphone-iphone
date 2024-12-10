@@ -165,7 +165,7 @@ class NotificationService: UNNotificationServiceExtension {
 						
 						stopCore()
 						bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "msg.caf"))
-						bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
+						bestAttemptContent.title = String(localized: "notification_chat_message_received_title")
 						if let subtitle = msgData?.subtitle {
 							bestAttemptContent.subtitle = subtitle
 						}
@@ -221,11 +221,11 @@ class NotificationService: UNNotificationServiceExtension {
 		
 		var content = ""
 		if message.isConferenceInvitationNew {
-			content = NSLocalizedString("📅 You are invited to a meeting", comment: "")
+			content = String(localized: "message_meeting_invitation_notification")
 		} else if message.isConferenceInvitationUpdate {
-			content =  NSLocalizedString("📅 Meeting has been modified", comment: "")
+			content =  String(localized: "message_meeting_invitation_updated_notification")
 		} else if message.isConferenceInvitationCancellation {
-			content =  NSLocalizedString("📅 Meeting has been cancelled", comment: "")
+			content =  String(localized: "message_meeting_invitation_cancelled_notification")
 		} else {
 			content = message.isText ? message.textContent! : "🗻"
 		}

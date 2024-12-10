@@ -61,7 +61,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 							}
 							.frame(width: geometry.size.width)
 							
-							Text("Use a SIP account")
+							Text("assistant_login_third_party_sip_account")
 								.default_text_style_white_800(styleSize: 20)
 								.padding(.top, 20)
 						}
@@ -101,9 +101,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 							}
 							.padding(.bottom, 40)
 							
-							Text("Some features require a Linphone account, such as group messaging, video conferences...\n\n"
-								 + "These features are hidden when you register with a third party SIP account.\n\n"
-								 + "To enable it in a commercial projet, please contact us. ")
+							Text("assistant_third_party_sip_account_warning_explanation")
 							.default_text_style(styleSize: 15)
 							.multilineTextAlignment(.center)
 							.padding(.bottom)
@@ -137,7 +135,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 						Button(action: {
 							dismiss()
 						}, label: {
-							Text("I prefere create an account")
+							Text("assistant_third_party_sip_account_create_linphone_account")
 								.default_text_style_orange_600(styleSize: 20)
 								.frame(height: 35)
 								.frame(maxWidth: .infinity)
@@ -156,7 +154,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 						NavigationLink(destination: {
 							ThirdPartySipAccountLoginFragment(accountLoginViewModel: accountLoginViewModel)
 						}, label: {
-							Text("I understand")
+							Text("assistant_third_party_sip_account_warning_ok")
 								.default_text_style_white_600(styleSize: 20)
 								.frame(height: 35)
 								.frame(maxWidth: .infinity)

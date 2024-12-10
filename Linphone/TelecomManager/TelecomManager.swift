@@ -641,7 +641,7 @@ class TelecomManager: ObservableObject {
 						if UIApplication.shared.applicationState != .active && (callLog == nil || callLog?.status == .Missed || callLog?.status == .Aborted || callLog?.status == .EarlyAborted) {
 							// Configure the notification's payload.
 							let content = UNMutableNotificationContent()
-							content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("Missed call", comment: ""), arguments: nil)
+							content.title = NSString.localizedUserNotificationString(forKey: NSLocalizedString("notification_missed_call_title", comment: ""), arguments: nil)
 							content.body = NSString.localizedUserNotificationString(forKey: displayName, arguments: nil)
 							
 							// Deliver the notification.

@@ -253,7 +253,7 @@ struct ChatBubbleView: View {
 														
 														VStack(spacing: 2) {
 															if !eventLogMessage.message.messageConferenceInfo!.meetingDescription.isEmpty {
-																Text("Description")
+																Text("meeting_schedule_description_title")
 																	.default_text_style(styleSize: 14)
 																	.frame(maxWidth: .infinity, alignment: .leading)
 																

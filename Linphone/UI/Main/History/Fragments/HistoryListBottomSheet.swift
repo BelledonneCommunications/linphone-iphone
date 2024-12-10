@@ -48,7 +48,7 @@ struct HistoryListBottomSheet: View {
 				Spacer()
 				HStack {
 					Spacer()
-					Button("Close") {
+					Button("dialog_close") {
 						if #available(iOS 16.0, *) {
 							showingSheet.toggle()
 						} else {

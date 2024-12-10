@@ -54,7 +54,7 @@ struct DialerBottomSheet: View {
 					Spacer()
 					HStack {
 						Spacer()
-						Button("Close") {
+						Button("dialog_close") {
 							showingDialer.toggle()
 							dismiss()
 						}

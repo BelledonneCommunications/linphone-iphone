@@ -121,11 +121,11 @@ struct ContactInnerActionsFragment: View {
 							VStack {
 								if contactAvatarModel.friend!.phoneNumbersWithLabel[index].label != nil
 									&& !contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!.isEmpty {
-									Text("Phone (\(contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!)) :")
+									Text(String(localized: "phone_number") + " \(contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!)) :")
 										.default_text_style_700(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 								} else {
-									Text("Phone :")
+									Text(String(localized: "phone_number") + " :")
 										.default_text_style_700(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 								}
@@ -170,7 +170,7 @@ struct ContactInnerActionsFragment: View {
 			VStack {
 				if contactAvatarModel.friend!.organization != nil
 					&& !contactAvatarModel.friend!.organization!.isEmpty {
-					Text("**Company :** \(contactAvatarModel.friend!.organization!)")
+					Text(.init(String(format:"**%@ :** %@", String(localized: "contact_editor_company"), contactAvatarModel.friend!.organization!)))
 						.default_text_style(styleSize: 14)
 						.padding(.vertical, 15)
 						.padding(.horizontal, 20)
@@ -179,7 +179,7 @@ struct ContactInnerActionsFragment: View {
 				
 				if contactAvatarModel.friend!.jobTitle != nil
 					&& !contactAvatarModel.friend!.jobTitle!.isEmpty {
-					Text("**Job :** \(contactAvatarModel.friend!.jobTitle!)")
+					Text(.init(String(format:"**%@ :** %@", String(localized: "contact_editor_job_title"), contactAvatarModel.friend!.jobTitle!)))
 						.default_text_style(styleSize: 14)
 						.padding(.top, 
 								 contactAvatarModel.friend!.organization != nil

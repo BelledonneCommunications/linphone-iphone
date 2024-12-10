@@ -40,7 +40,7 @@ struct ConversationsListBottomSheet: View {
 				Spacer()
 				HStack {
 					Spacer()
-					Button("Close") {
+					Button("dialog_close") {
 						if #available(iOS 16.0, *) {
 							showingSheet.toggle()
 						} else {
@@ -80,7 +80,7 @@ struct ConversationsListBottomSheet: View {
 							.foregroundStyle(Color.grayMain2c500)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
-						Text("Marquer comme non lu")
+						Text("conversation_action_mark_as_read")
 							.default_text_style(styleSize: 16)
 						Spacer()
 					}
@@ -118,7 +118,7 @@ struct ConversationsListBottomSheet: View {
 							.foregroundStyle(Color.grayMain2c500)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
-						Text(conversationsListViewModel.selectedConversation!.isMuted ? "Réactiver les notifications" : "Mettre en sourdine")
+						Text(conversationsListViewModel.selectedConversation!.isMuted ? "conversation_action_unmute" : "conversation_action_mute")
 							.default_text_style(styleSize: 16)
 						Spacer()
 					}
