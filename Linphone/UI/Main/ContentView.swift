@@ -1168,6 +1168,7 @@ struct ContentView: View {
 						if isShowAccountProfileFragment {
 							AccountProfileFragment(
 								accountProfileViewModel: accountProfileViewModel,
+								registerViewModel: RegisterViewModel(),
 								isShowAccountProfileFragment: $isShowAccountProfileFragment
 							)
 							.zIndex(3)

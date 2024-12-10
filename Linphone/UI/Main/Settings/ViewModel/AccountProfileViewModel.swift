@@ -25,15 +25,68 @@ class AccountProfileViewModel: ObservableObject {
 	
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var photoAvatarModel: String?
+	@Published var displayName: String = ""
+	
+	@Published var dialPlanValueSelected: String = "🇫🇷 France | +33"
+	var dialPlanSelected: DialPlan?
+	var dialPlansList: [DialPlan] = []
 	
 	init() {}
 	
+	func saveChangesWhenLeaving() {
+		CoreContext.shared.doOnCoreQueue { core in
+			let newParams = core.defaultAccount!.params?.clone()
+			print("getImagePath 0 \(self.displayName) \(newParams?.identityAddress?.displayName ?? "NIL")")
+			if self.displayName != newParams?.identityAddress?.displayName {
+				if let newIdentityAddress = newParams?.identityAddress?.clone() {
+					try? newIdentityAddress.setDisplayname(newValue: self.displayName)
+					try? newParams?.setIdentityaddress(newValue: newIdentityAddress)
+				}
+				
+				print("getImagePath 1 \(self.getImagePath().lastPathComponent)")
+				
+				if self.getImagePath().lastPathComponent.contains("-default") {
+					print("getImagePath 2")
+					self.saveImage(
+						image: ContactsManager.shared.textToImage(
+							firstName: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName, lastName: ""),
+						name: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName,
+						prefix: "-default")
+				}
+			}
+			
+			/*
+			newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
+			newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
+			newParams?.useInternationalPrefixForCallsAndChats = true
+			*/
+			
+			core.defaultAccount!.params = newParams
+		}
+	}
+	 
 	func setAvatarModel() {
 		CoreContext.shared.doOnCoreQueue { core in
 			if core.defaultAccount != nil {
-				let displayNameTmp = core.defaultAccount!.displayName()
-				let contactAddressTmp = core.defaultAccount!.contactAddress?.asStringUriOnly() ?? ""
+				let displayNameTmp = core.defaultAccount!.params?.identityAddress?.displayName ?? ""
+				let contactAddressTmp = core.defaultAccount!.params?.identityAddress?.asStringUriOnly() ?? ""
 				var photoAvatarModelTmp = ""
+				
+				let prefix = core.defaultAccount!.params?.internationalPrefix ?? ""
+				let isoCountryCode = core.defaultAccount!.params?.internationalPrefixIsoCountryCode ?? ""
+				
+				var dialPlanValueSelectedTmp = ""
+				if !prefix.isEmpty || !isoCountryCode.isEmpty {
+					Log.info(
+						"$TAG Account \(core.defaultAccount!.params?.identityAddress?.asStringUriOnly() ?? "") prefix is \(prefix) \(isoCountryCode)"
+					)
+					
+					self.dialPlansList = Factory.Instance.dialPlans
+					if let dialPlan = self.dialPlansList.first(where: { $0.isoCountryCode == isoCountryCode }) ??
+						self.dialPlansList.first(where: { $0.countryCallingCode == prefix }) {
+						dialPlanValueSelectedTmp = "\(dialPlan.flag) \(dialPlan.country) | +\(dialPlan.countryCallingCode)"
+					}
+				}
 				
 				let preferences = UserDefaults.standard
 				
@@ -44,11 +97,17 @@ class AccountProfileViewModel: ObservableObject {
 				}
 				
 				DispatchQueue.main.async {
-					self.avatarModel = ContactAvatarModel(friend: nil, name: displayNameTmp, address: contactAddressTmp, withPresence: false)
+					self.avatarModel = ContactAvatarModel(friend: nil, name: displayNameTmp.isEmpty ? core.defaultAccount!.displayName() : displayNameTmp, address: contactAddressTmp, withPresence: false)
 					self.photoAvatarModel = photoAvatarModelTmp
+					self.displayName = displayNameTmp
+					self.dialPlanValueSelected = dialPlanValueSelectedTmp
 				}
 			}
 		}
+	}
+	
+	func changeDialPlan() {
+		
 	}
 	
 	func saveImage(image: UIImage, name: String, prefix: String) {

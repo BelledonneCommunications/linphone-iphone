@@ -207,14 +207,24 @@ class RegisterViewModel: ObservableObject {
 	func getDialPlansList() {
 		coreContext.doOnCoreQueue { _ in
 			let dialPlans = Factory.Instance.dialPlans
+			var dialPlansListTmp: [DialPlan] = []
+			var dialPlansLabelListTmp: [String] = []
+			var dialPlansShortLabelListTmp: [String] = []
+			
 			dialPlans.forEach { dialPlan in
-				self.dialPlansList.append(dialPlan)
-				self.dialPlansLabelList.append(
+				dialPlansListTmp.append(dialPlan)
+				dialPlansLabelListTmp.append(
 					"\(dialPlan.flag) \(dialPlan.country) | +\(dialPlan.countryCallingCode)"
 				)
-				self.dialPlansShortLabelList.append(
+				dialPlansShortLabelListTmp.append(
 					"\(dialPlan.flag) +\(dialPlan.countryCallingCode)"
 				)
+			}
+			
+			DispatchQueue.main.async {
+				self.dialPlansList = dialPlansListTmp
+				self.dialPlansLabelList = dialPlansLabelListTmp
+				self.dialPlansShortLabelList = dialPlansShortLabelListTmp
 			}
 		}
 	}

@@ -3797,6 +3797,23 @@
         }
       }
     },
+    "manage_account_details_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails"
+          }
+        }
+      }
+    },
     "manage_account_edit_picture" : {
       "localizations" : {
         "en" : {

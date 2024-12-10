@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct AccountProfileFragment: View {
 	
@@ -25,6 +26,7 @@ struct AccountProfileFragment: View {
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+	@ObservedObject var registerViewModel: RegisterViewModel
 	
 	@Binding var isShowAccountProfileFragment: Bool
 	@State var detailIsOpen: Bool = true
@@ -32,6 +34,8 @@ struct AccountProfileFragment: View {
 	@State private var showPhotoPicker = false
 	@State private var selectedImage: UIImage?
 	@State private var removedImage = false
+	
+	@FocusState var isDisplayNameFocused: Bool
 	
 	private let avatarSize = 100.0
 	
@@ -53,6 +57,7 @@ struct AccountProfileFragment: View {
 						.padding(.top, 4)
 						.padding(.leading, -10)
 						.onTapGesture {
+							accountProfileViewModel.saveChangesWhenLeaving()
 							withAnimation {
 								if isShowAccountProfileFragment {
 									isShowAccountProfileFragment = false
@@ -233,7 +238,7 @@ struct AccountProfileFragment: View {
 							}
 							
 							HStack(alignment: .center) {
-								Text("conversation_info_participants_list_title")
+								Text("manage_account_details_title")
 									.default_text_style_800(styleSize: 18)
 									.frame(maxWidth: .infinity, alignment: .leading)
 								
@@ -258,7 +263,87 @@ struct AccountProfileFragment: View {
 							
 							if detailIsOpen {
 								VStack(spacing: 0) {
-									
+									VStack(spacing: 30) {
+										HStack {
+											Text(String(localized: "sip_address") + ":")
+												.default_text_style_600(styleSize: 14)
+											
+											Text(accountProfileViewModel.avatarModel!.address)
+												.foregroundStyle(Color.grayMain2c700)
+												.default_text_style(styleSize: 14)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												.lineLimit(1)
+											
+											Button(action: {
+												UIPasteboard.general.setValue(
+													accountProfileViewModel.avatarModel!.address,
+													forPasteboardType: UTType.plainText.identifier
+												)
+												
+												ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
+												ToastViewModel.shared.displayToast.toggle()
+											}, label: {
+												Image("copy")
+													.resizable()
+													.frame(width: 20, height: 20)
+											})
+										}
+										
+										VStack(alignment: .leading) {
+											Text("sip_address_display_name")
+												.default_text_style_700(styleSize: 15)
+												.padding(.bottom, -5)
+											TextField(accountProfileViewModel.displayName, text: $accountProfileViewModel.displayName)
+												.default_text_style(styleSize: 15)
+												.frame(height: 25)
+												.padding(.horizontal, 20)
+												.padding(.vertical, 15)
+												.background(.white)
+												.cornerRadius(60)
+												.overlay(
+													RoundedRectangle(cornerRadius: 60)
+														.inset(by: 0.5)
+														.stroke(isDisplayNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+												)
+												.focused($isDisplayNameFocused)
+										}
+										
+										VStack(alignment: .leading) {
+											Text("sip_address_display_name")
+												.default_text_style_700(styleSize: 15)
+												.padding(.bottom, -5)
+											
+											Menu {
+												Picker("", selection: $accountProfileViewModel.dialPlanValueSelected) {
+													ForEach(registerViewModel.dialPlansLabelList, id: \.self) { dialPlan in
+														Text(dialPlan).tag(dialPlan)
+													}
+												}
+											} label: {
+												HStack {
+													Text(accountProfileViewModel.dialPlanValueSelected)
+														.default_text_style(styleSize: 15)
+														.frame(maxWidth: .infinity, alignment: .leading)
+													
+													Image("caret-down")
+														.resizable()
+														.frame(width: 20, height: 20)
+												}
+												.frame(height: 25)
+												.padding(.horizontal, 20)
+												.padding(.vertical, 15)
+												.background(.white)
+												.cornerRadius(60)
+												.overlay(
+													RoundedRectangle(cornerRadius: 60)
+														.inset(by: 0.5)
+														.stroke(Color.gray200, lineWidth: 1)
+												)
+											}
+										}
+									}
+									.padding(.vertical, 30)
+									.padding(.horizontal, 20)
 								}
 								.background(.white)
 								.cornerRadius(15)
