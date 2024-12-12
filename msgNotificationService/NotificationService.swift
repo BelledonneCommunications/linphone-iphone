@@ -210,7 +210,7 @@ class NotificationService: UNNotificationServiceExtension {
 				bestAttemptContent.body = ""
 				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) 
 			} else {
-				bestAttemptContent.title = NSLocalizedString("Message received", comment: "")
+				bestAttemptContent.title = String(localized: "notification_chat_message_received_title")
 				bestAttemptContent.body = NSLocalizedString("IM_MSG", comment: "")
 			}
 			contentHandler(bestAttemptContent)

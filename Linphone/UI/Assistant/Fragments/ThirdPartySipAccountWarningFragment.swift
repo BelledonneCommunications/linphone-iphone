@@ -101,7 +101,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 							}
 							.padding(.bottom, 40)
 							
-							Text("assistant_third_party_sip_account_warning_explanation")
+							Text(.init(String(format: String(localized: "assistant_third_party_sip_account_warning_explanation"), Bundle.main.displayName)))
 							.default_text_style(styleSize: 15)
 							.multilineTextAlignment(.center)
 							.padding(.bottom)

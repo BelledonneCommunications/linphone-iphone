@@ -208,7 +208,14 @@
       }
     },
     "assistant_account_login_forbidden_error" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrong username or password"
+          }
+        }
+      }
     },
     "assistant_account_register" : {
       "extractionState" : "manual",
@@ -600,16 +607,44 @@
       }
     },
     "assistant_sip_account_transport_protocol" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transport"
+          }
+        }
+      }
     },
     "assistant_third_party_sip_account_create_linphone_account" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I prefer to create an account"
+          }
+        }
+      }
     },
     "assistant_third_party_sip_account_warning_explanation" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some features require a %@ account, such as group messaging, video conferences…\\n\\nThese features are hidden when you register with a third party SIP account.\\n\\nTo enable it in a commercial project, please contact us."
+          }
+        }
+      }
     },
     "assistant_third_party_sip_account_warning_ok" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I understand"
+          }
+        }
+      }
     },
     "assistant_web_platform_link" : {
       "localizations" : {
@@ -869,13 +904,34 @@
       }
     },
     "call_audio_device_type_bluetooth" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluetooth (%@)"
+          }
+        }
+      }
     },
     "call_audio_device_type_earpiece" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Earpiece"
+          }
+        }
+      }
     },
     "call_audio_device_type_headphones" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Headphones"
+          }
+        }
+      }
     },
     "call_audio_device_type_speaker" : {
       "localizations" : {
@@ -894,7 +950,14 @@
       }
     },
     "call_audio_incoming" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incoming call"
+          }
+        }
+      }
     },
     "call_can_be_trusted_toast" : {
       "extractionState" : "manual",
@@ -1067,7 +1130,14 @@
       }
     },
     "call_do_zrtp_sas_validation_again" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Validate ZRTP SAS again"
+          }
+        }
+      }
     },
     "call_history_deleted_toast" : {
       "localizations" : {
@@ -1097,7 +1167,14 @@
       }
     },
     "call_outgoing" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outgoing call"
+          }
+        }
+      }
     },
     "call_srtp_point_to_point_encrypted" : {
       "extractionState" : "manual",
@@ -1117,7 +1194,14 @@
       }
     },
     "call_state_connected" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
+          }
+        }
+      }
     },
     "call_state_paused" : {
       "localizations" : {
@@ -1152,22 +1236,64 @@
       }
     },
     "call_state_resuming" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resuming…"
+          }
+        }
+      }
     },
     "call_stats_audio_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        }
+      }
     },
     "call_stats_media_encryption_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Media encryption"
+          }
+        }
+      }
     },
     "call_stats_video_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video"
+          }
+        }
+      }
     },
     "call_transfer_current_call_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer call"
+          }
+        }
+      }
     },
     "call_transfer_failed_toast" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call transfer failed!"
+          }
+        }
+      }
     },
     "call_transfer_in_progress_toast" : {
       "localizations" : {
@@ -1258,7 +1384,14 @@
       }
     },
     "calls_count_label" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@calls"
+          }
+        }
+      }
     },
     "calls_list_dialog_merge_into_conference_label" : {
       "extractionState" : "manual",
@@ -1295,7 +1428,14 @@
       }
     },
     "calls_list_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calls list"
+          }
+        }
+      }
     },
     "Ce mode vous permet d’être interopérable avec d’autres services SIP.\nVos communications seront chiffrées de point à point. " : {
 
@@ -1369,16 +1509,44 @@
       }
     },
     "conference_layout_active_speaker" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speaker"
+          }
+        }
+      }
     },
     "conference_layout_audio_only" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio only"
+          }
+        }
+      }
     },
     "conference_layout_grid" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mosaic"
+          }
+        }
+      }
     },
     "conference_name_error" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conference name error"
+          }
+        }
+      }
     },
     "conference_participant_joining_text" : {
       "localizations" : {
@@ -1558,10 +1726,24 @@
       }
     },
     "contact_dialog_delete_message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This contact will be definitively removed."
+          }
+        }
+      }
     },
     "contact_dialog_delete_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete %@?"
+          }
+        }
+      }
     },
     "contact_dialog_pick_phone_number_or_sip_address_title" : {
       "extractionState" : "manual",
@@ -1613,10 +1795,24 @@
       }
     },
     "contact_editor_dialog_abort_confirmation_message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All changes will be lost"
+          }
+        }
+      }
     },
     "contact_editor_dialog_abort_confirmation_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't save changes?"
+          }
+        }
+      }
     },
     "contact_editor_first_name" : {
       "localizations" : {
@@ -1863,7 +2059,14 @@
       }
     },
     "conversation_action_mark_as_read" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark as read"
+          }
+        }
+      }
     },
     "conversation_action_mute" : {
       "extractionState" : "manual",
@@ -2724,9 +2927,6 @@
         }
       }
     },
-    "Could not send ICS invitations to meeting to any participant" : {
-
-    },
     "debug_logs_copied_to_clipboard_toast" : {
       "localizations" : {
         "en" : {
@@ -2792,10 +2992,24 @@
       }
     },
     "dialog_close" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
     },
     "dialog_continue" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
     },
     "dialog_deny" : {
       "localizations" : {
@@ -2814,7 +3028,14 @@
       }
     },
     "dialog_no" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No"
+          }
+        }
+      }
     },
     "dialog_ok" : {
       "localizations" : {
@@ -2833,7 +3054,14 @@
       }
     },
     "dialog_yes" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yes"
+          }
+        }
+      }
     },
     "drawer_menu_account_connection_status_cleared" : {
       "extractionState" : "manual",
@@ -2971,7 +3199,24 @@
       }
     },
     "Error" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error"
+          }
+        }
+      }
+    },
+    "failed_meeting_ics_invitation_not_sent_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not send ICS invitations to meeting to any participant"
+          }
+        }
+      }
     },
     "GC_MSG" : {
       "extractionState" : "manual",
@@ -3024,7 +3269,14 @@
       }
     },
     "help_troubleshooting_clean_logs" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clean logs"
+          }
+        }
+      }
     },
     "help_troubleshooting_debug_logs_cleaned_toast_message" : {
       "localizations" : {
@@ -3037,7 +3289,14 @@
       }
     },
     "help_troubleshooting_share_logs" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share logs"
+          }
+        }
+      }
     },
     "history_call_start_create_group_call" : {
       "localizations" : {
@@ -3090,10 +3349,24 @@
       }
     },
     "history_dialog_delete_all_call_logs_message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All calls will be removed from the history"
+          }
+        }
+      }
     },
     "history_dialog_delete_all_call_logs_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you really want to delete all calls history?"
+          }
+        }
+      }
     },
     "history_group_call_start_dialog_set_subject" : {
       "localizations" : {
@@ -3233,7 +3506,14 @@
       }
     },
     "manage_account_delete" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out"
+          }
+        }
+      }
     },
     "manage_account_edit_picture" : {
       "localizations" : {
@@ -3285,16 +3565,44 @@
       }
     },
     "meeting_call_remove_no_participants" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No participant for the moment…"
+          }
+        }
+      }
     },
     "meeting_call_remove_participant_confirmation_message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you wish to remove %@ ?"
+          }
+        }
+      }
     },
     "meeting_call_remove_participant_confirmation_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove a participant"
+          }
+        }
+      }
     },
     "meeting_exported_as_calendar_event" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting added to iPhone calendar"
+          }
+        }
+      }
     },
     "meeting_info_cancelled_toast" : {
       "localizations" : {
@@ -3403,10 +3711,24 @@
       }
     },
     "meeting_schedule_cancel_dialog_message" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you want to cancel the meeting and send a notification to all participants?"
+          }
+        }
+      }
     },
     "meeting_schedule_cancel_dialog_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel the meeting?"
+          }
+        }
+      }
     },
     "meeting_schedule_description_hint" : {
       "localizations" : {
@@ -3425,7 +3747,14 @@
       }
     },
     "meeting_schedule_description_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        }
+      }
     },
     "meeting_schedule_edit_title" : {
       "localizations" : {
@@ -3471,13 +3800,34 @@
       }
     },
     "meeting_schedule_pick_end_time_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the end time"
+          }
+        }
+      }
     },
     "meeting_schedule_pick_start_date_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the start date"
+          }
+        }
+      }
     },
     "meeting_schedule_pick_start_time_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the start time"
+          }
+        }
+      }
     },
     "meeting_schedule_send_invitations_title" : {
       "localizations" : {
@@ -3657,10 +4007,24 @@
       }
     },
     "menu_block_address" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block the address"
+          }
+        }
+      }
     },
     "menu_block_number" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block the number"
+          }
+        }
+      }
     },
     "menu_copy_chat_message" : {
       "extractionState" : "manual",
@@ -3826,9 +4190,6 @@
           }
         }
       }
-    },
-    "Message received" : {
-
     },
     "message_copied_to_clipboard_toast" : {
       "localizations" : {
@@ -4008,10 +4369,24 @@
       }
     },
     "network_not_reachable" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You aren't connected to internet"
+          }
+        }
+      }
     },
-    "network_not_reachable_again" : {
-
+    "network_reachable_again" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network is now reachable again"
+          }
+        }
+      }
     },
     "new_conversation_create_group" : {
       "extractionState" : "manual",
@@ -4064,7 +4439,14 @@
       }
     },
     "next" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
     },
     "notification_chat_message_reaction_received" : {
       "localizations" : {
@@ -4083,13 +4465,34 @@
       }
     },
     "notification_chat_message_received_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message received"
+          }
+        }
+      }
     },
     "notification_missed_call_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missed call"
+          }
+        }
+      }
     },
     "operation_in_progress_overlay" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operation in progress, please wait"
+          }
+        }
+      }
     },
     "or" : {
       "localizations" : {
@@ -4144,10 +4547,24 @@
       }
     },
     "picker_categories" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categories"
+          }
+        }
+      }
     },
     "qr_code_validated" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR code validated"
+          }
+        }
+      }
     },
     "recordings_title" : {
       "extractionState" : "manual",
@@ -4166,19 +4583,15 @@
         }
       }
     },
-    "Register" : {
-      "extractionState" : "stale",
+    "selected_participants_count" : {
       "localizations" : {
-        "fr" : {
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "S’inscrire"
+            "value" : "%@ selected participants"
           }
         }
       }
-    },
-    "selected_participants_count" : {
-
     },
     "settings_title" : {
       "extractionState" : "manual",
@@ -4224,22 +4637,50 @@
       }
     },
     "sip_address_display_name" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Display name"
+          }
+        }
+      }
     },
     "sip_address_domain" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domain"
+          }
+        }
+      }
     },
     "sip.linphone.org" : {
       "shouldTranslate" : false
     },
     "start" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
+      }
     },
     "TCP" : {
       "shouldTranslate" : false
     },
     "Temp Help" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temp Help"
+          }
+        }
+      }
     },
     "TLS" : {
       "shouldTranslate" : false
@@ -4248,19 +4689,54 @@
       "shouldTranslate" : false
     },
     "uri_handler_bad_call_address_failed_toast" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to call, invalid address"
+          }
+        }
+      }
     },
     "uri_handler_bad_config_address_failed_toast" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to retrieve configuration, invalid address"
+          }
+        }
+      }
     },
     "uri_handler_call_failed_toast" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call failed"
+          }
+        }
+      }
     },
     "uri_handler_config_failed_toast" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuration failed"
+          }
+        }
+      }
     },
     "uri_handler_config_success_toast" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuration successfully applied"
+          }
+        }
+      }
     },
     "username" : {
       "extractionState" : "manual",
@@ -4280,10 +4756,24 @@
       }
     },
     "username_error" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username error"
+          }
+        }
+      }
     },
     "welcome_carousel_skip" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
     },
     "welcome_page_1_message" : {
       "localizations" : {

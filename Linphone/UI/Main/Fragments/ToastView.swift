@@ -137,7 +137,7 @@ struct ToastView: View {
 							.padding(8)
 						
 					case "Success_toast_network_connected":
-						Text("network_not_reachable_again")
+						Text("network_reachable_again")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
@@ -254,7 +254,7 @@ struct ToastView: View {
 							.padding(8)
 						
 					case "Failed_meeting_invitations_not_sent":
-						Text("Could not send ICS invitations to meeting to any participant")
+						Text("failed_meeting_ics_invitation_not_sent_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
