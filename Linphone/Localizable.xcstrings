@@ -8,7 +8,7 @@
 
     },
     "[linphone.org/contact](https://linphone.org/contact)" : {
-
+      "shouldTranslate" : false
     },
     "*" : {
 
@@ -214,6 +214,12 @@
             "state" : "translated",
             "value" : "Wrong username or password"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mauvais nom d’utilisateur ou mot de passe"
+          }
         }
       }
     },
@@ -417,6 +423,12 @@
             "state" : "translated",
             "value" : "Invalid URI"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URI invalide"
+          }
         }
       }
     },
@@ -587,6 +599,12 @@
             "state" : "translated",
             "value" : "Invalid QR code!"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce QR code est invalide !"
+          }
         }
       }
     },
@@ -613,6 +631,12 @@
             "state" : "translated",
             "value" : "Transport"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transport"
+          }
         }
       }
     },
@@ -622,6 +646,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "I prefer to create an account"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je préfère créer un compte"
           }
         }
       }
@@ -633,6 +663,12 @@
             "state" : "translated",
             "value" : "Some features require a %@ account, such as group messaging, video conferences…\\n\\nThese features are hidden when you register with a third party SIP account.\\n\\nTo enable it in a commercial project, please contact us."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Certaines fonctionnalités telles que les conversations de groupe, les vidéo-conférences, etc… nécessitent un compte %@.\\n\\nCes fonctionnalités seront masquées si vous utilisez un compte SIP tiers.\\n\\nPour les activer dans un projet commercial, merci de nous contacter."
+          }
         }
       }
     },
@@ -642,6 +678,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "I understand"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "J’ai compris"
           }
         }
       }
@@ -910,6 +952,12 @@
             "state" : "translated",
             "value" : "Bluetooth (%@)"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluetooth (%@)"
+          }
         }
       }
     },
@@ -920,6 +968,12 @@
             "state" : "translated",
             "value" : "Earpiece"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oreillette"
+          }
         }
       }
     },
@@ -929,6 +983,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Headphones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Écouteurs"
           }
         }
       }
@@ -955,6 +1015,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Incoming call"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel entrant"
           }
         }
       }
@@ -1136,6 +1202,12 @@
             "state" : "translated",
             "value" : "Validate ZRTP SAS again"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faire la vérification à nouveau"
+          }
         }
       }
     },
@@ -1145,6 +1217,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "History has been deleted"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’historique des appels a été supprimé"
           }
         }
       }
@@ -1173,6 +1251,12 @@
             "state" : "translated",
             "value" : "Outgoing call"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel sortant"
+          }
         }
       }
     },
@@ -1199,6 +1283,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Active"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actif"
           }
         }
       }
@@ -1242,12 +1332,24 @@
             "state" : "translated",
             "value" : "Resuming…"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprise…"
+          }
         }
       }
     },
     "call_stats_audio_title" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio"
@@ -1262,12 +1364,24 @@
             "state" : "translated",
             "value" : "Media encryption"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiffrement du média"
+          }
         }
       }
     },
     "call_stats_video_title" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Video"
@@ -1282,6 +1396,12 @@
             "state" : "translated",
             "value" : "Transfer call"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transférer l’appel"
+          }
         }
       }
     },
@@ -1291,6 +1411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Call transfer failed!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le transfert a échoué !"
           }
         }
       }
@@ -1302,6 +1428,12 @@
             "state" : "translated",
             "value" : "Call is being transferred"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel en cours de transfert"
+          }
         }
       }
     },
@@ -1311,6 +1443,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Call has been successfully transferred"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’appel a été transféré"
           }
         }
       }
@@ -1388,7 +1526,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@calls"
+            "value" : "%@ calls"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%@ appels"
           }
         }
       }
@@ -1433,6 +1577,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Calls list"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liste des appels"
           }
         }
       }
@@ -1515,6 +1665,12 @@
             "state" : "translated",
             "value" : "Speaker"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervenant actif"
+          }
         }
       }
     },
@@ -1524,6 +1680,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio only"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio uniquement"
           }
         }
       }
@@ -1535,6 +1697,12 @@
             "state" : "translated",
             "value" : "Mosaic"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mosaïque"
+          }
         }
       }
     },
@@ -1544,6 +1712,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Conference name error"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de réunion invalide"
           }
         }
       }
@@ -1732,6 +1906,12 @@
             "state" : "translated",
             "value" : "This contact will be definitively removed."
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce contact sera définitivement supprimé."
+          }
         }
       }
     },
@@ -1741,6 +1921,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete %@?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer %@ ?"
           }
         }
       }
@@ -1801,6 +1987,12 @@
             "state" : "translated",
             "value" : "All changes will be lost"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes vos modifications seront perdues."
+          }
         }
       }
     },
@@ -1810,6 +2002,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Don't save changes?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne pas sauvegarder vos changements ?"
           }
         }
       }
@@ -2064,6 +2262,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mark as read"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marquer comme lu"
           }
         }
       }
@@ -2934,6 +3138,12 @@
             "state" : "translated",
             "value" : "Debug logs copied to clipboard"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les journaux ont été ajoutés au presse-papier"
+          }
         }
       }
     },
@@ -2998,6 +3208,12 @@
             "state" : "translated",
             "value" : "Close"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer"
+          }
         }
       }
     },
@@ -3007,6 +3223,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
           }
         }
       }
@@ -3034,6 +3256,12 @@
             "state" : "translated",
             "value" : "No"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non"
+          }
         }
       }
     },
@@ -3059,6 +3287,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oui"
           }
         }
       }
@@ -3205,6 +3439,12 @@
             "state" : "translated",
             "value" : "Error"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
+          }
         }
       }
     },
@@ -3214,6 +3454,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Could not send ICS invitations to meeting to any participant"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echec de l’envoi des invitations ICS de la réunion aux participants"
           }
         }
       }
@@ -3275,6 +3521,12 @@
             "state" : "translated",
             "value" : "Clean logs"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nettoyer les journaux"
+          }
         }
       }
     },
@@ -3285,6 +3537,12 @@
             "state" : "translated",
             "value" : "Debug logs have been cleaned"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les journaux ont été nettoyés"
+          }
         }
       }
     },
@@ -3294,6 +3552,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share logs"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partager les journaux"
           }
         }
       }
@@ -3355,6 +3619,12 @@
             "state" : "translated",
             "value" : "All calls will be removed from the history"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout votre historique d’appels sera supprimé."
+          }
         }
       }
     },
@@ -3364,6 +3634,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Do you really want to delete all calls history?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voulez vous tout supprimer ?"
           }
         }
       }
@@ -3512,6 +3788,12 @@
             "state" : "translated",
             "value" : "Sign out"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se déconnecter"
+          }
         }
       }
     },
@@ -3571,6 +3853,12 @@
             "state" : "translated",
             "value" : "No participant for the moment…"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun participant pour l’instant…"
+          }
         }
       }
     },
@@ -3580,6 +3868,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Are you sure you wish to remove %@ ?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voulez vous vraiment exclure %@ ?"
           }
         }
       }
@@ -3591,6 +3885,12 @@
             "state" : "translated",
             "value" : "Remove a participant"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exclure un participant"
+          }
         }
       }
     },
@@ -3600,6 +3900,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Meeting added to iPhone calendar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réunion ajoutée au calendrier de l’iPhone"
           }
         }
       }
@@ -3642,6 +3948,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Meeting has been deleted"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La réunion a été supprimée"
           }
         }
       }
@@ -3717,6 +4029,12 @@
             "state" : "translated",
             "value" : "Do you want to cancel the meeting and send a notification to all participants?"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voulez-vous annuler la réunion et envoyer une notification aux participants ?"
+          }
         }
       }
     },
@@ -3726,6 +4044,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel the meeting?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler la réunion ?"
           }
         }
       }
@@ -3749,6 +4073,12 @@
     "meeting_schedule_description_title" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Description"
@@ -3779,6 +4109,12 @@
             "state" : "translated",
             "value" : "A subject and at least one participant is required to create a meeting"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il faut au moins un sujet et un participant pour créer une réunion"
+          }
         }
       }
     },
@@ -3806,6 +4142,12 @@
             "state" : "translated",
             "value" : "Choose the end time"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heure de fin"
+          }
         }
       }
     },
@@ -3816,6 +4158,12 @@
             "state" : "translated",
             "value" : "Choose the start date"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date de début"
+          }
         }
       }
     },
@@ -3825,6 +4173,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose the start time"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heure de début"
           }
         }
       }
@@ -4013,6 +4367,12 @@
             "state" : "translated",
             "value" : "Block the address"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquer l'adresse"
+          }
         }
       }
     },
@@ -4022,6 +4382,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Block the number"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquer le numéro"
           }
         }
       }
@@ -4197,6 +4563,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Message copied into clipboard"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message copié dans le presse-papier"
           }
         }
       }
@@ -4375,6 +4747,12 @@
             "state" : "translated",
             "value" : "You aren't connected to internet"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous n’êtes pas connecté à internet"
+          }
         }
       }
     },
@@ -4384,6 +4762,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Network is now reachable again"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous êtes à nouveau connecté à internet"
           }
         }
       }
@@ -4445,6 +4829,12 @@
             "state" : "translated",
             "value" : "Next"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivant"
+          }
         }
       }
     },
@@ -4471,6 +4861,12 @@
             "state" : "translated",
             "value" : "Message received"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Message reçu"
+          }
         }
       }
     },
@@ -4481,6 +4877,12 @@
             "state" : "translated",
             "value" : "Missed call"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appel manqué"
+          }
         }
       }
     },
@@ -4490,6 +4892,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Operation in progress, please wait"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opération en cours, merci de patienter..."
           }
         }
       }
@@ -4553,6 +4961,12 @@
             "state" : "translated",
             "value" : "Categories"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Catégories"
+          }
         }
       }
     },
@@ -4562,6 +4976,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "QR code validated"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR code validé"
           }
         }
       }
@@ -4589,6 +5009,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ selected participants"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ participants selectionnés"
           }
         }
       }
@@ -4633,6 +5059,12 @@
             "state" : "translated",
             "value" : "SIP address copied into clipboard"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adresse SIP copiée dans le presse-papier"
+          }
         }
       }
     },
@@ -4643,6 +5075,12 @@
             "state" : "translated",
             "value" : "Display name"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom d'affichage"
+          }
         }
       }
     },
@@ -4652,6 +5090,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Domain"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Domaine"
           }
         }
       }
@@ -4665,6 +5109,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Start"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commencer"
           }
         }
       }
@@ -4695,6 +5145,12 @@
             "state" : "translated",
             "value" : "Unable to call, invalid address"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echec de l’appel, l’adresse est invalide"
+          }
         }
       }
     },
@@ -4704,6 +5160,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to retrieve configuration, invalid address"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echec de la configuration, l’adresse est invalide"
           }
         }
       }
@@ -4715,6 +5177,12 @@
             "state" : "translated",
             "value" : "Call failed"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echec de l’appel"
+          }
         }
       }
     },
@@ -4725,6 +5193,12 @@
             "state" : "translated",
             "value" : "Configuration failed"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echec de la configuration"
+          }
         }
       }
     },
@@ -4734,6 +5208,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Configuration successfully applied"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuration appliquée avec succè"
           }
         }
       }
@@ -4762,6 +5242,12 @@
             "state" : "translated",
             "value" : "Username error"
           }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur dans le nom d'utilisateur"
+          }
         }
       }
     },
@@ -4771,6 +5257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Skip"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passer"
           }
         }
       }
