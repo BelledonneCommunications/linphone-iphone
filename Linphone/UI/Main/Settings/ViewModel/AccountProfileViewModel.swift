@@ -36,22 +36,21 @@ class AccountProfileViewModel: ObservableObject {
 	func saveChangesWhenLeaving() {
 		CoreContext.shared.doOnCoreQueue { core in
 			let newParams = core.defaultAccount!.params?.clone()
-			print("getImagePath 0 \(self.displayName) \(newParams?.identityAddress?.displayName ?? "NIL")")
-			if self.displayName != newParams?.identityAddress?.displayName {
+			if (self.displayName != newParams?.identityAddress?.displayName)
+				&& (newParams?.identityAddress?.displayName != nil || !self.displayName.isEmpty) {
 				if let newIdentityAddress = newParams?.identityAddress?.clone() {
 					try? newIdentityAddress.setDisplayname(newValue: self.displayName)
 					try? newParams?.setIdentityaddress(newValue: newIdentityAddress)
 				}
 				
-				print("getImagePath 1 \(self.getImagePath().lastPathComponent)")
-				
-				if self.getImagePath().lastPathComponent.contains("-default") {
-					print("getImagePath 2")
-					self.saveImage(
-						image: ContactsManager.shared.textToImage(
-							firstName: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName, lastName: ""),
-						name: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName,
-						prefix: "-default")
+				if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
+					DispatchQueue.main.async {
+						self.saveImage(
+							image: ContactsManager.shared.textToImage(
+								firstName: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName, lastName: ""),
+							name: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName,
+							prefix: "-default")
+					}
 				}
 			}
 			

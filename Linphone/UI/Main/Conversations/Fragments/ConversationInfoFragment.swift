@@ -317,11 +317,19 @@ struct ConversationInfoFragment: View {
 														}
 														
 														VStack {
-															Text(participantConversationModel.name)
-																.foregroundStyle(Color.grayMain2c700)
-																.default_text_style(styleSize: 14)
-																.frame(maxWidth: .infinity, alignment: .leading)
-																.lineLimit(1)
+															if conversationViewModel.myParticipantConversationModel != nil && conversationViewModel.myParticipantConversationModel!.address != participantConversationModel.address {
+																Text(participantConversationModel.name)
+																	.foregroundStyle(Color.grayMain2c700)
+																	.default_text_style(styleSize: 14)
+																	.frame(maxWidth: .infinity, alignment: .leading)
+																	.lineLimit(1)
+															} else {
+																Text(accountProfileViewModel.displayName.isEmpty ? participantConversationModel.name : accountProfileViewModel.displayName)
+																	.foregroundStyle(Color.grayMain2c700)
+																	.default_text_style(styleSize: 14)
+																	.frame(maxWidth: .infinity, alignment: .leading)
+																	.lineLimit(1)
+															}
 															
 															let participantConversationModelIsAdmin = conversationViewModel.participantConversationModelAdmin.first(
 																where: {$0.address == participantConversationModel.address})
