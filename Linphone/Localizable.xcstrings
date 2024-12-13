@@ -3814,6 +3814,23 @@
         }
       }
     },
+    "manage_account_dialog_international_prefix_help_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick your country to allow Linphone to match your contacts."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez votre pays pour permettre à Linphone de faire le lien avec vos contacts."
+          }
+        }
+      }
+    },
     "manage_account_edit_picture" : {
       "localizations" : {
         "en" : {
@@ -3826,6 +3843,23 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Modifier l’image"
+          }
+        }
+      }
+    },
+    "manage_account_international_prefix" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "International Prefix"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indicatif international"
           }
         }
       }

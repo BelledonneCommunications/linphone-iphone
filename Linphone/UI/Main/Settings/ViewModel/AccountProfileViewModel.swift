@@ -54,11 +54,12 @@ class AccountProfileViewModel: ObservableObject {
 				}
 			}
 			
-			/*
-			newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
-			newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
-			newParams?.useInternationalPrefixForCallsAndChats = true
-			*/
+			if self.dialPlanSelected != nil
+				&& (self.dialPlanSelected!.countryCallingCode != newParams?.internationalPrefix || self.dialPlanSelected!.isoCountryCode != newParams?.internationalPrefixIsoCountryCode) {
+				newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
+				newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
+				newParams?.useInternationalPrefixForCallsAndChats = true
+			}
 			
 			core.defaultAccount!.params = newParams
 		}
@@ -105,8 +106,11 @@ class AccountProfileViewModel: ObservableObject {
 		}
 	}
 	
-	func changeDialPlan() {
-		
+	func updateDialPlan(newDialPlan: String) {
+		if let dialPlan = self.dialPlansList.first(where: { newDialPlan.contains($0.isoCountryCode) }) ??
+			self.dialPlansList.first(where: { newDialPlan.contains($0.countryCallingCode) }) {
+			self.dialPlanSelected = dialPlan
+		}
 	}
 	
 	func saveImage(image: UIImage, name: String, prefix: String) {
