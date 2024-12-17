@@ -321,7 +321,7 @@ struct ContentView: View {
 															.clipShape(Circle())
 													case .failure:
 														Image(uiImage: contactsManager.textToImage(
-															firstName: accountProfileViewModel.avatarModel?.name ?? "",
+															firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
 															lastName: ""))
 														.resizable()
 														.frame(width: avatarSize, height: avatarSize)
@@ -931,7 +931,7 @@ struct ContentView: View {
 					SideMenu(
 						accountProfileViewModel: accountProfileViewModel,
 						width: geometry.size.width / 5 * 4,
-						isOpen: self.sideMenuIsOpen,
+						isOpen: $sideMenuIsOpen,
 						menuClose: self.openMenu,
 						safeAreaInsets: geometry.safeAreaInsets,
 						isShowLoginFragment: $isShowLoginFragment,

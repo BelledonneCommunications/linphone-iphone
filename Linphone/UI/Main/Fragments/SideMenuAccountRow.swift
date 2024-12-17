@@ -28,6 +28,7 @@ struct SideMenuAccountRow: View {
 	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State private var navigateToOption = false
+	@Binding var isOpen: Bool
 	@Binding var isShowAccountProfileFragment: Bool
 	
 	private let avatarSize = 45.0
@@ -47,7 +48,7 @@ struct SideMenuAccountRow: View {
 						.clipShape(Circle())
 				case .failure:
 					Image(uiImage: contactsManager.textToImage(
-						firstName: accountProfileViewModel.avatarModel?.name ?? "",
+						firstName: model.avatarModel?.name ?? "",
 						lastName: ""))
 					.resizable()
 					.frame(width: avatarSize, height: avatarSize)
@@ -97,6 +98,8 @@ struct SideMenuAccountRow: View {
 				Menu {
 					Button {
 						withAnimation {
+							
+							isOpen = false
 							isShowAccountProfileFragment = true
 						}
 					} label: {

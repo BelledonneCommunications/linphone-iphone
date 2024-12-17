@@ -21,64 +21,64 @@ import linphonesw
 
 class AccountProfileViewModel: ObservableObject {
 	
-	let photoAvatarModelKey = "photo_avatar_model"
-	
-	@Published var avatarModel: ContactAvatarModel?
-	@Published var photoAvatarModel: String?
-	@Published var displayName: String = ""
-	
 	@Published var dialPlanValueSelected: String = "🇫🇷 France | +33"
 	var dialPlanSelected: DialPlan?
 	var dialPlansList: [DialPlan] = []
 	
+	var accountModelIndex: Int? = 0
+	
 	init() {}
 	
 	func saveChangesWhenLeaving() {
-		CoreContext.shared.doOnCoreQueue { core in
-			let newParams = core.defaultAccount!.params?.clone()
-			if (self.displayName != newParams?.identityAddress?.displayName)
-				&& (newParams?.identityAddress?.displayName != nil || !self.displayName.isEmpty) {
-				if let newIdentityAddress = newParams?.identityAddress?.clone() {
-					try? newIdentityAddress.setDisplayname(newValue: self.displayName)
-					try? newParams?.setIdentityaddress(newValue: newIdentityAddress)
-				}
-				
-				if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
-					DispatchQueue.main.async {
-						self.saveImage(
-							image: ContactsManager.shared.textToImage(
-								firstName: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName, lastName: ""),
-							name: self.displayName.isEmpty ? core.defaultAccount!.displayName() : self.displayName,
-							prefix: "-default")
+		if accountModelIndex != nil {
+			CoreContext.shared.doOnCoreQueue { _ in
+				let displayNameAccountModel = CoreContext.shared.accounts[self.accountModelIndex!].displayNameAvatar
+				let newParams = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.clone()
+				if (displayNameAccountModel != newParams?.identityAddress?.displayName)
+					&& (newParams?.identityAddress?.displayName != nil || !displayNameAccountModel.isEmpty) {
+					if let newIdentityAddress = newParams?.identityAddress?.clone() {
+						try? newIdentityAddress.setDisplayname(newValue: displayNameAccountModel)
+						try? newParams?.setIdentityaddress(newValue: newIdentityAddress)
+					}
+					
+					if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
+						DispatchQueue.main.async {
+							self.saveImage(
+								image: ContactsManager.shared.textToImage(
+									firstName: displayNameAccountModel.isEmpty ? CoreContext.shared.accounts[self.accountModelIndex!].account.displayName() : displayNameAccountModel, lastName: ""),
+								name: displayNameAccountModel.isEmpty ? CoreContext.shared.accounts[self.accountModelIndex!].account.displayName() : displayNameAccountModel,
+								prefix: "-default")
+						}
 					}
 				}
+				
+				if self.dialPlanSelected != nil
+					&& (self.dialPlanSelected!.countryCallingCode != newParams?.internationalPrefix || self.dialPlanSelected!.isoCountryCode != newParams?.internationalPrefixIsoCountryCode) {
+					newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
+					newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
+					newParams?.useInternationalPrefixForCallsAndChats = true
+				}
+				
+				CoreContext.shared.accounts[self.accountModelIndex!].account.params = newParams
 			}
-			
-			if self.dialPlanSelected != nil
-				&& (self.dialPlanSelected!.countryCallingCode != newParams?.internationalPrefix || self.dialPlanSelected!.isoCountryCode != newParams?.internationalPrefixIsoCountryCode) {
-				newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
-				newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
-				newParams?.useInternationalPrefixForCallsAndChats = true
-			}
-			
-			core.defaultAccount!.params = newParams
 		}
 	}
 	 
 	func setAvatarModel() {
-		CoreContext.shared.doOnCoreQueue { core in
-			if core.defaultAccount != nil {
-				let displayNameTmp = core.defaultAccount!.params?.identityAddress?.displayName ?? ""
-				let contactAddressTmp = core.defaultAccount!.params?.identityAddress?.asStringUriOnly() ?? ""
+		if accountModelIndex != nil {
+			CoreContext.shared.doOnCoreQueue { _ in
+				let photoAvatarAccountModel = CoreContext.shared.accounts[self.accountModelIndex!].photoAvatarModel
+				let displayNameTmp = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.displayName ?? ""
+				let contactAddressTmp = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.asStringUriOnly() ?? ""
 				var photoAvatarModelTmp = ""
 				
-				let prefix = core.defaultAccount!.params?.internationalPrefix ?? ""
-				let isoCountryCode = core.defaultAccount!.params?.internationalPrefixIsoCountryCode ?? ""
+				let prefix = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.internationalPrefix ?? ""
+				let isoCountryCode = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.internationalPrefixIsoCountryCode ?? ""
 				
 				var dialPlanValueSelectedTmp = ""
 				if !prefix.isEmpty || !isoCountryCode.isEmpty {
 					Log.info(
-						"$TAG Account \(core.defaultAccount!.params?.identityAddress?.asStringUriOnly() ?? "") prefix is \(prefix) \(isoCountryCode)"
+						"$TAG Account \(CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.asStringUriOnly() ?? "") prefix is \(prefix) \(isoCountryCode)"
 					)
 					
 					self.dialPlansList = Factory.Instance.dialPlans
@@ -90,16 +90,25 @@ class AccountProfileViewModel: ObservableObject {
 				
 				let preferences = UserDefaults.standard
 				
-				if preferences.object(forKey: self.photoAvatarModelKey) == nil {
-					preferences.set(self.photoAvatarModel ?? "", forKey: self.photoAvatarModelKey)
+				let accountDisplayName = CoreContext.shared.accounts[self.accountModelIndex!].account.displayName()
+				
+				let photoAvatarModelKey = "photo_avatar_model" + CoreContext.shared.accounts[self.accountModelIndex!].address
+				if preferences.object(forKey: photoAvatarModelKey) == nil {
+					preferences.set(photoAvatarAccountModel ?? "", forKey: photoAvatarModelKey)
 				} else {
-					photoAvatarModelTmp = preferences.string(forKey: self.photoAvatarModelKey)!
+					photoAvatarModelTmp = preferences.string(forKey: photoAvatarModelKey)!
 				}
 				
 				DispatchQueue.main.async {
-					self.avatarModel = ContactAvatarModel(friend: nil, name: displayNameTmp.isEmpty ? core.defaultAccount!.displayName() : displayNameTmp, address: contactAddressTmp, withPresence: false)
-					self.photoAvatarModel = photoAvatarModelTmp
-					self.displayName = displayNameTmp
+					CoreContext.shared.accounts[self.accountModelIndex!].avatarModel = ContactAvatarModel(
+						friend: nil,
+						name: displayNameTmp.isEmpty ? accountDisplayName : displayNameTmp,
+						address: contactAddressTmp,
+						withPresence: false
+					)
+					
+					CoreContext.shared.accounts[self.accountModelIndex!].photoAvatarModel = photoAvatarModelTmp
+					CoreContext.shared.accounts[self.accountModelIndex!].displayNameAvatar = displayNameTmp
 					self.dialPlanValueSelected = dialPlanValueSelectedTmp
 				}
 			}
@@ -118,14 +127,18 @@ class AccountProfileViewModel: ObservableObject {
 			return
 		}
 		
+		let photoAvatarModelKey = "photo_avatar_model" + CoreContext.shared.accounts[self.accountModelIndex ?? 0].address
+		
 		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
-			UserDefaults.standard.set(result, forKey: self.photoAvatarModelKey)
-			self.photoAvatarModel = result
+			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)
+			CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = result
 		}
 	}
 	
 	func getImagePath() -> URL {
-		let imagePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(self.photoAvatarModel ?? "Error")
+		let imagePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(
+			CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel ?? "Error"
+		)
 		
 		return imagePath
 	}

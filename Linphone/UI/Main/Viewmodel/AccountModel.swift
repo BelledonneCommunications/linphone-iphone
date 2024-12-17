@@ -30,6 +30,9 @@ class AccountModel: ObservableObject {
 	@Published var isDefaultAccount: Bool = false
 	@Published var displayName: String = ""
 	@Published var address: String = ""
+	@Published var avatarModel: ContactAvatarModel?
+	@Published var photoAvatarModel: String?
+	@Published var displayNameAvatar: String = ""
 	
 	private var accountDelegate: AccountDelegate?
 	private var coreDelegate: CoreDelegate?

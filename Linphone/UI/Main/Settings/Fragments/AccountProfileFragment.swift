@@ -20,6 +20,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+// swiftlint:disable type_body_length
 struct AccountProfileFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
@@ -35,6 +36,7 @@ struct AccountProfileFragment: View {
 	@State private var selectedImage: UIImage?
 	@State private var removedImage = false
 	@State private var isShowPopup = false
+	@State private var flag = true
 	
 	@FocusState var isDisplayNameFocused: Bool
 	
@@ -82,18 +84,19 @@ struct AccountProfileFragment: View {
 				
 				ScrollView {
 					VStack(spacing: 0) {
-						VStack(spacing: 0) {
-							if #unavailable(iOS 16.0) {
-								Rectangle()
-									.foregroundColor(Color.gray100)
-									.frame(height: 7)
-							}
-							
-							if accountProfileViewModel.avatarModel != nil {
+						if accountProfileViewModel.accountModelIndex != nil {
+							let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!]
+							VStack(spacing: 0) {
+								if #unavailable(iOS 16.0) {
+									Rectangle()
+										.foregroundColor(Color.gray100)
+										.frame(height: 7)
+								}
+								
 								VStack(spacing: 0) {
-									if accountProfileViewModel.avatarModel != nil
-										&& accountProfileViewModel.photoAvatarModel != nil
-										&& !accountProfileViewModel.photoAvatarModel!.isEmpty
+									if accountModel.avatarModel != nil
+										&& accountModel.photoAvatarModel != nil
+										&& !accountModel.photoAvatarModel!.isEmpty
 										&& selectedImage == nil && !removedImage {
 										
 										AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
@@ -109,7 +112,7 @@ struct AccountProfileFragment: View {
 													.clipShape(Circle())
 											case .failure:
 												Image(uiImage: contactsManager.textToImage(
-													firstName: accountProfileViewModel.avatarModel?.name ?? "",
+													firstName: accountModel.avatarModel?.name ?? "",
 													lastName: ""))
 												.resizable()
 												.frame(width: avatarSize, height: avatarSize)
@@ -120,7 +123,7 @@ struct AccountProfileFragment: View {
 										}
 									} else if selectedImage == nil {
 										Image(uiImage: contactsManager.textToImage(
-											firstName: accountProfileViewModel.avatarModel?.name ?? "",
+											firstName: accountModel.avatarModel?.name ?? "",
 											lastName: ""))
 										.resizable()
 										.frame(width: avatarSize, height: avatarSize)
@@ -133,10 +136,10 @@ struct AccountProfileFragment: View {
 											.clipShape(Circle())
 									}
 									
-									if accountProfileViewModel.avatarModel != nil
-										&& accountProfileViewModel.photoAvatarModel != nil
-										&& !accountProfileViewModel.photoAvatarModel!.isEmpty
-										&& (accountProfileViewModel.photoAvatarModel!.suffix(11) != "default.png" || selectedImage != nil)
+									if accountModel.avatarModel != nil
+										&& accountModel.photoAvatarModel != nil
+										&& !accountModel.photoAvatarModel!.isEmpty
+										&& (accountModel.photoAvatarModel!.suffix(11) != "default.png" || selectedImage != nil)
 										&& !removedImage {
 										HStack {
 											Spacer()
@@ -236,140 +239,226 @@ struct AccountProfileFragment: View {
 								.padding(.top, 10)
 								.padding(.bottom, 2)
 								.background(Color.gray100)
-							}
-							
-							HStack(alignment: .center) {
-								Text("manage_account_details_title")
-									.default_text_style_800(styleSize: 18)
-									.frame(maxWidth: .infinity, alignment: .leading)
 								
-								Spacer()
-								
-								Image(detailIsOpen ? "caret-up" : "caret-down")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-							}
-							.padding(.top, 30)
-							.padding(.bottom, 10)
-							.padding(.horizontal, 20)
-							.background(Color.gray100)
-							.onTapGesture {
-								withAnimation {
-									detailIsOpen.toggle()
+								HStack(alignment: .center) {
+									Text("manage_account_details_title")
+										.default_text_style_800(styleSize: 18)
+										.frame(maxWidth: .infinity, alignment: .leading)
+									
+									Spacer()
+									
+									Image(detailIsOpen ? "caret-up" : "caret-down")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c600)
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
 								}
-							}
-							
-							if detailIsOpen {
-								VStack(spacing: 0) {
-									VStack(spacing: 30) {
-										HStack {
-											Text(String(localized: "sip_address") + ":")
-												.default_text_style_600(styleSize: 14)
-											
-											Text(accountProfileViewModel.avatarModel!.address)
-												.foregroundStyle(Color.grayMain2c700)
-												.default_text_style(styleSize: 14)
-												.frame(maxWidth: .infinity, alignment: .leading)
-												.lineLimit(1)
-											
-											Button(action: {
-												UIPasteboard.general.setValue(
-													accountProfileViewModel.avatarModel!.address,
-													forPasteboardType: UTType.plainText.identifier
-												)
-												
-												ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
-												ToastViewModel.shared.displayToast.toggle()
-											}, label: {
-												Image("copy")
-													.resizable()
-													.frame(width: 20, height: 20)
-											})
-										}
-										
-										VStack(alignment: .leading) {
-											Text("sip_address_display_name")
-												.default_text_style_700(styleSize: 15)
-												.padding(.bottom, -5)
-											TextField(accountProfileViewModel.displayName, text: $accountProfileViewModel.displayName)
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isDisplayNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isDisplayNameFocused)
-										}
-										
-										VStack(alignment: .leading) {
+								.padding(.top, 30)
+								.padding(.bottom, 10)
+								.padding(.horizontal, 20)
+								.background(Color.gray100)
+								.onTapGesture {
+									withAnimation {
+										detailIsOpen.toggle()
+									}
+								}
+								
+								if detailIsOpen {
+									VStack(spacing: 0) {
+										VStack(spacing: 30) {
 											HStack {
-												Text("manage_account_international_prefix")
+												Text(String(localized: "sip_address") + ":")
 													.default_text_style_700(styleSize: 15)
-													.padding(.bottom, -5)
+												
+												Text(accountModel.avatarModel!.address)
+													.foregroundStyle(Color.grayMain2c700)
+													.default_text_style(styleSize: 15)
+													.frame(maxWidth: .infinity, alignment: .leading)
 													.lineLimit(1)
 												
 												Button(action: {
-													isShowPopup = true
+													UIPasteboard.general.setValue(
+														accountModel.avatarModel!.address,
+														forPasteboardType: UTType.plainText.identifier
+													)
+													
+													ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
+													ToastViewModel.shared.displayToast.toggle()
 												}, label: {
-													Image("question")
-														.renderingMode(.template)
+													Image("copy")
 														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
 														.frame(width: 20, height: 20)
 												})
-												.padding(.bottom, -5)
 											}
-											Menu {
-												Picker("", selection: $accountProfileViewModel.dialPlanValueSelected) {
-													ForEach(registerViewModel.dialPlansLabelList, id: \.self) { dialPlan in
-														Text(dialPlan).tag(dialPlan)
-													}
-												}
-												.onChange(of: accountProfileViewModel.dialPlanValueSelected) { newValue in
-													accountProfileViewModel.updateDialPlan(newDialPlan: newValue)
-												}
-											} label: {
+											
+											VStack(alignment: .leading) {
+												Text("sip_address_display_name")
+													.default_text_style_700(styleSize: 15)
+													.padding(.bottom, -5)
+												
+												TextField(accountModel.displayNameAvatar, text: Binding(
+														get: { accountModel.displayNameAvatar },
+														set: { newValue in
+															accountModel.displayNameAvatar = newValue
+														}
+													))
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isDisplayNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isDisplayNameFocused)
+											}
+											
+											VStack(alignment: .leading) {
 												HStack {
-													Text(accountProfileViewModel.dialPlanValueSelected)
-														.default_text_style(styleSize: 15)
-														.frame(maxWidth: .infinity, alignment: .leading)
+													Text("manage_account_international_prefix")
+														.default_text_style_700(styleSize: 15)
+														.padding(.bottom, -5)
+														.lineLimit(1)
 													
-													Image("caret-down")
-														.resizable()
-														.frame(width: 20, height: 20)
+													Button(action: {
+														isShowPopup = true
+													}, label: {
+														Image("question")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c600)
+															.frame(width: 20, height: 20)
+													})
+													.padding(.bottom, -5)
 												}
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(Color.gray200, lineWidth: 1)
-												)
+												Menu {
+													Picker("", selection: $accountProfileViewModel.dialPlanValueSelected) {
+														ForEach(registerViewModel.dialPlansLabelList, id: \.self) { dialPlan in
+															Text(dialPlan).tag(dialPlan)
+														}
+													}
+													.onChange(of: accountProfileViewModel.dialPlanValueSelected) { newValue in
+														accountProfileViewModel.updateDialPlan(newDialPlan: newValue)
+													}
+												} label: {
+													HStack {
+														Text(accountProfileViewModel.dialPlanValueSelected)
+															.default_text_style(styleSize: 15)
+															.frame(maxWidth: .infinity, alignment: .leading)
+														
+														Image("caret-down")
+															.resizable()
+															.frame(width: 20, height: 20)
+													}
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(Color.gray200, lineWidth: 1)
+													)
+												}
 											}
 										}
+										.padding(.vertical, 30)
+										.padding(.horizontal, 20)
+									}
+									.background(.white)
+									.cornerRadius(15)
+									.padding(.horizontal)
+									.zIndex(-1)
+									.transition(.move(edge: .top))
+								}
+								
+								VStack(spacing: 0) {
+									VStack(spacing: 15) {
+										HStack(spacing: 20) {
+											Toggle("", isOn: $flag)
+												.labelsHidden()
+											
+											Text("drawer_menu_account_connection_status_connected")
+												.default_text_style_700(styleSize: 15)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												.padding(.bottom, -5)
+												.lineLimit(1)
+										}
+										
+										Text("manage_account_international_prefix")
+											.default_text_style_700(styleSize: 15)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.padding(.bottom, -5)
+											.lineLimit(1)
 									}
 									.padding(.vertical, 30)
 									.padding(.horizontal, 20)
 								}
 								.background(.white)
 								.cornerRadius(15)
-								.padding(.horizontal)
-								.zIndex(-1)
-								.transition(.move(edge: .top))
+								.padding(.all)
+								
+								HStack(alignment: .center) {
+									Text("manage_account_details_title")
+										.default_text_style_800(styleSize: 18)
+										.frame(maxWidth: .infinity, alignment: .leading)
+									
+									Spacer()
+									
+									Image(detailIsOpen ? "caret-up" : "caret-down")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c600)
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+								}
+								.padding(.top, 10)
+								.padding(.bottom, 10)
+								.padding(.horizontal, 20)
+								.background(Color.gray100)
+								.onTapGesture {
+									withAnimation {
+										detailIsOpen.toggle()
+									}
+								}
+								
+								if detailIsOpen {
+									VStack(spacing: 0) {
+										VStack(spacing: 30) {
+											Text("manage_account_dialog_international_prefix_help_message")
+												.default_text_style_700(styleSize: 15)
+												.frame(maxWidth: .infinity, alignment: .leading)
+										}
+										.padding(.vertical, 30)
+										.padding(.horizontal, 20)
+									}
+									.background(.white)
+									.cornerRadius(15)
+									.padding(.horizontal)
+									.zIndex(-1)
+									.transition(.move(edge: .top))
+								}
+								
+								VStack(spacing: 0) {
+									VStack(spacing: 15) {
+										Text("manage_account_dialog_international_prefix_help_message")
+											.default_text_style_700(styleSize: 15)
+											.frame(maxWidth: .infinity, alignment: .leading)
+									}
+									.padding(.vertical, 30)
+									.padding(.horizontal, 20)
+								}
+								.background(.white)
+								.cornerRadius(15)
+								.padding(.all)
 							}
+							.frame(maxWidth: sharedMainViewModel.maxWidth)
 						}
-						.frame(maxWidth: sharedMainViewModel.maxWidth)
 					}
 					.frame(maxWidth: .infinity)
 				}
@@ -397,11 +486,13 @@ struct AccountProfileFragment: View {
 	}
 	
 	func saveImage() {
+		let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0]
 		accountProfileViewModel.saveImage(
 			image: selectedImage
 			?? ContactsManager.shared.textToImage(
-				firstName: accountProfileViewModel.avatarModel!.name, lastName: ""),
-			name: accountProfileViewModel.avatarModel!.name,
+				firstName: accountModel.avatarModel!.name, lastName: ""),
+			name: accountModel.avatarModel!.name,
 			prefix: ((selectedImage == nil) ? "-default" : ""))
 	}
 }
+// swiftlint:enable type_body_length

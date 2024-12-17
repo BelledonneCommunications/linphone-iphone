@@ -47,6 +47,7 @@ struct ConversationInfoFragment: View {
 	@State private var participantListIsOpen = true
 	
 	var body: some View {
+		let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0]
 		NavigationView {
 			GeometryReader { geometry in
 				if conversationViewModel.displayedConversation != nil {
@@ -305,7 +306,7 @@ struct ConversationInfoFragment: View {
 																		.clipShape(Circle())
 																case .failure:
 																	Image(uiImage: contactsManager.textToImage(
-																		firstName: accountProfileViewModel.avatarModel?.name ?? "",
+																		firstName: accountModel.avatarModel?.name ?? "",
 																		lastName: ""))
 																	.resizable()
 																	.frame(width: avatarSize, height: avatarSize)
@@ -324,7 +325,7 @@ struct ConversationInfoFragment: View {
 																	.frame(maxWidth: .infinity, alignment: .leading)
 																	.lineLimit(1)
 															} else {
-																Text(accountProfileViewModel.displayName.isEmpty ? participantConversationModel.name : accountProfileViewModel.displayName)
+																Text(accountModel.displayName.isEmpty ? participantConversationModel.name : accountModel.displayName)
 																	.foregroundStyle(Color.grayMain2c700)
 																	.default_text_style(styleSize: 14)
 																	.frame(maxWidth: .infinity, alignment: .leading)
