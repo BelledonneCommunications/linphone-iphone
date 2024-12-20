@@ -265,7 +265,7 @@ class ConversationModel: ObservableObject, Identifiable {
 					
 					subjectTmp = self.chatRoom.participants.first!.address!.displayName != nil
 					? self.chatRoom.participants.first!.address!.displayName!
-					: (self.chatRoom.participants.first!.address!.username ?? self.chatRoom.participants.first!.address!.asStringUriOnly())
+					: (self.chatRoom.participants.first!.address!.username ?? String(self.chatRoom.participants.first!.address!.asStringUriOnly().dropFirst(4)))
 					
 				}
 			}

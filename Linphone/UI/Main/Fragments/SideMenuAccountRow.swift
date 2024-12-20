@@ -35,7 +35,7 @@ struct SideMenuAccountRow: View {
 	
 	var body: some View {
 		HStack {
-			AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
+			AsyncImage(url: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].imagePathAvatar) { image in
 				switch image {
 				case .empty:
 					ProgressView()

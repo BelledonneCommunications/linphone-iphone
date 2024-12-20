@@ -42,11 +42,13 @@ class AccountProfileViewModel: ObservableObject {
 					}
 					
 					if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
+						let usernameTmp = CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
+						
 						DispatchQueue.main.async {
 							self.saveImage(
 								image: ContactsManager.shared.textToImage(
-									firstName: displayNameAccountModel.isEmpty ? CoreContext.shared.accounts[self.accountModelIndex!].account.displayName() : displayNameAccountModel, lastName: ""),
-								name: displayNameAccountModel.isEmpty ? CoreContext.shared.accounts[self.accountModelIndex!].account.displayName() : displayNameAccountModel,
+									firstName: displayNameAccountModel.isEmpty ? usernameTmp : displayNameAccountModel, lastName: ""),
+								name: usernameTmp,
 								prefix: "-default")
 						}
 					}
@@ -67,10 +69,8 @@ class AccountProfileViewModel: ObservableObject {
 	func setAvatarModel() {
 		if accountModelIndex != nil {
 			CoreContext.shared.doOnCoreQueue { _ in
-				let photoAvatarAccountModel = CoreContext.shared.accounts[self.accountModelIndex!].photoAvatarModel
 				let displayNameTmp = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.displayName ?? ""
 				let contactAddressTmp = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.asStringUriOnly() ?? ""
-				var photoAvatarModelTmp = ""
 				
 				let prefix = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.internationalPrefix ?? ""
 				let isoCountryCode = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.internationalPrefixIsoCountryCode ?? ""
@@ -88,16 +88,7 @@ class AccountProfileViewModel: ObservableObject {
 					}
 				}
 				
-				let preferences = UserDefaults.standard
-				
 				let accountDisplayName = CoreContext.shared.accounts[self.accountModelIndex!].account.displayName()
-				
-				let photoAvatarModelKey = "photo_avatar_model" + CoreContext.shared.accounts[self.accountModelIndex!].address
-				if preferences.object(forKey: photoAvatarModelKey) == nil {
-					preferences.set(photoAvatarAccountModel ?? "", forKey: photoAvatarModelKey)
-				} else {
-					photoAvatarModelTmp = preferences.string(forKey: photoAvatarModelKey)!
-				}
 				
 				DispatchQueue.main.async {
 					CoreContext.shared.accounts[self.accountModelIndex!].avatarModel = ContactAvatarModel(
@@ -107,8 +98,6 @@ class AccountProfileViewModel: ObservableObject {
 						withPresence: false
 					)
 					
-					CoreContext.shared.accounts[self.accountModelIndex!].photoAvatarModel = photoAvatarModelTmp
-					CoreContext.shared.accounts[self.accountModelIndex!].displayNameAvatar = displayNameTmp
 					self.dialPlanValueSelected = dialPlanValueSelectedTmp
 				}
 			}
@@ -127,11 +116,20 @@ class AccountProfileViewModel: ObservableObject {
 			return
 		}
 		
-		let photoAvatarModelKey = "photo_avatar_model" + CoreContext.shared.accounts[self.accountModelIndex ?? 0].address
+		let photoAvatarModelKey = "photo_avatar_model" + CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
 		
 		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
 			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)
-			CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = result
+			
+			CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = ""
+			CoreContext.shared.accounts[self.accountModelIndex ?? 0].imagePathAvatar = nil
+			NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
+			
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = result
+				CoreContext.shared.accounts[self.accountModelIndex ?? 0].imagePathAvatar = CoreContext.shared.accounts[self.accountModelIndex ?? 0].getImagePath()
+				NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
+			}
 		}
 	}
 	

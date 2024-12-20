@@ -33,6 +33,8 @@ class AccountModel: ObservableObject {
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var photoAvatarModel: String?
 	@Published var displayNameAvatar: String = ""
+	@Published var usernaneAvatar: String = ""
+	@Published var imagePathAvatar: URL?
 	
 	private var accountDelegate: AccountDelegate?
 	private var coreDelegate: CoreDelegate?
@@ -78,6 +80,21 @@ class AccountModel: ObservableObject {
 		}
 		let displayName = account.displayName()
 		let address = account.params?.identityAddress?.asString()
+		
+		let displayNameTmp = account.params?.identityAddress?.displayName ?? ""
+		let usernaneAvatarTmp = account.contactAddress?.username ?? ""
+		var photoAvatarModelTmp = ""
+		
+		let preferences = UserDefaults.standard
+		
+		let photoAvatarModelKey = "photo_avatar_model" + usernaneAvatarTmp
+		
+		if preferences.object(forKey: photoAvatarModelKey) == nil {
+			preferences.set(photoAvatarModelKey, forKey: photoAvatarModelKey)
+		} else {
+			photoAvatarModelTmp = preferences.string(forKey: photoAvatarModelKey)!
+		}
+		
 		DispatchQueue.main.async { [self] in
 			switch state {
 			case .Cleared, .None:
@@ -99,6 +116,11 @@ class AccountModel: ObservableObject {
 			isDefaultAccount = isDefault
 			self.displayName = displayName
 			address.map {self.address = $0}
+			
+			photoAvatarModel = photoAvatarModelTmp
+			displayNameAvatar = displayNameTmp
+			usernaneAvatar = usernaneAvatarTmp
+			imagePathAvatar = getImagePath()
 		}
 	}
 	
@@ -113,5 +135,13 @@ class AccountModel: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { _ in
 			self.account.refreshRegister()
 		}
+	}
+	
+	func getImagePath() -> URL {
+		let imagePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(
+			photoAvatarModel ?? "Error"
+		)
+		
+		return imagePath
 	}
 }

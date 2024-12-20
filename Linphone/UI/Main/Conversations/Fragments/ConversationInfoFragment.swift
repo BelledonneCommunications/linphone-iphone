@@ -293,7 +293,7 @@ struct ConversationInfoFragment: View {
 															Avatar(contactAvatarModel: participantConversationModel, avatarSize: 50)
 														} else {
 															let avatarSize = 50.0
-															AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
+															AsyncImage(url: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].imagePathAvatar) { image in
 																switch image {
 																case .empty:
 																	ProgressView()

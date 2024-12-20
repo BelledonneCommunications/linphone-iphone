@@ -79,10 +79,13 @@ struct ContentView: View {
 	@State private var isShowLoginFragment: Bool = false
 	
 	private let avatarSize = 45.0
+	@State private var imagePath: URL?
 	
 	var body: some View {
 		let pub = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ContactLoaded"))
+		let imageChanged = NotificationCenter.default
+			.publisher(for: NSNotification.Name("ImageChanged"))
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
 				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
@@ -308,30 +311,41 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
-												AsyncImage(url: accountProfileViewModel.getImagePath()) { image in
-													switch image {
-													case .empty:
-														ProgressView()
-															.frame(width: avatarSize, height: avatarSize)
-													case .success(let image):
-														image
+												if (accountProfileViewModel.accountModelIndex ?? 0) < CoreContext.shared.accounts.count {
+													AsyncImage(url: imagePath) { image in
+														switch image {
+														case .empty:
+															ProgressView()
+																.frame(width: avatarSize, height: avatarSize)
+														case .success(let image):
+															image
+																.resizable()
+																.aspectRatio(contentMode: .fill)
+																.frame(width: avatarSize, height: avatarSize)
+																.clipShape(Circle())
+														case .failure:
+															Image(uiImage: contactsManager.textToImage(
+																firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
+																lastName: ""))
 															.resizable()
-															.aspectRatio(contentMode: .fill)
 															.frame(width: avatarSize, height: avatarSize)
 															.clipShape(Circle())
-													case .failure:
-														Image(uiImage: contactsManager.textToImage(
-															firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
-															lastName: ""))
-														.resizable()
-														.frame(width: avatarSize, height: avatarSize)
-														.clipShape(Circle())
-													@unknown default:
-														EmptyView()
+														@unknown default:
+															EmptyView()
+														}
 													}
-												}
-												.onTapGesture {
-													openMenu()
+													.onTapGesture {
+														openMenu()
+													}
+													.onAppear {
+														imagePath = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].getImagePath()
+													}
+													.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].usernaneAvatar) { _ in
+														imagePath = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].getImagePath()
+													}
+													.onReceive(imageChanged) { _ in
+														imagePath = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].getImagePath()
+													}
 												}
 												
 												Text(String(localized: index == 0 ? "bottom_navigation_contacts_label" : (index == 1 ? "bottom_navigation_calls_label" : (index == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
@@ -1338,6 +1352,9 @@ struct ContentView: View {
 		.onChange(of: scenePhase) { newPhase in
 			CoreContext.shared.enteredForeground = newPhase == .active
 			orientation = UIDevice.current.orientation
+			if newPhase == .active {
+				accountProfileViewModel.setAvatarModel()
+			}
 		}
 	}
 	
