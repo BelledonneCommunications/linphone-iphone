@@ -84,7 +84,7 @@ struct AccountProfileFragment: View {
 				
 				ScrollView {
 					VStack(spacing: 0) {
-						if accountProfileViewModel.accountModelIndex != nil {
+						if accountProfileViewModel.accountModelIndex != nil && CoreContext.shared.accounts.count > accountProfileViewModel.accountModelIndex! {
 							let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!]
 							VStack(spacing: 0) {
 								if #unavailable(iOS 16.0) {
@@ -382,8 +382,13 @@ struct AccountProfileFragment: View {
 								VStack(spacing: 0) {
 									VStack(spacing: 15) {
 										HStack(spacing: 20) {
-											Toggle("", isOn: $flag)
-												.labelsHidden()
+											Toggle("", isOn: Binding(
+												get: { accountModel.isRegistrered },
+												set: { newValue in
+													accountProfileViewModel.toggleRegister()
+												}
+											))
+											.labelsHidden()
 											
 											Text(accountModel.humanReadableRegistrationState)
 												.default_text_style_700(styleSize: 15)
@@ -392,11 +397,10 @@ struct AccountProfileFragment: View {
 												.lineLimit(1)
 										}
 										
-										Text("manage_account_international_prefix")
-											.default_text_style_700(styleSize: 15)
+										Text(accountModel.summary)
+											.default_text_style(styleSize: 15)
 											.frame(maxWidth: .infinity, alignment: .leading)
 											.padding(.bottom, -5)
-											.lineLimit(1)
 									}
 									.padding(.vertical, 30)
 									.padding(.horizontal, 20)

@@ -3880,6 +3880,74 @@
         }
       }
     },
+    "manage_account_status_cleared_summary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account has been disabled, you won't receive any call or message."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compte désactivé, vous ne recevrez ni appel ni message."
+          }
+        }
+      }
+    },
+    "manage_account_status_connected_summary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This account in online, everybody can call you."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous êtes en ligne, on peut vous joindre."
+          }
+        }
+      }
+    },
+    "manage_account_status_failed_summary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account connection failed, check your settings."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur de connexion, vérifiez vos paramètres."
+          }
+        }
+      }
+    },
+    "manage_account_status_progress_summary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account is connecting to the server, please wait…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion en cours, merci de patienter…"
+          }
+        }
+      }
+    },
     "manage_account_title" : {
       "extractionState" : "manual",
       "localizations" : {

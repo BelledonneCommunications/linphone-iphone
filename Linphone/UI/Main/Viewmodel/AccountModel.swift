@@ -25,7 +25,9 @@ import Combine
 class AccountModel: ObservableObject {
 	let account: Account
 	@Published var humanReadableRegistrationState: String = ""
+	@Published var summary: String = ""
 	@Published var registrationStateAssociatedUIColor: Color = .clear
+	@Published var isRegistrered: Bool = false
 	@Published var notificationsCount: Int = 0
 	@Published var isDefaultAccount: Bool = false
 	@Published var displayName: String = ""
@@ -99,20 +101,27 @@ class AccountModel: ObservableObject {
 			switch state {
 			case .Cleared, .None:
 				humanReadableRegistrationState = "drawer_menu_account_connection_status_cleared".localized()
+				summary = "manage_account_status_cleared_summary".localized()
 				registrationStateAssociatedUIColor = .orangeWarning600
 			case .Progress:
 				humanReadableRegistrationState = "drawer_menu_account_connection_status_progress".localized()
+				summary = "manage_account_status_progress_summary".localized()
 				registrationStateAssociatedUIColor = .greenSuccess500
 			case .Failed:
 				humanReadableRegistrationState = "drawer_menu_account_connection_status_failed".localized()
+				summary = "manage_account_status_failed_summary".localized()
 				registrationStateAssociatedUIColor = .redDanger500
 			case .Ok:
 				humanReadableRegistrationState = "drawer_menu_account_connection_status_connected".localized()
+				summary = "manage_account_status_connected_summary".localized()
 				registrationStateAssociatedUIColor = .greenSuccess500
 			case .Refreshing:
 				humanReadableRegistrationState = "drawer_menu_account_connection_status_refreshing".localized()
+				summary = "manage_account_status_progress_summary".localized()
 				registrationStateAssociatedUIColor = .grayMain2c500
 			}
+			
+			isRegistrered = state == .Ok
 			isDefaultAccount = isDefault
 			self.displayName = displayName
 			address.map {self.address = $0}

@@ -35,88 +35,90 @@ struct SideMenuAccountRow: View {
 	
 	var body: some View {
 		HStack {
-			AsyncImage(url: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].imagePathAvatar) { image in
-				switch image {
-				case .empty:
-					ProgressView()
-						.frame(width: avatarSize, height: avatarSize)
-				case .success(let image):
-					image
+			if accountProfileViewModel.accountModelIndex != nil && CoreContext.shared.accounts.count > accountProfileViewModel.accountModelIndex! {
+				AsyncImage(url: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].imagePathAvatar) { image in
+					switch image {
+					case .empty:
+						ProgressView()
+							.frame(width: avatarSize, height: avatarSize)
+					case .success(let image):
+						image
+							.resizable()
+							.aspectRatio(contentMode: .fill)
+							.frame(width: avatarSize, height: avatarSize)
+							.clipShape(Circle())
+					case .failure:
+						Image(uiImage: contactsManager.textToImage(
+							firstName: model.avatarModel?.name ?? "",
+							lastName: ""))
 						.resizable()
-						.aspectRatio(contentMode: .fill)
 						.frame(width: avatarSize, height: avatarSize)
 						.clipShape(Circle())
-				case .failure:
-					Image(uiImage: contactsManager.textToImage(
-						firstName: model.avatarModel?.name ?? "",
-						lastName: ""))
-					.resizable()
-					.frame(width: avatarSize, height: avatarSize)
-					.clipShape(Circle())
-				@unknown default:
-					EmptyView()
+					@unknown default:
+						EmptyView()
+					}
 				}
-			}
-			.padding(.leading, 6)
-			
-			VStack {
-				Text(model.displayName)
-					.default_text_style_grey_400(styleSize: 14)
-					.lineLimit(1)
-					.frame(maxWidth: .infinity, alignment: .leading)
+				.padding(.leading, 6)
 				
 				VStack {
-					Text(model.humanReadableRegistrationState)
-						.default_text_style_uncolored(styleSize: 12)
-						.foregroundStyle(model.registrationStateAssociatedUIColor)
-				}
-				.padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-				.background(Color.grayMain2c200)
-				.cornerRadius(12)
-				.frame(height: 20)
-				.frame(maxWidth: .infinity, alignment: .leading)
-				.onTapGesture {
-					model.refreshRegiter()
-				}
-			}
-			.padding(.leading, 4)
-			
-			Spacer()
-			
-			HStack {
-				if model.notificationsCount > 0 {
-					Text(String(model.notificationsCount))
-						.foregroundStyle(.white)
-						.default_text_style(styleSize: 12)
+					Text(model.displayName)
+						.default_text_style_grey_400(styleSize: 14)
 						.lineLimit(1)
-						.frame(width: 20, height: 20)
-						.background(Color.redDanger500)
-						.cornerRadius(50)
 						.frame(maxWidth: .infinity, alignment: .leading)
+					
+					VStack {
+						Text(model.humanReadableRegistrationState)
+							.default_text_style_uncolored(styleSize: 12)
+							.foregroundStyle(model.registrationStateAssociatedUIColor)
+					}
+					.padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+					.background(Color.grayMain2c200)
+					.cornerRadius(12)
+					.frame(height: 20)
+					.frame(maxWidth: .infinity, alignment: .leading)
+					.onTapGesture {
+						model.refreshRegiter()
+					}
 				}
+				.padding(.leading, 4)
 				
-				Menu {
-					Button {
-						withAnimation {
-							
-							isOpen = false
-							isShowAccountProfileFragment = true
+				Spacer()
+				
+				HStack {
+					if model.notificationsCount > 0 {
+						Text(String(model.notificationsCount))
+							.foregroundStyle(.white)
+							.default_text_style(styleSize: 12)
+							.lineLimit(1)
+							.frame(width: 20, height: 20)
+							.background(Color.redDanger500)
+							.cornerRadius(50)
+							.frame(maxWidth: .infinity, alignment: .leading)
+					}
+					
+					Menu {
+						Button {
+							withAnimation {
+								
+								isOpen = false
+								isShowAccountProfileFragment = true
+							}
+						} label: {
+							Label("drawer_menu_manage_account", systemImage: "arrow.right.circle")
 						}
 					} label: {
-						Label("drawer_menu_manage_account", systemImage: "arrow.right.circle")
+						Image("dots-three-vertical")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundColor(Color.gray)
+							.scaledToFit()
+							.frame(height: 30)
 					}
-				} label: {
-					Image("dots-three-vertical")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundColor(Color.gray)
-						.scaledToFit()
-						.frame(height: 30)
 				}
+				.frame(width: 64, alignment: .trailing)
+				.padding(.top, 12)
+				.padding(.bottom, 12)
 			}
-			.frame(width: 64, alignment: .trailing)
-			.padding(.top, 12)
-			.padding(.bottom, 12)
 		}
 		.frame(height: 61)
 		.background(model.isDefaultAccount ? Color.grayMain2c100 : .clear)

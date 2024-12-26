@@ -21,6 +21,8 @@ import linphonesw
 
 class AccountProfileViewModel: ObservableObject {
 	
+	static let TAG = "[AccountProfileViewModel]"
+	
 	@Published var dialPlanValueSelected: String = "🇫🇷 France | +33"
 	var dialPlanSelected: DialPlan?
 	var dialPlansList: [DialPlan] = []
@@ -78,7 +80,7 @@ class AccountProfileViewModel: ObservableObject {
 				var dialPlanValueSelectedTmp = ""
 				if !prefix.isEmpty || !isoCountryCode.isEmpty {
 					Log.info(
-						"$TAG Account \(CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.asStringUriOnly() ?? "") prefix is \(prefix) \(isoCountryCode)"
+						"\(AccountProfileViewModel.TAG) Account \(CoreContext.shared.accounts[self.accountModelIndex!].account.params?.identityAddress?.asStringUriOnly() ?? "") prefix is \(prefix) \(isoCountryCode)"
 					)
 					
 					self.dialPlansList = Factory.Instance.dialPlans
@@ -139,5 +141,20 @@ class AccountProfileViewModel: ObservableObject {
 		)
 		
 		return imagePath
+	}
+	
+	func toggleRegister() {
+		CoreContext.shared.doOnCoreQueue { _ in
+			let account = CoreContext.shared.accounts[self.accountModelIndex ?? 0].account
+			if let params = account.params {
+				if let copy = params.clone() {
+					copy.registerEnabled = !params.registerEnabled
+					Log.info(
+						"\(AccountProfileViewModel.TAG) Account registration is now \(copy.registerEnabled ? "enabled" : "disabled") for account \(params.identityAddress?.asStringUriOnly())"
+					)
+					account.params = copy
+				}
+			}
+		}
 	}
 }
