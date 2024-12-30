@@ -23,6 +23,8 @@ import SwiftUI
 import Combine
 
 class AccountModel: ObservableObject {
+	static let TAG = "[AccountModel]"
+	
 	let account: Account
 	@Published var humanReadableRegistrationState: String = ""
 	@Published var summary: String = ""
@@ -38,8 +40,13 @@ class AccountModel: ObservableObject {
 	@Published var usernaneAvatar: String = ""
 	@Published var imagePathAvatar: URL?
 	
+	@Published var devices: [AccountDeviceModel] = []
+	
 	private var accountDelegate: AccountDelegate?
 	private var coreDelegate: CoreDelegate?
+	
+	private var accountManagerServices: AccountManagerServices?
+	private var requestDelegate: AccountManagerServicesRequestDelegate?
 	
 	init(account: Account, core: Core) {
 		self.account = account
@@ -82,6 +89,8 @@ class AccountModel: ObservableObject {
 		}
 		let displayName = account.displayName()
 		let address = account.params?.identityAddress?.asString()
+		
+		self.requestDevicesList()
 		
 		let displayNameTmp = account.params?.identityAddress?.displayName ?? ""
 		let usernaneAvatarTmp = account.contactAddress?.username ?? ""
@@ -152,5 +161,115 @@ class AccountModel: ObservableObject {
 		)
 		
 		return imagePath
+	}
+	
+	func requestDevicesList() {
+		if account.params != nil && account.params!.identityAddress != nil, let identityAddress = account.params!.identityAddress {
+			Log.info(
+				"\(AccountModel.TAG) Request devices list for identity address \(identityAddress.asStringUriOnly())"
+			)
+			CoreContext.shared.doOnCoreQueue { core in
+				do {
+					self.accountManagerServices = try core.createAccountManagerServices()
+					if self.accountManagerServices != nil {
+						self.accountManagerServices!.language = Locale.current.identifier
+						
+						do {
+							let request = try self.accountManagerServices!.createGetDevicesListRequest(sipIdentity: identityAddress)
+							self.addDelegate(request: request)
+						} catch {
+							print("\(AccountModel.TAG) Failed to create request: \(error.localizedDescription)")
+						}
+					}
+				} catch {
+					
+				}
+			}
+		}
+	}
+	
+	func addDelegate(request: AccountManagerServicesRequest) {
+		self.requestDelegate = AccountManagerServicesRequestDelegateStub(
+			onRequestSuccessful: { (request: AccountManagerServicesRequest, data: String) in
+				Log.info("\(AccountModel.TAG) Request \(request) was successful, data is \(data)")
+			}, onRequestError: { (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+				Log.error(
+					"\(AccountModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
+				)
+				// TODO Display Error Toast
+			}, onDevicesListFetched: { (request: AccountManagerServicesRequest, accountDevices: [AccountDevice]) in
+				Log.info("\(AccountModel.TAG) Fetched \(accountDevices.count) devices for our account")
+				var devicesList: [AccountDeviceModel] = []
+				accountDevices.forEach { accountDevice in
+					devicesList.append(AccountDeviceModel(accountDevice: accountDevice))
+				}
+				
+				request.removeDelegate(delegate: self.requestDelegate!)
+				DispatchQueue.main.async {
+					self.devices = devicesList
+				}
+			}
+		)
+		
+		request.addDelegate(delegate: self.requestDelegate!)
+		request.submit()
+	}
+	
+	func removeDevice(deviceIndex: Int) {
+		let removedDevice = self.devices[deviceIndex].accountDevice
+		self.devices.remove(at: deviceIndex)
+		if account.params != nil && account.params!.identityAddress != nil, let identityAddress = account.params!.identityAddress {
+			Log.info(
+				"\(AccountModel.TAG) Delete device for identity address \(identityAddress.asStringUriOnly())"
+			)
+			CoreContext.shared.doOnCoreQueue { core in
+				do {
+					self.accountManagerServices = try core.createAccountManagerServices()
+					if self.accountManagerServices != nil {
+						self.accountManagerServices!.language = Locale.current.identifier
+						
+						do {
+							let request = try self.accountManagerServices!.createDeleteDeviceRequest(sipIdentity: identityAddress, device: removedDevice)
+							self.addDelegate(request: request)
+						} catch {
+							print("\(AccountModel.TAG) Failed to create request: \(error.localizedDescription)")
+						}
+					}
+				} catch {
+					
+				}
+			}
+		}
+	}
+}
+
+class AccountDeviceModel: ObservableObject {
+	let accountDevice: AccountDevice
+	@Published var deviceName: String = ""
+	@Published var lastDate: String = ""
+	@Published var lastTime: String = ""
+	@Published var isMobileDevice: Bool = true
+	
+	init(accountDevice: AccountDevice) {
+		self.accountDevice = accountDevice
+		self.deviceName = accountDevice.name ?? ""
+		
+		let timeInterval = TimeInterval(accountDevice.lastUpdateTimestamp ?? 0)
+		let dateTmp = Date(timeIntervalSince1970: timeInterval)
+		
+		let dateFormat = DateFormatter()
+		dateFormat.dateFormat = Locale.current.identifier == "fr_FR" ? "dd/MM/YYYY" : "MM/dd/YYYY"
+		let date = dateFormat.string(from: dateTmp)
+		
+		let dateFormatBis = DateFormatter()
+		dateFormatBis.dateFormat = "HH:mm"
+		let time = dateFormatBis.string(from: dateTmp)
+		
+		self.lastDate = date
+		self.lastTime = time
+		
+		self.isMobileDevice = accountDevice.userAgent.contains("LinphoneAndroid") || accountDevice.userAgent.contains(
+			"LinphoneiOS"
+		)
 	}
 }

@@ -31,6 +31,7 @@ struct AccountProfileFragment: View {
 	
 	@Binding var isShowAccountProfileFragment: Bool
 	@State var detailIsOpen: Bool = true
+	@State var deviceIsOpen: Bool = false
 	
 	@State private var showPhotoPicker = false
 	@State private var selectedImage: UIImage?
@@ -384,7 +385,7 @@ struct AccountProfileFragment: View {
 										HStack(spacing: 20) {
 											Toggle("", isOn: Binding(
 												get: { accountModel.isRegistrered },
-												set: { newValue in
+												set: { _ in
 													accountProfileViewModel.toggleRegister()
 												}
 											))
@@ -408,46 +409,123 @@ struct AccountProfileFragment: View {
 								.background(.white)
 								.cornerRadius(15)
 								.padding(.all)
+								.background(Color.gray100)
 								
-								/*
 								HStack(alignment: .center) {
-									Text("manage_account_details_title")
+									Text("manage_account_devices_title")
 										.default_text_style_800(styleSize: 18)
 										.frame(maxWidth: .infinity, alignment: .leading)
 									
 									Spacer()
 									
-									Image(detailIsOpen ? "caret-up" : "caret-down")
+									Image(deviceIsOpen ? "caret-up" : "caret-down")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(Color.grayMain2c600)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
 								}
-								.padding(.top, 10)
-								.padding(.bottom, 10)
+								.padding(.vertical, 10)
 								.padding(.horizontal, 20)
 								.background(Color.gray100)
 								.onTapGesture {
 									withAnimation {
-										detailIsOpen.toggle()
+										deviceIsOpen.toggle()
 									}
 								}
 								
-								if detailIsOpen {
+								if deviceIsOpen {
 									VStack(spacing: 0) {
-										VStack(spacing: 30) {
-											Text("manage_account_dialog_international_prefix_help_message")
-												.default_text_style_700(styleSize: 15)
-												.frame(maxWidth: .infinity, alignment: .leading)
+										VStack(spacing: 15) {
+											ForEach(accountModel.devices.indices, id: \.self) { index in
+												VStack {
+													HStack {
+														Image(accountModel.devices[index].isMobileDevice ? "device-mobile-camera" : "desktop")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c600)
+															.frame(width: 25, height: 25, alignment: .leading)
+														
+														Text(accountModel.devices[index].deviceName)
+															.default_text_style_700(styleSize: 15)
+															.lineLimit(1)
+															.frame(maxWidth: .infinity, alignment: .leading)
+														
+														Button(action: {
+															deviceIsOpen = false
+															accountModel.removeDevice(deviceIndex: index)
+															deviceIsOpen = true
+														}, label: {
+															HStack {
+																Image("trash-simple")
+																	.renderingMode(.template)
+																	.resizable()
+																	.foregroundStyle(Color.orangeMain500)
+																	.frame(width: 20, height: 20)
+																
+																Text("manage_account_device_remove")
+																	.default_text_style_orange_500(styleSize: 14)
+																	.frame(height: 35)
+															}
+															
+														})
+														.padding(.horizontal, 10)
+														.background(Color.orangeMain100)
+														.cornerRadius(60)
+													}
+													.padding(.bottom, 10)
+													
+													Text("manage_account_device_last_connection")
+														.default_text_style_700(styleSize: 15)
+														.lineLimit(1)
+														.frame(maxWidth: .infinity, alignment: .leading)
+													
+													HStack {
+														Image("calendar-blank")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c600)
+															.frame(width: 25, height: 25, alignment: .leading)
+														
+														Text(accountModel.devices[index].lastDate)
+															.default_text_style(styleSize: 15)
+															.lineLimit(1)
+															.frame(maxWidth: .infinity, alignment: .leading)
+														
+														Image("clock")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c600)
+															.frame(width: 25, height: 25, alignment: .leading)
+														
+														Text(accountModel.devices[index].lastTime)
+															.default_text_style(styleSize: 15)
+															.lineLimit(1)
+															.frame(maxWidth: .infinity, alignment: .leading)
+													}
+												}
+												.padding(.all, 20)
+												.background(Color.gray100)
+												.cornerRadius(15)
+												
+											}
 										}
-										.padding(.vertical, 30)
-										.padding(.horizontal, 20)
+										.padding(.all, 20)
+										.frame(maxWidth: .infinity)
+										.overlay(
+											VStack {
+												if accountModel.devices.indices.isEmpty {
+													Text("manage_account_no_device")
+														.default_text_style_500(styleSize: 16)
+												}
+											}
+												.padding(.all)
+										)
 									}
 									.background(.white)
 									.cornerRadius(15)
 									.padding(.horizontal)
-									.zIndex(-1)
+									.zIndex(-2)
 									.transition(.move(edge: .top))
 								}
 								
@@ -463,9 +541,11 @@ struct AccountProfileFragment: View {
 								.background(.white)
 								.cornerRadius(15)
 								.padding(.all)
-								*/
 							}
 							.frame(maxWidth: sharedMainViewModel.maxWidth)
+							.onAppear {
+								accountModel.requestDevicesList()
+							}
 						}
 					}
 					.frame(maxWidth: .infinity)
