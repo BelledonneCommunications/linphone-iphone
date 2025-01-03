@@ -241,6 +241,13 @@ class AccountModel: ObservableObject {
 			}
 		}
 	}
+	
+	func logout() {
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("Account \(self.account.displayName()) has been removed")
+			core.removeAccount(account: self.account)
+		}
+	}
 }
 
 class AccountDeviceModel: ObservableObject {

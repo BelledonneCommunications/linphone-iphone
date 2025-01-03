@@ -7,6 +7,15 @@
     ": %@" : {
 
     },
+    "." : {
+
+    },
+    "[Forgotten password?](https://subscribe.linphone.org/)" : {
+
+    },
+    "[https://sip.linphone.org](https://sip.linphone.org)" : {
+
+    },
     "[linphone.org/contact](https://linphone.org/contact)" : {
       "shouldTranslate" : false
     },
@@ -3882,6 +3891,40 @@
         }
       }
     },
+    "manage_account_dialog_remove_account_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you wish to delete your account permanently, go to: https://sip.linphone.org"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si vous souhaitez supprimer définitivement votre compte rendez-vous sur : https://sip.linphone.org"
+          }
+        }
+      }
+    },
+    "manage_account_dialog_remove_account_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out of your account?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se déconnecter du compte ?"
+          }
+        }
+      }
+    },
     "manage_account_edit_picture" : {
       "localizations" : {
         "en" : {
@@ -3944,6 +3987,23 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Enlever l’image"
+          }
+        }
+      }
+    },
+    "manage_account_settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres de compte"
           }
         }
       }

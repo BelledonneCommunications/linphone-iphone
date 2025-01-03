@@ -37,6 +37,7 @@ struct AccountProfileFragment: View {
 	@State private var selectedImage: UIImage?
 	@State private var removedImage = false
 	@State private var isShowPopup = false
+	@State private var isShowLogoutPopup = false
 	@State private var flag = true
 	
 	@FocusState var isDisplayNameFocused: Bool
@@ -529,18 +530,59 @@ struct AccountProfileFragment: View {
 									.transition(.move(edge: .top))
 								}
 								
+								HStack(alignment: .center) {
+									Text("contact_details_actions_title")
+										.default_text_style_800(styleSize: 18)
+										.frame(maxWidth: .infinity, alignment: .leading)
+								}
+								.padding(.top, 20)
+								.padding(.bottom, 10)
+								.padding(.horizontal, 20)
+								.background(Color.gray100)
+								
 								VStack(spacing: 0) {
-									VStack(spacing: 15) {
-										Text("manage_account_dialog_international_prefix_help_message")
-											.default_text_style_700(styleSize: 15)
-											.frame(maxWidth: .infinity, alignment: .leading)
+									VStack(spacing: 18) {
+										Button(action: {
+										}, label: {
+											HStack {
+												Image("gear")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c700)
+													.frame(width: 25, height: 25)
+												
+												Text("manage_account_settings")
+													.foregroundStyle(Color.grayMain2c700)
+													.default_text_style(styleSize: 16)
+													.frame(maxWidth: .infinity, alignment: .leading)
+											}
+										})
+										
+										Divider()
+										
+										Button(action: {
+											isShowLogoutPopup = true
+										}, label: {
+											HStack {
+												Image("sign-out")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.redDanger500)
+													.frame(width: 25, height: 25)
+												
+												Text("manage_account_delete")
+													.foregroundStyle(Color.redDanger500)
+													.default_text_style(styleSize: 16)
+													.frame(maxWidth: .infinity, alignment: .leading)
+											}
+										})
 									}
-									.padding(.vertical, 30)
+									.padding(.vertical, 20)
 									.padding(.horizontal, 20)
 								}
 								.background(.white)
 								.cornerRadius(15)
-								.padding(.all)
+								.padding(.horizontal)
 							}
 							.frame(maxWidth: sharedMainViewModel.maxWidth)
 							.onAppear {
@@ -568,6 +610,36 @@ struct AccountProfileFragment: View {
 				.background(.black.opacity(0.65))
 				.onTapGesture {
 					self.isShowPopup.toggle()
+				}
+			}
+			
+			if self.isShowLogoutPopup {
+				let localizedString = NSLocalizedString("manage_account_dialog_remove_account_message", comment: "")
+				
+				let components = localizedString.components(separatedBy: " ")
+				let textPart = components.dropLast().joined(separator: " ")
+				
+				let contentPopup1 = Text(textPart + " ")
+				let contentPopup2 = Text("[https://sip.linphone.org](https://sip.linphone.org)").underline()
+				
+				PopupView(
+					isShowPopup: $isShowLogoutPopup,
+					title: Text("manage_account_dialog_remove_account_title"),
+					content: contentPopup1 + contentPopup2,
+					titleFirstButton: Text("Cancel"),
+					actionFirstButton: {
+						self.isShowLogoutPopup.toggle()
+					},
+					titleSecondButton: Text("manage_account_delete"),
+					actionSecondButton: {
+						if accountProfileViewModel.accountModelIndex != nil {
+							CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].logout()
+						}
+					}
+				)
+				.background(.black.opacity(0.65))
+				.onTapGesture {
+					self.isShowLogoutPopup.toggle()
 				}
 			}
 		}
