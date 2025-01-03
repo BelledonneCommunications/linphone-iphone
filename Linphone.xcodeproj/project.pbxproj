@@ -151,6 +151,8 @@
 		D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */; };
 		D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C48DF32AFA66F900D938CB /* EditContactController.swift */; };
 		D7C48DF62AFCDF4700D938CB /* ContactInnerActionsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C48DF52AFCDF4700D938CB /* ContactInnerActionsFragment.swift */; };
+		D7C500402D27F16C00DD53EC /* AccountSettingsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C5003F2D27F16900DD53EC /* AccountSettingsFragment.swift */; };
+		D7C500422D2BE98100DD53EC /* AccountSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C500412D2BE96E00DD53EC /* AccountSettingsViewModel.swift */; };
 		D7CEE0352B7A210300FD79B7 /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CEE0342B7A210300FD79B7 /* ConversationsView.swift */; };
 		D7CEE0382B7A214F00FD79B7 /* ConversationsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CEE0372B7A214F00FD79B7 /* ConversationsListViewModel.swift */; };
 		D7CEE03B2B7A234200FD79B7 /* ConversationsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */; };
@@ -347,6 +349,8 @@
 		D7C3650D2AF15BF200FE6142 /* PhotoPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPicker.swift; sourceTree = "<group>"; };
 		D7C48DF32AFA66F900D938CB /* EditContactController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactController.swift; sourceTree = "<group>"; };
 		D7C48DF52AFCDF4700D938CB /* ContactInnerActionsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerActionsFragment.swift; sourceTree = "<group>"; };
+		D7C5003F2D27F16900DD53EC /* AccountSettingsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsFragment.swift; sourceTree = "<group>"; };
+		D7C500412D2BE96E00DD53EC /* AccountSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewModel.swift; sourceTree = "<group>"; };
 		D7CEE0342B7A210300FD79B7 /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
 		D7CEE0372B7A214F00FD79B7 /* ConversationsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListViewModel.swift; sourceTree = "<group>"; };
 		D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsFragment.swift; sourceTree = "<group>"; };
@@ -927,6 +931,7 @@
 		D7DC096B2CFA192F00A6D47C /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D7C5003F2D27F16900DD53EC /* AccountSettingsFragment.swift */,
 				D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */,
 			);
 			path = Fragments;
@@ -942,6 +947,7 @@
 		D7DC096D2CFA194600A6D47C /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				D7C500412D2BE96E00DD53EC /* AccountSettingsViewModel.swift */,
 				D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */,
 			);
 			path = ViewModel;
@@ -1189,6 +1195,7 @@
 				C6A5A9452C10B6270070FEA4 /* OIDAuthStateExtension.swift in Sources */,
 				D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */,
 				D79F1C162CD3D6AD00FF0A05 /* ConversationInfoFragment.swift in Sources */,
+				D7C500422D2BE98100DD53EC /* AccountSettingsViewModel.swift in Sources */,
 				D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */,
 				C67586B02C09F247002E77BF /* URIHandler.swift in Sources */,
 				C62817282C1B389700DBA646 /* SideMenuAccountRow.swift in Sources */,
@@ -1214,6 +1221,7 @@
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
 				D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */,
 				6646A7A32BB2E224006B842A /* ScheduleMeetingFragment.swift in Sources */,
+				D7C500402D27F16C00DD53EC /* AccountSettingsFragment.swift in Sources */,
 				D71FCA7F2AE1397200D2E43E /* ContactsListViewModel.swift in Sources */,
 				D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */,
 				D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */,

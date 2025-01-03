@@ -151,6 +151,421 @@
     "9" : {
 
     },
+    "A subject and at least one participant is required to create a meeting" : {
+
+    },
+    "Accept all" : {
+
+    },
+    "Account successfully logged out" : {
+
+    },
+    "account_settings_audio_video_conference_factory_uri_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio/video conference factory URI"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URI de l'usine à réunions"
+          }
+        }
+      }
+    },
+    "account_settings_avpf_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AVPF"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AVPF"
+          }
+        }
+      }
+    },
+    "account_settings_bundle_mode_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bundle mode"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode \"bundle\""
+          }
+        }
+      }
+    },
+    "account_settings_ccmp_server_url_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CCMP server URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL du serveur CCMP"
+          }
+        }
+      }
+    },
+    "account_settings_conference_factory_uri_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conference factory URI"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URI de l'usine à conversations"
+          }
+        }
+      }
+    },
+    "account_settings_cpim_in_basic_conversations_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use CPIM in \"basic\" conversations"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser CPIM dans les conversations \"basiques\""
+          }
+        }
+      }
+    },
+    "account_settings_enable_ice_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable ICE"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer ICE"
+          }
+        }
+      }
+    },
+    "account_settings_enable_turn_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable TURN"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer TURN"
+          }
+        }
+      }
+    },
+    "account_settings_expire_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expire (in seconds)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expiration (en secondes)"
+          }
+        }
+      }
+    },
+    "account_settings_im_encryption_mandatory_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IM encryption mandatory"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiffrement obligatoire des conversations"
+          }
+        }
+      }
+    },
+    "account_settings_lime_server_url_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "E2E encryption keys server URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL du serveur d'échange de clés de chiffrement"
+          }
+        }
+      }
+    },
+    "account_settings_mwi_uri_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MWI server URI (Message Waiting Indicator)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URI du serveur MWI (Message Waiting Indicator)"
+          }
+        }
+      }
+    },
+    "account_settings_nat_policy_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NAT policy settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres de politique NAT"
+          }
+        }
+      }
+    },
+    "account_settings_outbound_proxy_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outbound proxy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveur mandataire sortant"
+          }
+        }
+      }
+    },
+    "account_settings_push_notification_not_available_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push notifications aren't available!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les notifications poussées ne sont pas disponibles !"
+          }
+        }
+      }
+    },
+    "account_settings_push_notification_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow push notifications"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser les notifications poussées"
+          }
+        }
+      }
+    },
+    "account_settings_sip_proxy_url_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SIP proxy server URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL du serveur mandataire"
+          }
+        }
+      }
+    },
+    "account_settings_stun_server_url_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "STUN/TURN server URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL du serveur STUN/TURN"
+          }
+        }
+      }
+    },
+    "account_settings_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres de compte"
+          }
+        }
+      }
+    },
+    "account_settings_turn_password_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TURN password"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mot de passe TURN"
+          }
+        }
+      }
+    },
+    "account_settings_turn_username_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TURN username"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisateur TURN"
+          }
+        }
+      }
+    },
+    "account_settings_update_password_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update password"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre à jour le mot de passe"
+          }
+        }
+      }
+    },
+    "account_settings_voicemail_uri_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voicemail URI"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URI du serveur de messagerie vocale"
+          }
+        }
+      }
+    },
+    "Active" : {
+
+    },
+    "Administrateur" : {
+
+    },
+    "All calls will be removed from the history." : {
+
+    },
+    "All contacts" : {
+
+    },
+    "All modifications will be canceled." : {
+
+    },
     "assistant_account_create" : {
       "localizations" : {
         "en" : {
@@ -5262,6 +5677,32 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ participants selectionnés"
+          }
+        }
+      }
+    },
+    "Send cancellation notifications" : {
+
+    },
+    "Send Logs" : {
+
+    },
+    "Send notification to participants ?" : {
+
+    },
+    "settings_advanced_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advanced settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Paramètres avancés"
           }
         }
       }
