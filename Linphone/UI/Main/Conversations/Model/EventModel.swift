@@ -45,7 +45,13 @@ class EventModel: ObservableObject {
 				if let addressFriend = friendResult {
 					name = addressFriend.name!
 				} else {
-					name = address!.displayName != nil ? address!.displayName! : address!.username!
+					if address!.displayName != nil {
+						name = address!.displayName!
+					} else if address!.username != nil {
+						name = address!.username!
+					} else {
+						name = String(address!.asStringUriOnly().dropFirst(4))
+					}
 				}
 				
 				let textValue: String

@@ -134,7 +134,7 @@ class ConversationsListViewModel: ObservableObject {
 					} else if message.fromAddress!.username != nil {
 						fromAddressFriend = message.fromAddress!.username! + ": "
 					} else {
-						fromAddressFriend = ""
+						fromAddressFriend = String(message.fromAddress!.asStringUriOnly().dropFirst(4)) + ": "
 					}
 				} else {
 					fromAddressFriend! += ": "

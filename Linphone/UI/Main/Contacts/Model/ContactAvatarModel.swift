@@ -149,11 +149,25 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 					}
 					completion(avatarModel!)
 				} else {
-					let name = address.displayName != nil ? address.displayName! : address.username!
+					var name = ""
+					if address.displayName != nil {
+						name = address.displayName!
+					} else if address.username != nil {
+						name = address.username!
+					} else {
+						name = String(address.asStringUriOnly().dropFirst(4))
+					}
 					completion(ContactAvatarModel(friend: nil, name: name, address: address.asStringUriOnly(), withPresence: false))
 				}
 			} else {
-				let name = address.displayName != nil ? address.displayName! : address.username!
+				var name = ""
+				if address.displayName != nil {
+					name = address.displayName!
+				} else if address.username != nil {
+					name = address.username!
+				} else {
+					name = String(address.asStringUriOnly().dropFirst(4))
+				}
 				completion(ContactAvatarModel(friend: nil, name: name, address: address.asStringUriOnly(), withPresence: false))
 			}
 		}

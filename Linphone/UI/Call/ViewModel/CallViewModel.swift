@@ -170,6 +170,8 @@ class CallViewModel: ObservableObject {
 							displayNameTmp = self.currentCall!.remoteAddress!.displayName!
 						} else if self.currentCall!.remoteAddress!.username != nil && displayNameTmp.isEmpty {
 							displayNameTmp = self.currentCall!.remoteAddress!.username!
+						} else if displayNameTmp.isEmpty {
+							displayNameTmp = String(self.currentCall!.remoteAddress!.asStringUriOnly().dropFirst(4))
 						}
 					}
 					
@@ -351,6 +353,8 @@ class CallViewModel: ObservableObject {
 							activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
 						} else if activeSpeakerParticipantTmp!.address.username != nil {
 							activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
+						} else {
+							activeSpeakerNameTmp = String(activeSpeakerParticipantTmp!.address.asStringUriOnly().dropFirst(4))
 						}
 					}
 				}
@@ -467,7 +471,9 @@ class CallViewModel: ObservableObject {
 									activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.displayName!
 								} else if activeSpeakerParticipantTmp!.address.username != nil {
 									activeSpeakerNameTmp = activeSpeakerParticipantTmp!.address.username!
-								}
+								} else {
+									activeSpeakerNameTmp = String(activeSpeakerParticipantTmp!.address.asStringUriOnly().dropFirst(4))
+						  		}
 							}
 							DispatchQueue.main.async {
 								if self.activeSpeakerParticipant == nil {
@@ -594,6 +600,8 @@ class CallViewModel: ObservableObject {
 							activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.displayName!
 						} else if activeSpeakerParticipantTmp.address.username != nil {
 							activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.username!
+						} else {
+							activeSpeakerNameTmp = String(activeSpeakerParticipantTmp.address.asStringUriOnly().dropFirst(4))
 						}
 					}
 					

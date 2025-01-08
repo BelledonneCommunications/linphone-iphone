@@ -53,7 +53,13 @@ class ParticipantModel: ObservableObject {
 			if let addressFriend = friendResult {
 				self.name = addressFriend.name!
 			} else {
-				self.name = address.displayName != nil ? address.displayName! : address.username!
+				if address.displayName != nil {
+					self.name = address.displayName!
+				} else if address.username != nil {
+					self.name = address.username!
+				} else {
+					self.name = String(address.asStringUriOnly().dropFirst(4))
+				}
 			}
 		}
 		

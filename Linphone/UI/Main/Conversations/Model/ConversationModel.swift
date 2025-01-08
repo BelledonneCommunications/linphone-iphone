@@ -219,7 +219,7 @@ class ConversationModel: ObservableObject, Identifiable {
 						} else if lastMessage!.fromAddress!.username != nil {
 							fromAddressFriend = lastMessage!.fromAddress!.username! + ": "
 						} else {
-							fromAddressFriend = ""
+							fromAddressFriend = String(lastMessage!.fromAddress!.asStringUriOnly().dropFirst(4)) + ": "
 						}
 					} else {
 						fromAddressFriend! += ": "

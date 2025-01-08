@@ -131,7 +131,7 @@ class NotificationService: UNNotificationServiceExtension {
 								} else if chatRoom.peerAddress!.username != nil {
 									bestAttemptContent.body = chatRoom.peerAddress!.username!
 								} else {
-									bestAttemptContent.body = "Peer Address Error"
+									bestAttemptContent.body = String(chatRoom.peerAddress!.asStringUriOnly().dropFirst(4))
 								}
 							} else {
 								bestAttemptContent.body = "Peer Address Error"

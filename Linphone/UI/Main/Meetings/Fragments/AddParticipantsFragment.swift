@@ -258,20 +258,44 @@ struct AddParticipantsFragment: View {
 			} label: {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
-						&& contactsManager.lastSearchSuggestions[index].address != nil
-						&& contactsManager.lastSearchSuggestions[index].address!.username != nil {
-						
-						Image(uiImage: contactsManager.textToImage(
-							firstName: contactsManager.lastSearchSuggestions[index].address!.username!,
-							lastName: ""))
-						.resizable()
-						.frame(width: 45, height: 45)
-						.clipShape(Circle())
-						
-						Text(contactsManager.lastSearchSuggestions[index].address?.username ?? "")
-							.default_text_style(styleSize: 16)
-							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+						&& contactsManager.lastSearchSuggestions[index].address != nil {
+						if contactsManager.lastSearchSuggestions[index].address!.displayName != nil {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: contactsManager.lastSearchSuggestions[index].address!.displayName!,
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(contactsManager.lastSearchSuggestions[index].address?.displayName ?? "")
+								.default_text_style(styleSize: 16)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						} else if contactsManager.lastSearchSuggestions[index].address!.username != nil {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: contactsManager.lastSearchSuggestions[index].address!.username!,
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(contactsManager.lastSearchSuggestions[index].address!.username ?? "")
+								.default_text_style(styleSize: 16)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						} else {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
+								.default_text_style(styleSize: 16)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						}
 					} else {
 						Image("profil-picture-default")
 							.resizable()

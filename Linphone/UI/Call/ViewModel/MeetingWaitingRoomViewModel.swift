@@ -83,6 +83,8 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 								userNameTmp = core.defaultAccount!.contactAddress!.displayName!
 							} else if core.defaultAccount!.contactAddress!.username != nil {
 								userNameTmp = core.defaultAccount!.contactAddress!.username!
+							} else {
+								userNameTmp = String(core.defaultAccount!.contactAddress!.asStringUriOnly().dropFirst(4))
 							}
 						}
 					}

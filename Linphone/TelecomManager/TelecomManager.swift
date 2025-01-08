@@ -368,6 +368,8 @@ class TelecomManager: ObservableObject {
 							completion(call.remoteAddress!.displayName!)
 						} else if call.remoteAddress!.username != nil {
 							completion(call.remoteAddress!.username!)
+						} else {
+							completion(String(call.remoteAddress!.asStringUriOnly().dropFirst(4)))
 						}
 					}
 					
@@ -475,6 +477,8 @@ class TelecomManager: ObservableObject {
 						displayName = call.remoteAddress!.displayName!
 					} else if call.remoteAddress!.username != nil {
 						displayName = call.remoteAddress!.username!
+					} else {
+						displayName = String(call.remoteAddress!.asStringUriOnly().dropFirst(4))
 					}
 				}
 				

@@ -31,7 +31,7 @@ extension Account {
 		if address.username != nil && !address.username!.isEmpty {
 			return address.username!
 		}
-		return address.asStringUriOnly()
+		return String(address.asStringUriOnly().dropFirst(4))
 	}
 	
 	static func == (lhs: Account, rhs: Account) -> Bool {
