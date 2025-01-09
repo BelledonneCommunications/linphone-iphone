@@ -610,7 +610,7 @@ struct AccountProfileFragment: View {
 							  content: Text("manage_account_dialog_international_prefix_help_message"),
 							  titleFirstButton: nil,
 							  actionFirstButton: {},
-							  titleSecondButton: Text("Ok"),
+							  titleSecondButton: Text("dialog_ok"),
 							  actionSecondButton: {
 						self.isShowPopup.toggle()
 					}
@@ -634,7 +634,7 @@ struct AccountProfileFragment: View {
 						isShowPopup: $isShowLogoutPopup,
 						title: Text("manage_account_dialog_remove_account_title"),
 						content: contentPopup1 + contentPopup2,
-						titleFirstButton: Text("Cancel"),
+						titleFirstButton: Text("dialog_cancel"),
 						actionFirstButton: {
 							self.isShowLogoutPopup.toggle()
 						},

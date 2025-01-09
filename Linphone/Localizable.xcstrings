@@ -7,12 +7,6 @@
     ": %@" : {
 
     },
-    "." : {
-
-    },
-    "[Forgotten password?](https://subscribe.linphone.org/)" : {
-
-    },
     "[https://sip.linphone.org](https://sip.linphone.org)" : {
 
     },
@@ -149,15 +143,6 @@
 
     },
     "9" : {
-
-    },
-    "A subject and at least one participant is required to create a meeting" : {
-
-    },
-    "Accept all" : {
-
-    },
-    "Account successfully logged out" : {
 
     },
     "account_settings_audio_video_conference_factory_uri_title" : {
@@ -550,21 +535,6 @@
           }
         }
       }
-    },
-    "Active" : {
-
-    },
-    "Administrateur" : {
-
-    },
-    "All calls will be removed from the history." : {
-
-    },
-    "All contacts" : {
-
-    },
-    "All modifications will be canceled." : {
-
     },
     "assistant_account_create" : {
       "localizations" : {
@@ -5680,15 +5650,6 @@
           }
         }
       }
-    },
-    "Send cancellation notifications" : {
-
-    },
-    "Send Logs" : {
-
-    },
-    "Send notification to participants ?" : {
-
     },
     "settings_advanced_title" : {
       "extractionState" : "manual",

@@ -351,7 +351,7 @@ struct AccountSettingsFragment: View {
 									VStack(spacing: 0) {
 										VStack(spacing: 30) {
 											VStack(alignment: .leading) {
-												Text("Transport")
+												Text("assistant_sip_account_transport_protocol")
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
