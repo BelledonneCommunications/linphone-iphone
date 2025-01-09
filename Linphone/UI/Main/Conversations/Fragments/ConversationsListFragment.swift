@@ -22,6 +22,8 @@ import linphonesw
 
 struct ConversationsListFragment: View {
 	
+	@Environment(\.scenePhase) var scenePhase
+	
 	@EnvironmentObject var navigationManager: NavigationManager
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
@@ -66,6 +68,11 @@ struct ConversationsListFragment: View {
 				}
 					.padding(.all)
 			)
+		}
+		.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				conversationsListViewModel.computeChatRoomsList(filter: "")
+			}
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
