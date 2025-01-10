@@ -89,45 +89,30 @@ struct AccountSettingsFragment: View {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
 								VStack(spacing: 30) {
-									Toggle("account_settings_push_notification_title", isOn: Binding(
-										get: { accountSettingsViewModel.pushNotification },
-										set: { _ in
-											accountSettingsViewModel.pushNotification.toggle()
-										}
-									))
-									.default_text_style_700(styleSize: 15)
+									Toggle("account_settings_push_notification_title", isOn: $accountSettingsViewModel.pushNotification)
+										.default_text_style_700(styleSize: 15)
 									
-									Toggle("account_settings_im_encryption_mandatory_title", isOn: Binding(
-										get: { accountSettingsViewModel.imEncryptionMandatory },
-										set: { _ in
-											accountSettingsViewModel.imEncryptionMandatory.toggle()
-										}
-									))
-									.default_text_style_700(styleSize: 15)
+									Toggle("account_settings_im_encryption_mandatory_title", isOn: $accountSettingsViewModel.imEncryptionMandatory)
+										.default_text_style_700(styleSize: 15)
 									
 									VStack(alignment: .leading) {
 										Text("account_settings_voicemail_uri_title")
 											.default_text_style_700(styleSize: 15)
 											.padding(.bottom, -5)
 										
-										TextField("account_settings_voicemail_uri_title", text: Binding(
-											get: { accountSettingsViewModel.voicemailUri },
-											set: { newValue in
-												accountSettingsViewModel.voicemailUri = newValue
-											}
-										))
-										.default_text_style(styleSize: 15)
-										.frame(height: 25)
-										.padding(.horizontal, 20)
-										.padding(.vertical, 15)
-										.background(.white)
-										.cornerRadius(60)
-										.overlay(
-											RoundedRectangle(cornerRadius: 60)
-												.inset(by: 0.5)
-												.stroke(isVoicemailUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-										)
-										.focused($isVoicemailUriFocused)
+										TextField("account_settings_voicemail_uri_title", text: $accountSettingsViewModel.voicemailUri)
+											.default_text_style(styleSize: 15)
+											.frame(height: 25)
+											.padding(.horizontal, 20)
+											.padding(.vertical, 15)
+											.background(.white)
+											.cornerRadius(60)
+											.overlay(
+												RoundedRectangle(cornerRadius: 60)
+													.inset(by: 0.5)
+													.stroke(isVoicemailUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											)
+											.focused($isVoicemailUriFocused)
 									}
 									
 									VStack(alignment: .leading) {
@@ -135,24 +120,19 @@ struct AccountSettingsFragment: View {
 											.default_text_style_700(styleSize: 15)
 											.padding(.bottom, -5)
 										
-										TextField("account_settings_mwi_uri_title", text: Binding(
-											get: { accountSettingsViewModel.mwiUri },
-											set: { newValue in
-												accountSettingsViewModel.mwiUri = newValue
-											}
-										))
-										.default_text_style(styleSize: 15)
-										.frame(height: 25)
-										.padding(.horizontal, 20)
-										.padding(.vertical, 15)
-										.background(.white)
-										.cornerRadius(60)
-										.overlay(
-											RoundedRectangle(cornerRadius: 60)
-												.inset(by: 0.5)
-												.stroke(isMwiUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-										)
-										.focused($isMwiUriFocused)
+										TextField("account_settings_mwi_uri_title", text: $accountSettingsViewModel.mwiUri)
+											.default_text_style(styleSize: 15)
+											.frame(height: 25)
+											.padding(.horizontal, 20)
+											.padding(.vertical, 15)
+											.background(.white)
+											.cornerRadius(60)
+											.overlay(
+												RoundedRectangle(cornerRadius: 60)
+													.inset(by: 0.5)
+													.stroke(isMwiUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											)
+											.focused($isMwiUriFocused)
 									}
 								}
 								.padding(.vertical, 30)
@@ -197,65 +177,45 @@ struct AccountSettingsFragment: View {
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_stun_server_url_title", text: Binding(
-													get: { accountSettingsViewModel.stunServerUrl },
-													set: { newValue in
-														accountSettingsViewModel.stunServerUrl = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isStunServerUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isStunServerUriFocused)
+												TextField("account_settings_stun_server_url_title", text: $accountSettingsViewModel.stunServerUrl)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isStunServerUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isStunServerUriFocused)
 											}
 											
-											Toggle("account_settings_enable_ice_title", isOn: Binding(
-												get: { accountSettingsViewModel.enableIce },
-												set: { _ in
-													accountSettingsViewModel.enableIce.toggle()
-												}
-											))
-											.default_text_style_700(styleSize: 15)
+											Toggle("account_settings_enable_ice_title", isOn: $accountSettingsViewModel.enableIce)
+												.default_text_style_700(styleSize: 15)
 											
-											Toggle("account_settings_enable_turn_title", isOn: Binding(
-												get: { accountSettingsViewModel.enableTurn },
-												set: { _ in
-													accountSettingsViewModel.enableTurn.toggle()
-												}
-											))
-											.default_text_style_700(styleSize: 15)
+											Toggle("account_settings_enable_turn_title", isOn: $accountSettingsViewModel.enableTurn)
+												.default_text_style_700(styleSize: 15)
 											
 											VStack(alignment: .leading) {
 												Text("account_settings_turn_username_title")
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_turn_username_title", text: Binding(
-													get: { accountSettingsViewModel.turnUsername },
-													set: { newValue in
-														accountSettingsViewModel.turnUsername = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isTurnUsernameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isTurnUsernameFocused)
+												TextField("account_settings_turn_username_title", text: $accountSettingsViewModel.turnUsername)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isTurnUsernameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isTurnUsernameFocused)
 											}
 											
 											VStack(alignment: .leading) {
@@ -266,27 +226,17 @@ struct AccountSettingsFragment: View {
 												ZStack(alignment: .trailing) {
 													Group {
 														if isSecured {
-															SecureField("account_settings_turn_password_title", text: Binding(
-																get: { accountSettingsViewModel.turnPassword },
-																set: { newValue in
-																	accountSettingsViewModel.turnPassword = newValue
-																}
-															))
-															.default_text_style(styleSize: 15)
-															.frame(height: 25)
-															.focused($isTurnPasswordFocused)
+															SecureField("account_settings_turn_password_title", text: $accountSettingsViewModel.turnPassword)
+																.default_text_style(styleSize: 15)
+																.frame(height: 25)
+																.focused($isTurnPasswordFocused)
 														} else {
-															TextField("account_settings_turn_password_title", text: Binding(
-																get: { accountSettingsViewModel.turnPassword },
-																set: { newValue in
-																	accountSettingsViewModel.turnPassword = newValue
-																}
-															))
-															.default_text_style(styleSize: 15)
-															.disableAutocorrection(true)
-															.autocapitalization(.none)
-															.frame(height: 25)
-															.focused($isTurnPasswordFocused)
+															TextField("account_settings_turn_password_title", text: $accountSettingsViewModel.turnPassword)
+																.default_text_style(styleSize: 15)
+																.disableAutocorrection(true)
+																.autocapitalization(.none)
+																.frame(height: 25)
+																.focused($isTurnPasswordFocused)
 														}
 													}
 													
@@ -385,81 +335,51 @@ struct AccountSettingsFragment: View {
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_sip_proxy_url_title", text: Binding(
-													get: { accountSettingsViewModel.sipProxyUrl },
-													set: { newValue in
-														accountSettingsViewModel.sipProxyUrl = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isSipProxyUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isSipProxyUrlFocused)
+												TextField("account_settings_sip_proxy_url_title", text: $accountSettingsViewModel.sipProxyUrl)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isSipProxyUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isSipProxyUrlFocused)
 											}
 											
-											Toggle("account_settings_outbound_proxy_title", isOn: Binding(
-												get: { accountSettingsViewModel.outboundProxy },
-												set: { _ in
-													accountSettingsViewModel.outboundProxy.toggle()
-												}
-											))
-											.default_text_style_700(styleSize: 15)
+											Toggle("account_settings_outbound_proxy_title", isOn: $accountSettingsViewModel.outboundProxy)
+												.default_text_style_700(styleSize: 15)
 											
-											Toggle("account_settings_avpf_title", isOn: Binding(
-												get: { accountSettingsViewModel.avpf },
-												set: { _ in
-													accountSettingsViewModel.avpf.toggle()
-												}
-											))
-											.default_text_style_700(styleSize: 15)
+											Toggle("account_settings_avpf_title", isOn: $accountSettingsViewModel.avpf)
+												.default_text_style_700(styleSize: 15)
 											
-											Toggle("account_settings_bundle_mode_title", isOn: Binding(
-												get: { accountSettingsViewModel.bundleMode },
-												set: { _ in
-													accountSettingsViewModel.bundleMode.toggle()
-												}
-											))
-											.default_text_style_700(styleSize: 15)
+											Toggle("account_settings_bundle_mode_title", isOn: $accountSettingsViewModel.bundleMode)
+												.default_text_style_700(styleSize: 15)
 											
-											Toggle("account_settings_cpim_in_basic_conversations_title", isOn: Binding(
-												get: { accountSettingsViewModel.cpimInBasicConversations },
-												set: { _ in
-													accountSettingsViewModel.cpimInBasicConversations.toggle()
-												}
-											))
-											.default_text_style_700(styleSize: 15)
+											Toggle("account_settings_cpim_in_basic_conversations_title", isOn: $accountSettingsViewModel.cpimInBasicConversations)
+												.default_text_style_700(styleSize: 15)
 											
 											VStack(alignment: .leading) {
 												Text("account_settings_expire_title")
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_expire_title", text: Binding(
-													get: { accountSettingsViewModel.expire },
-													set: { newValue in
-														accountSettingsViewModel.expire = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isSettingsExpireFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isSettingsExpireFocused)
+												TextField("account_settings_expire_title", text: $accountSettingsViewModel.expire)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isSettingsExpireFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isSettingsExpireFocused)
 											}
 											
 											VStack(alignment: .leading) {
@@ -467,24 +387,19 @@ struct AccountSettingsFragment: View {
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_conference_factory_uri_title", text: Binding(
-													get: { accountSettingsViewModel.conferenceFactoryUri },
-													set: { newValue in
-														accountSettingsViewModel.conferenceFactoryUri = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isConferenceFactoryUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isConferenceFactoryUriFocused)
+												TextField("account_settings_conference_factory_uri_title", text: $accountSettingsViewModel.conferenceFactoryUri)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isConferenceFactoryUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isConferenceFactoryUriFocused)
 											}
 											
 											VStack(alignment: .leading) {
@@ -492,24 +407,19 @@ struct AccountSettingsFragment: View {
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_audio_video_conference_factory_uri_title", text: Binding(
-													get: { accountSettingsViewModel.audioVideoConferenceFactoryUri },
-													set: { newValue in
-														accountSettingsViewModel.audioVideoConferenceFactoryUri = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isAudioVideoConferenceFactoryUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isAudioVideoConferenceFactoryUriFocused)
+												TextField("account_settings_audio_video_conference_factory_uri_title", text: $accountSettingsViewModel.audioVideoConferenceFactoryUri)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isAudioVideoConferenceFactoryUriFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isAudioVideoConferenceFactoryUriFocused)
 											}
 											
 											VStack(alignment: .leading) {
@@ -517,24 +427,19 @@ struct AccountSettingsFragment: View {
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_ccmp_server_url_title", text: Binding(
-													get: { accountSettingsViewModel.ccmpServerUrl },
-													set: { newValue in
-														accountSettingsViewModel.ccmpServerUrl = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isCcmpServerUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isCcmpServerUrlFocused)
+												TextField("account_settings_ccmp_server_url_title", text: $accountSettingsViewModel.ccmpServerUrl)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isCcmpServerUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isCcmpServerUrlFocused)
 											}
 											
 											VStack(alignment: .leading) {
@@ -542,26 +447,20 @@ struct AccountSettingsFragment: View {
 													.default_text_style_700(styleSize: 15)
 													.padding(.bottom, -5)
 												
-												TextField("account_settings_lime_server_url_title", text: Binding(
-													get: { accountSettingsViewModel.limeServerUrl },
-													set: { newValue in
-														accountSettingsViewModel.limeServerUrl = newValue
-													}
-												))
-												.default_text_style(styleSize: 15)
-												.frame(height: 25)
-												.padding(.horizontal, 20)
-												.padding(.vertical, 15)
-												.background(.white)
-												.cornerRadius(60)
-												.overlay(
-													RoundedRectangle(cornerRadius: 60)
-														.inset(by: 0.5)
-														.stroke(isLimeServerUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-												)
-												.focused($isLimeServerUrlFocused)
+												TextField("account_settings_lime_server_url_title", text: $accountSettingsViewModel.limeServerUrl)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isLimeServerUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isLimeServerUrlFocused)
 											}
-											
 											/*
 											Button {
 												// TODO Update password
