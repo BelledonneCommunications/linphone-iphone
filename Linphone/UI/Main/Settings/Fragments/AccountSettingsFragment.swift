@@ -408,7 +408,7 @@ struct AccountSettingsFragment: View {
 											Toggle("account_settings_outbound_proxy_title", isOn: Binding(
 												get: { accountSettingsViewModel.outboundProxy },
 												set: { _ in
-													//accountProfileViewModel.toggleRegister()
+													accountSettingsViewModel.outboundProxy.toggle()
 												}
 											))
 											.default_text_style_700(styleSize: 15)
