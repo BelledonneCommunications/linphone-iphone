@@ -72,6 +72,7 @@ struct ContentView: View {
 	@State var isShowSipAddressesPopupType = 0 // 0 to call, 1  to message, 2 to video call
 	@State var isShowConversationFragment = false
 	@State var isShowAccountProfileFragment = false
+	@State var isShowSettingsFragment = false
 	
 	@State var fullscreenVideo = false
 	
@@ -949,7 +950,8 @@ struct ContentView: View {
 						menuClose: self.openMenu,
 						safeAreaInsets: geometry.safeAreaInsets,
 						isShowLoginFragment: $isShowLoginFragment,
-						isShowAccountProfileFragment: $isShowAccountProfileFragment
+						isShowAccountProfileFragment: $isShowAccountProfileFragment,
+						isShowSettingsFragment: $isShowSettingsFragment
 					)
 					.ignoresSafeArea(.all)
 					.zIndex(2)
@@ -1183,6 +1185,15 @@ struct ContentView: View {
 							accountProfileViewModel: accountProfileViewModel,
 							registerViewModel: RegisterViewModel(),
 							isShowAccountProfileFragment: $isShowAccountProfileFragment
+						)
+						.zIndex(3)
+						.transition(.move(edge: .trailing))
+					}
+					
+					if isShowSettingsFragment {
+						SettingsFragment(
+							settingsViewModel: SettingsViewModel(),
+							isShowSettingsFragment: $isShowSettingsFragment
 						)
 						.zIndex(3)
 						.transition(.move(edge: .trailing))

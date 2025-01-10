@@ -31,6 +31,7 @@ struct SideMenu: View {
 	let safeAreaInsets: EdgeInsets
 	@Binding var isShowLoginFragment: Bool
 	@Binding var isShowAccountProfileFragment: Bool
+	@Binding var isShowSettingsFragment: Bool
 	@State private var showHelp = false
 	
 	var body: some View {
@@ -124,14 +125,21 @@ struct SideMenu: View {
 						ForEach(0..<CoreContext.shared.shortcuts.count, id: \.self) { index in
 							SideMenuShortcut(shortcutModel: CoreContext.shared.shortcuts[index])
 						}
+						
 						SideMenuEntry(
 							iconName: "gear",
 							title: "settings_title"
-						)
+						).onTapGesture {
+							withAnimation {
+								isShowSettingsFragment = true
+							}
+						}
+						
 						SideMenuEntry(
 							iconName: "record-fill",
 							title: "recordings_title"
 						)
+						
 						SideMenuEntry(
 							iconName: "question",
 							title: "help_title"
@@ -179,7 +187,8 @@ struct SideMenu: View {
 			menuClose: {},
 			safeAreaInsets: geometry.safeAreaInsets,
 			isShowLoginFragment: $triggerNavigateToLogin,
-			isShowAccountProfileFragment: .constant(false)
+			isShowAccountProfileFragment: .constant(false),
+			isShowSettingsFragment: .constant(false)
 		)
 		.ignoresSafeArea(.all)
 		.zIndex(2)
