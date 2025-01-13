@@ -111,14 +111,14 @@ final class MagicSearchSingleton: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			var needResetCache = false
 			
-			DispatchQueue.main.sync {
-				if let oldFilter = self.previousFilter {
-					if oldFilter.count > self.currentFilter.count || oldFilter != self.currentFilter {
-						needResetCache = true
-					}
+			if let oldFilter = self.previousFilter {
+				if oldFilter.count > self.currentFilter.count || oldFilter != self.currentFilter {
+					needResetCache = true
 				}
-				self.previousFilter = self.currentFilter
 			}
+			self.previousFilter = self.currentFilter
+			
+			
 			if needResetCache {
 				self.magicSearch.resetSearchCache()
 			}
@@ -135,14 +135,13 @@ final class MagicSearchSingleton: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			var needResetCache = false
 			
-			DispatchQueue.main.sync {
-				if let oldFilter = self.previousFilterSuggestions {
-					if oldFilter.count > self.currentFilterSuggestions.count || oldFilter != self.currentFilterSuggestions {
-						needResetCache = true
-					}
+			if let oldFilter = self.previousFilterSuggestions {
+				if oldFilter.count > self.currentFilterSuggestions.count || oldFilter != self.currentFilterSuggestions {
+					needResetCache = true
 				}
-				self.previousFilterSuggestions = self.currentFilterSuggestions
 			}
+			self.previousFilterSuggestions = self.currentFilterSuggestions
+			
 			if needResetCache {
 				self.magicSearch.resetSearchCache()
 			}
