@@ -534,6 +534,10 @@ struct CallView: View {
 					LinphoneVideoViewHolder { view in
 						coreContext.doOnCoreQueue { core in
 							core.nativeVideoWindow = view
+							Log.info("debugtrace -- LinphoneVideoViewHolder set view 1")
+							DispatchQueue.main.async {
+								CoreContext.shared.pipViewModel.setupPiPViewController(remoteView: view)
+							}
 						}
 					}
 					.frame(
@@ -549,6 +553,9 @@ struct CallView: View {
 					}
 					.onAppear {
 						if callViewModel.videoDisplayed {
+							if coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false {
+								coreContext.pipViewModel.pipController?.stopPictureInPicture()
+							}
 							callViewModel.videoDisplayed = false
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 								callViewModel.videoDisplayed = true
@@ -557,6 +564,9 @@ struct CallView: View {
 					}
 					.onDisappear {
 						if callViewModel.videoDisplayed {
+							if !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false){
+								coreContext.pipViewModel.pipController?.startPictureInPicture()
+							}
 							callViewModel.videoDisplayed = false
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 								callViewModel.videoDisplayed = true
@@ -893,6 +903,10 @@ struct CallView: View {
 								LinphoneVideoViewHolder { view in
 									coreContext.doOnCoreQueue { core in
 										core.nativeVideoWindow = view
+										Log.info("debugtrace -- LinphoneVideoViewHolder set view 2")
+										DispatchQueue.main.async {
+											CoreContext.shared.pipViewModel.setupPiPViewController(remoteView: view)
+										}
 									}
 								}
 							}

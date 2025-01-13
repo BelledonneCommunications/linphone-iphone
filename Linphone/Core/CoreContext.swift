@@ -35,6 +35,7 @@ final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
 	private var sharedMainViewModel = SharedMainViewModel.shared
+	var pipViewModel = PIPViewModel()
 	
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn: Bool = false

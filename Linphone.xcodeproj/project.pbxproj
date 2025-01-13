@@ -22,6 +22,7 @@
 		667E5D812B8E444E00EBCFC4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */; };
 		6691CA7E2B839C2D00B2A7B8 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691CA7D2B839C2D00B2A7B8 /* NotificationService.swift */; };
 		66A3E5B72CAE8E5C00FCB7FA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
+		66C468FB2D2BE54800A836F7 /* PIPViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C468FA2D2BE54300A836F7 /* PIPViewModel.swift */; };
 		66C491F92B24D25B00CEA16D /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
 		66C491FB2B24D32600CEA16D /* CoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FA2B24D32600CEA16D /* CoreExtension.swift */; };
 		66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */; };
@@ -227,6 +228,7 @@
 		6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleMeetingFragment.swift; sourceTree = "<group>"; };
 		667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6691CA7D2B839C2D00B2A7B8 /* NotificationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		66C468FA2D2BE54300A836F7 /* PIPViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PIPViewModel.swift; sourceTree = "<group>"; };
 		66C491F82B24D25A00CEA16D /* ConfigExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigExtension.swift; sourceTree = "<group>"; };
 		66C491FA2B24D32600CEA16D /* CoreExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreExtension.swift; sourceTree = "<group>"; };
 		66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteUtils.swift; sourceTree = "<group>"; };
@@ -858,6 +860,7 @@
 			children = (
 				D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */,
 				D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */,
+				66C468FA2D2BE54300A836F7 /* PIPViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -1307,6 +1310,7 @@
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */,
 				D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */,
+				66C468FB2D2BE54800A836F7 /* PIPViewModel.swift in Sources */,
 				D7CEE0352B7A210300FD79B7 /* ConversationsView.swift in Sources */,
 				D717071E2AC5922E0037746F /* ColorExtension.swift in Sources */,
 				D71968922B86369D00DF4459 /* ChatBubbleView.swift in Sources */,
@@ -1557,8 +1561,11 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Linphone;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Deprecated - Prior to iOS 17 full calendar access is required";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "App requires access to the local network to establish VoIP connections";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone usage is required for VOIP calls";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Share photos with your friends and customize avatars";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -1610,8 +1617,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Linphone;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Deprecated - Prior to iOS 17 full calendar access is required";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "App requires access to the local network to establish VoIP connections";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone usage is required for VOIP calls";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Share photos with your friends and customize avatars";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
