@@ -114,7 +114,7 @@ class MeetingsListViewModel: ObservableObject {
 				todayIdx = currentIdx
 			}
 			
-			DispatchQueue.main.sync {
+			DispatchQueue.main.async {
 				self.todayIdx = todayIdx
 				self.meetingsList = meetingsListTmp
 			}
