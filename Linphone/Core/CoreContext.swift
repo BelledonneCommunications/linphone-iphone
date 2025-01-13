@@ -218,6 +218,15 @@ final class CoreContext: ObservableObject {
 				}
 			}, onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
 				TelecomManager.shared.onCallStateChanged(core: core, call: call, state: cstate, message: message)
+				
+				if core.calls.isEmpty {
+					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+						if UIApplication.shared.applicationState == .background {
+							Log.info("[CoreContext] core is currently in background with no calls, triggering onEnterBackground procedure")
+							self.onEnterBackground()
+						}
+					}
+				}
 			}, onAuthenticationRequested: { (_: Core, authInfo: AuthInfo, method: AuthMethod) in
 				guard let username = authInfo.username, let server = authInfo.authorizationServer, !server.isEmpty else {
 					Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
