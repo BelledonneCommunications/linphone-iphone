@@ -237,13 +237,15 @@ struct LinphoneApp: App {
 					}
 			}
 		}.onChange(of: scenePhase) { newPhase in
-			if newPhase == .active {
-				Log.info("Entering foreground")
-				coreContext.onEnterForeground()
-			} else if newPhase == .inactive {
-			} else if newPhase == .background {
-				Log.info("Entering background")
-				coreContext.onEnterBackground()
+			if !TelecomManager.shared.callInProgress {
+				if newPhase == .active {
+					Log.info("Entering foreground")
+					coreContext.onEnterForeground()
+				} else if newPhase == .inactive {
+				} else if newPhase == .background {
+					Log.info("Entering background")
+					coreContext.onEnterBackground()
+				}
 			}
 		}
 	}
