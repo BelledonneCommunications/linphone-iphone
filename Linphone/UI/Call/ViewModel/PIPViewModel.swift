@@ -22,21 +22,23 @@ import SwiftUI
 import AVKit
 
 class PIPViewModel: NSObject, AVPictureInPictureControllerDelegate {
-
+	static let TAG = "[PIPViewModel]"
+	
 	var pipController: AVPictureInPictureController?
+	var pipVideoCallViewController: PictureInPictureVideoCallViewController?
 	var pipRemoteVideoView = SampleBufferVideoCallView()
 	var videoCallView = UIView()
 	
 	var callStateChangedDelegate: CallDelegate?
 	
 	func setupPiPViewController(remoteView: UIView) {
-		Log.info("debugtrace setupPiPViewController")
+		Log.info("\(PIPViewModel.TAG) Setup PiPViewController")
 		videoCallView = remoteView
-		let pipVideoCallController = PictureInPictureVideoCallViewController()
-		pipRemoteVideoView = pipVideoCallController.pipRemoteVideoView
+		self.pipVideoCallViewController = PictureInPictureVideoCallViewController()
+		pipRemoteVideoView = pipVideoCallViewController!.pipRemoteVideoView
 		let pipContentSource = AVPictureInPictureController.ContentSource(
 			activeVideoCallSourceView: videoCallView,
-			contentViewController: pipVideoCallController)
+			contentViewController: pipVideoCallViewController!)
 		pipController = AVPictureInPictureController(contentSource: pipContentSource)
 		pipController?.delegate = self
 		pipController?.canStartPictureInPictureAutomaticallyFromInline = true
@@ -45,7 +47,7 @@ class PIPViewModel: NSObject, AVPictureInPictureControllerDelegate {
 			if let call = core.currentCall {
 				self.callStateChangedDelegate = CallDelegateStub(onStateChanged: { (_: Call, cstate: Call.State, _: String) in
 					if cstate != .StreamsRunning && CoreContext.shared.pipViewModel.pipController?.isPictureInPictureActive ?? false {
-						Log.info("debugtrace -- callstate changed stop pip")
+						Log.info("\(PIPViewModel.TAG) onCallStateChanged detected, stop picture in picture")
 						CoreContext.shared.pipViewModel.pipController?.stopPictureInPicture()
 						if cstate == .End || cstate == .Error {
 							self.callStateChangedDelegate = nil
@@ -53,35 +55,21 @@ class PIPViewModel: NSObject, AVPictureInPictureControllerDelegate {
 					}
 				})
 				call.addDelegate(delegate: self.callStateChangedDelegate!)
-				Log.info("debugtrace -- added callstatechanged delegate")
-			} else {
-				Log.info("debugtrace -- no current call")
 			}
 		}
-		/*
-		ControlsViewModel.shared.isVideoEnabled.readCurrentAndObserve{ (video) in
-			pipVideoCallController.matchVideoDimension()
-			self.pipController?.canStartPictureInPictureAutomaticallyFromInline = video == true
-		}
-		
-		CallsViewModel.shared.currentCallData.observe(onChange: { callData in
-			if (callData??.call.state != .StreamsRunning && self.pipController?.isPictureInPictureActive) {
-				self.pipController?.stopPictureInPicture()
-			}
-		})
-		*/
 	}
 	
 	
 	func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-		Log.info("debugtrace pictureInPictureControllerWillStartPictureInPicture")
+		Log.info("\(PIPViewModel.TAG) pictureInPictureControllerWillStartPictureInPicture")
+		self.pipVideoCallViewController?.matchVideoDimension()
 		CoreContext.shared.doOnCoreQueue { core in
 			core.nativeVideoWindow = self.pipRemoteVideoView
 		}
 	}
 	
 	func pictureInPictureControllerDidStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-		Log.info("debugtrace pictureInPictureControllerDidStopPictureInPicture")
+		Log.info("\(PIPViewModel.TAG) pictureInPictureControllerDidStopPictureInPicture")
 		CoreContext.shared.doOnCoreQueue { core in
 			core.nativeVideoWindow = self.videoCallView
 		}
@@ -91,22 +79,12 @@ class PIPViewModel: NSObject, AVPictureInPictureControllerDelegate {
 		CoreContext.shared.doOnCoreQueue { core in
 			core.nativeVideoWindow = self.videoCallView
 		}
-		Log.error("Start Picture in Picture video call error : \(error)")
-		// DispatchQueue.main.async { self.configurationPiPViewController() }
+		Log.error("\(PIPViewModel.TAG) failedToStartPictureInPictureWithError : \(error)")
 	}
 	
 	func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
-		Log.info("debugtrace restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
-		
-		
+		Log.info("\(PIPViewModel.TAG) restoreUserInterfaceForPictureInPictureStopWithCompletionHandler")
 		TelecomManager.shared.callDisplayed = true
-		/* a
-		if (CallsViewModel.shared.currentCallData.value??.call.state == .StreamsRunning && PhoneMainView.instance().currentView != self.compositeViewDescription()) {
-			PhoneMainView.instance().changeCurrentView(self.compositeViewDescription())
-			//Core.get().nativeVideoWindow = pipRemoteVideoView // let the video on the pip view during the stop animation
-		}
-		//pictureInPictureController.contentSource?.activeVideoCallContentViewController.view.layer.cornerRadius = ActiveCallView.center_view_corner_radius
-		 */
 		completionHandler(true)
 	}
 }
@@ -114,6 +92,8 @@ class PIPViewModel: NSObject, AVPictureInPictureControllerDelegate {
 class PictureInPictureVideoCallViewController: AVPictureInPictureVideoCallViewController {
 	
 	var pipRemoteVideoView = SampleBufferVideoCallView()
+	var pipWidth: Double = 720
+	var pipHeight: Double = 480
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -129,13 +109,13 @@ class PictureInPictureVideoCallViewController: AVPictureInPictureVideoCallViewCo
 	}
 	
 	override func viewDidLayoutSubviews() {
-		matchVideoDimension()
 		super.viewDidLayoutSubviews()
+		self.matchVideoDimension()
 	}
 	
 	func matchVideoDimension() {
-		Log.info("debugtrace - matchVideoDimension")
-		self.preferredContentSize = CGSize(width: Double(720), height: Double(480))
+		Log.info("\(PIPViewModel.TAG) - PIPViewController - matchVideoDimension to \(pipWidth)x\(pipHeight)")
+		self.preferredContentSize = CGSize(width: pipWidth, height: pipHeight)
 		pipRemoteVideoView.frame = view.bounds
 	}
 }

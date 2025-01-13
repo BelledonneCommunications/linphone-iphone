@@ -534,7 +534,6 @@ struct CallView: View {
 					LinphoneVideoViewHolder { view in
 						coreContext.doOnCoreQueue { core in
 							core.nativeVideoWindow = view
-							Log.info("debugtrace -- LinphoneVideoViewHolder set view 1")
 							DispatchQueue.main.async {
 								CoreContext.shared.pipViewModel.setupPiPViewController(remoteView: view)
 							}
@@ -564,7 +563,8 @@ struct CallView: View {
 					}
 					.onDisappear {
 						if callViewModel.videoDisplayed {
-							if !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false){
+							if !callViewModel.isPaused && TelecomManager.shared.callInProgress
+								&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
 								coreContext.pipViewModel.pipController?.startPictureInPicture()
 							}
 							callViewModel.videoDisplayed = false
@@ -903,7 +903,6 @@ struct CallView: View {
 								LinphoneVideoViewHolder { view in
 									coreContext.doOnCoreQueue { core in
 										core.nativeVideoWindow = view
-										Log.info("debugtrace -- LinphoneVideoViewHolder set view 2")
 										DispatchQueue.main.async {
 											CoreContext.shared.pipViewModel.setupPiPViewController(remoteView: view)
 										}
