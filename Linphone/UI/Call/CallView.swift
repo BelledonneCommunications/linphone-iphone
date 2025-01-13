@@ -908,6 +908,17 @@ struct CallView: View {
 										}
 									}
 								}
+								.onAppear {
+									if coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false {
+										coreContext.pipViewModel.pipController?.stopPictureInPicture()
+									}
+								}
+								.onDisappear {
+									if !callViewModel.isPaused && TelecomManager.shared.callInProgress
+										&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
+										coreContext.pipViewModel.pipController?.startPictureInPicture()
+									}
+								}
 							}
 							.frame(
 								width: fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.width - (isLandscapeMode ? 160 : 0) : geometry.size.width - 8 - (isLandscapeMode ? 160 : 0),

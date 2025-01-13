@@ -45,11 +45,11 @@ class PIPViewModel: NSObject, AVPictureInPictureControllerDelegate {
 		
 		CoreContext.shared.doOnCoreQueue { core in
 			if let call = core.currentCall {
-				self.callStateChangedDelegate = CallDelegateStub(onStateChanged: { (_: Call, cstate: Call.State, _: String) in
-					if cstate != .StreamsRunning && CoreContext.shared.pipViewModel.pipController?.isPictureInPictureActive ?? false {
-						Log.info("\(PIPViewModel.TAG) onCallStateChanged detected, stop picture in picture")
-						CoreContext.shared.pipViewModel.pipController?.stopPictureInPicture()
+				self.callStateChangedDelegate = CallDelegateStub(onStateChanged: { (call: Call, cstate: Call.State, _: String) in
+					if CoreContext.shared.pipViewModel.pipController?.isPictureInPictureActive ?? false {
 						if cstate == .End || cstate == .Error {
+							Log.info("\(PIPViewModel.TAG) call state 'End' or 'Error' detected, stopping picture in picture")
+							CoreContext.shared.pipViewModel.pipController?.stopPictureInPicture()
 							self.callStateChangedDelegate = nil
 						}
 					}
