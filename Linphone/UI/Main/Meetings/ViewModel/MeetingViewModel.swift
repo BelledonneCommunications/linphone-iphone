@@ -181,14 +181,23 @@ class MeetingViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
 					self.errorMsg = (self.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
-					// TODO: show error toast
+					ToastViewModel.shared.toastMessage = (self.displayedMeeting != nil) ? "meeting_failed_to_edit_toast" : "meeting_failed_to_schedule_toast"
+					ToastViewModel.shared.displayToast = true
 				}
 			} else if state == ConferenceScheduler.State.Ready {
 				let conferenceAddress = self.conferenceScheduler?.info?.uri
 				if let confInfoToEdit = self.conferenceInfoToEdit {
 					Log.info("\(MeetingViewModel.TAG) Conference info \(confInfoToEdit.uri?.asStringUriOnly() ?? "'nil'") has been updated")
+					DispatchQueue.main.async {
+						ToastViewModel.shared.toastMessage = "Success_meeting_info_updated_toast"
+						ToastViewModel.shared.displayToast = true
+					}
 				} else {
 					Log.info("\(MeetingViewModel.TAG) Conference info created, address will be \(conferenceAddress?.asStringUriOnly() ?? "'nil'")")
+					DispatchQueue.main.async {
+						ToastViewModel.shared.toastMessage = "Success_meeting_info_created_toast"
+						ToastViewModel.shared.displayToast = true
+					}
 				}
 				
 				if self.sendInvitations {
@@ -202,6 +211,9 @@ class MeetingViewModel: ObservableObject {
 					}
 				}
 			} else if state == ConferenceScheduler.State.Updating {
+				DispatchQueue.main.async {
+					ToastViewModel.shared.displayToast = true
+				}
 				self.sendIcsInvitation(core: core)
 			}
 		}, onInvitationsSent: { (_: ConferenceScheduler, failedInvitations: [Address]) in
@@ -211,7 +223,7 @@ class MeetingViewModel: ObservableObject {
 			} else if failedInvitations.count == self.participants.count {
 				Log.error("\(MeetingViewModel.TAG) No invitation sent!")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Failed_meeting_invitations_not_sent"
+					ToastViewModel.shared.toastMessage = "meeting_failed_to_send_invites_toast"
 					ToastViewModel.shared.displayToast = true
 				}
 			} else {
@@ -224,7 +236,7 @@ class MeetingViewModel: ObservableObject {
 				}
 				Log.warn("\(MeetingViewModel.TAG) \(failedInvitations.count) invitations couldn't have been sent to: \(failInvList)")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Error: \(failedInvitations.count) invitations couldn't be sent to \(failInvList)"
+					ToastViewModel.shared.toastMessage = "meeting_failed_to_send_part_of_invites_toast"
 					ToastViewModel.shared.displayToast = true
 				}
 			}

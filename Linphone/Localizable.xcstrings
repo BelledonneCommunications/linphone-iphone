@@ -3846,6 +3846,7 @@
       }
     },
     "failed_meeting_ics_invitation_not_sent_toast" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4545,6 +4546,70 @@
         }
       }
     },
+    "meeting_failed_to_edit_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to edit meeting"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la modification de la réunion"
+          }
+        }
+      }
+    },
+    "meeting_failed_to_schedule_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to schedule meeting!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Échec de création de la réunion !"
+          }
+        }
+      }
+    },
+    "meeting_failed_to_send_invites_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to send all invites to meeting!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'envoi des invitations à la réunion !"
+          }
+        }
+      }
+    },
+    "meeting_failed_to_send_part_of_invites_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to send invites to some participants of the meeting!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'envoi des invitations à certains des participants !"
+          }
+        }
+      }
+    },
     "meeting_info_cancelled_toast" : {
       "localizations" : {
         "en" : {
@@ -4557,6 +4622,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réunion annulée"
+          }
+        }
+      }
+    },
+    "meeting_info_created_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been created"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réunion créée"
           }
         }
       }
@@ -4637,6 +4718,22 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Organisateur"
+          }
+        }
+      }
+    },
+    "meeting_info_updated_toast" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meeting has been updated"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réunion mise à jour"
           }
         }
       }

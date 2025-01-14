@@ -164,6 +164,20 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_meeting_info_created_toast":
+						Text("meeting_info_created_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_meeting_info_updated_toast":
+						Text("meeting_info_updated_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Failed_toast_call_transfer_failed":
 						Text("call_transfer_failed_toast")
 							.multilineTextAlignment(.center)
@@ -253,8 +267,29 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
-					case "Failed_meeting_invitations_not_sent":
-						Text("failed_meeting_ics_invitation_not_sent_toast")
+					case "meeting_failed_to_edit_toast":
+						Text("meeting_failed_to_edit_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "meeting_failed_to_schedule_toast":
+						Text("meeting_failed_to_schedule_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "meeting_failed_to_send_invites_toast":
+						Text("meeting_failed_to_send_invites_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "meeting_failed_to_send_part_of_invites_toast":
+						Text("meeting_failed_to_send_part_of_invites_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
