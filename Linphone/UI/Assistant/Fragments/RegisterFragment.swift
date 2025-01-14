@@ -303,7 +303,7 @@ struct RegisterFragment: View {
 					
 					if self.isShowPopup {
 						let titlePopup = Text("assistant_dialog_confirm_phone_number_title")
-						let contentPopup = Text(String(format: NSLocalizedString("assistant_dialog_confirm_phone_number_message", comment: ""), registerViewModel.phoneNumber))
+						let contentPopup = Text("assistant_dialog_confirm_phone_number_message")
 						
 						PopupView(
 							isShowPopup: $isShowPopup,
