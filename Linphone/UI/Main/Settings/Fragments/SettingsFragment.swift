@@ -25,7 +25,6 @@ struct SettingsFragment: View {
 	
 	@Binding var isShowSettingsFragment: Bool
 	
-	@State private var isOn: Bool = false
 	@State var securityIsOpen: Bool = false
 	@State var callsIsOpen: Bool = false
 	@State var conversationsIsOpen: Bool = false
@@ -440,28 +439,29 @@ struct SettingsFragment: View {
 								.transition(.move(edge: .top))
 							}
 							*/
-							HStack(alignment: .center) {
-								Text("settings_advanced_title")
-									.default_text_style_800(styleSize: 18)
-									.frame(maxWidth: .infinity, alignment: .leading)
+							NavigationLink(destination: {
+								SettingsAdvancedFragment(settingsViewModel: settingsViewModel)
+							}, label: {
+								HStack(alignment: .center) {
+									Text("settings_advanced_title")
+										.default_text_style_800(styleSize: 18)
+										.frame(maxWidth: .infinity, alignment: .leading)
+									
+									Spacer()
+									
+									Image("caret-right")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c600)
+										.frame(width: 25, height: 25, alignment: .leading)
+										.padding(.all, 10)
+								}
+								.frame(maxWidth: .infinity)
 								
-								Spacer()
-								
-								Image("caret-right")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-							}
+							})
 							.padding(.vertical, 10)
 							.padding(.horizontal, 20)
 							.background(Color.gray100)
-							.onTapGesture {
-								withAnimation {
-									//networkIsOpen.toggle()
-								}
-							}
 						}
 					}
 					.background(Color.gray100)

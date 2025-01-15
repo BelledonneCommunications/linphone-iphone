@@ -129,6 +129,7 @@
 		D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */; };
 		D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */; };
 		D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */; };
+		D78607712D36CB8A009E6A7E /* SettingsAdvancedFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */; };
 		D78E06282BE3811D00CE3783 /* CallStatsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E06272BE3811D00CE3783 /* CallStatsModel.swift */; };
 		D78E062A2BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E06292BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift */; };
 		D78E062C2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */; };
@@ -329,6 +330,7 @@
 		D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_default_values; sourceTree = "<group>"; };
 		D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_third_party_default_values; sourceTree = "<group>"; };
+		D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAdvancedFragment.swift; sourceTree = "<group>"; };
 		D78E06272BE3811D00CE3783 /* CallStatsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStatsModel.swift; sourceTree = "<group>"; };
 		D78E06292BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaEncryptedSheetBottomSheet.swift; sourceTree = "<group>"; };
 		D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStatisticsSheetBottomSheet.swift; sourceTree = "<group>"; };
@@ -939,6 +941,7 @@
 		D7DC096B2CFA192F00A6D47C /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */,
 				D732C38B2D311D2100F78100 /* SettingsFragment.swift */,
 				D7C5003F2D27F16900DD53EC /* AccountSettingsFragment.swift */,
 				D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */,
@@ -1199,6 +1202,7 @@
 				D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */,
 				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
+				D78607712D36CB8A009E6A7E /* SettingsAdvancedFragment.swift in Sources */,
 				66E50A492BD12B2300AD61CA /* MeetingsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
 				D717630D2BD7BD0E00464097 /* ParticipantsListFragment.swift in Sources */,

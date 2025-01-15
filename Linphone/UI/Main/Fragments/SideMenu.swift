@@ -130,6 +130,7 @@ struct SideMenu: View {
 							iconName: "gear",
 							title: "settings_title"
 						).onTapGesture {
+							self.menuClose()
 							withAnimation {
 								isShowSettingsFragment = true
 							}

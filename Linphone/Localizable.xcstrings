@@ -3826,6 +3826,9 @@
         }
       }
     },
+    "DTLS" : {
+
+    },
     "Error" : {
       "localizations" : {
         "en" : {
@@ -5470,6 +5473,9 @@
         }
       }
     },
+    "None" : {
+
+    },
     "notification_chat_message_reaction_received" : {
       "localizations" : {
         "en" : {
@@ -5651,6 +5657,193 @@
         }
       }
     },
+    "settings_advanced_accept_early_media_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accept early media"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accepter l'early media"
+          }
+        }
+      }
+    },
+    "settings_advanced_allow_outgoing_early_media_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow outgoing early media"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser l'early media pour les appels sortants"
+          }
+        }
+      }
+    },
+    "settings_advanced_audio_codecs_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio codecs"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codecs audio"
+          }
+        }
+      }
+    },
+    "settings_advanced_audio_devices_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio devices"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Périphériques audio"
+          }
+        }
+      }
+    },
+    "settings_advanced_device_id" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l'appareil"
+          }
+        }
+      }
+    },
+    "settings_advanced_device_id_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alpha-numerical characters only"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caractères alpha-numériques uniquement"
+          }
+        }
+      }
+    },
+    "settings_advanced_download_apply_remote_provisioning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download & apply"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger & appliquer"
+          }
+        }
+      }
+    },
+    "settings_advanced_input_audio_device_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default input audio device"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Périphérique de capture par défaut"
+          }
+        }
+      }
+    },
+    "settings_advanced_media_encryption_mandatory_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Media encryption mandatory"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rendre le chiffrement du média obligatoire"
+          }
+        }
+      }
+    },
+    "settings_advanced_output_audio_device_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default output audio device"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Périphérique d'écoute par défaut"
+          }
+        }
+      }
+    },
+    "settings_advanced_remote_provisioning_url" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remote provisioning URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL de configuration distante"
+          }
+        }
+      }
+    },
     "settings_advanced_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5664,6 +5857,40 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Paramètres avancés"
+          }
+        }
+      }
+    },
+    "settings_advanced_upload_server_url" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File sharing server URL"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL du serveur de partage de fichier"
+          }
+        }
+      }
+    },
+    "settings_advanced_video_codecs_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Video codecs"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codecs vidéo"
           }
         }
       }
@@ -6631,6 +6858,9 @@
     "sip.linphone.org" : {
       "shouldTranslate" : false
     },
+    "SRTP" : {
+
+    },
     "start" : {
       "localizations" : {
         "en" : {
@@ -6908,6 +7138,9 @@
       }
     },
     "You will change this mode later" : {
+
+    },
+    "ZRTP" : {
 
     }
   },

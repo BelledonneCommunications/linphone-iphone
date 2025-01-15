@@ -27,7 +27,7 @@ class SettingsViewModel: ObservableObject {
 	
 	// Security settings
 	@Published var enableVfs: Bool = false
-	//@Published var preventScreenshots: Bool = false
+	// @Published var preventScreenshots: Bool = false
 	
 	// Calls settings
 	@Published var adaptiveRateControl: Bool = false
@@ -43,6 +43,16 @@ class SettingsViewModel: ObservableObject {
 	// Network settings
 	@Published var useWifiOnly: Bool = false
 	@Published var allowIpv6: Bool = false
+	
+	// Advanced settings
+	@Published var enableFec: Bool = false
+	@Published var mediaEncryption: String = ""
+	@Published var mediaEncryptionMandatory: Bool = false
+	@Published var acceptEarlyMedia: Bool = false
+	@Published var allowOutgoingEarlyMedia: Bool = false
+	@Published var deviceId: String = ""
+	@Published var uploadServerUrl: String = ""
+	@Published var remoteProvisioningUrl: String = ""
 	
 	init() {
 		CoreContext.shared.doOnCoreQueue { core in
@@ -60,6 +70,26 @@ class SettingsViewModel: ObservableObject {
 			let useWifiOnlyTmp = core.wifiOnlyEnabled
 			let allowIpv6Tmp = core.ipv6Enabled
 			
+			// Advanced settings
+			let enableFecTmp = core.fecEnabled
+			var mediaEncryptionTmp = ""
+			switch core.mediaEncryption {
+			case .None:
+				mediaEncryptionTmp = "None"
+			case .SRTP:
+				mediaEncryptionTmp = "SRTP"
+			case .ZRTP:
+				mediaEncryptionTmp = "ZRTP"
+			case .DTLS:
+				mediaEncryptionTmp = "DTLS"
+			}
+			let mediaEncryptionMandatoryTmp = core.isMediaEncryptionMandatory
+			let acceptEarlyMediaTmp = CorePreferences.acceptEarlyMedia
+			let allowOutgoingEarlyMediaTmp = CorePreferences.allowOutgoingEarlyMedia
+			let deviceIdTmp = CorePreferences.deviceName
+			let fileSharingServerUrlTmp = core.fileTransferServer
+   			let remoteProvisioningUrlTmp = core.provisioningUri
+			
 			DispatchQueue.main.async {
 				self.enableVfs = enableVfsTmp
 				
@@ -73,6 +103,17 @@ class SettingsViewModel: ObservableObject {
 				
 				self.useWifiOnly = useWifiOnlyTmp
 				self.allowIpv6 = allowIpv6Tmp
+				
+				// Advanced settings
+				self.enableFec = enableFecTmp
+				self.mediaEncryption = mediaEncryptionTmp
+				self.mediaEncryptionMandatory = mediaEncryptionMandatoryTmp
+				self.acceptEarlyMedia = acceptEarlyMediaTmp
+				self.allowOutgoingEarlyMedia = allowOutgoingEarlyMediaTmp
+				
+				self.deviceId = deviceIdTmp
+				self.uploadServerUrl = fileSharingServerUrlTmp ?? ""
+				self.remoteProvisioningUrl = remoteProvisioningUrlTmp ?? ""
 				
 				self.coreDelegate = CoreDelegateStub(
 					onAudioDevicesListUpdated: { (_: Core) in
@@ -91,6 +132,22 @@ class SettingsViewModel: ObservableObject {
 		if let delegate = coreDelegate {
 			CoreContext.shared.doOnCoreQueue { core in
 				core.removeDelegate(delegate: delegate)
+			}
+		}
+	}
+	
+	func downloadAndApplyRemoteProvisioning() {
+		Log.info("\(SettingsViewModel.TAG) Updating remote provisioning URI now and then download/apply it")
+		
+		CoreContext.shared.doOnCoreQueue { core in
+			if core.provisioningUri != self.remoteProvisioningUrl && !(core.provisioningUri == nil && self.remoteProvisioningUrl.isEmpty) {
+				try? core.setProvisioninguri(newValue: self.remoteProvisioningUrl)
+				
+				Log.info("\(SettingsViewModel.TAG) Restarting the Core to apply configuration changes")
+				core.stop()
+				Log.info("\(SettingsViewModel.TAG) Core has been stopped, restarting it")
+				try? core.start()
+				Log.info("\(SettingsViewModel.TAG) Core has been restarted")
 			}
 		}
 	}
@@ -128,6 +185,49 @@ class SettingsViewModel: ObservableObject {
 			
 			if core.ipv6Enabled != self.allowIpv6 {
 				core.ipv6Enabled = self.allowIpv6
+			}
+			
+			if core.fecEnabled != self.enableFec {
+				core.fecEnabled = self.enableFec
+			}
+			
+			if (core.mediaEncryption == .None && self.mediaEncryption != "None")
+				|| (core.mediaEncryption == .SRTP && self.mediaEncryption != "SRTP")
+				|| (core.mediaEncryption == .ZRTP && self.mediaEncryption != "ZRTP")
+				|| (core.mediaEncryption == .DTLS && self.mediaEncryption != "DTLS") {
+				
+				switch self.mediaEncryption {
+				case "None":
+					try? core.setMediaencryption(newValue: .None)
+				case "SRTP":
+					try? core.setMediaencryption(newValue: .SRTP)
+				case "ZRTP":
+					try? core.setMediaencryption(newValue: .ZRTP)
+				case "DTLS":
+					try? core.setMediaencryption(newValue: .DTLS)
+				default:
+					break
+				}
+			}
+			
+			if core.isMediaEncryptionMandatory != self.mediaEncryptionMandatory {
+				core.mediaEncryptionMandatory = self.mediaEncryptionMandatory
+			}
+			
+			if CorePreferences.acceptEarlyMedia != self.acceptEarlyMedia {
+				CorePreferences.acceptEarlyMedia = self.acceptEarlyMedia
+			}
+			
+			if CorePreferences.allowOutgoingEarlyMedia != self.allowOutgoingEarlyMedia {
+				CorePreferences.allowOutgoingEarlyMedia = self.allowOutgoingEarlyMedia
+			}
+			
+			if CorePreferences.deviceName != self.deviceId {
+				CorePreferences.deviceName = self.deviceId
+			}
+			
+			if core.fileTransferServer != self.uploadServerUrl && !(core.fileTransferServer == nil && self.uploadServerUrl.isEmpty) {
+				core.fileTransferServer = self.uploadServerUrl
 			}
 		}
 	}

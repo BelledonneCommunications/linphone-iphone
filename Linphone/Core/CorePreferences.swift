@@ -224,6 +224,24 @@ class CorePreferences {
 		}
 	}
 	
+	static var acceptEarlyMedia: Bool {
+		get {
+			return Config.get().getBool(section: "sip", key: "incoming_calls_early_media", defaultValue: false)
+		}
+		set {
+			Config.get().setBool(section: "sip", key: "incoming_calls_early_media", value: newValue)
+		}
+	}
+	
+	static var allowOutgoingEarlyMedia: Bool {
+		get {
+			return Config.get().getBool(section: "sip", key: "real_early_media", defaultValue: false)
+		}
+		set {
+			Config.get().setBool(section: "sip", key: "real_early_media", value: newValue)
+		}
+	}
+	
 	private func copy(from: String, to: String, overrideIfExists: Bool = false) {
 		let fileManager = FileManager.default
 		if fileManager.fileExists(atPath: to), !overrideIfExists {
