@@ -139,13 +139,11 @@ final class ContactsManager: ObservableObject {
 												self.friendList?.removeDelegate(delegate: friendListDelegate)
 											}
 											self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
-												
 												var addedAvatarListModel: [ContactAvatarModel] = []
 												linphoneFriend.phoneNumbers.forEach { phone in
-													let address = core.interpretUrl(url: phone, applyInternationalPrefix: true)
-													
+													let address = try? Factory.Instance.createAddress(addr: sipUri)
 													let presence = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
-													if address != nil && presence != nil {
+													if address != nil {
 														linphoneFriend.edit()
 														linphoneFriend.addAddress(address: address!)
 														linphoneFriend.done()
