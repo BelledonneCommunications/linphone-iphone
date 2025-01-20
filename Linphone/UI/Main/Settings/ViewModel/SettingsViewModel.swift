@@ -54,6 +54,14 @@ class SettingsViewModel: ObservableObject {
 	@Published var uploadServerUrl: String = ""
 	@Published var remoteProvisioningUrl: String = ""
 	
+	@Published var inputAudioDeviceLabels: [String] = []
+	@Published var inputAudioDeviceValues: [AudioDevice] = []
+	@Published var inputAudioDeviceIndex: Int = 0
+	
+	@Published var outputAudioDeviceLabels: [String] = []
+	@Published var outputAudioDeviceValues: [AudioDevice] = []
+	@Published var outputAudioDeviceIndex: Int = 0
+	
 	init() {
 		CoreContext.shared.doOnCoreQueue { core in
 			
@@ -115,15 +123,19 @@ class SettingsViewModel: ObservableObject {
 				self.uploadServerUrl = fileSharingServerUrlTmp ?? ""
 				self.remoteProvisioningUrl = remoteProvisioningUrlTmp ?? ""
 				
+				/*
+				self.setupAudioDevices()
+				
 				self.coreDelegate = CoreDelegateStub(
 					onAudioDevicesListUpdated: { (_: Core) in
 						Log.info(
 							"\(SettingsViewModel.TAG) Audio devices list has changed, update available input/output audio devices list"
 						)
-						// setupAudioDevices()
+						self.setupAudioDevices()
 					}
 				)
 				core.addDelegate(delegate: self.coreDelegate!)
+				*/
 			}
 		}
 	}
@@ -148,6 +160,91 @@ class SettingsViewModel: ObservableObject {
 				Log.info("\(SettingsViewModel.TAG) Core has been stopped, restarting it")
 				try? core.start()
 				Log.info("\(SettingsViewModel.TAG) Core has been restarted")
+			}
+		}
+	}
+	
+	func setInputAudioDevice(index: Int) {
+		CoreContext.shared.doOnCoreQueue { core in
+			let audioDevice = self.inputAudioDeviceValues[index]
+			core.defaultInputAudioDevice = audioDevice
+		}
+	}
+	
+	func setOutputAudioDevice(index: Int) {
+		CoreContext.shared.doOnCoreQueue { core in
+			let audioDevice = self.outputAudioDeviceValues[index]
+			core.defaultOutputAudioDevice = audioDevice
+		}
+	}
+	
+	func setupAudioDevices() {
+		CoreContext.shared.doOnCoreQueue { core in
+			DispatchQueue.main.async {
+				self.inputAudioDeviceLabels = []
+				self.inputAudioDeviceValues = []
+				self.inputAudioDeviceIndex = 0
+				self.outputAudioDeviceLabels = []
+				self.outputAudioDeviceValues = []
+				self.outputAudioDeviceIndex = 0
+			}
+			
+			// let audioSession = AVAudioSession.sharedInstance()
+			// try? audioSession.setActive(true)
+			
+			// Input Audio Devices
+			var inputIndex = 0
+			let defaultInputAudioDevice = core.defaultInputAudioDevice
+			Log.info("\(SettingsViewModel.TAG) Current default input audio device is \(defaultInputAudioDevice?.id ?? "Error defaultInputAudioDevice id")")
+			
+			var inputAudioDeviceLabelsTmp = [String]()
+			var inputAudioDeviceValuesTmp = [AudioDevice]()
+			var inputAudioDeviceIndexTmp = inputIndex
+			
+			core.extendedAudioDevices.forEach { audioDevice in
+				if audioDevice.hasCapability(capability: AudioDevice.Capabilities.CapabilityRecord) {
+					inputAudioDeviceLabelsTmp.append(audioDevice.id)
+					inputAudioDeviceValuesTmp.append(audioDevice)
+					if audioDevice.id == defaultInputAudioDevice?.id {
+						inputAudioDeviceIndexTmp = inputIndex
+					}
+					Log.info("\(SettingsViewModel.TAG) Input audio device is \(audioDevice.id) \(audioDevice.capabilities)")
+					inputIndex += 1
+				}
+				Log.info("\(SettingsViewModel.TAG) ---- 1 Input audio device is \(audioDevice.id) \(audioDevice.capabilities)")
+			}
+			
+			DispatchQueue.main.async {
+				self.inputAudioDeviceLabels = inputAudioDeviceLabelsTmp
+				self.inputAudioDeviceValues = inputAudioDeviceValuesTmp
+				self.inputAudioDeviceIndex = inputAudioDeviceIndexTmp
+			}
+			
+			// Output Audio Devices
+			var outputIndex = 0
+			let defaultOutputAudioDevice = core.defaultOutputAudioDevice
+			Log.info("\(SettingsViewModel.TAG) Current default output audio device is \(defaultOutputAudioDevice?.id ?? "Error defaultOutputAudioDevice id")")
+			
+			var outputAudioDeviceLabelsTmp = [String]()
+			var outputAudioDeviceValuesTmp = [AudioDevice]()
+			var outputAudioDeviceIndexTmp = outputIndex
+			
+			core.extendedAudioDevices.forEach { audioDevice in
+				if audioDevice.hasCapability(capability: AudioDevice.Capabilities.CapabilityPlay) {
+					outputAudioDeviceLabelsTmp.append(audioDevice.id)
+					outputAudioDeviceValuesTmp.append(audioDevice)
+					if audioDevice.id == defaultOutputAudioDevice?.id {
+						outputAudioDeviceIndexTmp = outputIndex
+					}
+					Log.info("\(SettingsViewModel.TAG) Output audio device is \(audioDevice.id) \(audioDevice.capabilities)")
+					outputIndex += 1
+				}
+			}
+			
+			DispatchQueue.main.async {
+				self.outputAudioDeviceLabels = outputAudioDeviceLabelsTmp
+				self.outputAudioDeviceValues = outputAudioDeviceValuesTmp
+				self.outputAudioDeviceIndex = outputAudioDeviceIndexTmp
 			}
 		}
 	}

@@ -221,17 +221,21 @@ struct SettingsAdvancedFragment: View {
 							VStack(spacing: 0) {
 								VStack(spacing: 30) {
 									VStack(alignment: .leading) {
-										Text("call_stats_media_encryption_title")
+										Text("settings_advanced_input_audio_device_title")
 											.default_text_style_700(styleSize: 15)
 											.padding(.bottom, -5)
 										
 										Menu {
-											Button("None") { } // settingsViewModel.defaultLayout = ""}
-											Button("SRTP") { } // settingsViewModel.defaultLayout = ""}
-											Button("ZRTP") { } // settingsViewModel.defaultLayout = ""}
-											Button("DTLS") { } // settingsViewModel.defaultLayout = ""}
+											ForEach(settingsViewModel.inputAudioDeviceLabels, id: \.self) { inputAudioDevice in
+												Button(inputAudioDevice) {
+													if let inputAudioDeviceIndexTmp = settingsViewModel.inputAudioDeviceLabels.firstIndex(of: inputAudioDevice) {
+														settingsViewModel.setInputAudioDevice(index: inputAudioDeviceIndexTmp)
+													}
+												}
+											}
 										} label: {
-											Text("ZRTP")
+											Text(settingsViewModel.inputAudioDeviceIndex < settingsViewModel.inputAudioDeviceLabels.count
+												 ? settingsViewModel.inputAudioDeviceLabels[settingsViewModel.inputAudioDeviceIndex] : "")
 												.default_text_style(styleSize: 15)
 												.frame(maxWidth: .infinity, alignment: .leading)
 											Image("caret-down")
@@ -252,17 +256,21 @@ struct SettingsAdvancedFragment: View {
 									}
 									
 									VStack(alignment: .leading) {
-										Text("call_stats_media_encryption_title")
+										Text("settings_advanced_output_audio_device_title")
 											.default_text_style_700(styleSize: 15)
 											.padding(.bottom, -5)
 										
 										Menu {
-											Button("None") { } // settingsViewModel.defaultLayout = ""}
-											Button("SRTP") { } // settingsViewModel.defaultLayout = ""}
-											Button("ZRTP") { } // settingsViewModel.defaultLayout = ""}
-											Button("DTLS") { } // settingsViewModel.defaultLayout = ""}
+											ForEach(settingsViewModel.outputAudioDeviceLabels, id: \.self) { outputAudioDevice in
+												Button(outputAudioDevice) {
+													if let outputAudioDeviceIndexTmp = settingsViewModel.outputAudioDeviceLabels.firstIndex(of: outputAudioDevice) {
+														settingsViewModel.setOutputAudioDevice(index: outputAudioDeviceIndexTmp)
+													}
+												}
+											}
 										} label: {
-											Text("ZRTP")
+											Text(settingsViewModel.outputAudioDeviceIndex < settingsViewModel.outputAudioDeviceLabels.count
+												 ? settingsViewModel.outputAudioDeviceLabels[settingsViewModel.outputAudioDeviceIndex] : "")
 												.default_text_style(styleSize: 15)
 												.frame(maxWidth: .infinity, alignment: .leading)
 											Image("caret-down")
@@ -291,7 +299,8 @@ struct SettingsAdvancedFragment: View {
 							.zIndex(-1)
 							.transition(.move(edge: .top))
 						}
-						
+						*/
+						/*
 						HStack(alignment: .center) {
 							Text("settings_advanced_audio_codecs_title")
 								.default_text_style_800(styleSize: 18)
