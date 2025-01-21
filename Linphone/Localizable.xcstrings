@@ -6004,7 +6004,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Contrôle qualité adaptatif"
+            "value" : "Contrôle automatique de la qualité"
           }
         }
       }
@@ -6021,7 +6021,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Démarrer l'enregistrement des appels automatiquement"
+            "value" : "Enregistrement automatique des appels"
           }
         }
       }
@@ -6191,7 +6191,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activer la vidéo"
+            "value" : "Autoriser la vidéo"
           }
         }
       }
@@ -6225,7 +6225,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vibrer lors de la réception d'un appel"
+            "value" : "Vibration lors de l’appel"
           }
         }
       }
