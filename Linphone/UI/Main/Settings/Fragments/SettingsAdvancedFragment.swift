@@ -300,7 +300,7 @@ struct SettingsAdvancedFragment: View {
 							.transition(.move(edge: .top))
 						}
 						*/
-						/*
+						
 						HStack(alignment: .center) {
 							Text("settings_advanced_audio_codecs_title")
 								.default_text_style_800(styleSize: 18)
@@ -327,14 +327,14 @@ struct SettingsAdvancedFragment: View {
 						if audioCodecsIsOpen {
 							VStack(spacing: 0) {
 								VStack(spacing: 30) {
-									Toggle("settings_calls_adaptive_rate_control_title", isOn: $settingsViewModel.adaptiveRateControl)
-										.default_text_style_700(styleSize: 15)
-									
-									Toggle("settings_calls_enable_video_title", isOn: $settingsViewModel.enableVideo)
-										.default_text_style_700(styleSize: 15)
-									
-									Toggle("settings_calls_auto_record_title", isOn: $settingsViewModel.autoRecord)
-										.default_text_style_700(styleSize: 15)
+									ForEach(settingsViewModel.audioCodecs) { audioCodec in
+										SettingsToggleWidget(title: audioCodec.mimeType, subtitle: audioCodec.subtitle, isOn: Binding(
+											get: { audioCodec.isEnabled },
+											set: { newValue in
+												audioCodec.toggleEnabled()
+											}
+										))
+									}
 								}
 								.padding(.vertical, 30)
 								.padding(.horizontal, 20)
@@ -372,8 +372,14 @@ struct SettingsAdvancedFragment: View {
 						if videoCodecsIsOpen {
 							VStack(spacing: 0) {
 								VStack(spacing: 30) {
-									Toggle("settings_conversations_auto_download_title", isOn: $settingsViewModel.autoDownload)
-										.default_text_style_700(styleSize: 15)
+									ForEach(settingsViewModel.videoCodecs) { videoCodec in
+										SettingsToggleWidget(title: videoCodec.mimeType, subtitle: videoCodec.subtitle, isOn: Binding(
+											get: { videoCodec.isEnabled },
+											set: { newValue in
+												videoCodec.toggleEnabled()
+											}
+										))
+									}
 								}
 								.padding(.vertical, 30)
 								.padding(.horizontal, 20)
@@ -384,7 +390,6 @@ struct SettingsAdvancedFragment: View {
 							.zIndex(-3)
 							.transition(.move(edge: .top))
 						}
-						*/
 					}
 				}
 				.background(Color.gray100)
@@ -393,5 +398,31 @@ struct SettingsAdvancedFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+	}
+}
+
+struct SettingsToggleWidget: View {
+	var title: String
+	var subtitle: String
+	@Binding var isOn: Bool
+	
+	var body: some View {
+		HStack {
+			VStack(alignment: .leading, spacing: 2) {
+				Text(title)
+					.default_text_style_700(styleSize: 15)
+				if !subtitle.isEmpty {
+					Text(subtitle)
+						.foregroundColor(Color.grayMain2c500)
+						.default_text_style(styleSize: 14)
+				}
+			}
+			.layoutPriority(1)
+			
+			Toggle(isOn: $isOn) {
+				EmptyView()
+			}
+			.toggleStyle(SwitchToggleStyle())
+		}
 	}
 }

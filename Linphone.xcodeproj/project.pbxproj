@@ -104,6 +104,7 @@
 		D732A9152B04C7FE00DB42BA /* HistoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */; };
 		D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */; };
 		D732C38C2D311D2500F78100 /* SettingsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732C38B2D311D2100F78100 /* SettingsFragment.swift */; };
+		D7343FE82D3FA2000059D784 /* CodecModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7343FE72D3FA1F40059D784 /* CodecModel.swift */; };
 		D73449992BC6932A00778C56 /* MeetingWaitingRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */; };
 		D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
@@ -306,6 +307,7 @@
 		D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModel.swift; sourceTree = "<group>"; };
 		D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListBottomSheet.swift; sourceTree = "<group>"; };
 		D732C38B2D311D2100F78100 /* SettingsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsFragment.swift; sourceTree = "<group>"; };
+		D7343FE72D3FA1F40059D784 /* CodecModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodecModel.swift; sourceTree = "<group>"; };
 		D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomFragment.swift; sourceTree = "<group>"; };
 		D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomViewModel.swift; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
@@ -952,6 +954,7 @@
 		D7DC096C2CFA193B00A6D47C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				D7343FE72D3FA1F40059D784 /* CodecModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1312,6 +1315,7 @@
 				D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */,
 				D7CEE03D2B7A23B200FD79B7 /* ConversationsListFragment.swift in Sources */,
 				D74C9CFC2ACACF370021626A /* WelcomePage3Fragment.swift in Sources */,
+				D7343FE82D3FA2000059D784 /* CodecModel.swift in Sources */,
 				D77A080E2CB6BCAF0095D589 /* MessageConferenceInfo.swift in Sources */,
 				C6A5A9412C10B5D50070FEA4 /* EncodableExtension.swift in Sources */,
 				D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */,

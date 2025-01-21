@@ -62,6 +62,9 @@ class SettingsViewModel: ObservableObject {
 	@Published var outputAudioDeviceValues: [AudioDevice] = []
 	@Published var outputAudioDeviceIndex: Int = 0
 	
+	@Published var audioCodecs: [CodecModel] = []
+	@Published var videoCodecs: [CodecModel] = []
+	
 	init() {
 		CoreContext.shared.doOnCoreQueue { core in
 			
@@ -136,6 +139,8 @@ class SettingsViewModel: ObservableObject {
 				)
 				core.addDelegate(delegate: self.coreDelegate!)
 				*/
+				
+				self.setupCodecs()
 			}
 		}
 	}
@@ -245,6 +250,47 @@ class SettingsViewModel: ObservableObject {
 				self.outputAudioDeviceLabels = outputAudioDeviceLabelsTmp
 				self.outputAudioDeviceValues = outputAudioDeviceValuesTmp
 				self.outputAudioDeviceIndex = outputAudioDeviceIndexTmp
+			}
+		}
+	}
+	
+	func setupCodecs() {
+		CoreContext.shared.doOnCoreQueue { core in
+			var audioCodecsList: [CodecModel] = []
+			for payload in core.audioPayloadTypes {
+				let model = CodecModel(
+					mimeType: payload.mimeType,
+					clockRate: payload.clockRate,
+					channels: payload.channels,
+					recvFmtp: nil,
+					isAudioCodec: true,
+					enabled: payload.enabled(),
+					onEnabledChanged: { enabled in
+						payload.enable(enabled: enabled)
+					}
+				)
+				audioCodecsList.append(model)
+			}
+			
+			var videoCodecsList: [CodecModel] = []
+			for payload in core.videoPayloadTypes {
+				let model = CodecModel(
+					mimeType: payload.mimeType,
+					clockRate: -1,
+					channels: -1,
+					recvFmtp: payload.recvFmtp,
+					isAudioCodec: false,
+					enabled: payload.enabled(),
+					onEnabledChanged: { enabled in
+						payload.enable(enabled: enabled)
+					}
+				)
+				videoCodecsList.append(model)
+			}
+			
+			DispatchQueue.main.async {
+				self.audioCodecs = audioCodecsList
+				self.videoCodecs = videoCodecsList
 			}
 		}
 	}
