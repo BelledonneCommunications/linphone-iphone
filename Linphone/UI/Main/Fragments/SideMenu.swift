@@ -136,10 +136,12 @@ struct SideMenu: View {
 							}
 						}
 						
+						/*
 						SideMenuEntry(
 							iconName: "record-fill",
 							title: "recordings_title"
 						)
+						*/
 						
 						SideMenuEntry(
 							iconName: "question",
