@@ -73,6 +73,7 @@ struct ContentView: View {
 	@State var isShowConversationFragment = false
 	@State var isShowAccountProfileFragment = false
 	@State var isShowSettingsFragment = false
+	@State var isShowHelpFragment = false
 	
 	@State var fullscreenVideo = false
 	
@@ -951,7 +952,8 @@ struct ContentView: View {
 						safeAreaInsets: geometry.safeAreaInsets,
 						isShowLoginFragment: $isShowLoginFragment,
 						isShowAccountProfileFragment: $isShowAccountProfileFragment,
-						isShowSettingsFragment: $isShowSettingsFragment
+						isShowSettingsFragment: $isShowSettingsFragment,
+						isShowHelpFragment: $isShowHelpFragment
 					)
 					.ignoresSafeArea(.all)
 					.zIndex(2)
@@ -1194,6 +1196,15 @@ struct ContentView: View {
 						SettingsFragment(
 							settingsViewModel: SettingsViewModel(),
 							isShowSettingsFragment: $isShowSettingsFragment
+						)
+						.zIndex(3)
+						.transition(.move(edge: .trailing))
+					}
+					
+					if isShowHelpFragment {
+						HelpFragment(
+							helpViewModel: HelpViewModel(),
+							isShowHelpFragment: $isShowHelpFragment
 						)
 						.zIndex(3)
 						.transition(.move(edge: .trailing))

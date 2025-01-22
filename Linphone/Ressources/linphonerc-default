@@ -36,7 +36,7 @@ port=443
 [misc]
 log_collection_upload_server_url=https://files.linphone.org:443/http-file-transfer-server/hft.php
 file_transfer_server_url=https://files.linphone.org:443/http-file-transfer-server/hft.php
-version_check_url_root=https://www.linphone.org/releases
+version_check_url_root=https://download.linphone.org/releases
 max_calls=10
 conference_layout=1
 

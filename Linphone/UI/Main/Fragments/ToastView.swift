@@ -59,6 +59,13 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_version_up_to_date":
+						Text("help_version_up_to_date_toast_message")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_remove_call_logs":
 						Text("call_history_deleted_toast")
 							.multilineTextAlignment(.center)
@@ -89,6 +96,13 @@ struct ToastView: View {
 						
 					case "Success_message_copied_into_clipboard":
 						Text("message_copied_to_clipboard_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_text_copied_into_clipboard":
+						Text("text_copied_to_clipboard_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)

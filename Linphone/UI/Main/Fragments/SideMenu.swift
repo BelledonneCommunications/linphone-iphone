@@ -32,6 +32,7 @@ struct SideMenu: View {
 	@Binding var isShowLoginFragment: Bool
 	@Binding var isShowAccountProfileFragment: Bool
 	@Binding var isShowSettingsFragment: Bool
+	@Binding var isShowHelpFragment: Bool
 	@State private var showHelp = false
 	
 	var body: some View {
@@ -147,18 +148,11 @@ struct SideMenu: View {
 							iconName: "question",
 							title: "help_title"
 						).onTapGesture {
-							showHelp = true
-						}
-						.confirmationDialog("Temp Help", isPresented: $showHelp, titleVisibility: .visible) {
-							Button("help_troubleshooting_share_logs") {
-								HelpView.sendLogs()
+							self.menuClose()
+							withAnimation {
+								isShowHelpFragment = true
 							}
-							Button("help_troubleshooting_clean_logs") {
-								HelpView.clearLogs()
-							}
-							Button("manage_account_delete") {
-								HelpView.logout()
-							}
+							
 						}
 					}
 					.padding(.bottom, safeAreaInsets.bottom + 13)
@@ -191,7 +185,8 @@ struct SideMenu: View {
 			safeAreaInsets: geometry.safeAreaInsets,
 			isShowLoginFragment: $triggerNavigateToLogin,
 			isShowAccountProfileFragment: .constant(false),
-			isShowSettingsFragment: .constant(false)
+			isShowSettingsFragment: .constant(false),
+			isShowHelpFragment: .constant(false)
 		)
 		.ignoresSafeArea(.all)
 		.zIndex(2)

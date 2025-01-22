@@ -106,6 +106,8 @@
 		D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */; };
 		D732C38C2D311D2500F78100 /* SettingsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D732C38B2D311D2100F78100 /* SettingsFragment.swift */; };
 		D7343FE82D3FA2000059D784 /* CodecModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7343FE72D3FA1F40059D784 /* CodecModel.swift */; };
+		D7343FED2D3FE1560059D784 /* HelpFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7343FEC2D3FE1550059D784 /* HelpFragment.swift */; };
+		D7343FEF2D3FE16C0059D784 /* HelpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7343FEE2D3FE16B0059D784 /* HelpViewModel.swift */; };
 		D73449992BC6932A00778C56 /* MeetingWaitingRoomFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */; };
 		D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
@@ -129,6 +131,7 @@
 		D77A080E2CB6BCAF0095D589 /* MessageConferenceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */; };
 		D78290B82ADD3910004AA85C /* ContactsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290B72ADD3910004AA85C /* ContactsFragment.swift */; };
 		D78290BB2ADD40B2004AA85C /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */; };
+		D783028F2D414847009CCB60 /* DebugFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D783028E2D414845009CCB60 /* DebugFragment.swift */; };
 		D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */; };
 		D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */; };
 		D78607712D36CB8A009E6A7E /* SettingsAdvancedFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */; };
@@ -310,6 +313,8 @@
 		D732A91A2B061BD900DB42BA /* HistoryListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListBottomSheet.swift; sourceTree = "<group>"; };
 		D732C38B2D311D2100F78100 /* SettingsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsFragment.swift; sourceTree = "<group>"; };
 		D7343FE72D3FA1F40059D784 /* CodecModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodecModel.swift; sourceTree = "<group>"; };
+		D7343FEC2D3FE1550059D784 /* HelpFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpFragment.swift; sourceTree = "<group>"; };
+		D7343FEE2D3FE16B0059D784 /* HelpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewModel.swift; sourceTree = "<group>"; };
 		D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomFragment.swift; sourceTree = "<group>"; };
 		D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomViewModel.swift; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
@@ -332,6 +337,7 @@
 		D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageConferenceInfo.swift; sourceTree = "<group>"; };
 		D78290B72ADD3910004AA85C /* ContactsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsFragment.swift; sourceTree = "<group>"; };
 		D78290BA2ADD40B2004AA85C /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
+		D783028E2D414845009CCB60 /* DebugFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugFragment.swift; sourceTree = "<group>"; };
 		D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_default_values; sourceTree = "<group>"; };
 		D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_third_party_default_values; sourceTree = "<group>"; };
 		D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAdvancedFragment.swift; sourceTree = "<group>"; };
@@ -620,6 +626,7 @@
 				D7CEE0332B7A20A400FD79B7 /* Conversations */,
 				D7A03FBB2ACC2D850081A588 /* Contacts */,
 				D74C9CFD2ACAEC150021626A /* Fragments */,
+				D7343FE92D3FE0830059D784 /* Help */,
 				D7A03FBE2ACC2E010081A588 /* History */,
 				66E56BC52BA45E49006CE56F /* Meetings */,
 				66D382032CEB7DB80063E1C5 /* Models */,
@@ -701,6 +708,32 @@
 				D71556352C297DB1009A8CEF /* StartGroupCallFragment.swift */,
 			);
 			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D7343FE92D3FE0830059D784 /* Help */ = {
+			isa = PBXGroup;
+			children = (
+				D7343FEA2D3FE1080059D784 /* Fragments */,
+				D7343FEB2D3FE1150059D784 /* ViewModel */,
+			);
+			path = Help;
+			sourceTree = "<group>";
+		};
+		D7343FEA2D3FE1080059D784 /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D783028E2D414845009CCB60 /* DebugFragment.swift */,
+				D7343FEC2D3FE1550059D784 /* HelpFragment.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D7343FEB2D3FE1150059D784 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				D7343FEE2D3FE16B0059D784 /* HelpViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		D74C9CF62ACACEB70021626A /* Fragments */ = {
@@ -1201,6 +1234,7 @@
 				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
 				D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */,
 				C6DC4E3D2C199C4E009096FD /* BundleExtenion.swift in Sources */,
+				D7343FEF2D3FE16C0059D784 /* HelpViewModel.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
 				D759CB662C3FBE1D00AC35E8 /* StartConversationViewModel.swift in Sources */,
 				D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */,
@@ -1234,6 +1268,7 @@
 				C62817302C1C3DCC00DBA646 /* AccountModel.swift in Sources */,
 				D73449992BC6932A00778C56 /* MeetingWaitingRoomFragment.swift in Sources */,
 				D7C48DF42AFA66F900D938CB /* EditContactController.swift in Sources */,
+				D7343FED2D3FE1560059D784 /* HelpFragment.swift in Sources */,
 				C628172E2C1C3A3600DBA646 /* AccountExtension.swift in Sources */,
 				66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */,
 				C62817322C1C400A00DBA646 /* StringExtension.swift in Sources */,
@@ -1248,6 +1283,7 @@
 				D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */,
 				D719ABB72ABC67BF00B41C10 /* LinphoneApp.swift in Sources */,
 				66E50A4B2BD12B7800AD61CA /* MeetingsFragment.swift in Sources */,
+				D783028F2D414847009CCB60 /* DebugFragment.swift in Sources */,
 				66162A202BDFC2F900DCE913 /* AddParticipantsViewModel.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
