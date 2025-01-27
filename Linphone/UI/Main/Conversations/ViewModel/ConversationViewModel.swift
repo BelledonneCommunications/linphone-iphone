@@ -311,18 +311,18 @@ class ConversationViewModel: ObservableObject {
 							}
 						}
 					}
-
-					if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
-						DispatchQueue.main.async {
-							self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
+					if !self.conversationMessagesSection.isEmpty,
+					   !self.conversationMessagesSection[0].rows.isEmpty {
+						if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId.isEmpty && $0.eventModel.eventLog.chatMessage != nil ? $0.eventModel.eventLog.chatMessage!.messageId == message.messageId : false}) {
+							DispatchQueue.main.async {
+								self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
+							}
 						}
-					}
-					
-					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
-					
-					DispatchQueue.main.async {
-						if indexMessage != nil {
-							self.conversationMessagesSection[0].rows[indexMessage!].message.status = statusTmp ?? .error
+						
+						if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
+							DispatchQueue.main.async {
+								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
+							}
 						}
 					}
 				}, onNewMessageReaction: { (message: ChatMessage, _: ChatMessageReaction) in
