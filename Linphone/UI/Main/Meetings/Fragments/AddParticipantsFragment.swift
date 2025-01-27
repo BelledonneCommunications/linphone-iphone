@@ -69,8 +69,9 @@ struct AddParticipantsFragment: View {
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 							.padding(.top, 20)
-						Text(String(format: String(localized: "selected_participants_count"), $addParticipantsViewModel.participantsToAdd.count))
-							.default_text_style_300(styleSize: 12)
+						
+						Text(String(format: String(localized: "selected_participants_count"), $addParticipantsViewModel.participantsToAdd.count.description))
+							   .default_text_style_300(styleSize: 12)
 					}
 					Spacer()
 				}
