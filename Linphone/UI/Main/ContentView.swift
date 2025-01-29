@@ -1340,9 +1340,6 @@ struct ContentView: View {
 						.zIndex(6)
 				}
 			}
-			.onAppear {
-				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-			}
 			.onChange(of: navigationManager.selectedCallId) { newCallId in
 				if newCallId != nil {
 					self.index = 2

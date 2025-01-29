@@ -37,7 +37,6 @@ class ConversationsListViewModel: ObservableObject {
 	var selectedConversation: ConversationModel?
 	
 	init() {
-		computeChatRoomsList(filter: "")
 		addConversationDelegate()
 	}
 	

@@ -69,11 +69,6 @@ struct ConversationsListFragment: View {
 					.padding(.all)
 			)
 		}
-		.onChange(of: scenePhase) { newPhase in
-			if newPhase == .active {
-				conversationsListViewModel.computeChatRoomsList(filter: "")
-			}
-		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
 	}

@@ -89,7 +89,6 @@ final class ContactsManager: ObservableObject {
 			}
 			
 			let store = CNContactStore()
-            
 			store.requestAccess(for: .contacts) { (granted, error) in
 				if let error = error {
 					print("\(#function) - failed to request access", error)
@@ -162,10 +161,10 @@ final class ContactsManager: ObservableObject {
 												DispatchQueue.main.async {
 													self.avatarListModel += addedAvatarListModel
 												}
-												
-												MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 											})
 											self.friendList?.addDelegate(delegate: self.friendListDelegate!)
+											
+											MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 										}
 									}
 							}
