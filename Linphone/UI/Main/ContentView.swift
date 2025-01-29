@@ -340,13 +340,22 @@ struct ContentView: View {
 														openMenu()
 													}
 													.onAppear {
-														imagePath = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].getImagePath()
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															imagePath = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+														}
 													}
-													.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].usernaneAvatar) { _ in
-														imagePath = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].getImagePath()
+													.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].usernaneAvatar) { _ in
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															imagePath = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+														}
 													}
 													.onReceive(imageChanged) { _ in
-														imagePath = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].getImagePath()
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															imagePath = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+														}
 													}
 												}
 												
