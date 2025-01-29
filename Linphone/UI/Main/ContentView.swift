@@ -100,7 +100,7 @@ struct ContentView: View {
 							.padding(.leading, 10)
 						
 						if callViewModel.callsCounter > 1 {
-							Text(String(format: String(localized: "calls_count_label"), callViewModel.callsCounter))
+							Text(String(format: String(localized: "calls_count_label"), callViewModel.callsCounter.description))
 								.default_text_style_white(styleSize: 16)
 						} else {
 							Text("\(callViewModel.displayName)")
