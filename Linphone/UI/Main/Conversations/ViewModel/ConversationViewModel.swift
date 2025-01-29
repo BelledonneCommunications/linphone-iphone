@@ -1740,18 +1740,23 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func resetDisplayedChatRoom(conversationsList: [ConversationModel]) {
+		guard !conversationsList.isEmpty else {
+			Log.info("\(ConversationViewModel.TAG) The conversation list is empty.")
+			return
+		}
+
 		if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
-			if self.displayedConversation != nil {
+			if let displayedConversation = self.displayedConversation {
 				conversationsList.forEach { conversation in
-					if conversation.id == self.displayedConversation!.id {
+					if conversation.id == displayedConversation.id {
 						self.displayedConversation = conversation
 						self.computeComposingLabel()
 						
-						if self.displayedConversation != nil {
+						if let updatedDisplayedConversation = self.displayedConversation {
 							CoreContext.shared.doOnCoreQueue { _ in
-								let historyEventsSizeTmp = self.displayedConversation!.chatRoom.historyEventsSize
+								let historyEventsSizeTmp = updatedDisplayedConversation.chatRoom.historyEventsSize
 								if self.displayedConversationHistorySize < historyEventsSizeTmp {
-									let eventLogList = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
+									let eventLogList = updatedDisplayedConversation.chatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
 									
 									if !eventLogList.isEmpty {
 										self.getNewMessages(eventLogs: eventLogList)
