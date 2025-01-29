@@ -1177,8 +1177,8 @@ class ConversationViewModel: ObservableObject {
 					var attachmentNameReplyList: String = ""
 					
 					eventLog.chatMessage?.replyMessage?.contents.forEach { content in
-						if !content.isText {
-							attachmentNameReplyList += ", \(content.name!)"
+						if !content.isText, let name = content.name {
+							attachmentNameReplyList += ", \(name)"
 						}
 					}
 					
