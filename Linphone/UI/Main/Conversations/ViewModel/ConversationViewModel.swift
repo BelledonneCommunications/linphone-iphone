@@ -1006,7 +1006,12 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewMessages(eventLogs: [EventLog]) {
-		if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != eventLogs.last?.chatMessage?.messageId {
+		if let firstEventLogId = self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId,
+		   let lastMessageId = eventLogs.last?.chatMessage?.messageId,
+		   !eventLogs.isEmpty,
+		   !self.conversationMessagesSection.isEmpty,
+		   !self.conversationMessagesSection[0].rows.isEmpty,
+		   firstEventLogId != lastMessageId {
 			eventLogs.enumerated().forEach { index, eventLog in
 				var attachmentNameList: String = ""
 				var attachmentList: [Attachment] = []
