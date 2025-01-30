@@ -65,16 +65,36 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			let chatRoomsCounter = account?.chatRooms != nil ? account!.chatRooms.count : core.chatRooms.count
-			
-			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
-				self.computeChatRoomsList(filter: "")
-			}, onMessageSent: { (_: Core, _: ChatRoom, _: ChatMessage) in
-				self.computeChatRoomsList(filter: "")
-			}, onChatRoomRead: { (_: Core, _: ChatRoom) in
-				self.computeChatRoomsList(filter: "")
-			}, onChatRoomStateChanged: { (core: Core, chatRoom: ChatRoom, state: ChatRoom.State) in
+			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (_: Core, chatRoom: ChatRoom, _: [ChatMessage]) in
+				let model = ConversationModel(chatRoom: chatRoom)
+				DispatchQueue.main.async {
+					if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === chatRoom }) {
+						self.conversationsList.remove(at: index)
+					}
+					self.conversationsList.insert(model, at: 0)
+				}
+				self.updateUnreadMessagesCount()
+			}, onMessageSent: { (_: Core, chatRoom: ChatRoom, _: ChatMessage) in
+				let model = ConversationModel(chatRoom: chatRoom)
+				DispatchQueue.main.async {
+					if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === chatRoom }) {
+						self.conversationsList.remove(at: index)
+					}
+					self.conversationsList.insert(model, at: 0)
+				}
+				self.updateUnreadMessagesCount()
+			}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
+				let model = ConversationModel(chatRoom: chatRoom)
+				DispatchQueue.main.async {
+					if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === chatRoom }) {
+						self.conversationsList.remove(at: index)
+						self.conversationsList.insert(model, at: index)
+					} else {
+						self.conversationsList.insert(model, at: 0)
+					}
+				}
+				self.updateUnreadMessagesCount()
+			}, onChatRoomStateChanged: { (core: Core, _: ChatRoom, state: ChatRoom.State) in
 				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				if core.globalState == .On {
 					switch state {

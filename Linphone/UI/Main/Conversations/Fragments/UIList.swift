@@ -208,7 +208,6 @@ struct UIList: UIViewRepresentable {
 			
 			if isScrolledToBottom && conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
 				conversationViewModel.markAsRead()
-				conversationsListViewModel.computeChatRoomsList(filter: "")
 			}
 		}
 	}
@@ -467,7 +466,6 @@ struct UIList: UIViewRepresentable {
 					
 					if self.parent.isScrolledToBottom && self.parent.conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
 						self.parent.conversationViewModel.markAsRead()
-						self.parent.conversationsListViewModel.computeChatRoomsList(filter: "")
 					}
 				}
 			}
