@@ -580,15 +580,15 @@ class CallViewModel: ObservableObject {
 						}
 					}
 				})
-			}, onActiveSpeakerParticipantDevice: { (conference: Conference, participantDevice: ParticipantDevice) in
-				if participantDevice.address != nil {
+			}, onActiveSpeakerParticipantDevice: { (conference: Conference, participantDevice: ParticipantDevice?) in
+				if participantDevice != nil && participantDevice!.address != nil {
 					let activeSpeakerParticipantBis = self.activeSpeakerParticipant
 					
 					let activeSpeakerParticipantTmp = ParticipantModel(
-						address: participantDevice.address!,
+						address: participantDevice!.address!,
 						isJoining: false,
-						onPause: participantDevice.state == .OnHold,
-						isMuted: participantDevice.isMuted
+						onPause: participantDevice!.state == .OnHold,
+						isMuted: participantDevice!.isMuted
 					)
 					
 					var activeSpeakerNameTmp = ""
