@@ -136,9 +136,7 @@ struct EditContactFragment: View {
 						.padding(.top, 2)
 						.disabled(editContactViewModel.firstName.isEmpty)
 						.onTapGesture {
-							withAnimation {
-								addOrEditFriend()
-							}
+							addOrEditFriend()
 						}
 				}
 				.frame(maxWidth: .infinity)
@@ -532,25 +530,28 @@ struct EditContactFragment: View {
 				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend) {
 					MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 					
-					if editContactViewModel.selectedEditFriend != nil 
-						&& editContactViewModel.selectedEditFriend!.name != editContactViewModel.firstName + " " + editContactViewModel.lastName {
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-							let result = ContactsManager.shared.lastSearch.firstIndex(where: {
-								$0.friend!.name == newContact.firstName + " " + newContact.lastName
-							})
-							contactViewModel.indexDisplayedFriend = result
+					DispatchQueue.main.async {
+						if editContactViewModel.selectedEditFriend != nil {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+								let result = ContactsManager.shared.lastSearch.firstIndex(where: {
+									$0.friend!.name == newContact.firstName + " " + newContact.lastName
+								})
+								contactViewModel.indexDisplayedFriend = result
+							}
 						}
-					}
-					
-					delayColorDismiss()
-					if editContactViewModel.selectedEditFriend == nil {
-						withAnimation {
-							isShowEditContactFragment.toggle()
+						
+						delayColorDismiss()
+						if editContactViewModel.selectedEditFriend == nil {
+							withAnimation {
+								isShowEditContactFragment.toggle()
+							}
+						} else {
+							withAnimation {
+								dismiss()
+							}
 						}
-					} else {
-						dismiss()
+						editContactViewModel.resetValues()
 					}
-					editContactViewModel.resetValues()
 				}
 		}
 	}
