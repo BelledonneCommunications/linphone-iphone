@@ -88,6 +88,8 @@ final class ContactsManager: ObservableObject {
 				}
 			}
 			
+			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			
 			let store = CNContactStore()
 			store.requestAccess(for: .contacts) { (granted, error) in
 				if let error = error {
@@ -129,7 +131,7 @@ final class ContactsManager: ObservableObject {
 									name: contact.givenName + contact.familyName,
 									prefix: ((imageThumbnail == nil) ? "-default" : ""),
 									contact: newContact, linphoneFriend: false, existingFriend: nil) {
-										if (self.friendList?.friends.count ?? 0) + (self.linphoneFriendList?.friends.count ?? 0) == contactCounter {
+										if (self.friendList?.friends.count ?? 0) == contactCounter {
 											// Every contact properly added, proceed
 											self.linphoneFriendList?.updateSubscriptions()
 											self.friendList?.updateSubscriptions()
@@ -137,6 +139,7 @@ final class ContactsManager: ObservableObject {
 											if let friendListDelegate = self.friendListDelegate {
 												self.friendList?.removeDelegate(delegate: friendListDelegate)
 											}
+											
 											self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
 												var addedAvatarListModel: [ContactAvatarModel] = []
 												linphoneFriend.phoneNumbers.forEach { phone in
@@ -160,11 +163,10 @@ final class ContactsManager: ObservableObject {
 												
 												DispatchQueue.main.async {
 													self.avatarListModel += addedAvatarListModel
+													self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
 												}
 											})
 											self.friendList?.addDelegate(delegate: self.friendListDelegate!)
-											
-											MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 										}
 									}
 							}

@@ -73,8 +73,8 @@ struct ContactInnerFragment: View {
 						}
 						
 						Spacer()
-						if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count
-							&& !contactAvatarModel.nativeUri.isEmpty {
+						
+						if !contactAvatarModel.nativeUri.isEmpty {
 							Button(action: {
 								editNativeContact()
 							}, label: {
@@ -118,17 +118,9 @@ struct ContactInnerFragment: View {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
 								VStack(spacing: 0) {
-									if contactViewModel.indexDisplayedFriend != nil && contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count {
+									if contactViewModel.indexDisplayedFriend != nil {
 										Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
-									} else if contactViewModel.indexDisplayedFriend != nil
-												&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count {
-										Image("profil-picture-default")
-											.resizable()
-											.frame(width: 100, height: 100)
-											.clipShape(Circle())
-									}
-									if contactViewModel.indexDisplayedFriend != nil
-										&& contactViewModel.indexDisplayedFriend! < contactsManager.lastSearch.count {
+										
 										Text(contactAvatarModel.name)
 											.foregroundStyle(Color.grayMain2c700)
 											.multilineTextAlignment(.center)
@@ -144,7 +136,6 @@ struct ContactInnerFragment: View {
 											.default_text_style_300(styleSize: 12)
 											.frame(maxWidth: .infinity)
 									}
-									
 								}
 								.frame(minHeight: 150)
 								.frame(maxWidth: .infinity)
