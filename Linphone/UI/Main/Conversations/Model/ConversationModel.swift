@@ -27,7 +27,7 @@ class ConversationModel: ObservableObject, Identifiable {
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
 	
-	let chatRoom: ChatRoom
+	var chatRoom: ChatRoom
 	let isDisabledBecauseNotSecured: Bool = false
 	
 	static let TAG = "[Conversation Model]"

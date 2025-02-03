@@ -1355,7 +1355,7 @@ struct ContentView: View {
 				}
 			}
 			.onReceive(pub) { _ in
-				conversationsListViewModel.computeChatRoomsList(filter: "")
+				conversationsListViewModel.updateChatRoomsList()
 				historyListViewModel.refreshHistoryAvatarModel()
 			}
 		}
@@ -1381,6 +1381,7 @@ struct ContentView: View {
 			CoreContext.shared.enteredForeground = newPhase == .active
 			orientation = UIDevice.current.orientation
 			if newPhase == .active {
+				conversationsListViewModel.computeChatRoomsList(filter: "")
 				accountProfileViewModel.setAvatarModel()
 			}
 		}
