@@ -190,20 +190,13 @@ struct ConversationRow: View {
 		.listRowSeparator(.hidden)
 		.background(.white)
 		.onReceive(pub) { _ in
-			if CoreContext.shared.enteredForeground && conversationViewModel.displayedConversation != nil
-				&& (navigationManager.peerAddr == nil || navigationManager.peerAddr == conversationViewModel.displayedConversation!.remoteSipUri) {
-				if conversationViewModel.displayedConversation != nil {
-					conversationViewModel.resetDisplayedChatRoom(conversationsList: conversationsListViewModel.conversationsList)
-				}
-			}
-			
-			CoreContext.shared.enteredForeground = false
-			
+			/*
 			if navigationManager.peerAddr != nil
 				&& conversation.remoteSipUri.contains(navigationManager.peerAddr!) {
 				conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
 				navigationManager.peerAddr = nil
 			}
+			*/
 		}
 		.onTapGesture {
 			conversationViewModel.changeDisplayedChatRoom(conversationModel: conversation)

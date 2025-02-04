@@ -24,6 +24,7 @@ import UniformTypeIdentifiers
 // swiftlint:disable type_body_length
 struct ConversationFragment: View {
 	
+	@Environment(\.scenePhase) var scenePhase
 	@State private var orientation = UIDevice.current.orientation
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
@@ -160,6 +161,11 @@ struct ConversationFragment: View {
 							ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$conversationViewModel.mediasToSend)
 						}
 						.background(Color.gray100.ignoresSafeArea(.keyboard))
+				}
+			}
+			.onChange(of: scenePhase) { newPhase in
+				if newPhase == .active {
+					conversationViewModel.resetDisplayedChatRoom()
 				}
 			}
 		}
@@ -662,7 +668,7 @@ struct ConversationFragment: View {
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
 											.onChange(of: conversationViewModel.messageText) { text in
-												if !text.isEmpty && !CoreContext.shared.enteredForeground {
+												if !text.isEmpty {
 													conversationViewModel.compose()
 												}
 											}
@@ -675,7 +681,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: 15)
 												.focused($isMessageTextFocused)
 												.onChange(of: conversationViewModel.messageText) { text in
-													if !text.isEmpty && !CoreContext.shared.enteredForeground {
+													if !text.isEmpty {
 														conversationViewModel.compose()
 													}
 												}
