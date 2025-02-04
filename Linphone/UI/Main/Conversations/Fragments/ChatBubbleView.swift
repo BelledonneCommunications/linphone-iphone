@@ -374,10 +374,8 @@ struct ChatBubbleView: View {
 													}
 												}
 												.onTapGesture {
-													if !CoreContext.shared.enteredForeground {
-														conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
-														conversationViewModel.prepareBottomSheetForDeliveryStatus()
-													}
+													conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+													conversationViewModel.prepareBottomSheetForDeliveryStatus()
 												}
 												.disabled(conversationViewModel.selectedMessage != nil)
 												.padding(.top, -4)

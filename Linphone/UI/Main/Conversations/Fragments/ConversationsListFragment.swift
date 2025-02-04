@@ -71,6 +71,14 @@ struct ConversationsListFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+		.onChange(of: scenePhase) { newPhase in
+			if newPhase == .active {
+				if navigationManager.peerAddr != nil {
+					conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
+					navigationManager.peerAddr = nil
+				}
+			}
+		}
 	}
 }
 
@@ -85,8 +93,6 @@ struct ConversationRow: View {
 	@Binding var text: String
 	
 	var body: some View {
-		let pub = NotificationCenter.default
-				.publisher(for: NSNotification.Name("ChatRoomsComputed"))
 		HStack {
 			Avatar(contactAvatarModel: conversation.avatarModel, avatarSize: 50)
 			
@@ -189,22 +195,6 @@ struct ConversationRow: View {
 		.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
 		.listRowSeparator(.hidden)
 		.background(.white)
-		.onReceive(pub) { _ in
-			if CoreContext.shared.enteredForeground && conversationViewModel.displayedConversation != nil
-				&& (navigationManager.peerAddr == nil || navigationManager.peerAddr == conversationViewModel.displayedConversation!.remoteSipUri) {
-				if conversationViewModel.displayedConversation != nil {
-					conversationViewModel.resetDisplayedChatRoom(conversationsList: conversationsListViewModel.conversationsList)
-				}
-			}
-			
-			CoreContext.shared.enteredForeground = false
-			
-			if navigationManager.peerAddr != nil
-				&& conversation.remoteSipUri.contains(navigationManager.peerAddr!) {
-				conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
-				navigationManager.peerAddr = nil
-			}
-		}
 		.onTapGesture {
 			conversationViewModel.changeDisplayedChatRoom(conversationModel: conversation)
 		}

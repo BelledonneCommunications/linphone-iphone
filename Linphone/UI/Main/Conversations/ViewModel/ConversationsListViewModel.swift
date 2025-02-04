@@ -61,11 +61,6 @@ class ConversationsListViewModel: ObservableObject {
 				}
 			}
 			
-			DispatchQueue.main.async {
-				//self.conversationsList = self.conversationsListTmp
-				NotificationCenter.default.post(name: NSNotification.Name("ChatRoomsComputed"), object: nil)
-			}
-			
 			self.updateUnreadMessagesCount()
 		}
 	}
@@ -132,7 +127,8 @@ class ConversationsListViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (_: Core, chatRoom: ChatRoom, _: [ChatMessage]) in
 				let model = ConversationModel(chatRoom: chatRoom)
-				let index = self.conversationsList.firstIndex(where: { $0.chatRoom === chatRoom })
+				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+				let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
 				DispatchQueue.main.async {
 					if index != nil {
 						self.conversationsList.remove(at: index!)
@@ -142,7 +138,8 @@ class ConversationsListViewModel: ObservableObject {
 				self.updateUnreadMessagesCount()
 			}, onMessageSent: { (_: Core, chatRoom: ChatRoom, _: ChatMessage) in
 				let model = ConversationModel(chatRoom: chatRoom)
-				let index = self.conversationsList.firstIndex(where: { $0.chatRoom === chatRoom })
+				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+				let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
 				DispatchQueue.main.async {
 					if index != nil {
 						self.conversationsList.remove(at: index!)
@@ -152,7 +149,8 @@ class ConversationsListViewModel: ObservableObject {
 				self.updateUnreadMessagesCount()
 			}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
 				let model = ConversationModel(chatRoom: chatRoom)
-				let index = self.conversationsList.firstIndex(where: { $0.chatRoom === chatRoom })
+				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+				let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
 				DispatchQueue.main.async {
 					if index != nil {
 						self.conversationsList.remove(at: index!)

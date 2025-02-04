@@ -1378,7 +1378,6 @@ struct ContentView: View {
 			orientation = newOrientation
 		}
 		.onChange(of: scenePhase) { newPhase in
-			CoreContext.shared.enteredForeground = newPhase == .active
 			orientation = UIDevice.current.orientation
 			if newPhase == .active {
 				conversationsListViewModel.computeChatRoomsList(filter: "")
