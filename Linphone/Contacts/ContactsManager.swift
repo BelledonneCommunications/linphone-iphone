@@ -150,14 +150,23 @@ final class ContactsManager: ObservableObject {
 														linphoneFriend.addAddress(address: address!)
 														linphoneFriend.done()
 														
+														let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
 														addedAvatarListModel.append(
 															ContactAvatarModel(
 																friend: linphoneFriend,
 																name: linphoneFriend.name ?? "",
-																address: linphoneFriend.address?.clone()?.asStringUriOnly() ?? "",
+																address: addressTmp,
 																withPresence: true
 															)
 														)
+														
+														DispatchQueue.main.async {
+															NotificationCenter.default.post(
+																name: NSNotification.Name("ContactAdded"),
+																object: nil,
+																userInfo: ["address": addressTmp]
+															)
+														}
 													}
 												}
 												
@@ -342,25 +351,21 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func getFriendWithAddress(address: Address?) -> Friend? {
-		if address != nil {
-			let clonedAddress = address!.clone()
-			clonedAddress!.clean()
-			let sipUri = clonedAddress!.asStringUriOnly()
-			
-			if self.friendList != nil && !self.friendList!.friends.isEmpty {
-				var friend: Friend?
-				friend = self.friendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-				if friend == nil && self.linphoneFriendList != nil && !self.linphoneFriendList!.friends.isEmpty {
-					friend = self.linphoneFriendList!.friends.first(where: {$0.addresses.contains(where: {$0.asStringUriOnly() == sipUri})})
-				}
-				
-				return friend
-			} else {
-				return nil
-			}
-		} else {
+		print("getFriendWithAddress")
+		guard let address = address, let clonedAddress = address.clone() else {
 			return nil
 		}
+		clonedAddress.clean()
+		let sipUri = clonedAddress.asStringUriOnly()
+		
+		var friend: Friend?
+		if let friendList = self.friendList {
+			friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+		}
+		if friend == nil, let linphoneFriendList = self.linphoneFriendList {
+			friend = linphoneFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+		}
+		return friend
 	}
 	
 	func getFriendWithAddressInCoreQueue(address: Address?, completion: @escaping (Friend?) -> Void) {

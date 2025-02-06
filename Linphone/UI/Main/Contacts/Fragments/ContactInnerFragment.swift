@@ -163,17 +163,18 @@ struct ContactInnerFragment: View {
 												Image("phone")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
+													.foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(Color.grayMain2c200)
+											.background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
 											.cornerRadius(40)
 											
 											Text("contact_call_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
+									.disabled(contactAvatarModel.address.isEmpty)
 									
 									Spacer()
 									
@@ -195,17 +196,18 @@ struct ContactInnerFragment: View {
 												Image("chat-teardrop-text")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
+													.foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(Color.grayMain2c200)
+											.background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
 											.cornerRadius(40)
 											
 											Text("contact_message_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
+									.disabled(contactAvatarModel.address.isEmpty)
 									
 									Spacer()
 									
@@ -227,17 +229,18 @@ struct ContactInnerFragment: View {
 												Image("video-camera")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
+													.foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(Color.grayMain2c200)
+											.background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
 											.cornerRadius(40)
 											
 											Text("contact_video_call_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
+									.disabled(contactAvatarModel.address.isEmpty)
 									
 									Spacer()
 								}

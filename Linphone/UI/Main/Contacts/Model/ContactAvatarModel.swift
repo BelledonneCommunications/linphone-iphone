@@ -22,6 +22,7 @@ import linphonesw
 import Combine
 
 class ContactAvatarModel: ObservableObject, Identifiable {
+	let id = UUID()
 	
 	let friend: Friend?
 	
@@ -46,24 +47,23 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 		self.name = name
 		self.address = address
 		var addressesTmp: [String] = []
-		if friend != nil {
-			friend!.addresses.forEach { address in
+		if let friend = friend {
+			friend.addresses.forEach { address in
 				addressesTmp.append(address.asStringUriOnly())
 			}
 		}
 		self.addresses = addressesTmp
 		self.nativeUri = friend?.nativeUri ?? ""
 		self.withPresence = withPresence
-		if friend != nil &&
-			withPresence == true {
+		if let friend = friend, withPresence == true {
 			self.lastPresenceInfo = ""
 			
-			self.presenceStatus = friend!.consolidatedPresence
+			self.presenceStatus = friend.consolidatedPresence
 			
-			if friend!.consolidatedPresence == .Online || friend!.consolidatedPresence == .Busy {
-				if friend!.consolidatedPresence == .Online || friend!.presenceModel!.latestActivityTimestamp != -1 {
-					self.lastPresenceInfo = (friend!.consolidatedPresence == .Online) ?
-					"Online" : getCallTime(startDate: friend!.presenceModel!.latestActivityTimestamp)
+			if friend.consolidatedPresence == .Online || friend.consolidatedPresence == .Busy {
+				if friend.consolidatedPresence == .Online || friend.presenceModel?.latestActivityTimestamp != -1 {
+					self.lastPresenceInfo = (friend.consolidatedPresence == .Online) ?
+					"Online" : getCallTime(startDate: friend.presenceModel!.latestActivityTimestamp)
 				} else {
 					self.lastPresenceInfo = "Away"
 				}
