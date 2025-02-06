@@ -26,10 +26,12 @@ class SharedMainViewModel: ObservableObject {
 	@Published var welcomeViewDisplayed = false
 	@Published var generalTermsAccepted = false
 	@Published var displayProfileMode = false
+	@Published var defaultAvatar: URL?
 	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
 	let displayProfileModeKey = "display_profile_mode"
+	let defaultAvatarKey = "default_avatar"
 	
 	var maxWidth = 400.0
 	
@@ -52,6 +54,14 @@ class SharedMainViewModel: ObservableObject {
 			preferences.set(displayProfileMode, forKey: displayProfileModeKey)
 		} else {
 			displayProfileMode = preferences.bool(forKey: displayProfileModeKey)
+		}
+		
+		if preferences.object(forKey: defaultAvatarKey) == nil {
+			preferences.set(defaultAvatar, forKey: defaultAvatarKey)
+		} else {
+			if let defaultAvatarTmp = preferences.url(forKey: defaultAvatarKey) {
+				defaultAvatar = defaultAvatarTmp
+			}
 		}
 	}
 	
@@ -81,5 +91,12 @@ class SharedMainViewModel: ObservableObject {
 		
 		displayProfileMode = false
 		preferences.set(displayProfileMode, forKey: displayProfileModeKey)
+	}
+	
+	func changeDefaultAvatar(defaultAvatarURL: URL) {
+		let preferences = UserDefaults.standard
+		
+		defaultAvatar = defaultAvatarURL
+		preferences.set(defaultAvatar, forKey: defaultAvatarKey)
 	}
 }

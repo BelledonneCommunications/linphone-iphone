@@ -81,7 +81,6 @@ struct ContentView: View {
 	@State private var isShowLoginFragment: Bool = false
 	
 	private let avatarSize = 45.0
-	@State private var imagePath: URL?
 	
 	var body: some View {
 		let pub = NotificationCenter.default
@@ -316,8 +315,8 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
-												if (accountProfileViewModel.accountModelIndex ?? 0) < CoreContext.shared.accounts.count {
-													AsyncImage(url: imagePath) { image in
+												if sharedMainViewModel.defaultAvatar != nil {
+													AsyncImage(url: sharedMainViewModel.defaultAvatar) { image in
 														switch image {
 														case .empty:
 															ProgressView()
@@ -342,22 +341,29 @@ struct ContentView: View {
 													.onTapGesture {
 														openMenu()
 													}
-													.onAppear {
-														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-														   accountModelIndex < CoreContext.shared.accounts.count {
-															imagePath = CoreContext.shared.accounts[accountModelIndex].getImagePath()
-														}
-													}
 													.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].usernaneAvatar) { _ in
 														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
 														   accountModelIndex < CoreContext.shared.accounts.count {
-															imagePath = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: CoreContext.shared.accounts[accountModelIndex].getImagePath())
 														}
 													}
 													.onReceive(imageChanged) { _ in
 														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
 														   accountModelIndex < CoreContext.shared.accounts.count {
-															imagePath = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: CoreContext.shared.accounts[accountModelIndex].getImagePath())
+														}
+													}
+												} else {
+													Image(uiImage: contactsManager.textToImage(
+														firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
+														lastName: ""))
+													.resizable()
+													.frame(width: avatarSize, height: avatarSize)
+													.clipShape(Circle())
+													.onAppear {
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: CoreContext.shared.accounts[accountModelIndex].getImagePath())
 														}
 													}
 												}
