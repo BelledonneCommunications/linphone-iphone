@@ -123,6 +123,62 @@ class ConversationsListViewModel: ObservableObject {
 		}
 	}
 	
+	func updateChatRoom(address: String) {
+			CoreContext.shared.doOnCoreQueue { _ in
+				if let contactAvatarModel = self.contactsManager.avatarListModel.first(where: {$0.addresses.contains(address)}) {
+					self.conversationsListTmp.forEach { conversationModel in
+						if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
+							if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
+								let lastMessage = conversationModel.chatRoom.lastMessageInHistory
+								if lastMessage != nil && lastMessage!.fromAddress != nil && lastMessage!.fromAddress!.asStringUriOnly().contains(contactAvatarModel.address) {
+									var fromAddressFriend = lastMessage!.fromAddress != nil
+									? self.contactsManager.getFriendWithAddress(address: lastMessage!.fromAddress)?.name ?? nil
+									: nil
+									
+									if !lastMessage!.isOutgoing && lastMessage!.chatRoom != nil && !lastMessage!.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+										if fromAddressFriend == nil {
+											if lastMessage!.fromAddress!.displayName != nil {
+												fromAddressFriend = lastMessage!.fromAddress!.displayName! + ": "
+											} else if lastMessage!.fromAddress!.username != nil {
+												fromAddressFriend = lastMessage!.fromAddress!.username! + ": "
+											} else {
+												fromAddressFriend = String(lastMessage!.fromAddress!.asStringUriOnly().dropFirst(4)) + ": "
+											}
+										} else {
+											fromAddressFriend! += ": "
+										}
+										
+									} else {
+										fromAddressFriend = nil
+									}
+									let lastMessageTextTmp = (fromAddressFriend ?? "")
+									+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+									
+									let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom })
+									
+									DispatchQueue.main.async {
+										conversationModel.lastMessageText = lastMessageTextTmp
+										if index != nil {
+											self.conversationsList[index!].lastMessageText = lastMessageTextTmp
+										}
+									}
+								}
+							} else if !conversationModel.isGroup && conversationModel.participantsAddress.first != nil && conversationModel.participantsAddress.first!.contains(contactAvatarModel.address) {
+								let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom })
+								DispatchQueue.main.async {
+									conversationModel.avatarModel = contactAvatarModel
+									conversationModel.subject = contactAvatarModel.name
+									if index != nil {
+										self.conversationsList[index!].avatarModel = contactAvatarModel
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { core in
 			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (_: Core, chatRoom: ChatRoom, _: [ChatMessage]) in

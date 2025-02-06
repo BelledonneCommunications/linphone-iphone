@@ -86,6 +86,9 @@ struct ContentView: View {
 	var body: some View {
 		let pub = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ContactLoaded"))
+		let pub2 = NotificationCenter.default
+				.publisher(for: NSNotification.Name("ContactAdded"))
+				.compactMap { $0.userInfo?["address"] as? String }
 		let imageChanged = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ImageChanged"))
 		GeometryReader { geometry in
@@ -110,7 +113,7 @@ struct ContentView: View {
 						Spacer()
 						
 						if callViewModel.callsCounter == 1 {
-							Text(String(localized: "\(callViewModel.isPaused || telecomManager.isPausedByRemote ? "call_state_paused" : "call_state_connected")"))
+							Text(callViewModel.isPaused || telecomManager.isPausedByRemote ? String(localized: "call_state_paused") : String(localized: "call_state_connected"))
 								.default_text_style_white(styleSize: 16)
 								.padding(.trailing, 10)
 						}
@@ -1357,6 +1360,9 @@ struct ContentView: View {
 			.onReceive(pub) { _ in
 				conversationsListViewModel.updateChatRoomsList()
 				historyListViewModel.refreshHistoryAvatarModel()
+			}
+			.onReceive(pub2) { address in
+				conversationsListViewModel.updateChatRoom(address: address)
 			}
 		}
 		.overlay {

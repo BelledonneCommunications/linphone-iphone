@@ -112,24 +112,27 @@ class HistoryModel: ObservableObject {
 	
 	func refreshAvatarModel() {
 		coreContext.doOnCoreQueue { _ in
-			let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(
-				address: self.callLog.dir == .Outgoing ? self.callLog.toAddress! : self.callLog.fromAddress!
-			)
-			if addressFriendTmp != nil {
+			guard let address = (self.callLog.dir == .Outgoing ? self.callLog.toAddress : self.callLog.fromAddress) else {
+				DispatchQueue.main.async {
+					self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+				}
+				return
+			}
+			
+			let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(address: address)
+			if let addressFriendTmp = addressFriendTmp {
 				self.addressFriend = addressFriendTmp
 				
 				let addressNameTmp = self.addressName
 				
-				let avatarModelTmp = addressFriendTmp != nil
-				? ContactsManager.shared.avatarListModel.first(where: {
-					$0.friend!.name == addressFriendTmp!.name
-					&& $0.friend!.address!.asStringUriOnly() == addressFriendTmp!.address!.asStringUriOnly()
+				let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
+					guard let friend = $0.friend else { return false }
+					return friend.name == addressFriendTmp.name && friend.address?.asStringUriOnly() == addressFriendTmp.address?.asStringUriOnly()
 				}) ?? ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
-				: ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
 				
 				DispatchQueue.main.async {
 					self.addressFriend = addressFriendTmp
-					self.addressName = addressFriendTmp!.name ?? addressNameTmp
+					self.addressName = addressFriendTmp.name ?? addressNameTmp
 					self.avatarModel = avatarModelTmp
 				}
 			} else {
