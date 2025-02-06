@@ -28,6 +28,8 @@ struct ConversationFragment: View {
 	@State private var orientation = UIDevice.current.orientation
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
+	@EnvironmentObject var navigationManager: NavigationManager
+	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
@@ -165,7 +167,9 @@ struct ConversationFragment: View {
 			}
 			.onChange(of: scenePhase) { newPhase in
 				if newPhase == .active {
-					conversationViewModel.resetDisplayedChatRoom()
+					if conversationViewModel.displayedConversation != nil && (navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(conversationViewModel.displayedConversation!.remoteSipUri)) {
+						conversationViewModel.resetDisplayedChatRoom()
+					}
 				}
 			}
 		}

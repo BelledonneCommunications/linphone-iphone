@@ -1777,18 +1777,21 @@ class ConversationViewModel: ObservableObject {
 		self.selectedMessage = nil
 		self.resetMessage()
 		self.removeConversationDelegate()
-		withAnimation {
-			self.displayedConversation = conversationModel
-		}
-		
 		CoreContext.shared.doOnCoreQueue { core in
 			let nilParams: ConferenceParams? = nil
 			if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: conversationModel.chatRoom.peerAddress, participants: nil) {
-				self.addConversationDelegate(chatRoom: newChatRoom)
+				if LinphoneUtils.getChatRoomId(room: newChatRoom) == conversationModel.id {
+					self.addConversationDelegate(chatRoom: newChatRoom)
+					let conversation = ConversationModel(chatRoom: newChatRoom)
+					DispatchQueue.main.async {
+						withAnimation {
+							self.displayedConversation = conversation
+						}
+						self.getMessages()
+					}
+				}
 			}
 		}
-		
-		self.getMessages()
 	}
 	
 	func resetDisplayedChatRoom() {
