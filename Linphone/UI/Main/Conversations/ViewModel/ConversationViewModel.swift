@@ -1046,6 +1046,16 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewMessages(eventLogs: [EventLog]) {
+		guard !eventLogs.isEmpty,
+			  !self.conversationMessagesSection.isEmpty,
+			  !self.conversationMessagesSection[0].rows.isEmpty,
+			  let firstEventLogId = self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId,
+			  let lastMessageId = eventLogs.last?.chatMessage?.messageId,
+			  firstEventLogId != lastMessageId
+		else {
+			return
+		}
+		
 		if let firstEventLogId = self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId,
 		   let lastMessageId = eventLogs.last?.chatMessage?.messageId,
 		   !eventLogs.isEmpty,
@@ -1057,8 +1067,10 @@ class ConversationViewModel: ObservableObject {
 				var attachmentList: [Attachment] = []
 				var contentText = ""
 				
-				if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
-					eventLog.chatMessage!.contents.forEach { content in
+				guard let chatMessage = eventLog.chatMessage else { return }
+				
+				if !chatMessage.contents.isEmpty {
+					chatMessage.contents.forEach { content in
 						if content.isText && content.name == nil {
 							contentText = content.utf8Text ?? ""
 						} else {
@@ -1150,13 +1162,13 @@ class ConversationViewModel: ObservableObject {
 					}
 				}
 				
-				let addressPrecCleaned = index > 0 ? eventLogs[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+				let addressPrecCleaned = index > 0 ? eventLogs[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 				addressPrecCleaned?.clean()
 				
-				let addressNextCleaned = index <= eventLogs.count - 2 ? eventLogs[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+				let addressNextCleaned = index <= eventLogs.count - 2 ? eventLogs[index + 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 				addressNextCleaned?.clean()
 				
-				let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+				let addressCleaned = chatMessage.fromAddress?.clone()
 				addressCleaned?.clean()
 				
 				if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
@@ -1179,12 +1191,12 @@ class ConversationViewModel: ObservableObject {
 					: !self.conversationMessagesSection[0].rows[0].message.isOutgoing || (addressCleaned != nil && self.conversationMessagesSection[0].rows[0].message.address == addressCleaned!.asStringUriOnly())
 				)
 				
-				let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+				let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 				
 				let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
 				
 				var statusTmp: Message.Status? = .sending
-				switch eventLog.chatMessage?.state {
+				switch chatMessage.state {
 				case .InProgress:
 					statusTmp = .sending
 				case .Delivered:
@@ -1200,7 +1212,7 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				var reactionsTmp: [String] = []
-				eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+				chatMessage.reactions.forEach({ chatMessageReaction in
 					reactionsTmp.append(chatMessageReaction.body)
 				})
 				
@@ -1209,19 +1221,19 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				var replyMessageTmp: ReplyMessage?
-				if eventLog.chatMessage?.replyMessage != nil {
-					let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+				if chatMessage.replyMessage != nil {
+					let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
 					addressReplyCleaned?.clean()
 					
 					if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
 						self.addParticipantConversationModel(address: addressReplyCleaned!)
 					}
 					
-					let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+					let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 					
 					var attachmentNameReplyList: String = ""
 					
-					eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+					chatMessage.replyMessage?.contents.forEach { content in
 						if !content.isText, let name = content.name {
 							attachmentNameReplyList += ", \(name)"
 						}
@@ -1232,7 +1244,7 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					replyMessageTmp = ReplyMessage(
-						id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+						id: chatMessage.replyMessage?.messageId ?? UUID().uuidString,
 						address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
 						isFirstMessage: false,
 						text: contentReplyText,
@@ -1248,30 +1260,30 @@ class ConversationViewModel: ObservableObject {
 					let message = EventLogMessage(
 						eventModel: EventModel(eventLog: eventLog),
 						message: Message(
-							id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
-							appData: eventLog.chatMessage!.appdata ?? "",
+							id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+							appData: chatMessage.appdata ?? "",
 							status: statusTmp,
-							isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-							dateReceived: eventLog.chatMessage?.time ?? 0,
+							isOutgoing: chatMessage.isOutgoing,
+							dateReceived: chatMessage.time,
 							address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
 							isFirstMessage: isFirstMessageTmp,
 							text: contentText,
 							attachmentsNames: attachmentNameList,
 							attachments: attachmentList,
 							replyMessage: replyMessageTmp,
-							isForward: eventLog.chatMessage?.isForward ?? false,
-							ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
+							isForward: chatMessage.isForward,
+							ownReaction: chatMessage.ownReaction?.body ?? "",
 							reactions: reactionsTmp,
-							isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
-							ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-							ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-							isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-							messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
+							isEphemeral: chatMessage.isEphemeral,
+							ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+							ephemeralLifetime: chatMessage.ephemeralLifetime,
+							isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+							messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
 						)
 					)
 					
-					if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != eventLog.chatMessage?.messageId {
-						self.addChatMessageDelegate(message: eventLog.chatMessage!)
+					if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != chatMessage.messageId {
+						self.addChatMessageDelegate(message: chatMessage)
 						
 						DispatchQueue.main.async {
 							Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")

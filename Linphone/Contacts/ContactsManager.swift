@@ -354,7 +354,6 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func getFriendWithAddress(address: Address?) -> Friend? {
-		print("getFriendWithAddress")
 		guard let address = address, let clonedAddress = address.clone() else {
 			return nil
 		}
