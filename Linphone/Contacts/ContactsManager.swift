@@ -324,12 +324,15 @@ final class ContactsManager: ObservableObject {
 		if directory != nil {
 			DispatchQueue.main.async {
 				do {
-					let urlName = URL(string: name + prefix)
-					let imagePath = urlName != nil ? urlName!.absoluteString.replacingOccurrences(of: "%", with: "") : "ImageError"
-					
-					let decodedData: () = try data.write(to: directory!.appendingPathComponent(imagePath + ".png"))
-					
-					completion(decodedData, imagePath + ".png")
+					if let urlName = URL(string: name + prefix) {
+						let imagePath = urlName.absoluteString.replacingOccurrences(of: "%", with: "")
+						
+						let decodedData: () = try data.write(to: directory!.appendingPathComponent(imagePath + ".png"))
+						
+						completion(decodedData, imagePath + ".png")
+					} else {
+					 	completion((), "")
+					}
 				} catch {
 					print("Error: ", error)
 					completion((), "")

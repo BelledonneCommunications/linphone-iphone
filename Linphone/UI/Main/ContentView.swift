@@ -81,6 +81,7 @@ struct ContentView: View {
 	@State private var isShowLoginFragment: Bool = false
 	
 	private let avatarSize = 45.0
+	@State private var imagePath: URL?
 	
 	var body: some View {
 		let pub = NotificationCenter.default
@@ -316,56 +317,56 @@ struct ContentView: View {
 										if searchIsActive == false {
 											HStack {
 												if (accountProfileViewModel.accountModelIndex ?? 0) < CoreContext.shared.accounts.count {
-													if sharedMainViewModel.defaultAvatar != nil {
-														AsyncImage(url: sharedMainViewModel.defaultAvatar) { image in
-															switch image {
-															case .empty:
-																ProgressView()
-																	.frame(width: avatarSize, height: avatarSize)
-															case .success(let image):
-																image
-																	.resizable()
-																	.aspectRatio(contentMode: .fill)
-																	.frame(width: avatarSize, height: avatarSize)
-																	.clipShape(Circle())
-															case .failure:
-																Image(uiImage: contactsManager.textToImage(
-																	firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
-																	lastName: ""))
+													AsyncImage(url: imagePath) { image in
+														switch image {
+														case .empty:
+															ProgressView()
+																.frame(width: avatarSize, height: avatarSize)
+														case .success(let image):
+															image
 																.resizable()
+																.aspectRatio(contentMode: .fill)
 																.frame(width: avatarSize, height: avatarSize)
 																.clipShape(Circle())
-															@unknown default:
-																EmptyView()
+														case .failure:
+															Image(uiImage: contactsManager.textToImage(
+																firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
+																lastName: ""))
+															.resizable()
+															.frame(width: avatarSize, height: avatarSize)
+															.clipShape(Circle())
+														@unknown default:
+															EmptyView()
+														}
+													}
+													.onTapGesture {
+														openMenu()
+													}
+													.onAppear {
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+															if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
+																imagePath = imagePathTmp
 															}
 														}
-														.onTapGesture {
-															openMenu()
-														}
-														.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].usernaneAvatar) { _ in
-															if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-															   accountModelIndex < CoreContext.shared.accounts.count {
-																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: CoreContext.shared.accounts[accountModelIndex].getImagePath())
+													}
+													.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].usernaneAvatar) { _ in
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+															if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
+																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
+																imagePath = imagePathTmp
 															}
 														}
-														.onReceive(imageChanged) { _ in
-															if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-															   accountModelIndex < CoreContext.shared.accounts.count {
-																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: CoreContext.shared.accounts[accountModelIndex].getImagePath())
-															}
-														}
-													} else {
-														Image(uiImage: contactsManager.textToImage(
-															firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
-															lastName: ""))
-														.resizable()
-														.frame(width: avatarSize, height: avatarSize)
-														.clipShape(Circle())
-														.onAppear {
-															if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-															   accountModelIndex < CoreContext.shared.accounts.count {
-																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: CoreContext.shared.accounts[accountModelIndex].getImagePath())
-															}
+													}
+													.onReceive(imageChanged) { _ in
+														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+														   accountModelIndex < CoreContext.shared.accounts.count {
+															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
+															imagePath = imagePathTmp
 														}
 													}
 												}
