@@ -569,13 +569,15 @@ class ConversationViewModel: ObservableObject {
 					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
-					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
-						eventLog.chatMessage!.contents.forEach { content in
+					guard let chatMessage = eventLog.chatMessage else { return }
+					
+					if !chatMessage.contents.isEmpty {
+						chatMessage.contents.forEach { content in
 							if content.isText && content.name == nil {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
-									// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									// self.downloadContent(chatMessage: chatMessage, content: content)
 									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 									
 									if path != nil {
@@ -662,13 +664,13 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					
-					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 					addressPrecCleaned?.clean()
 					
-					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 					addressNextCleaned?.clean()
 					
-					let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+					let addressCleaned = chatMessage.fromAddress?.clone()
 					addressCleaned?.clean()
 					
 					if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
@@ -678,10 +680,10 @@ class ConversationViewModel: ObservableObject {
 					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					
-					let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+					let isFirstMessageTmp = chatMessage.isOutgoing  ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 					
 					var statusTmp: Message.Status? = .sending
-					switch eventLog.chatMessage?.state {
+					switch chatMessage.state {
 					case .InProgress:
 						statusTmp = .sending
 					case .Delivered:
@@ -697,7 +699,7 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					var reactionsTmp: [String] = []
-					eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+					chatMessage.reactions.forEach({ chatMessageReaction in
 						reactionsTmp.append(chatMessageReaction.body)
 					})
 					
@@ -706,19 +708,19 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					var replyMessageTmp: ReplyMessage?
-					if eventLog.chatMessage?.replyMessage != nil {
-						let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+					if chatMessage.replyMessage != nil {
+						let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
 						addressReplyCleaned?.clean()
 						
 						if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
 							self.addParticipantConversationModel(address: addressReplyCleaned!)
 						}
 						
-						let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 						
 						var attachmentNameReplyList: String = ""
 						
-						eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+						chatMessage.replyMessage?.contents.forEach { content in
 							if !content.isText {
 								attachmentNameReplyList += ", \(content.name!)"
 							}
@@ -729,7 +731,7 @@ class ConversationViewModel: ObservableObject {
 						}
 						
 						replyMessageTmp = ReplyMessage(
-							id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+							id: chatMessage.replyMessage!.messageId,
 							address: addressReplyCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: false,
 							text: contentReplyText,
@@ -740,53 +742,33 @@ class ConversationViewModel: ObservableObject {
 						)
 					}
 					
-					if eventLog.chatMessage != nil {
-						conversationMessage.append(
-							EventLogMessage(
-								eventModel: EventModel(eventLog: eventLog),
-								message: Message(
-									id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
-									status: statusTmp,
-									isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-									dateReceived: eventLog.chatMessage?.time ?? 0,
-									address: addressCleaned?.asStringUriOnly() ?? "",
-									isFirstMessage: isFirstMessageTmp,
-									text: contentText,
-									attachmentsNames: attachmentNameList,
-									attachments: attachmentList,
-									replyMessage: replyMessageTmp,
-									isForward: eventLog.chatMessage?.isForward ?? false,
-									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-									reactions: reactionsTmp,
-									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
-									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
-								)
+					conversationMessage.append(
+						EventLogMessage(
+							eventModel: EventModel(eventLog: eventLog),
+							message: Message(
+								id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+								status: statusTmp,
+								isOutgoing: chatMessage.isOutgoing,
+								dateReceived: chatMessage.time,
+								address: addressCleaned?.asStringUriOnly() ?? "",
+								isFirstMessage: isFirstMessageTmp,
+								text: contentText,
+								attachmentsNames: attachmentNameList,
+								attachments: attachmentList,
+								replyMessage: replyMessageTmp,
+								isForward: chatMessage.isForward,
+								ownReaction: chatMessage.ownReaction?.body ?? "",
+								reactions: reactionsTmp,
+								isEphemeral: chatMessage.isEphemeral,
+								ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+								ephemeralLifetime: chatMessage.ephemeralLifetime,
+								isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+								messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
 							)
 						)
-						
-						self.addChatMessageDelegate(message: eventLog.chatMessage!)
-					} else {
-						conversationMessage.append(
-							EventLogMessage(
-								eventModel: EventModel(eventLog: eventLog),
-								message: Message(
-									id: UUID().uuidString,
-									status: nil,
-									isOutgoing: false,
-									dateReceived: 0,
-									address: "",
-									isFirstMessage: false,
-									text: "",
-									attachments: [],
-									ownReaction: "",
-									reactions: []
-								)
-							)
-						)
-					}
+					)
+					
+					self.addChatMessageDelegate(message: chatMessage)
 				}
 				
 				DispatchQueue.main.async {
@@ -812,13 +794,15 @@ class ConversationViewModel: ObservableObject {
 					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
-					if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
-						eventLog.chatMessage!.contents.forEach { content in
+					guard let chatMessage = eventLog.chatMessage else { return }
+					
+					if !chatMessage.contents.isEmpty {
+						chatMessage.contents.forEach { content in
 							if content.isText && content.name == nil {
 								contentText = content.utf8Text ?? ""
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.filePath == nil || content.filePath!.isEmpty {
-									// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+									// self.downloadContent(chatMessage: chatMessage, content: content)
 									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 									
 									if path != nil {
@@ -904,13 +888,13 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					
-					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 					addressPrecCleaned?.clean()
 					
-					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 					addressNextCleaned?.clean()
 					
-					let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+					let addressCleaned = chatMessage.fromAddress?.clone()
 					addressCleaned?.clean()
 					
 					if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
@@ -920,10 +904,10 @@ class ConversationViewModel: ObservableObject {
 					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 					
-					let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+					let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 					
 					var statusTmp: Message.Status? = .sending
-					switch eventLog.chatMessage?.state {
+					switch chatMessage.state {
 					case .InProgress:
 						statusTmp = .sending
 					case .Delivered:
@@ -939,7 +923,7 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					var reactionsTmp: [String] = []
-					eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+					chatMessage.reactions.forEach({ chatMessageReaction in
 						reactionsTmp.append(chatMessageReaction.body)
 					})
 					
@@ -948,19 +932,19 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					var replyMessageTmp: ReplyMessage?
-					if eventLog.chatMessage?.replyMessage != nil {
-						let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+					if chatMessage.replyMessage != nil {
+						let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
 						addressReplyCleaned?.clean()
 						
 						if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
 							self.addParticipantConversationModel(address: addressReplyCleaned!)
 						}
 						
-						let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 						
 						var attachmentNameReplyList: String = ""
 						
-						eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+						chatMessage.replyMessage?.contents.forEach { content in
 							if !content.isText {
 								attachmentNameReplyList += ", \(content.name!)"
 							}
@@ -971,7 +955,7 @@ class ConversationViewModel: ObservableObject {
 						}
 						
 						replyMessageTmp = ReplyMessage(
-							id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+							id: chatMessage.replyMessage!.messageId,
 							address: addressReplyCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: false,
 							text: contentReplyText,
@@ -982,53 +966,33 @@ class ConversationViewModel: ObservableObject {
 						)
 					}
 					
-					if eventLog.chatMessage != nil {
-						conversationMessagesTmp.insert(
-							EventLogMessage(
-								eventModel: EventModel(eventLog: eventLog),
-								message: Message(
-									id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
-									status: statusTmp,
-									isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-									dateReceived: eventLog.chatMessage?.time ?? 0,
-									address: addressCleaned?.asStringUriOnly() ?? "",
-									isFirstMessage: isFirstMessageTmp,
-									text: contentText,
-									attachmentsNames: attachmentNameList,
-									attachments: attachmentList,
-									replyMessage: replyMessageTmp,
-									isForward: eventLog.chatMessage?.isForward ?? false,
-									ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-									reactions: reactionsTmp,
-									isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
-									ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-									ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-									isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
-								)
-							), at: 0
-						)
-						
-						self.addChatMessageDelegate(message: eventLog.chatMessage!)
-					} else {
-						conversationMessagesTmp.insert(
-							EventLogMessage(
-								eventModel: EventModel(eventLog: eventLog),
-								message: Message(
-									id: UUID().uuidString,
-									status: nil,
-									isOutgoing: false,
-									dateReceived: 0,
-									address: "",
-									isFirstMessage: false,
-									text: "",
-									attachments: [],
-									ownReaction: "",
-									reactions: []
-								)
-							), at: 0
-						)
-					}
+					conversationMessagesTmp.insert(
+						EventLogMessage(
+							eventModel: EventModel(eventLog: eventLog),
+							message: Message(
+								id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+								status: statusTmp,
+								isOutgoing: chatMessage.isOutgoing,
+								dateReceived: chatMessage.time,
+								address: addressCleaned?.asStringUriOnly() ?? "",
+								isFirstMessage: isFirstMessageTmp,
+								text: contentText,
+								attachmentsNames: attachmentNameList,
+								attachments: attachmentList,
+								replyMessage: replyMessageTmp,
+								isForward: chatMessage.isForward,
+								ownReaction: chatMessage.ownReaction?.body ?? "",
+								reactions: reactionsTmp,
+								isEphemeral: chatMessage.isEphemeral,
+								ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+								ephemeralLifetime: chatMessage.ephemeralLifetime,
+								isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+								messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
+							)
+						), at: 0
+					)
+					
+					self.addChatMessageDelegate(message: chatMessage)
 				}
 				
 				if !conversationMessagesTmp.isEmpty {
@@ -1075,7 +1039,7 @@ class ConversationViewModel: ObservableObject {
 							contentText = content.utf8Text ?? ""
 						} else {
 							if content.filePath == nil || content.filePath!.isEmpty {
-								// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+								// self.downloadContent(chatMessage: chatMessage, content: content)
 								let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 								
 								if path != nil {
@@ -1255,79 +1219,51 @@ class ConversationViewModel: ObservableObject {
 					)
 				}
 				
-				if eventLog.chatMessage != nil {
-					
-					let message = EventLogMessage(
-						eventModel: EventModel(eventLog: eventLog),
-						message: Message(
-							id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
-							appData: chatMessage.appdata ?? "",
-							status: statusTmp,
-							isOutgoing: chatMessage.isOutgoing,
-							dateReceived: chatMessage.time,
-							address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
-							isFirstMessage: isFirstMessageTmp,
-							text: contentText,
-							attachmentsNames: attachmentNameList,
-							attachments: attachmentList,
-							replyMessage: replyMessageTmp,
-							isForward: chatMessage.isForward,
-							ownReaction: chatMessage.ownReaction?.body ?? "",
-							reactions: reactionsTmp,
-							isEphemeral: chatMessage.isEphemeral,
-							ephemeralExpireTime: chatMessage.ephemeralExpireTime,
-							ephemeralLifetime: chatMessage.ephemeralLifetime,
-							isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
-							messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
-						)
+				let message = EventLogMessage(
+					eventModel: EventModel(eventLog: eventLog),
+					message: Message(
+						id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+						appData: chatMessage.appdata ?? "",
+						status: statusTmp,
+						isOutgoing: chatMessage.isOutgoing,
+						dateReceived: chatMessage.time,
+						address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
+						isFirstMessage: isFirstMessageTmp,
+						text: contentText,
+						attachmentsNames: attachmentNameList,
+						attachments: attachmentList,
+						replyMessage: replyMessageTmp,
+						isForward: chatMessage.isForward,
+						ownReaction: chatMessage.ownReaction?.body ?? "",
+						reactions: reactionsTmp,
+						isEphemeral: chatMessage.isEphemeral,
+						ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+						ephemeralLifetime: chatMessage.ephemeralLifetime,
+						isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+						messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
 					)
-					
-					if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != chatMessage.messageId {
-						self.addChatMessageDelegate(message: chatMessage)
-						
-						DispatchQueue.main.async {
-							Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")
-							if !self.conversationMessagesSection.isEmpty
-								&& !self.conversationMessagesSection[0].rows.isEmpty
-								&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
-								&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
-								self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
-							}
-							
-							if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
-								self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [message]))
-							} else {
-								self.conversationMessagesSection[0].rows.insert(message, at: 0)
-							}
-							
-							if !message.message.isOutgoing {
-								self.displayedConversationUnreadMessagesCount = unreadMessagesCount
-							}
-						}
-					}
-				} else {
-					let message = EventLogMessage(
-						eventModel: EventModel(eventLog: eventLog),
-						message: Message(
-							id: UUID().uuidString,
-							status: nil,
-							isOutgoing: false,
-							dateReceived: 0,
-							address: "",
-							isFirstMessage: false,
-							text: "",
-							attachments: [],
-							ownReaction: "",
-							reactions: []
-						)
-					)
+				)
+				
+				if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != chatMessage.messageId {
+					self.addChatMessageDelegate(message: chatMessage)
 					
 					DispatchQueue.main.async {
-						Log.info("[ConversationViewModel] Get new Messages (message nil) \(self.conversationMessagesSection.count)")
+						Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")
+						if !self.conversationMessagesSection.isEmpty
+							&& !self.conversationMessagesSection[0].rows.isEmpty
+							&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
+							&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
+							self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
+						}
+						
 						if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
 							self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [message]))
 						} else {
 							self.conversationMessagesSection[0].rows.insert(message, at: 0)
+						}
+						
+						if !message.message.isOutgoing {
+							self.displayedConversationUnreadMessagesCount = unreadMessagesCount
 						}
 					}
 				}
@@ -1389,13 +1325,15 @@ class ConversationViewModel: ObservableObject {
 							var attachmentList: [Attachment] = []
 							var contentText = ""
 							
-							if eventLog.chatMessage != nil && !eventLog.chatMessage!.contents.isEmpty {
-								eventLog.chatMessage!.contents.forEach { content in
+							guard let chatMessage = eventLog.chatMessage else { return }
+							
+							if !chatMessage.contents.isEmpty {
+								chatMessage.contents.forEach { content in
 									if content.isText && content.name == nil {
 										contentText = content.utf8Text ?? ""
 									} else if content.name != nil && !content.name!.isEmpty {
 										if content.filePath == nil || content.filePath!.isEmpty {
-											// self.downloadContent(chatMessage: eventLog.chatMessage!, content: content)
+											// self.downloadContent(chatMessage: chatMessage, content: content)
 											let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
 											
 											if path != nil {
@@ -1481,13 +1419,13 @@ class ConversationViewModel: ObservableObject {
 								}
 							}
 							
-							let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+							let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 							addressPrecCleaned?.clean()
 							
-							let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : eventLog.chatMessage?.fromAddress?.clone()
+							let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 							addressNextCleaned?.clean()
 							
-							let addressCleaned = eventLog.chatMessage?.fromAddress?.clone()
+							let addressCleaned = chatMessage.fromAddress?.clone()
 							addressCleaned?.clean()
 							
 							if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
@@ -1497,10 +1435,10 @@ class ConversationViewModel: ObservableObject {
 							let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 							let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
 							
-							let isFirstMessageTmp = (eventLog.chatMessage?.isOutgoing ?? false) ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+							let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 							
 							var statusTmp: Message.Status? = .sending
-							switch eventLog.chatMessage?.state {
+							switch chatMessage.state {
 							case .InProgress:
 								statusTmp = .sending
 							case .Delivered:
@@ -1516,7 +1454,7 @@ class ConversationViewModel: ObservableObject {
 							}
 							
 							var reactionsTmp: [String] = []
-							eventLog.chatMessage?.reactions.forEach({ chatMessageReaction in
+							chatMessage.reactions.forEach({ chatMessageReaction in
 								reactionsTmp.append(chatMessageReaction.body)
 							})
 							
@@ -1525,19 +1463,19 @@ class ConversationViewModel: ObservableObject {
 							}
 							
 							var replyMessageTmp: ReplyMessage?
-							if eventLog.chatMessage?.replyMessage != nil {
-								let addressReplyCleaned = eventLog.chatMessage?.replyMessage?.fromAddress?.clone()
+							if chatMessage.replyMessage != nil {
+								let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
 								addressReplyCleaned?.clean()
 								
 								if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
 									self.addParticipantConversationModel(address: addressReplyCleaned!)
 								}
 								
-								let contentReplyText = eventLog.chatMessage?.replyMessage?.utf8Text ?? ""
+								let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 								
 								var attachmentNameReplyList: String = ""
 								
-								eventLog.chatMessage?.replyMessage?.contents.forEach { content in
+								chatMessage.replyMessage?.contents.forEach { content in
 									if !content.isText {
 										attachmentNameReplyList += ", \(content.name!)"
 									}
@@ -1548,7 +1486,7 @@ class ConversationViewModel: ObservableObject {
 								}
 								
 								replyMessageTmp = ReplyMessage(
-									id: eventLog.chatMessage?.replyMessage!.messageId ?? UUID().uuidString,
+									id: chatMessage.replyMessage!.messageId,
 									address: addressReplyCleaned?.asStringUriOnly() ?? "",
 									isFirstMessage: false,
 									text: contentReplyText,
@@ -1559,53 +1497,33 @@ class ConversationViewModel: ObservableObject {
 								)
 							}
 							
-							if eventLog.chatMessage != nil {
-								conversationMessagesTmp.insert(
-									EventLogMessage(
-										eventModel: EventModel(eventLog: eventLog),
-										message: Message(
-											id: !eventLog.chatMessage!.messageId.isEmpty ? eventLog.chatMessage!.messageId : UUID().uuidString,
-											status: statusTmp,
-											isOutgoing: eventLog.chatMessage?.isOutgoing ?? false,
-											dateReceived: eventLog.chatMessage?.time ?? 0,
-											address: addressCleaned?.asStringUriOnly() ?? "",
-											isFirstMessage: isFirstMessageTmp,
-											text: contentText,
-											attachmentsNames: attachmentNameList,
-											attachments: attachmentList,
-											replyMessage: replyMessageTmp,
-											isForward: eventLog.chatMessage?.isForward ?? false,
-											ownReaction: eventLog.chatMessage?.ownReaction?.body ?? "",
-											reactions: reactionsTmp,
-											isEphemeral: eventLog.chatMessage?.isEphemeral ?? false,
-									  		ephemeralExpireTime: eventLog.chatMessage?.ephemeralExpireTime ?? 0,
-											ephemeralLifetime: eventLog.chatMessage?.ephemeralLifetime ?? 0,
-											isIcalendar: eventLog.chatMessage?.contents.first?.isIcalendar ?? false,
-											messageConferenceInfo: eventLog.chatMessage != nil && eventLog.chatMessage!.contents.first != nil && eventLog.chatMessage!.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: eventLog.chatMessage!.contents.first!) : nil
-										)
-									), at: 0
-								)
-								
-								self.addChatMessageDelegate(message: eventLog.chatMessage!)
-							} else {
-								conversationMessagesTmp.insert(
-									EventLogMessage(
-										eventModel: EventModel(eventLog: eventLog),
-										message: Message(
-											id: UUID().uuidString,
-											status: nil,
-											isOutgoing: false,
-											dateReceived: 0,
-											address: "",
-											isFirstMessage: false,
-											text: "",
-											attachments: [],
-											ownReaction: "",
-											reactions: []
-										)
-									), at: 0
-								)
-							}
+							conversationMessagesTmp.insert(
+								EventLogMessage(
+									eventModel: EventModel(eventLog: eventLog),
+									message: Message(
+										id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+										status: statusTmp,
+										isOutgoing: chatMessage.isOutgoing,
+										dateReceived: chatMessage.time,
+										address: addressCleaned?.asStringUriOnly() ?? "",
+										isFirstMessage: isFirstMessageTmp,
+										text: contentText,
+										attachmentsNames: attachmentNameList,
+										attachments: attachmentList,
+										replyMessage: replyMessageTmp,
+										isForward: chatMessage.isForward,
+										ownReaction: chatMessage.ownReaction?.body ?? "",
+										reactions: reactionsTmp,
+										isEphemeral: chatMessage.isEphemeral,
+										ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+										ephemeralLifetime: chatMessage.ephemeralLifetime,
+										isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+										messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
+									)
+								), at: 0
+							)
+							
+							self.addChatMessageDelegate(message: chatMessage)
 						}
 						
 						if !conversationMessagesTmp.isEmpty {
@@ -1629,24 +1547,10 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeMessage(_ eventLog: EventLog) {
-		/*
-		if let found = self.conversationMessagesSection[0].rows.first(where: { $0.message.id == eventLog.chatMessage?.messageId }) {
-			var updatedList = self.conversationMessagesSection[0].rows
-			
-			print("Removing message from conversation events list")
-			if let index = updatedList.firstIndex(where: { $0.message.id == found.message.id }) {
-				updatedList.remove(at: index)
-			}
-			
-			DispatchQueue.main.async {
-				self.conversationMessagesSection[0].rows = updatedList
-			}
-		} else {
-			print("Failed to find matching message in conversation events list")
-		}
-		*/
 		
-		if let index = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.message.id == eventLog.chatMessage?.messageId }) {
+		guard let chatMessage = eventLog.chatMessage else { return }
+		
+		if let index = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.message.id == chatMessage.messageId }) {
 			DispatchQueue.main.async {
 				if index > 0 && self.conversationMessagesSection[0].rows[index - 1].message.address == self.conversationMessagesSection[0].rows[index].message.address {
 					self.conversationMessagesSection[0].rows[index - 1].message.isFirstMessage = self.conversationMessagesSection[0].rows[index].message.isFirstMessage
