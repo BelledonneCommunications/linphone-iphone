@@ -362,15 +362,16 @@ struct UIList: UIViewRepresentable {
 			
 			NotificationCenter.default.addObserver(forName: .onScrollToBottom, object: nil, queue: nil) { _ in
 				DispatchQueue.main.async {
-					if !self.sections.isEmpty {
-						if self.sections.first != nil
-							&& parent.conversationViewModel.conversationMessagesSection.first != nil
-							&& parent.conversationViewModel.displayedConversation != nil
-							&& self.sections.first!.chatRoomID == parent.conversationViewModel.displayedConversation!.id
-							&& self.sections.first!.rows.count == parent.conversationViewModel.conversationMessagesSection.first!.rows.count {
-							self.tableView!.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-						}
+					guard !self.sections.isEmpty,
+						  let firstSection = self.sections.first,
+						  let firstConversationSection = parent.conversationViewModel.conversationMessagesSection.first,
+						  let displayedConversation = parent.conversationViewModel.displayedConversation,
+						  let tableView = self.tableView,
+						  firstSection.chatRoomID == displayedConversation.id,
+						  firstSection.rows.count == firstConversationSection.rows.count else {
+						return
 					}
+					tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
 				}
 			}
 			

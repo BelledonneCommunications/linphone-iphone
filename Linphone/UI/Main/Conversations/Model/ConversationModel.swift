@@ -50,8 +50,8 @@ class ConversationModel: ObservableObject, Identifiable {
 	@Published var unreadMessagesCount: Int
 	@Published var avatarModel: ContactAvatarModel
 	
-	private var conferenceScheduler: ConferenceScheduler?
-	private var conferenceSchedulerDelegate: ConferenceSchedulerDelegate?
+	//private var conference: Conference?
+	private var conferenceDelegate: ConferenceDelegate?
 	
 	init(chatRoom: ChatRoom) {
 		self.chatRoom = chatRoom
@@ -138,31 +138,24 @@ class ConversationModel: ObservableObject, Identifiable {
 				conferenceInfo.organizer = account!.params?.identityAddress
 				conferenceInfo.subject = self.chatRoom.subject ?? "Conference"
 				
-				var participantsList: [ParticipantInfo] = []
+				var participantsList: [Address] = []
 				self.chatRoom.participants.forEach { participant in
-					do {
-						let info = try Factory.Instance.createParticipantInfo(address: participant.address!)
-						// For meetings, all participants must have Speaker role
-						info.role = Participant.Role.Speaker
-						participantsList.append(info)
-					} catch let error {
-						Log.error(
-							"\(ConversationModel.TAG) Can't create ParticipantInfo: \(error)"
-						)
-					}
+					participantsList.append(participant.address!)
 				}
-				
-				conferenceInfo.addParticipantInfos(participantInfos: participantsList)
 				
 				Log.info(
 					"\(ConversationModel.TAG) Creating group call with subject \(self.chatRoom.subject ?? "Conference") and \(participantsList.count) participant(s)"
 				)
-				
-				self.conferenceScheduler = try core.createConferenceScheduler(account: account)
-				if self.conferenceScheduler != nil {
-					self.conferenceAddDelegate(core: core, conferenceScheduler: self.conferenceScheduler!)
-					// Will trigger the conference creation/update automatically
-					self.conferenceScheduler!.info = conferenceInfo
+				if let conference = LinphoneUtils.createGroupCall(core: core, account: account, subject: self.chatRoom.subject ?? "Conference") {
+					let callParams = try? core.createCallParams(call: nil)
+					if let callParams = callParams {
+						callParams.videoEnabled = true
+						callParams.videoDirection = .RecvOnly
+						
+						print("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
+						
+						try conference.inviteParticipants(addresses: participantsList, params: callParams)
+					}
 				}
 			} catch let error {
 				Log.error(
@@ -170,38 +163,6 @@ class ConversationModel: ObservableObject, Identifiable {
 				)
 			}
 		}
-	}
-	
-	func conferenceAddDelegate(core: Core, conferenceScheduler: ConferenceScheduler) {
-		self.conferenceSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
-			Log.info("\(ConversationModel.TAG) Conference scheduler state is \(state)")
-			if state == ConferenceScheduler.State.Ready {
-				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
-				self.conferenceSchedulerDelegate = nil
-				
-				let conferenceAddress = conferenceScheduler.info?.uri
-				if conferenceAddress != nil {
-					Log.info(
-						"\(ConversationModel.TAG) Conference info created, address is \(conferenceAddress!.asStringUriOnly())"
-					)
-					
-					TelecomManager.shared.doCallWithCore(addr: conferenceAddress!, isVideo: true, isConference: true)
-				} else {
-					Log.error("\(ConversationModel.TAG) Conference info URI is null!")
-					
-					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
-					ToastViewModel.shared.displayToast = true
-				}
-			} else if state == ConferenceScheduler.State.Error {
-				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
-				self.conferenceSchedulerDelegate = nil
-				Log.error("\(ConversationModel.TAG) Failed to create group call!")
-				
-				ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
-				ToastViewModel.shared.displayToast = true
-			}
-		})
-		conferenceScheduler.addDelegate(delegate: self.conferenceSchedulerDelegate!)
 	}
 	
 	func getContentTextMessage() {

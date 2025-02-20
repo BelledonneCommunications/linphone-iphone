@@ -718,7 +718,7 @@ struct ConversationFragment: View {
 										}
 									} else {
 										Button {
-											if conversationViewModel.displayedConversationHistorySize > 0 {
+											if conversationViewModel.displayedConversationHistorySize > 1 {
 												NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
 											}
 											conversationViewModel.sendMessage()

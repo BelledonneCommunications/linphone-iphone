@@ -70,4 +70,34 @@ class LinphoneUtils: NSObject {
 		core.defaultAccount?.params?.limeServerUrl != nil &&
 		core.defaultAccount?.params?.conferenceFactoryUri != nil
 	}
+	
+	public class func createGroupCall(core: Core, account: Account?, subject: String) -> Conference? {
+		do {
+			let conferenceParams = try core.createConferenceParams(conference: nil)
+			conferenceParams.videoEnabled = true
+			conferenceParams.account = account
+			conferenceParams.subject = subject
+			
+			// Enable end-to-end encryption if client supports it
+			if isEndToEndEncryptedChatAvailable(core: core) {
+				Log.info("\(#function) Requesting EndToEnd security level for conference")
+				conferenceParams.securityLevel = .EndToEnd
+			} else {
+				Log.info("\(#function) Requesting PointToPoint security level for conference")
+				conferenceParams.securityLevel = .PointToPoint
+			}
+			
+			// Allows to have a chat room within the conference
+			conferenceParams.chatEnabled = true
+			
+			Log.info("\(#function) Creating group call with subject \(conferenceParams.subject ?? "Unknown")")
+			
+			let confWithParams = try core.createConferenceWithParams(params: conferenceParams)
+			
+			return confWithParams
+		} catch let error {
+			Log.info("\(#function) Error while creating group call: \(error)")
+			return nil
+		}
+	}
 }
