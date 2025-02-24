@@ -304,8 +304,10 @@ struct StartCallFragment: View {
 						}
 				}
 			}
+			.navigationTitle("")
 			.navigationBarHidden(true)
 		}
+		.navigationViewStyle(StackNavigationViewStyle())
 	}
 	
 	@Sendable private func delayColor() async {
