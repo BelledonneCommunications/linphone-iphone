@@ -225,23 +225,29 @@ class ConversationModel: ObservableObject, Identifiable {
 		
 		let addressTmp = addressFriend?.address?.asStringUriOnly() ?? ""
 		
-		let avatarModelTmp = addressFriend != nil && !self.isGroup
-		? ContactsManager.shared.avatarListModel.first(where: {
-			$0.friend!.name == addressFriend!.name
-			&& $0.friend!.address!.asStringUriOnly() == addressFriend!.address!.asStringUriOnly()
-		})
-		?? ContactAvatarModel(
-			friend: nil,
-			name: subjectTmp,
-			address: addressTmp,
-			withPresence: false
-		)
-		: ContactAvatarModel(
-			friend: nil,
-			name: subjectTmp,
-			address: self.chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
-			withPresence: false
-		)
+		let avatarModelTmp: ContactAvatarModel
+		if let addressFriend = addressFriend, !self.isGroup {
+			if let existingAvatarModel = ContactsManager.shared.avatarListModel.first(where: {
+				$0.friend?.name == addressFriend.name &&
+				$0.friend?.address?.asStringUriOnly() == addressFriend.address?.asStringUriOnly()
+			}) {
+				avatarModelTmp = existingAvatarModel
+			} else {
+				avatarModelTmp = ContactAvatarModel(
+					friend: nil,
+					name: subjectTmp,
+					address: addressTmp,
+					withPresence: false
+				)
+			}
+		} else {
+			avatarModelTmp = ContactAvatarModel(
+				friend: nil,
+				name: subjectTmp,
+				address: self.chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
+				withPresence: false
+			)
+		}
 		
 		var participantsAddressTmp: [String] = []
 		
