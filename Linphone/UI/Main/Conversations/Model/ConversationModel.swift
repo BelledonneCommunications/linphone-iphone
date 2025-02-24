@@ -50,7 +50,6 @@ class ConversationModel: ObservableObject, Identifiable {
 	@Published var unreadMessagesCount: Int
 	@Published var avatarModel: ContactAvatarModel
 	
-	//private var conference: Conference?
 	private var conferenceDelegate: ConferenceDelegate?
 	
 	init(chatRoom: ChatRoom) {
@@ -134,10 +133,6 @@ class ConversationModel: ObservableObject, Identifiable {
 			}
 			
 			do {
-				let conferenceInfo = try Factory.Instance.createConferenceInfo()
-				conferenceInfo.organizer = account!.params?.identityAddress
-				conferenceInfo.subject = self.chatRoom.subject ?? "Conference"
-				
 				var participantsList: [Address] = []
 				self.chatRoom.participants.forEach { participant in
 					participantsList.append(participant.address!)
@@ -152,7 +147,7 @@ class ConversationModel: ObservableObject, Identifiable {
 						callParams.videoEnabled = true
 						callParams.videoDirection = .RecvOnly
 						
-						print("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
+						Log.info("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
 						
 						try conference.inviteParticipants(addresses: participantsList, params: callParams)
 					}

@@ -37,8 +37,7 @@ class StartCallViewModel: ObservableObject {
 	
 	@Published var operationInProgress: Bool = false
 	
-	private var conferenceScheduler: ConferenceScheduler?
-	private var conferenceSchedulerDelegate: ConferenceSchedulerDelegate?
+	private var conferenceDelegate: ConferenceDelegate?
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
@@ -67,7 +66,7 @@ class StartCallViewModel: ObservableObject {
 			let account = core.defaultAccount
 			if account == nil {
 				Log.error(
-					"\(StartCallViewModel.TAG) No default account found, can't create group call!"
+					"\(ConversationModel.TAG) No default account found, can't create group call!"
 				)
 				return
 			}
@@ -77,86 +76,59 @@ class StartCallViewModel: ObservableObject {
 			}
 			
 			do {
-				let conferenceInfo = try Factory.Instance.createConferenceInfo()
-				conferenceInfo.organizer = account!.params?.identityAddress
-				conferenceInfo.subject = self.messageText
-				
-				var participantsList: [ParticipantInfo] = []
+				var participantsList: [Address] = []
 				self.participants.forEach { participant in
-					do {
-						let info = try Factory.Instance.createParticipantInfo(address: participant.address)
-						// For meetings, all participants must have Speaker role
-						info.role = Participant.Role.Speaker
-						participantsList.append(info)
-					} catch let error {
-						Log.error(
-							"\(StartCallViewModel.TAG) Can't create ParticipantInfo: \(error)"
-				  		)
-					}
+					participantsList.append(participant.address)
 				}
 				
 				DispatchQueue.main.async {
 					self.participants.removeAll()
 				}
 				
-				conferenceInfo.addParticipantInfos(participantInfos: participantsList)
-				
 				Log.info(
-					"\(StartCallViewModel.TAG) Creating group call with subject \(self.messageText) and \(participantsList.count) participant(s)"
+					"\(ConversationModel.TAG) Creating group call with subject \(self.messageText) and \(participantsList.count) participant(s)"
 				)
 				
-				self.conferenceScheduler = try core.createConferenceScheduler(account: account)
-				if self.conferenceScheduler != nil {
-					self.conferenceAddDelegate(core: core, conferenceScheduler: self.conferenceScheduler!)
-					// Will trigger the conference creation/update automatically
-					self.conferenceScheduler!.info = conferenceInfo
+				if let conference = LinphoneUtils.createGroupCall(core: core, account: account, subject: self.messageText) {
+					self.conferenceAddDelegate(core: core, conference: conference)
+					let callParams = try? core.createCallParams(call: nil)
+					if let callParams = callParams {
+						callParams.videoEnabled = true
+						callParams.videoDirection = .RecvOnly
+						
+						Log.info("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
+						
+						try conference.inviteParticipants(addresses: participantsList, params: callParams)
+					}
 				}
 			} catch let error {
 				Log.error(
-					"\(StartCallViewModel.TAG) createGroupCall: \(error)"
+					"\(ConversationModel.TAG) createGroupCall: \(error)"
 				)
 			}
 		}
 	}
 	
-	func conferenceAddDelegate(core: Core, conferenceScheduler: ConferenceScheduler) {
-		self.conferenceSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (conferenceScheduler: ConferenceScheduler, state: ConferenceScheduler.State) in
-			Log.info("\(StartCallViewModel.TAG) Conference scheduler state is \(state)")
-			if state == ConferenceScheduler.State.Ready {
-				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
-				self.conferenceSchedulerDelegate = nil
-				
-				let conferenceAddress = conferenceScheduler.info?.uri
-				if conferenceAddress != nil {
-					Log.info(
-						"\(StartCallViewModel.TAG) Conference info created, address is \(conferenceAddress?.asStringUriOnly() ?? "Error conference address")"
-					)
-					
-					self.startVideoCall(core: core, conferenceAddress: conferenceAddress!)
-				} else {
-					Log.error("\(StartCallViewModel.TAG) Conference info URI is null!")
-					
-					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
-					ToastViewModel.shared.displayToast = true
-				}
-				
+	func conferenceAddDelegate(core: Core, conference: Conference) {
+		self.conferenceDelegate = ConferenceDelegateStub(onStateChanged: { (conference: Conference, state: Conference.State) in
+			Log.info("\(StartCallViewModel.TAG) Conference state is \(state)")
+			if state == .Created {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
 				}
-			} else if state == ConferenceScheduler.State.Error {
-				conferenceScheduler.removeDelegate(delegate: self.conferenceSchedulerDelegate!)
-				self.conferenceSchedulerDelegate = nil
+			} else if state == .CreationFailed {
 				Log.error("\(StartCallViewModel.TAG) Failed to create group call!")
-				
-				ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
-				ToastViewModel.shared.displayToast = true
-				
 				DispatchQueue.main.async {
+					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
+					ToastViewModel.shared.displayToast = true
 					self.operationInProgress = false
 				}
 			}
 		})
-		conferenceScheduler.addDelegate(delegate: self.conferenceSchedulerDelegate!)
+		
+		if self.conferenceDelegate != nil {
+			conference.addDelegate(delegate: self.conferenceDelegate!)
+		}
 	}
 	
 	func startVideoCall(core: Core, conferenceAddress: Address) {
