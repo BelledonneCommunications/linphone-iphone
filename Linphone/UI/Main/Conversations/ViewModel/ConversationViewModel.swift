@@ -569,7 +569,26 @@ class ConversationViewModel: ObservableObject {
 					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
-					guard let chatMessage = eventLog.chatMessage else { return }
+					guard let chatMessage = eventLog.chatMessage else {
+						conversationMessage.append(
+							EventLogMessage(
+								eventModel: EventModel(eventLog: eventLog),
+								message: Message(
+									id: UUID().uuidString,
+									status: nil,
+									isOutgoing: false,
+									dateReceived: 0,
+									address: "",
+									isFirstMessage: false,
+									text: "",
+									attachments: [],
+									ownReaction: "",
+									reactions: []
+								)
+							)
+						)
+						return
+					}
 					
 					if !chatMessage.contents.isEmpty {
 						chatMessage.contents.forEach { content in
@@ -794,7 +813,26 @@ class ConversationViewModel: ObservableObject {
 					var attachmentList: [Attachment] = []
 					var contentText = ""
 					
-					guard let chatMessage = eventLog.chatMessage else { return }
+					guard let chatMessage = eventLog.chatMessage else {
+						conversationMessagesTmp.insert(
+							EventLogMessage(
+								eventModel: EventModel(eventLog: eventLog),
+								message: Message(
+									id: UUID().uuidString,
+									status: nil,
+									isOutgoing: false,
+									dateReceived: 0,
+									address: "",
+									isFirstMessage: false,
+									text: "",
+									attachments: [],
+									ownReaction: "",
+									reactions: []
+								)
+							), at: 0
+						)
+						return
+					}
 					
 					if !chatMessage.contents.isEmpty {
 						chatMessage.contents.forEach { content in
@@ -1020,6 +1058,10 @@ class ConversationViewModel: ObservableObject {
 			return
 		}
 		
+		var conversationMessagesTmp: [EventLogMessage] = []
+		
+		let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
+		
 		if let firstEventLogId = self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId,
 		   let lastMessageId = eventLogs.last?.chatMessage?.messageId,
 		   !eventLogs.isEmpty,
@@ -1157,8 +1199,6 @@ class ConversationViewModel: ObservableObject {
 				
 				let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 				
-				let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
-				
 				var statusTmp: Message.Status? = .sending
 				switch chatMessage.state {
 				case .InProgress:
@@ -1219,50 +1259,54 @@ class ConversationViewModel: ObservableObject {
 					)
 				}
 				
-				let message = EventLogMessage(
-					eventModel: EventModel(eventLog: eventLog),
-					message: Message(
-						id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
-						appData: chatMessage.appdata ?? "",
-						status: statusTmp,
-						isOutgoing: chatMessage.isOutgoing,
-						dateReceived: chatMessage.time,
-						address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
-						isFirstMessage: isFirstMessageTmp,
-						text: contentText,
-						attachmentsNames: attachmentNameList,
-						attachments: attachmentList,
-						replyMessage: replyMessageTmp,
-						isForward: chatMessage.isForward,
-						ownReaction: chatMessage.ownReaction?.body ?? "",
-						reactions: reactionsTmp,
-						isEphemeral: chatMessage.isEphemeral,
-						ephemeralExpireTime: chatMessage.ephemeralExpireTime,
-						ephemeralLifetime: chatMessage.ephemeralLifetime,
-						isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
-						messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
-					)
+				conversationMessagesTmp.insert(
+					EventLogMessage(
+						eventModel: EventModel(eventLog: eventLog),
+						message: Message(
+							id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+							appData: chatMessage.appdata ?? "",
+							status: statusTmp,
+							isOutgoing: chatMessage.isOutgoing,
+							dateReceived: chatMessage.time,
+							address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
+							isFirstMessage: isFirstMessageTmp,
+							text: contentText,
+							attachmentsNames: attachmentNameList,
+							attachments: attachmentList,
+							replyMessage: replyMessageTmp,
+							isForward: chatMessage.isForward,
+							ownReaction: chatMessage.ownReaction?.body ?? "",
+							reactions: reactionsTmp,
+							isEphemeral: chatMessage.isEphemeral,
+							ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+							ephemeralLifetime: chatMessage.ephemeralLifetime,
+							isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+							messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
+						)
+					), at: 0
 				)
-				
-				if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != chatMessage.messageId {
-					self.addChatMessageDelegate(message: chatMessage)
+				self.addChatMessageDelegate(message: chatMessage)
+			}
+			
+			if let eventLogMessage = conversationMessagesTmp.last {
+				if self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId != eventLogMessage.message.id {
 					
 					DispatchQueue.main.async {
 						Log.info("[ConversationViewModel] Get new Messages \(self.conversationMessagesSection.count)")
 						if !self.conversationMessagesSection.isEmpty
 							&& !self.conversationMessagesSection[0].rows.isEmpty
 							&& self.conversationMessagesSection[0].rows[0].message.isOutgoing
-							&& (self.conversationMessagesSection[0].rows[0].message.address == message.message.address) {
+							&& (self.conversationMessagesSection[0].rows[0].message.address == eventLogMessage.message.address) {
 							self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
 						}
 						
 						if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
-							self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [message]))
+							self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: conversationMessagesTmp))
 						} else {
-							self.conversationMessagesSection[0].rows.insert(message, at: 0)
+							self.conversationMessagesSection[0].rows.insert(contentsOf: conversationMessagesTmp, at: 0)
 						}
 						
-						if !message.message.isOutgoing {
+						if !eventLogMessage.message.isOutgoing {
 							self.displayedConversationUnreadMessagesCount = unreadMessagesCount
 						}
 					}
@@ -1325,7 +1369,26 @@ class ConversationViewModel: ObservableObject {
 							var attachmentList: [Attachment] = []
 							var contentText = ""
 							
-							guard let chatMessage = eventLog.chatMessage else { return }
+							guard let chatMessage = eventLog.chatMessage else {
+								conversationMessagesTmp.insert(
+									EventLogMessage(
+										eventModel: EventModel(eventLog: eventLog),
+										message: Message(
+											id: UUID().uuidString,
+											status: nil,
+											isOutgoing: false,
+											dateReceived: 0,
+											address: "",
+											isFirstMessage: false,
+											text: "",
+											attachments: [],
+											ownReaction: "",
+											reactions: []
+										)
+									), at: 0
+								)
+								return
+							}
 							
 							if !chatMessage.contents.isEmpty {
 								chatMessage.contents.forEach { content in
