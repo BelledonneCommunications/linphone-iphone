@@ -330,16 +330,15 @@ class ConversationViewModel: ObservableObject {
 									self.attachments[attachmentIndex] = newAttachment
 								} else {
 									if let messageAttachments = self.conversationMessagesSection.first?.rows[indexMessage].message.attachments {
-										let newAttachments = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.filter {
+										let newAttachments = messageAttachments.filter {
 											$0.transferProgressIndication >= 100 && !$0.full.pathExtension.isEmpty
 										}
 										if let indexFirst = self.attachments.firstIndex(where: { attachment in
-											messageAttachments.contains(where: { $0.id == attachment.id && !$0.full.pathExtension.isEmpty})
+											messageAttachments.contains(where: { $0.id == attachment.id && !$0.full.pathExtension.isEmpty })
 										}) {
 											self.attachments.removeAll { attachment in
-												self.conversationMessagesSection[0].rows[indexMessage].message.attachments.contains { $0.id == attachment.id }
+												messageAttachments.contains { $0.id == attachment.id }
 											}
-											
 											self.attachments.insert(contentsOf: newAttachments, at: indexFirst)
 										} else {
 											self.attachments.append(contentsOf: newAttachments)
