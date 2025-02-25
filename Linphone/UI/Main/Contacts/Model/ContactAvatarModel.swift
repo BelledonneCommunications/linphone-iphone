@@ -86,11 +86,12 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	func addFriendDelegate() {
 		friendDelegate = FriendDelegateStub(onPresenceReceived: { (friend: Friend) in
 			let latestActivityTimestamp = friend.presenceModel?.latestActivityTimestamp ?? -1
+			let consolidatedPresenceTmp = friend.consolidatedPresence
 			DispatchQueue.main.async {
-				self.presenceStatus = friend.consolidatedPresence
-				if friend.consolidatedPresence == .Online || friend.consolidatedPresence == .Busy {
-					if friend.consolidatedPresence == .Online || latestActivityTimestamp != -1 {
-						self.lastPresenceInfo = friend.consolidatedPresence == .Online ?
+				self.presenceStatus = consolidatedPresenceTmp
+				if consolidatedPresenceTmp == .Online || consolidatedPresenceTmp == .Busy {
+					if consolidatedPresenceTmp == .Online || latestActivityTimestamp != -1 {
+						self.lastPresenceInfo = consolidatedPresenceTmp == .Online ?
 						"Online" : self.getCallTime(startDate: latestActivityTimestamp)
 					} else {
 						self.lastPresenceInfo = "Away"
@@ -100,7 +101,10 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 				}
 			}
 		})
-		friend?.addDelegate(delegate: friendDelegate!)
+		
+		if friend != nil && friendDelegate != nil {
+			friend!.addDelegate(delegate: friendDelegate!)
+		}
 	}
 	
 	func removeFriendDelegate() {
