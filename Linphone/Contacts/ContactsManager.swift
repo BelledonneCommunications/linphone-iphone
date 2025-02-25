@@ -106,78 +106,127 @@ final class ContactsManager: ObservableObject {
 					do {
 						var contactCounter = 0
 						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
-							DispatchQueue.main.async {
-								let newContact = Contact(
-									identifier: contact.identifier,
-									firstName: contact.givenName,
-									lastName: contact.familyName,
-									organizationName: contact.organizationName,
-									jobTitle: "",
-									displayName: contact.nickname,
-									sipAddresses: contact.instantMessageAddresses.map { $0.value.service.lowercased() == "SIP".lowercased() ? $0.value.username : "" },
-									phoneNumbers: contact.phoneNumbers.map { PhoneNumber(numLabel: $0.label ?? "", num: $0.value.stringValue)},
-									imageData: ""
-								)
-								
-								let imageThumbnail = UIImage(data: contact.thumbnailImageData ?? Data())
-								self.saveImage(
-									image: imageThumbnail
-									?? self.textToImage(
-										firstName: contact.givenName.isEmpty
-										&& contact.familyName.isEmpty
-										&& contact.phoneNumbers.first?.value.stringValue != nil
-										? contact.phoneNumbers.first!.value.stringValue
-										: contact.givenName, lastName: contact.familyName),
-									name: contact.givenName + contact.familyName,
-									prefix: ((imageThumbnail == nil) ? "-default" : ""),
-									contact: newContact, linphoneFriend: false, existingFriend: nil) {
-										if (self.friendList?.friends.count ?? 0) == contactCounter {
-											// Every contact properly added, proceed
-											self.linphoneFriendList?.updateSubscriptions()
-											self.friendList?.updateSubscriptions()
-											
-											if let friendListDelegate = self.friendListDelegate {
-												self.friendList?.removeDelegate(delegate: friendListDelegate)
-											}
-											
-											self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
-												var addedAvatarListModel: [ContactAvatarModel] = []
-												linphoneFriend.phoneNumbers.forEach { phone in
-													let address = try? Factory.Instance.createAddress(addr: sipUri)
-													let presence = linphoneFriend.getPresenceModelForUriOrTel(uriOrTel: address?.asStringUriOnly() ?? "")
-													if address != nil {
-														linphoneFriend.edit()
-														linphoneFriend.addAddress(address: address!)
-														linphoneFriend.done()
-														
-														let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
-														addedAvatarListModel.append(
-															ContactAvatarModel(
-																friend: linphoneFriend,
-																name: linphoneFriend.name ?? "",
-																address: addressTmp,
-																withPresence: true
-															)
-														)
-														
-														DispatchQueue.main.async {
-															NotificationCenter.default.post(
-																name: NSNotification.Name("ContactAdded"),
-																object: nil,
-																userInfo: ["address": addressTmp]
-															)
-														}
-													}
+							let newContact = Contact(
+								identifier: contact.identifier,
+								firstName: contact.givenName,
+								lastName: contact.familyName,
+								organizationName: contact.organizationName,
+								jobTitle: "",
+								displayName: contact.nickname,
+								sipAddresses: contact.instantMessageAddresses.map { $0.value.service.lowercased() == "SIP".lowercased() ? $0.value.username : "" },
+								phoneNumbers: contact.phoneNumbers.map { PhoneNumber(numLabel: $0.label ?? "", num: $0.value.stringValue)},
+								imageData: ""
+							)
+							
+							let imageThumbnail = UIImage(data: contact.thumbnailImageData ?? Data())
+							if let image = imageThumbnail {
+								DispatchQueue.main.async {
+									self.saveImage(
+										image: image,
+										name: contact.givenName + contact.familyName,
+										prefix: "",
+										contact: newContact, linphoneFriend: false, existingFriend: nil) {
+											if (self.friendList?.friends.count ?? 0) == contactCounter {
+												// Every contact properly added, proceed
+												self.linphoneFriendList?.updateSubscriptions()
+												self.friendList?.updateSubscriptions()
+												
+												if let friendListDelegate = self.friendListDelegate {
+													self.friendList?.removeDelegate(delegate: friendListDelegate)
 												}
 												
-												DispatchQueue.main.async {
-													self.avatarListModel += addedAvatarListModel
-													self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
-												}
-											})
-											self.friendList?.addDelegate(delegate: self.friendListDelegate!)
+												self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
+													var addedAvatarListModel: [ContactAvatarModel] = []
+													linphoneFriend.phoneNumbers.forEach { _ in
+														let address = try? Factory.Instance.createAddress(addr: sipUri)
+														if address != nil {
+															linphoneFriend.edit()
+															linphoneFriend.addAddress(address: address!)
+															linphoneFriend.done()
+															
+															let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
+															addedAvatarListModel.append(
+																ContactAvatarModel(
+																	friend: linphoneFriend,
+																	name: linphoneFriend.name ?? "",
+																	address: addressTmp,
+																	withPresence: true
+																)
+															)
+															
+															DispatchQueue.main.async {
+																NotificationCenter.default.post(
+																	name: NSNotification.Name("ContactAdded"),
+																	object: nil,
+																	userInfo: ["address": addressTmp]
+																)
+															}
+														}
+													}
+													
+													DispatchQueue.main.async {
+														self.avatarListModel += addedAvatarListModel
+														self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
+													}
+												})
+												self.friendList?.addDelegate(delegate: self.friendListDelegate!)
+											}
 										}
-									}
+								}
+							} else {
+								self.textToImageInMainThread(firstName: contact.givenName, lastName: contact.familyName) { image in
+									self.saveImage(
+										image: image,
+										name: contact.givenName + contact.familyName,
+										prefix: "-default",
+										contact: newContact, linphoneFriend: false, existingFriend: nil) {
+											if (self.friendList?.friends.count ?? 0) == contactCounter {
+												// Every contact properly added, proceed
+												self.linphoneFriendList?.updateSubscriptions()
+												self.friendList?.updateSubscriptions()
+												
+												if let friendListDelegate = self.friendListDelegate {
+													self.friendList?.removeDelegate(delegate: friendListDelegate)
+												}
+												
+												self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
+													var addedAvatarListModel: [ContactAvatarModel] = []
+													linphoneFriend.phoneNumbers.forEach { _ in
+														let address = try? Factory.Instance.createAddress(addr: sipUri)
+														if address != nil {
+															linphoneFriend.edit()
+															linphoneFriend.addAddress(address: address!)
+															linphoneFriend.done()
+															
+															let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
+															addedAvatarListModel.append(
+																ContactAvatarModel(
+																	friend: linphoneFriend,
+																	name: linphoneFriend.name ?? "",
+																	address: addressTmp,
+																	withPresence: true
+																)
+															)
+															
+															DispatchQueue.main.async {
+																NotificationCenter.default.post(
+																	name: NSNotification.Name("ContactAdded"),
+																	object: nil,
+																	userInfo: ["address": addressTmp]
+																)
+															}
+														}
+													}
+													
+													DispatchQueue.main.async {
+														self.avatarListModel += addedAvatarListModel
+														self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
+													}
+												})
+												self.friendList?.addDelegate(delegate: self.friendListDelegate!)
+											}
+										}
+								}
 							}
 							
 							if !(contact.givenName.isEmpty && contact.familyName.isEmpty) {
@@ -193,6 +242,35 @@ final class ContactsManager: ObservableObject {
 					print("\(#function) - access denied")
 				}
 			}
+		}
+	}
+	
+	func textToImageInMainThread(firstName: String, lastName: String, completion: @escaping (UIImage) -> Void) {
+		DispatchQueue.main.async {
+			let lblNameInitialize = UILabel()
+			lblNameInitialize.frame.size = CGSize(width: 200.0, height: 200.0)
+			lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80)
+			lblNameInitialize.textColor = UIColor(Color.grayMain2c600)
+			
+			let textToDisplay = (firstName.first.map { String($0) } ?? "") + (lastName.first.map { String($0) } ?? "")
+			
+			lblNameInitialize.text = textToDisplay.uppercased()
+			lblNameInitialize.textAlignment = .center
+			lblNameInitialize.backgroundColor = UIColor(Color.grayMain2c200)
+			lblNameInitialize.layer.cornerRadius = 10.0
+			lblNameInitialize.clipsToBounds = true
+			
+			UIGraphicsBeginImageContext(lblNameInitialize.frame.size)
+			defer { UIGraphicsEndImageContext() }
+			
+			guard let context = UIGraphicsGetCurrentContext() else {
+				completion(UIImage())
+				return
+			}
+			
+			lblNameInitialize.layer.render(in: context)
+			let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+			completion(image)
 		}
 	}
 	
