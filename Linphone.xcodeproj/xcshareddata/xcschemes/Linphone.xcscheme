@@ -17,7 +17,7 @@
                BlueprintIdentifier = "D719ABB22ABC67BF00B41C10"
                BuildableName = "Linphone.app"
                BlueprintName = "Linphone"
-               ReferencedContainer = "container:Linphone.xcodeproj">
+               ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,7 +46,7 @@
             BlueprintIdentifier = "D719ABB22ABC67BF00B41C10"
             BuildableName = "Linphone.app"
             BlueprintName = "Linphone"
-            ReferencedContainer = "container:Linphone.xcodeproj">
+            ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,7 +63,7 @@
             BlueprintIdentifier = "D719ABB22ABC67BF00B41C10"
             BuildableName = "Linphone.app"
             BlueprintName = "Linphone"
-            ReferencedContainer = "container:Linphone.xcodeproj">
+            ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

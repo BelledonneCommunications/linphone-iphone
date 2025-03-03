@@ -19,6 +19,7 @@
 
 import linphonesw
 import Combine
+import SwiftUI
 
 // swiftlint:disable line_length
 class StartCallViewModel: ObservableObject {

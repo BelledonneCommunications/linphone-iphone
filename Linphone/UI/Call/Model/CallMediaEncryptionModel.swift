@@ -19,6 +19,7 @@
 
 import Foundation
 import linphonesw
+import SwiftUI
 
 class CallMediaEncryptionModel: ObservableObject {
 	var coreContext = CoreContext.shared

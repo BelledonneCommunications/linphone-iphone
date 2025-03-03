@@ -19,6 +19,7 @@
 
 import linphonesw
 import Combine
+import SwiftUI
 
 class HistoryListViewModel: ObservableObject {
 	

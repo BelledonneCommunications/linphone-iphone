@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
@@ -43,6 +43,8 @@
 		66FBFC4B2B83BD7B00BC6AB1 /* CoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FA2B24D32600CEA16D /* CoreExtension.swift */; };
 		66FDB7812C7C689A00561566 /* EventEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FDB7802C7C689A00561566 /* EventEditViewController.swift */; };
 		C60E8F192C0F649200A06DB8 /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60E8F182C0F649200A06DB8 /* UIApplicationExtension.swift */; };
+		C618BF562D75CA03005A00E0 /* linphonesw in Frameworks */ = {isa = PBXBuildFile; productRef = C618BF552D75CA03005A00E0 /* linphonesw */; };
+		C618BF582D75CA0D005A00E0 /* linphonesw in Frameworks */ = {isa = PBXBuildFile; productRef = C618BF572D75CA0D005A00E0 /* linphonesw */; };
 		C62817282C1B389700DBA646 /* SideMenuAccountRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62817272C1B389700DBA646 /* SideMenuAccountRow.swift */; };
 		C628172E2C1C3A3600DBA646 /* AccountExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C628172D2C1C3A3600DBA646 /* AccountExtension.swift */; };
 		C62817302C1C3DCC00DBA646 /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C628172F2C1C3DCC00DBA646 /* AccountModel.swift */; };
@@ -405,6 +407,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C618BF582D75CA0D005A00E0 /* linphonesw in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,7 +415,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */,
+				C618BF562D75CA03005A00E0 /* linphonesw in Frameworks */,
+				4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1066,7 +1070,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */;
+			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "linphone" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1075,6 +1079,9 @@
 				Base,
 			);
 			mainGroup = D719ABAA2ABC67BF00B41C10;
+			packageReferences = (
+				C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1709,7 +1716,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */ = {
+		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "linphone" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D719ABC02ABC67BF00B41C10 /* Debug */,
@@ -1728,6 +1735,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git";
+			requirement = {
+				branch = beta;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C618BF552D75CA03005A00E0 /* linphonesw */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
+			productName = linphonesw;
+		};
+		C618BF572D75CA0D005A00E0 /* linphonesw */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
+			productName = linphonesw;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D719ABAB2ABC67BF00B41C10 /* Project object */;
 }

@@ -96,7 +96,7 @@ class Log: LoggingServiceDelegate {
 #endif
 	}
 		
-	func onLogMessageWritten(logService: linphonesw.LoggingService, domain: String, level: linphonesw.LogLevel, message: String) {
+	func onLogMessageWritten(logService: LoggingService, domain: String, level: LogLevel, message: String) {
 		output(message, level.rawValue, domain)
 	}
 

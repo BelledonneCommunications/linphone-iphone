@@ -26,6 +26,7 @@ import linphone // needed for unwrapped function linphone_core_set_push_and_app_
 import Combine
 import UniformTypeIdentifiers
 import Network
+import SwiftUI
 
 #if USE_CRASHLYTICS
 import Firebase
