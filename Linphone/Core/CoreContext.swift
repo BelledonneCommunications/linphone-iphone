@@ -153,6 +153,8 @@ final class CoreContext: ObservableObject {
 			self.mCore.config!.setString(section: "misc", key: "file_transfer_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
 			self.mCore.config!.setString(section: "misc", key: "version_check_url_root", value: "https://download.linphone.org/releases")
 			
+			self.mCore.imdnToEverybodyThreshold = 1
+			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
 			if shortcutsCount > 0 {
 				var shortcuts: [ShortcutModel] = []

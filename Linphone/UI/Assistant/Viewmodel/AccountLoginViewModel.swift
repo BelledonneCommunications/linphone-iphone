@@ -128,8 +128,10 @@ class AccountLoginViewModel: ObservableObject {
 				// Also set the newly added account as default
 				core.defaultAccount = account
 				
-				self.domain = "sip.linphone.org"
-				self.transportType = "TLS"
+				DispatchQueue.main.async {
+					self.domain = "sip.linphone.org"
+					self.transportType = "TLS"
+				}
 				
 			} catch { NSLog(error.localizedDescription) }
 		}
