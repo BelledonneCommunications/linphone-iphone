@@ -29,170 +29,21 @@ struct PermissionsFragment: View {
 	
 	var body: some View {
 		GeometryReader { geometry in
-			ScrollView(.vertical) {
-				VStack {
-					ZStack {
-						Image("mountain")
-							.resizable()
-							.scaledToFill()
-							.frame(width: geometry.size.width, height: 100)
-							.clipped()
-						
-						VStack(alignment: .leading) {
-							HStack {
-								Image("caret-left")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, -75)
-									.padding(.leading, -10)
-									.onTapGesture {
-										withAnimation {
-											dismiss()
-										}
-									}
-								
-								Spacer()
-							}
-							.padding(.leading)
-						}
-						.frame(width: geometry.size.width)
-						
-						Text("assistant_permissions_title")
-							.default_text_style_white_800(styleSize: 20)
-							.padding(.top, 20)
-					}
-					.padding(.top, 35)
-					.padding(.bottom, 10)
-					
-					Text(String(format: String(localized: "assistant_permissions_subtitle"), Bundle.main.displayName))
-						.default_text_style(styleSize: 15)
-						.multilineTextAlignment(.center)
-					
-					Spacer()
-					
-					VStack(alignment: .leading) {
-						HStack {
-							HStack(alignment: .center) {
-								Image("bell-ringing")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 20, height: 20, alignment: .leading)
-							}
-							.padding(16)
-							.background(Color.grayMain2c200)
-							.cornerRadius(40)
-							
-							Text("assistant_permissions_post_notifications_title")
-								.default_text_style(styleSize: 15)
-								.padding(.leading, 10)
-						}
-						.padding(.bottom)
-						
-						HStack {
-							HStack(alignment: .center) {
-								Image("address-book")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 20, height: 20, alignment: .leading)
-							}
-							.padding(16)
-							.background(Color.grayMain2c200)
-							.cornerRadius(40)
-							Text(.init(String(format: String(localized: "assistant_permissions_read_contacts_title"), Bundle.main.displayName)))
-								.default_text_style(styleSize: 15)
-								.padding(.leading, 10)
-						}
-						.padding(.bottom)
-						
-						HStack {
-							HStack(alignment: .center) {
-								Image("microphone")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 20, height: 20, alignment: .leading)
-							}
-							.padding(16)
-							.background(Color.grayMain2c200)
-							.cornerRadius(40)
-							
-							Text("assistant_permissions_record_audio_title")
-								.default_text_style(styleSize: 15)
-								.padding(.leading, 10)
-						}
-						.padding(.bottom)
-						
-						HStack {
-							HStack(alignment: .center) {
-								Image("video-camera")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 20, height: 20, alignment: .leading)
-							}
-							.padding(16)
-							.background(Color.grayMain2c200)
-							.cornerRadius(40)
-							
-							Text("assistant_permissions_access_camera_title")
-								.default_text_style(styleSize: 15)
-								.padding(.leading, 10)
-						}
-						.padding(.bottom)
-					}
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
-					.frame(maxHeight: .infinity)
-					.padding(.horizontal, 20)
-					
-					Spacer()
-					
-					Button(action: {
-						withAnimation {
-							sharedMainViewModel.changeWelcomeView()
-						}
-					}, label: {
-						Text("assistant_permissions_skip_permissions")
-							.default_text_style_orange_600(styleSize: 20)
-							.frame(height: 35)
-							.frame(maxWidth: .infinity)
-					})
-					.padding(.horizontal, 20)
-					.padding(.vertical, 10)
-					.cornerRadius(60)
-					.overlay(
-						RoundedRectangle(cornerRadius: 60)
-							.inset(by: 0.5)
-							.stroke(Color.orangeMain500, lineWidth: 1)
-					)
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
-					.padding(.horizontal)
-					
-					Button {
-						permissionManager.getPermissions()
-					} label: {
-						Text("assistant_permissions_grant_all_of_them")
-							.default_text_style_white_600(styleSize: 20)
-							.frame(height: 35)
-							.frame(maxWidth: .infinity)
-					}
-					.padding(.horizontal, 20)
-					.padding(.vertical, 10)
-					.background(Color.orangeMain500)
-					.cornerRadius(60)
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
-					.padding(.horizontal)
-					.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
+			if #available(iOS 16.4, *) {
+				ScrollView(.vertical) {
+					innerScrollView(geometry: geometry)
 				}
-				.frame(minHeight: geometry.size.height)
+				.scrollBounceBehavior(.basedOnSize)
+			} else {
+				ScrollView(.vertical) {
+					innerScrollView(geometry: geometry)
+				}
 			}
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
 		.navigationBarHidden(true)
+		.edgesIgnoringSafeArea(.bottom)
+		.edgesIgnoringSafeArea(.horizontal)
 		.onReceive(permissionManager.$allPermissionsHaveBeenDisplayed, perform: { (granted) in
 			if granted {
 				withAnimation {
@@ -200,6 +51,161 @@ struct PermissionsFragment: View {
 				}
 			}
 		})
+	}
+	
+	func innerScrollView(geometry: GeometryProxy) -> some View {
+		VStack {
+			ZStack {
+				HStack {
+					Image("caret-left")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.grayMain2c500)
+						.frame(width: 25, height: 25)
+						.padding(.all, 10)
+						.onTapGesture {
+							withAnimation {
+								dismiss()
+							}
+						}
+					Spacer()
+				}
+				
+				Text("assistant_permissions_title")
+					.default_text_style_800(styleSize: 20)
+			}
+			.frame(width: geometry.size.width)
+			.padding(.top, 10)
+			.padding(.bottom, 20)
+			
+			Text(String(format: String(localized: "assistant_permissions_subtitle"), Bundle.main.displayName))
+				.default_text_style(styleSize: 15)
+				.multilineTextAlignment(.center)
+			
+			Spacer()
+			
+			VStack(alignment: .leading) {
+				HStack {
+					HStack(alignment: .center) {
+						Image("bell-ringing")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 20, height: 20, alignment: .leading)
+					}
+					.padding(16)
+					.background(Color.grayMain2c200)
+					.cornerRadius(40)
+					
+					Text("assistant_permissions_post_notifications_title")
+						.default_text_style(styleSize: 15)
+						.padding(.leading, 10)
+				}
+				.padding(.bottom)
+				
+				HStack {
+					HStack(alignment: .center) {
+						Image("address-book")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 20, height: 20, alignment: .leading)
+					}
+					.padding(16)
+					.background(Color.grayMain2c200)
+					.cornerRadius(40)
+					Text(.init(String(format: String(localized: "assistant_permissions_read_contacts_title"), Bundle.main.displayName)))
+						.default_text_style(styleSize: 15)
+						.padding(.leading, 10)
+				}
+				.padding(.bottom)
+				
+				HStack {
+					HStack(alignment: .center) {
+						Image("microphone")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 20, height: 20, alignment: .leading)
+					}
+					.padding(16)
+					.background(Color.grayMain2c200)
+					.cornerRadius(40)
+					
+					Text("assistant_permissions_record_audio_title")
+						.default_text_style(styleSize: 15)
+						.padding(.leading, 10)
+				}
+				.padding(.bottom)
+				
+				HStack {
+					HStack(alignment: .center) {
+						Image("video-camera")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c500)
+							.frame(width: 20, height: 20, alignment: .leading)
+					}
+					.padding(16)
+					.background(Color.grayMain2c200)
+					.cornerRadius(40)
+					
+					Text("assistant_permissions_access_camera_title")
+						.default_text_style(styleSize: 15)
+						.padding(.leading, 10)
+				}
+				.padding(.bottom)
+			}
+			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxHeight: .infinity)
+			.padding(.horizontal, 20)
+			
+			Spacer()
+			
+			Button(action: {
+				withAnimation {
+					sharedMainViewModel.changeWelcomeView()
+				}
+			}, label: {
+				Text("assistant_permissions_skip_permissions")
+					.default_text_style_orange_600(styleSize: 20)
+					.frame(height: 35)
+					.frame(maxWidth: .infinity)
+			})
+			.padding(.horizontal, 20)
+			.padding(.vertical, 10)
+			.cornerRadius(60)
+			.overlay(
+				RoundedRectangle(cornerRadius: 60)
+					.inset(by: 0.5)
+					.stroke(Color.orangeMain500, lineWidth: 1)
+			)
+			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.padding(.horizontal)
+			
+			Button {
+				permissionManager.getPermissions()
+			} label: {
+				Text("assistant_permissions_grant_all_of_them")
+					.default_text_style_white_600(styleSize: 20)
+					.frame(height: 35)
+					.frame(maxWidth: .infinity)
+			}
+			.padding(.horizontal, 20)
+			.padding(.vertical, 10)
+			.background(Color.orangeMain500)
+			.cornerRadius(60)
+			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.padding(.horizontal)
+			.padding(.bottom)
+			
+			Image("mountain2")
+				.resizable()
+				.scaledToFill()
+				.frame(width: geometry.size.width, height: 60)
+				.clipped()
+		}
+		.frame(minHeight: geometry.size.height)
 	}
 }
 

@@ -39,7 +39,9 @@ struct WelcomePage1Fragment: View {
 					.multilineTextAlignment(.center)
 				
 			}
-			Spacer()
+			.padding(.horizontal)
+			.padding(.bottom, 60)
+			
 			Spacer()
 		}
 		.frame(maxWidth: .infinity)

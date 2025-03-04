@@ -33,7 +33,7 @@ class SharedMainViewModel: ObservableObject {
 	let displayProfileModeKey = "display_profile_mode"
 	let defaultAvatarKey = "default_avatar"
 	
-	var maxWidth = 400.0
+	var maxWidth = 600.0
 	
 	private init() {
 		let preferences = UserDefaults.standard

@@ -1055,13 +1055,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Some features require a %@ account, such as group messaging, video conferences…\\n\\nThese features are hidden when you register with a third party SIP account.\\n\\nTo enable it in a commercial project, please contact us."
+            "value" : "Some features require a %@ account, such as group messaging, video conferences…\n\nThese features are hidden when you register with a third party SIP account.\n\nTo enable it in a commercial project, please contact us."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Certaines fonctionnalités telles que les conversations de groupe, les vidéo-conférences, etc… nécessitent un compte %@.\\n\\nCes fonctionnalités seront masquées si vous utilisez un compte SIP tiers.\\n\\nPour les activer dans un projet commercial, merci de nous contacter."
+            "value" : "Certaines fonctionnalités telles que les conversations de groupe, les vidéo-conférences, etc… nécessitent un compte %@.\n\nCes fonctionnalités seront masquées si vous utilisez un compte SIP tiers.\n\nPour les activer dans un projet commercial, merci de nous contacter."
           }
         }
       }
@@ -7677,12 +7677,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your communications are safe thanks to our <b>end-to-end encryption</b>."
+            "value" : "Your communications are safe thanks to our **end-to-end encryption**."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Vos communications sont en sécurité grâce au **chiffrement de bout en bout**."
           }
         }
@@ -7709,12 +7709,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A <b>free</b> and open source application since <b>2001</b>."
+            "value" : "A **free** and open source application since **2001**."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Une application open source et un **service gratuit** depuis **2001**."
           }
         }
