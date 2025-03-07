@@ -107,8 +107,8 @@ final class MagicSearchSingleton: ObservableObject {
 		}
 	}
 	
-	func searchForContacts(sourceFlags: Int) {
-		coreContext.doOnCoreQueue { _ in
+	func searchForContactsWithoutCoreThread(sourceFlags: Int) {
+		if self.magicSearch != nil {
 			var needResetCache = false
 			
 			if let oldFilter = self.previousFilter {
@@ -117,7 +117,6 @@ final class MagicSearchSingleton: ObservableObject {
 				}
 			}
 			self.previousFilter = self.currentFilter
-			
 			
 			if needResetCache {
 				self.magicSearch.resetSearchCache()
@@ -128,6 +127,31 @@ final class MagicSearchSingleton: ObservableObject {
 				domain: self.allContact ? "" : self.domainDefaultAccount,
 				sourceFlags: sourceFlags,
 				aggregation: MagicSearch.Aggregation.Friend)
+		}
+	}
+	
+	func searchForContacts(sourceFlags: Int) {
+		if self.magicSearch != nil {
+			coreContext.doOnCoreQueue { _ in
+				var needResetCache = false
+				
+				if let oldFilter = self.previousFilter {
+					if oldFilter.count > self.currentFilter.count || oldFilter != self.currentFilter {
+						needResetCache = true
+					}
+				}
+				self.previousFilter = self.currentFilter
+				
+				if needResetCache {
+					self.magicSearch.resetSearchCache()
+				}
+				
+				self.magicSearch.getContactsListAsync(
+					filter: self.currentFilter,
+					domain: self.allContact ? "" : self.domainDefaultAccount,
+					sourceFlags: sourceFlags,
+					aggregation: MagicSearch.Aggregation.Friend)
+			}
 		}
 	}
 	

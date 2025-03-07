@@ -88,7 +88,7 @@ final class ContactsManager: ObservableObject {
 				}
 			}
 			
-			MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 			
 			let store = CNContactStore()
 			store.requestAccess(for: .contacts) { (granted, error) in
