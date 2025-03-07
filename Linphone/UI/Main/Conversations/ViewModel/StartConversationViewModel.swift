@@ -78,11 +78,17 @@ class StartConversationViewModel: ObservableObject {
 			
 			let groupChatRoomSubject = self.messageText
 			do {
-				let params: ChatRoomParams = try core.createDefaultChatRoomParams()
-				params.groupEnabled = true
-				params.subject = groupChatRoomSubject
-				params.backend = ChatRoom.Backend.FlexisipChat
-				params.encryptionEnabled = true
+				let chatRoomParams = try core.createConferenceParams(conference: nil)
+				chatRoomParams.chatEnabled = true
+				chatRoomParams.groupEnabled = true
+				chatRoomParams.subject = groupChatRoomSubject
+				chatRoomParams.securityLevel = Conference.SecurityLevel.EndToEnd
+				chatRoomParams.account = account
+				
+				if let chatParams = chatRoomParams.chatParams {
+					chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
+					chatParams.backend = ChatRoom.Backend.FlexisipChat
+				}
 				
 				var participantsTmp: [Address] = []
 				self.participants.forEach { participant in
@@ -90,15 +96,9 @@ class StartConversationViewModel: ObservableObject {
 				}
 				
 				if account!.params != nil {
-					let localAddress = account!.params!.identityAddress
+					let chatRoom = try core.createChatRoom(params: chatRoomParams, participants: participantsTmp)
 					
-					let chatRoom = try core.createChatRoom(
-						params: params,
-						localAddr: localAddress,
-						participants: participantsTmp
-					)
-					
-					if params.backend == ChatRoom.Backend.FlexisipChat {
+					if chatRoomParams.chatParams != nil && chatRoomParams.chatParams!.backend == ChatRoom.Backend.FlexisipChat {
 						if chatRoom.state == ChatRoom.State.Created {
 							let id = LinphoneUtils.getChatRoomId(room: chatRoom)
 							Log.info(
