@@ -100,4 +100,17 @@ class LinphoneUtils: NSObject {
 			return nil
 		}
 	}
+	
+	public class func getConversationId(chatRoom: ChatRoom) -> String {
+		return chatRoom.identifier ?? ""
+		
+	}
+	
+	public class func getDefaultAccount() -> Account? {
+		return CoreContext.shared.mCore.defaultAccount ?? (CoreContext.shared.mCore.accountList.first ?? nil)
+	}
+	
+	public class func getAccountForAddress(address: Address) -> Account? {
+		return CoreContext.shared.mCore.accountList.first { $0.params?.identityAddress?.weakEqual(address2: address) == true }
+	}
 }

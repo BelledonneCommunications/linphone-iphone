@@ -2262,16 +2262,14 @@ struct CallView: View {
 					HStack(spacing: 0) {
 						VStack {
 							Button {
-								if callViewModel.isOneOneCall && callViewModel.remoteAddress != nil {
-									callViewModel.createOneToOneChatRoomWith(remote: callViewModel.remoteAddress!)
-								}
+								callViewModel.createConversation()
 							} label: {
 								HStack {
 									if !callViewModel.operationInProgress {
 										Image("chat-teardrop-text")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(callViewModel.isOneOneCall ? .white : Color.gray500)
+											.foregroundStyle(.white)
 											.frame(width: 32, height: 32)
 									} else {
 										ProgressView()
@@ -2279,8 +2277,13 @@ struct CallView: View {
 											.progressViewStyle(CircularProgressViewStyle(tint: .white))
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
-												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
-													conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+												if callViewModel.displayedConversation != nil {
+													indexPage = 2
+													self.conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+													callViewModel.displayedConversation = nil
+													withAnimation {
+														telecomManager.callDisplayed = false
+													}
 												}
 											}
 									}
@@ -2288,9 +2291,8 @@ struct CallView: View {
 							}
 							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
 							.frame(width: buttonSize, height: buttonSize)
-							.background(callViewModel.isOneOneCall ? Color.gray500 : .white)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(!callViewModel.isOneOneCall)
 							
 							Text("call_action_show_messages")
 								.foregroundStyle(.white)
@@ -2631,16 +2633,14 @@ struct CallView: View {
 						
 						VStack {
 							Button {
-							   if callViewModel.isOneOneCall && callViewModel.remoteAddress != nil {
-								   callViewModel.createOneToOneChatRoomWith(remote: callViewModel.remoteAddress!)
-							   }
+								callViewModel.createConversation()
 							} label: {
 								HStack {
 									if !callViewModel.operationInProgress {
 										Image("chat-teardrop-text")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(callViewModel.isOneOneCall ? .white : Color.gray500)
+											.foregroundStyle(.white)
 											.frame(width: 32, height: 32)
 									} else {
 										ProgressView()
@@ -2648,7 +2648,7 @@ struct CallView: View {
 											.progressViewStyle(CircularProgressViewStyle(tint: .white))
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
-												if callViewModel.isOneOneCall && callViewModel.displayedConversation != nil {
+												if callViewModel.displayedConversation != nil {
 													conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
 												}
 											}
@@ -2657,9 +2657,8 @@ struct CallView: View {
 							}
 							.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
 							.frame(width: buttonSize, height: buttonSize)
-							.background(callViewModel.isOneOneCall ? Color.gray500 : .white)
+							.background(Color.gray500)
 							.cornerRadius(40)
-							.disabled(!callViewModel.isOneOneCall)
 							
 							Text("call_action_show_messages")
 								.foregroundStyle(.white)

@@ -1162,141 +1162,179 @@ class CallViewModel: ObservableObject {
 		Log.info("\(CallViewModel.TAG) \(list.count) participants added to conference")
 	}
 	
-	func createOneToOneChatRoomWith(remote: Address) {
-		CoreContext.shared.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			if account == nil {
-				Log.error(
-					"\(StartConversationViewModel.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())!"
-				)
-				return
+	func createConversation() {
+		if currentCall != nil {
+			self.operationInProgress = true
+			CoreContext.shared.doOnCoreQueue { _ in
+				let existingConversation = self.lookupCurrentCallConversation(call: self.currentCall!)
+				if existingConversation != nil {
+					Log.info("\(CallViewModel.TAG) Found existing conversation \(LinphoneUtils.getConversationId(chatRoom: existingConversation!)), going to it")
+					
+					let model = ConversationModel(chatRoom: existingConversation!)
+					DispatchQueue.main.async {
+						self.displayedConversation = model
+						self.operationInProgress = false
+					}
+				} else {
+					Log.info("\(CallViewModel.TAG) No existing conversation was found, let's create it")
+					self.createCurrentCallConversation(call: self.currentCall!)
+				}
 			}
-			
+		}
+	}
+	
+	func lookupCurrentCallConversation(call: Call) -> ChatRoom? {
+		let localAddress = call.callLog?.localAddress
+		let remoteAddress = call.remoteAddress
+		
+		let params: ConferenceParams? = nil
+		let existingConversation: ChatRoom?
+		if call.conference != nil {
+			existingConversation = call.core?.searchChatRoom(
+				params: params,
+				localAddr: localAddress,
+				remoteAddr: remoteAddress,
+				participants: []
+			)
+		} else {
+			let participants = [remoteAddress!]
+			existingConversation = call.core?.searchChatRoom(
+				params: params,
+				localAddr: localAddress,
+				remoteAddr: nil,
+				participants: participants
+			)
+		}
+		
+		if existingConversation != nil {
+			Log.info("\(CallViewModel.TAG) Found existing conversation \(existingConversation!.peerAddress?.asStringUriOnly() ?? "") found for current call with local address \(localAddress?.asStringUriOnly() ?? "") and remote address \(remoteAddress?.asStringUriOnly() ?? "")")
+		} else {
+			Log.warn("\(CallViewModel.TAG) No existing conversation found for current call with local address \(localAddress?.asStringUriOnly() ?? "") and remote address \(remoteAddress?.asStringUriOnly() ?? "")")
+		}
+		
+		return existingConversation
+	}
+	
+	func createCurrentCallConversation(call: Call) {
+		if let remoteAddress = call.remoteAddress {
+			let participants = [remoteAddress]
+			let core = call.core
 			DispatchQueue.main.async {
 				self.operationInProgress = true
 			}
 			
-			do {
-				let params: ChatRoomParams = try core.createDefaultChatRoomParams()
-				params.groupEnabled = false
-				params.subject = "Dummy subject"
-				params.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
-				
-				let sameDomain = remote.domain == account?.params?.domain ?? ""
-				if StartConversationViewModel.isEndToEndEncryptionMandatory() && sameDomain {
-					Log.info("\(StartConversationViewModel.TAG) Account is in secure mode & domain matches, creating a E2E conversation")
-					params.backend = ChatRoom.Backend.FlexisipChat
-					params.encryptionEnabled = true
-				} else if !StartConversationViewModel.isEndToEndEncryptionMandatory() {
-					if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
-						Log.info(
-							"\(StartConversationViewModel.TAG) Account is in interop mode but LIME is available, creating a E2E conversation"
-						)
-						params.backend = ChatRoom.Backend.FlexisipChat
-						params.encryptionEnabled = true
-					} else {
-						Log.info(
-							"\(StartConversationViewModel.TAG) Account is in interop mode but LIME isn't available, creating a SIP simple conversation"
-						)
-						params.backend = ChatRoom.Backend.Basic
-						params.encryptionEnabled = false
+			if let params = getChatRoomParams(call: call) {
+				do {
+					if core != nil {
+						let chatRoom = try core!.createChatRoom(params: params, participants: participants)
+						if params.chatParams?.backend == ChatRoom.Backend.FlexisipChat {
+							if chatRoom.state == ChatRoom.State.Created {
+								let chatRoomId = LinphoneUtils.getConversationId(chatRoom: chatRoom)
+								Log.info("\(CallViewModel.TAG) 1-1 conversation \(chatRoomId) has been created")
+								let model = ConversationModel(chatRoom: chatRoom)
+								DispatchQueue.main.async {
+									self.displayedConversation = model
+									self.operationInProgress = false
+								}
+							} else {
+								Log.info("\(CallViewModel.TAG) Conversation isn't in Created state yet, wait for it")
+								self.chatRoomAddDelegate(core: core!, chatRoom: chatRoom)
+							}
+						} else {
+							let id = LinphoneUtils.getConversationId(chatRoom: chatRoom)
+							Log.info("\(CallViewModel.TAG) Conversation successfully created \(id)")
+							
+							let model = ConversationModel(chatRoom: chatRoom)
+							DispatchQueue.main.async {
+								self.displayedConversation = model
+								self.operationInProgress = false
+							}
+							
+						}
 					}
-				} else {
+				} catch {
 					Log.error(
-						"\(StartConversationViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remote.asStringUriOnly())"
+						"\(CallViewModel.TAG) Failed to create 1-1 conversation with \(remoteAddress.asStringUriOnly())"
 					)
 					DispatchQueue.main.async {
 						self.operationInProgress = false
-						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_invalid_participant_error"
+						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 						ToastViewModel.shared.displayToast = true
 					}
-					return
 				}
+			}
+		}
+	}
+	
+	func getChatRoomParams(call: Call) -> ConferenceParams? {
+		let localAddress = call.callLog?.localAddress
+		let remoteAddress = call.remoteAddress
+		let core = call.core
+		if let account = LinphoneUtils.getAccountForAddress(address: localAddress!) ?? LinphoneUtils.getDefaultAccount() {
+			do {
+				let params = try coreContext.mCore.createConferenceParams(conference: call.conference)
+				params.chatEnabled = true
+				params.groupEnabled = false
+				params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
+				params.account = account
 				
-				let participants = [remote]
-				let localAddress = account?.params?.identityAddress
-				let existingChatRoom = core.searchChatRoom(params: params, localAddr: localAddress, remoteAddr: nil, participants: participants)
-				if existingChatRoom == nil {
-					Log.info(
-						"\(StartConversationViewModel.TAG) No existing 1-1 conversation between local account "
-						+ "\(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) was found for given parameters, let's create it"
-					)
-					let chatRoom = try core.createChatRoom(params: params, localAddr: localAddress, participants: participants)
-					if params.backend == ChatRoom.Backend.FlexisipChat {
-						if chatRoom.state == ChatRoom.State.Created {
-							let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-							Log.info("\(StartConversationViewModel.TAG) 1-1 conversation \(id) has been created")
-							
-							let model = ConversationModel(chatRoom: chatRoom)
-							if 	self.operationInProgress == false {
-								DispatchQueue.main.async {
-									self.operationInProgress = true
-								}
-								
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-									self.operationInProgress = false
-									self.displayedConversation = model
-								}
-							} else {
-								DispatchQueue.main.async {
-									self.operationInProgress = false
-									self.displayedConversation = model
-								}
-							}
-						} else {
-							Log.info("\(StartConversationViewModel.TAG) Conversation isn't in Created state yet, wait for it")
-							self.chatRoomAddDelegate(core: core, chatRoom: chatRoom)
-						}
-					} else {
-						let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-						Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(id)")
-						
-						let model = ConversationModel(chatRoom: chatRoom)
-						if 	self.operationInProgress == false {
-							DispatchQueue.main.async {
-								self.operationInProgress = true
-							}
-							
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-								self.operationInProgress = false
-								self.displayedConversation = model
-							}
-						} else {
-							DispatchQueue.main.async {
-								self.operationInProgress = false
-								self.displayedConversation = model
-							}
-						}
-					}
-				} else {
-					Log.warn(
-						"\(StartConversationViewModel.TAG) A 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) for given parameters already exists!"
-					)
+				if let chatParams = params.chatParams {
+					chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
 					
-					let model = ConversationModel(chatRoom: existingChatRoom!)
-					if 	self.operationInProgress == false {
-						DispatchQueue.main.async {
-							self.operationInProgress = true
-						}
-						
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-							self.operationInProgress = false
-							self.displayedConversation = model
+					let sameDomain = remoteAddress?.domain == CorePreferences.defaultDomain && remoteAddress?.domain == account.params?.domain
+					if account.params != nil && (account.params!.instantMessagingEncryptionMandatory && sameDomain) {
+						Log.info(
+							"\(CallViewModel.TAG) Account is in secure mode & domain matches, requesting E2E encryption"
+						)
+						chatParams.backend = ChatRoom.Backend.FlexisipChat
+						params.securityLevel = Conference.SecurityLevel.EndToEnd
+					} else if account.params != nil && !account.params!.instantMessagingEncryptionMandatory {
+						if core != nil && LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core!) {
+							Log.info(
+								"\(CallViewModel.TAG) Account is in interop mode but LIME is available, requesting E2E encryption"
+							)
+							chatParams.backend = ChatRoom.Backend.FlexisipChat
+							params.securityLevel = Conference.SecurityLevel.EndToEnd
+						} else {
+							Log.info(
+								"\(CallViewModel.TAG) Account is in interop mode but LIME isn't available, disabling E2E encryption"
+							)
+							chatParams.backend = ChatRoom.Backend.Basic
+							params.securityLevel = Conference.SecurityLevel.None
 						}
 					} else {
-						DispatchQueue.main.async {
-							self.operationInProgress = false
-							self.displayedConversation = model
-						}
+						Log.error(
+							"\(CallViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remoteAddress?.asStringUriOnly() ?? "")"
+						)
+						return nil
 					}
+					return params
+				} else {
+					return nil
 				}
 			} catch {
-				DispatchQueue.main.async {
-					self.operationInProgress = false
-					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-					ToastViewModel.shared.displayToast = true
-				}
-				Log.error("\(StartConversationViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())!")
+				Log.error("\(CallViewModel.TAG) Can't create ConferenceParams \(remoteAddress?.asStringUriOnly() ?? "")")
+				return nil
+			}
+		} else {
+			return nil
+		}
+	}
+	
+	func goToConversation(model: ConversationModel) {
+		if 	self.operationInProgress == false {
+			DispatchQueue.main.async {
+				self.operationInProgress = true
+			}
+			
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				self.displayedConversation = model
+				self.operationInProgress = false
+			}
+		} else {
+			DispatchQueue.main.async {
+				self.displayedConversation = model
+				self.operationInProgress = false
 			}
 		}
 	}
@@ -1331,13 +1369,13 @@ class CallViewModel: ObservableObject {
 					}
 					
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.operationInProgress = false
 						self.displayedConversation = model
+						self.operationInProgress = false
 					}
 				} else {
 					DispatchQueue.main.async {
-						self.operationInProgress = false
 						self.displayedConversation = model
+						self.operationInProgress = false
 					}
 				}
 			} else if state == ChatRoom.State.CreationFailed {

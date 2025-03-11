@@ -242,6 +242,15 @@ class CorePreferences {
 		}
 	}
 	
+	static var defaultDomain: String {
+		get {
+			return Config.get().getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
+		}
+		set {
+			Config.get().setString(section: "app", key: "default_domain", value: newValue)
+		}
+	}
+	
 	private func copy(from: String, to: String, overrideIfExists: Bool = false) {
 		let fileManager = FileManager.default
 		if fileManager.fileExists(atPath: to), !overrideIfExists {

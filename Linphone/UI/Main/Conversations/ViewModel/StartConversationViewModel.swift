@@ -95,6 +95,10 @@ class StartConversationViewModel: ObservableObject {
 					participantsTmp.append(participant.address)
 				}
 				
+				DispatchQueue.main.async {
+					self.participants.removeAll()
+				}
+				
 				if account!.params != nil {
 					let chatRoom = try core.createChatRoom(params: chatRoomParams, participants: participantsTmp)
 					
@@ -106,20 +110,9 @@ class StartConversationViewModel: ObservableObject {
 							)
 							
 							let model = ConversationModel(chatRoom: chatRoom)
-							if 	self.operationInProgress == false {
-								DispatchQueue.main.async {
-									self.operationInProgress = true
-								}
-								
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-									self.operationInProgress = false
-									self.displayedConversation = model
-								}
-							} else {
-								DispatchQueue.main.async {
-									self.operationInProgress = false
-									self.displayedConversation = model
-								}
+							DispatchQueue.main.async {
+								self.displayedConversation = model
+								self.operationInProgress = false
 							}
 						} else {
 							Log.info(
@@ -132,20 +125,9 @@ class StartConversationViewModel: ObservableObject {
 						Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(id) \(groupChatRoomSubject)")
 						
 						let model = ConversationModel(chatRoom: chatRoom)
-						if 	self.operationInProgress == false {
-							DispatchQueue.main.async {
-								self.operationInProgress = true
-							}
-							
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-								self.operationInProgress = false
-								self.displayedConversation = model
-							}
-						} else {
-							DispatchQueue.main.async {
-								self.operationInProgress = false
-								self.displayedConversation = model
-							}
+						DispatchQueue.main.async {
+							self.displayedConversation = model
+							self.operationInProgress = false
 						}
 					}
 				}
@@ -163,11 +145,11 @@ class StartConversationViewModel: ObservableObject {
 	}
 	
 	func createOneToOneChatRoomWith(remote: Address) {
-		coreContext.doOnCoreQueue { core in
+		CoreContext.shared.doOnCoreQueue { core in
 			let account = core.defaultAccount
 			if account == nil {
 				Log.error(
-					"\(StartConversationViewModel.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())!"
+					"\(StartConversationViewModel.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())"
 				)
 				return
 			}
@@ -177,37 +159,42 @@ class StartConversationViewModel: ObservableObject {
 			}
 			
 			do {
-				let params: ChatRoomParams = try core.createDefaultChatRoomParams()
+				let params = try core.createConferenceParams(conference: nil)
+				params.chatEnabled = true
 				params.groupEnabled = false
-				params.subject = "Dummy subject"
-				params.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
+				params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
+				params.account = account
 				
-				let sameDomain = remote.domain == account?.params?.domain ?? ""
-				if StartConversationViewModel.isEndToEndEncryptionMandatory() && sameDomain {
-					Log.info("\(StartConversationViewModel.TAG) Account is in secure mode & domain matches, creating a E2E conversation")
-					params.backend = ChatRoom.Backend.FlexisipChat
-					params.encryptionEnabled = true
-				} else if !StartConversationViewModel.isEndToEndEncryptionMandatory() {
+				guard let chatParams = params.chatParams else { return }
+				chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
+				
+				let sameDomain = remote.domain == CorePreferences.defaultDomain && remote.domain == account!.params?.domain
+				if account!.params != nil && (account!.params!.instantMessagingEncryptionMandatory && sameDomain) {
+					Log.info("\(StartConversationViewModel.TAG) Account is in secure mode & domain matches, creating an E2E encrypted conversation")
+					chatParams.backend = ChatRoom.Backend.FlexisipChat
+					params.securityLevel = Conference.SecurityLevel.EndToEnd
+				} else if account!.params != nil && (!account!.params!.instantMessagingEncryptionMandatory) {
 					if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
 						Log.info(
-							"\(StartConversationViewModel.TAG) Account is in interop mode but LIME is available, creating a E2E conversation"
+							"\(StartConversationViewModel.TAG) Account is in interop mode but LIME is available, creating an E2E encrypted conversation"
 						)
-						params.backend = ChatRoom.Backend.FlexisipChat
-						params.encryptionEnabled = true
+						chatParams.backend = ChatRoom.Backend.FlexisipChat
+						params.securityLevel = Conference.SecurityLevel.EndToEnd
 					} else {
 						Log.info(
 							"\(StartConversationViewModel.TAG) Account is in interop mode but LIME isn't available, creating a SIP simple conversation"
 						)
-						params.backend = ChatRoom.Backend.Basic
-						params.encryptionEnabled = false
+						chatParams.backend = ChatRoom.Backend.Basic
+						params.securityLevel = Conference.SecurityLevel.None
 					}
 				} else {
 					Log.error(
 						"\(StartConversationViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remote.asStringUriOnly())"
 					)
+					
 					DispatchQueue.main.async {
 						self.operationInProgress = false
-						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_invalid_participant_error"
+						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 						ToastViewModel.shared.displayToast = true
 					}
 					return
@@ -218,85 +205,56 @@ class StartConversationViewModel: ObservableObject {
 				let existingChatRoom = core.searchChatRoom(params: params, localAddr: localAddress, remoteAddr: nil, participants: participants)
 				if existingChatRoom == nil {
 					Log.info(
-						"\(StartConversationViewModel.TAG) No existing 1-1 conversation between local account "
-						+ "\(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) was found for given parameters, let's create it"
+						"\(StartConversationViewModel.TAG) No existing 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) was found for given parameters, let's create it"
 					)
-					let chatRoom = try core.createChatRoom(params: params, localAddr: localAddress, participants: participants)
-					if params.backend == ChatRoom.Backend.FlexisipChat {
-						if chatRoom.state == ChatRoom.State.Created {
-							let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-							Log.info("\(StartConversationViewModel.TAG) 1-1 conversation \(id) has been created")
-							
-							let model = ConversationModel(chatRoom: chatRoom)
-							if 	self.operationInProgress == false {
-								DispatchQueue.main.async {
-									self.operationInProgress = true
-								}
+					
+					do {
+						let chatRoom = try core.createChatRoom(params: params, participants: participants)
+						if chatParams.backend == ChatRoom.Backend.FlexisipChat {
+							let state = chatRoom.state
+							if state == ChatRoom.State.Created {
+								let chatRoomId = LinphoneUtils.getConversationId(chatRoom: chatRoom)
+								Log.info("\(StartConversationViewModel.TAG) 1-1 conversation \(chatRoomId) has been created")
 								
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-									self.operationInProgress = false
+								let model = ConversationModel(chatRoom: chatRoom)
+								DispatchQueue.main.async {
 									self.displayedConversation = model
+									self.operationInProgress = false
 								}
 							} else {
-								DispatchQueue.main.async {
-									self.operationInProgress = false
-									self.displayedConversation = model
-								}
+								Log.info("\(StartConversationViewModel.TAG) Conversation isn't in Created state yet (state is \(state)), wait for it")
+								self.chatRoomAddDelegate(core: core, chatRoom: chatRoom)
 							}
 						} else {
-							Log.info("\(StartConversationViewModel.TAG) Conversation isn't in Created state yet, wait for it")
-							self.chatRoomAddDelegate(core: core, chatRoom: chatRoom)
-						}
-					} else {
-						let id = LinphoneUtils.getChatRoomId(room: chatRoom)
-						Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(id)")
-						
-						let model = ConversationModel(chatRoom: chatRoom)
-						if 	self.operationInProgress == false {
-							DispatchQueue.main.async {
-								self.operationInProgress = true
-							}
+							let chatRoomId = LinphoneUtils.getConversationId(chatRoom: chatRoom)
+							Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(chatRoomId)")
 							
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-								self.operationInProgress = false
-								self.displayedConversation = model
-							}
-						} else {
+							let model = ConversationModel(chatRoom: chatRoom)
 							DispatchQueue.main.async {
-								self.operationInProgress = false
 								self.displayedConversation = model
+								self.operationInProgress = false
 							}
+						}
+					} catch {
+						Log.error("\(StartConversationViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())")
+						
+						DispatchQueue.main.async {
+							self.operationInProgress = false
+							ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
+							ToastViewModel.shared.displayToast = true
 						}
 					}
 				} else {
 					Log.warn(
 						"\(StartConversationViewModel.TAG) A 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) for given parameters already exists!"
 					)
-					
 					let model = ConversationModel(chatRoom: existingChatRoom!)
-					if 	self.operationInProgress == false {
-						DispatchQueue.main.async {
-							self.operationInProgress = true
-						}
-						
-						DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-							self.operationInProgress = false
-							self.displayedConversation = model
-						}
-					} else {
-						DispatchQueue.main.async {
-							self.operationInProgress = false
-							self.displayedConversation = model
-						}
+					DispatchQueue.main.async {
+						self.displayedConversation = model
+						self.operationInProgress = false
 					}
 				}
 			} catch {
-				DispatchQueue.main.async {
-					self.operationInProgress = false
-					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-					ToastViewModel.shared.displayToast = true
-				}
-				Log.error("\(StartConversationViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())!")
 			}
 		}
 	}
@@ -304,9 +262,9 @@ class StartConversationViewModel: ObservableObject {
 	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
 		self.chatRoomDelegate = ChatRoomDelegateStub(onStateChanged: { (chatRoom: ChatRoom, state: ChatRoom.State) in
 			let state = chatRoom.state
-			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+			let chatRoomId = LinphoneUtils.getChatRoomId(room: chatRoom)
 			if state == ChatRoom.State.CreationFailed {
-				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(chatRoomId) creation has failed!")
 				if let chatRoomDelegate = self.chatRoomDelegate {
 					chatRoom.removeDelegate(delegate: chatRoomDelegate)
 				}
@@ -329,20 +287,9 @@ class StartConversationViewModel: ObservableObject {
 				self.chatRoomDelegate = nil
 				
 				let model = ConversationModel(chatRoom: chatRoom)
-				if 	self.operationInProgress == false {
-					DispatchQueue.main.async {
-						self.operationInProgress = true
-					}
-					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.operationInProgress = false
-						self.displayedConversation = model
-					}
-				} else {
-					DispatchQueue.main.async {
-						self.operationInProgress = false
-						self.displayedConversation = model
-					}
+				DispatchQueue.main.async {
+					self.displayedConversation = model
+					self.operationInProgress = false
 				}
 			} else if state == ChatRoom.State.CreationFailed {
 				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")

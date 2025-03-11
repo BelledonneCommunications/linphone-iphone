@@ -3486,6 +3486,17 @@
         }
       }
     },
+    "conversation_one_to_one_hidden_subject" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dummy subject"
+          }
+        }
+      }
+    },
     "conversation_reply_to_message_title" : {
       "extractionState" : "manual",
       "localizations" : {

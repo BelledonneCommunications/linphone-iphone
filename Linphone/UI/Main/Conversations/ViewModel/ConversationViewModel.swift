@@ -357,10 +357,10 @@ class ConversationViewModel: ObservableObject {
 						let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 						
 						DispatchQueue.main.async {
-							if let indexMessageEventLogId = indexMessageEventLogId {
+							if let indexMessageEventLogId = indexMessageEventLogId, !self.conversationMessagesSection.isEmpty, !self.conversationMessagesSection[0].rows.isEmpty, self.conversationMessagesSection[0].rows.count > indexMessageEventLogId {
 								self.conversationMessagesSection[0].rows[indexMessageEventLogId].eventModel.eventLogId = message.messageId
 							}
-							if let indexMessage = indexMessage {
+							if let indexMessage = indexMessage, !self.conversationMessagesSection.isEmpty, !self.conversationMessagesSection[0].rows.isEmpty, self.conversationMessagesSection[0].rows.count > indexMessage {
 								self.conversationMessagesSection[0].rows[indexMessage].message.status = statusTmp ?? .error
 							}
 						}

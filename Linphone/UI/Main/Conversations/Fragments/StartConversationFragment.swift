@@ -187,9 +187,7 @@ struct StartConversationFragment: View {
 							
 							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false)
 												 , startCallFunc: { addr in
-								withAnimation {
 									startConversationViewModel.createOneToOneChatRoomWith(remote: addr)
-								}
 							})
 							.padding(.horizontal, 16)
 							
@@ -266,10 +264,8 @@ struct StartConversationFragment: View {
 	var suggestionsList: some View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
-				withAnimation {
-					if contactsManager.lastSearchSuggestions[index].address != nil {
-						startConversationViewModel.createOneToOneChatRoomWith(remote: contactsManager.lastSearchSuggestions[index].address!)
-					}
+				if let address = contactsManager.lastSearchSuggestions[index].address {
+					startConversationViewModel.createOneToOneChatRoomWith(remote: address)
 				}
 			} label: {
 				HStack {
@@ -394,6 +390,9 @@ struct StartConversationFragment: View {
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
 			.frame(maxWidth: sharedMainViewModel.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+			.onDisappear {
+				startConversationViewModel.messageText = ""
+			}
 		}
 	}
 }

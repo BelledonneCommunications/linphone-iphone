@@ -223,6 +223,11 @@ struct ConversationForwardMessageFragment: View {
 			}
 			.navigationTitle("")
 			.navigationBarHidden(true)
+			.onAppear {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+					MagicSearchSingleton.shared.searchForSuggestions()
+				}
+			}
 			.onDisappear {
 				DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 					magicSearch.searchForContacts(
