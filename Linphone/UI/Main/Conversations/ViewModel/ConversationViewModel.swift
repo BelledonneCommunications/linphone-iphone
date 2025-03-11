@@ -1878,15 +1878,13 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeMessage(_ eventLog: EventLog) {
-		
 		guard let chatMessage = eventLog.chatMessage else { return }
-		
-		if let index = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.message.id == chatMessage.messageId }) {
+		if let indexMessageEventLogId = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.eventModel.eventLogId == chatMessage.messageId }) {
 			DispatchQueue.main.async {
-				if index > 0 && self.conversationMessagesSection[0].rows[index - 1].message.address == self.conversationMessagesSection[0].rows[index].message.address {
-					self.conversationMessagesSection[0].rows[index - 1].message.isFirstMessage = self.conversationMessagesSection[0].rows[index].message.isFirstMessage
+				if indexMessageEventLogId > 0 && self.conversationMessagesSection[0].rows[indexMessageEventLogId - 1].message.address == self.conversationMessagesSection[0].rows[indexMessageEventLogId].message.address {
+					self.conversationMessagesSection[0].rows[indexMessageEventLogId - 1].message.isFirstMessage = self.conversationMessagesSection[0].rows[indexMessageEventLogId].message.isFirstMessage
 				}
-				self.conversationMessagesSection[0].rows.remove(at: index)
+				self.conversationMessagesSection[0].rows.remove(at: indexMessageEventLogId)
 			}
 		}
 	}
