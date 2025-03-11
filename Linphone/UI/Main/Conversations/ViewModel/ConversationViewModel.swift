@@ -171,34 +171,38 @@ class ConversationViewModel: ObservableObject {
 		}, onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
 			self.getNewMessages(eventLogs: eventLogs)
 		}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
-			self.getNewMessages(eventLogs: [eventLog])
-		}, onParticipantAdded: { (_: ChatRoom, eventLogs: EventLog) in
-			self.getNewMessages(eventLogs: [eventLogs])
+			if self.conversationMessagesSection[0].rows.isEmpty {
+				self.sendFirstMessage(eventLog: eventLog)
+			} else {
+				self.getNewMessages(eventLogs: [eventLog])
+			}
+		}, onParticipantAdded: { (_: ChatRoom, eventLog: EventLog) in
+			self.getEventMessage(eventLog: eventLog)
 			self.getParticipantConversationModel()
-		}, onParticipantRemoved: { (_: ChatRoom, eventLogs: EventLog) in
-			self.getNewMessages(eventLogs: [eventLogs])
+		}, onParticipantRemoved: { (_: ChatRoom, eventLog: EventLog) in
+			self.getEventMessage(eventLog: eventLog)
 			self.getParticipantConversationModel()
-		}, onParticipantAdminStatusChanged: { (_: ChatRoom, eventLogs: EventLog) in
-			self.getNewMessages(eventLogs: [eventLogs])
+		}, onParticipantAdminStatusChanged: { (_: ChatRoom, eventLog: EventLog) in
+			self.getEventMessage(eventLog: eventLog)
 			self.getParticipantConversationModel()
-		}, onSubjectChanged: { (_: ChatRoom, eventLogs: EventLog) in
-			self.getNewMessages(eventLogs: [eventLogs])
+		}, onSubjectChanged: { (_: ChatRoom, eventLog: EventLog) in
+			self.getEventMessage(eventLog: eventLog)
 		}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
-			self.getNewMessages(eventLogs: [eventLog])
+			self.getEventMessage(eventLog: eventLog)
 			if self.displayedConversation != nil {
 				DispatchQueue.main.async {
 					self.displayedConversation!.isReadOnly = false
 				}
 			}
 		}, onConferenceLeft: {(_: ChatRoom, eventLog: EventLog) in
-			self.getNewMessages(eventLogs: [eventLog])
+			self.getEventMessage(eventLog: eventLog)
 			if self.displayedConversation != nil {
 				DispatchQueue.main.async {
 					self.displayedConversation!.isReadOnly = true
 				}
 			}
-		}, onEphemeralEvent: {(_: ChatRoom, eventLogs: EventLog) in
-			self.getNewMessages(eventLogs: [eventLogs])
+		}, onEphemeralEvent: {(_: ChatRoom, eventLog: EventLog) in
+			self.getEventMessage(eventLog: eventLog)
 		}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
 			self.removeMessage(eventLog)
 		})
@@ -1073,7 +1077,26 @@ class ConversationViewModel: ObservableObject {
 				var attachmentList: [Attachment] = []
 				var contentText = ""
 				
-				guard let chatMessage = eventLog.chatMessage else { return }
+				guard let chatMessage = eventLog.chatMessage else {
+					conversationMessagesTmp.append(
+						EventLogMessage(
+							eventModel: EventModel(eventLog: eventLog),
+							message: Message(
+								id: UUID().uuidString,
+								status: nil,
+								isOutgoing: false,
+								dateReceived: 0,
+								address: "",
+								isFirstMessage: false,
+								text: "",
+								attachments: [],
+								ownReaction: "",
+								reactions: []
+							)
+						)
+					)
+					return
+				}
 				
 				if !chatMessage.contents.isEmpty {
 					chatMessage.contents.forEach { content in
@@ -1315,6 +1338,251 @@ class ConversationViewModel: ObservableObject {
 			
 			getHistorySize()
 		}
+	}
+	
+	func sendFirstMessage(eventLog: EventLog) {
+		var conversationMessagesTmp: [EventLogMessage] = []
+		
+		let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
+		var attachmentNameList: String = ""
+		var attachmentList: [Attachment] = []
+		var contentText = ""
+		
+		guard let chatMessage = eventLog.chatMessage else {
+			return
+		}
+		
+		if !chatMessage.contents.isEmpty {
+			chatMessage.contents.forEach { content in
+				if content.isText && content.name == nil {
+					contentText = content.utf8Text ?? ""
+				} else {
+					if content.filePath == nil || content.filePath!.isEmpty {
+						// self.downloadContent(chatMessage: chatMessage, content: content)
+						let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+						
+						if path != nil {
+							let attachment =
+							Attachment(
+								id: UUID().uuidString,
+								name: content.name ?? "???",
+								url: path!,
+								type: .fileTransfer,
+								size: content.fileSize,
+								transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+							)
+							attachmentNameList += ", \(content.name ?? "???")"
+							attachmentList.append(attachment)
+						}
+					} else if content.name != nil && !content.name!.isEmpty {
+						if content.type != "video" {
+							let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+							let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+							
+							var typeTmp: AttachmentType = .other
+							
+							switch content.type {
+							case "image":
+								typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+							case "audio":
+								typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+							case "application":
+								typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+							case "text":
+								typeTmp = .text
+							default:
+								typeTmp = .other
+							}
+							
+							if path != nil {
+								let attachment =
+								Attachment(
+									id: UUID().uuidString,
+									name: content.name!,
+									url: path!,
+									type: typeTmp,
+									duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
+									size: content.fileSize,
+									transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+								)
+								attachmentNameList += ", \(content.name!)"
+								attachmentList.append(attachment)
+								if typeTmp != .voiceRecording {
+									DispatchQueue.main.async {
+										if !attachment.full.pathExtension.isEmpty {
+											self.attachments.append(attachment)
+										}
+									}
+								}
+							}
+						} else if content.type == "video" {
+							let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+							let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+							
+							let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
+							if path != nil && pathThumbnail != nil {
+								let attachment =
+								Attachment(
+									id: UUID().uuidString,
+									name: content.name!,
+									thumbnail: pathThumbnail!,
+									full: path!,
+									type: .video,
+									size: content.fileSize,
+									transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+								)
+								attachmentNameList += ", \(content.name!)"
+								attachmentList.append(attachment)
+								DispatchQueue.main.async {
+									if !attachment.full.pathExtension.isEmpty {
+										self.attachments.append(attachment)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		let addressCleaned = chatMessage.fromAddress?.clone()
+		addressCleaned?.clean()
+		
+		if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
+			self.addParticipantConversationModel(address: addressCleaned!)
+		}
+		
+		let isFirstMessageTmp = true
+		
+		var statusTmp: Message.Status? = .sending
+		switch chatMessage.state {
+		case .InProgress:
+			statusTmp = .sending
+		case .Delivered:
+			statusTmp = .sent
+		case .DeliveredToUser:
+			statusTmp = .received
+		case .Displayed:
+			statusTmp = .read
+		case .NotDelivered:
+			statusTmp = .error
+		default:
+			statusTmp = .sending
+		}
+		
+		var reactionsTmp: [String] = []
+		chatMessage.reactions.forEach({ chatMessageReaction in
+			reactionsTmp.append(chatMessageReaction.body)
+		})
+		
+		if !attachmentNameList.isEmpty {
+			attachmentNameList = String(attachmentNameList.dropFirst(2))
+		}
+		
+		var replyMessageTmp: ReplyMessage?
+		if chatMessage.replyMessage != nil {
+			let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
+			addressReplyCleaned?.clean()
+			
+			if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
+				self.addParticipantConversationModel(address: addressReplyCleaned!)
+			}
+			
+			let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
+			
+			var attachmentNameReplyList: String = ""
+			
+			chatMessage.replyMessage?.contents.forEach { content in
+				if !content.isText, let name = content.name {
+					attachmentNameReplyList += ", \(name)"
+				}
+			}
+			
+			if !attachmentNameReplyList.isEmpty {
+				attachmentNameReplyList = String(attachmentNameReplyList.dropFirst(2))
+			}
+			
+			replyMessageTmp = ReplyMessage(
+				id: chatMessage.replyMessage?.messageId ?? UUID().uuidString,
+				address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
+				isFirstMessage: false,
+				text: contentReplyText,
+				isOutgoing: false,
+				dateReceived: 0,
+				attachmentsNames: attachmentNameReplyList,
+				attachments: []
+			)
+		}
+		
+		conversationMessagesTmp.insert(
+			EventLogMessage(
+				eventModel: EventModel(eventLog: eventLog),
+				message: Message(
+					id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+					appData: chatMessage.appdata ?? "",
+					status: statusTmp,
+					isOutgoing: chatMessage.isOutgoing,
+					dateReceived: chatMessage.time,
+					address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
+					isFirstMessage: isFirstMessageTmp,
+					text: contentText,
+					attachmentsNames: attachmentNameList,
+					attachments: attachmentList,
+					replyMessage: replyMessageTmp,
+					isForward: chatMessage.isForward,
+					ownReaction: chatMessage.ownReaction?.body ?? "",
+					reactions: reactionsTmp,
+					isEphemeral: chatMessage.isEphemeral,
+					ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+					ephemeralLifetime: chatMessage.ephemeralLifetime,
+					isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+					messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
+				)
+			), at: 0
+		)
+		self.addChatMessageDelegate(message: chatMessage)
+		
+		if let eventLogMessage = conversationMessagesTmp.last {
+			DispatchQueue.main.async {
+				   Log.info("[ConversationViewModel] Send first message")
+				   if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
+					   self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: conversationMessagesTmp))
+				   } else {
+					   self.conversationMessagesSection[0].rows.append(eventLogMessage)
+				   }
+			   }
+		}
+		
+		getHistorySize()
+	}
+	
+	func getEventMessage(eventLog: EventLog) {
+		let eventLogMessage = EventLogMessage(
+			eventModel: EventModel(eventLog: eventLog),
+			message: Message(
+				id: UUID().uuidString,
+				status: nil,
+				isOutgoing: false,
+				dateReceived: 0,
+				address: "",
+				isFirstMessage: false,
+				text: "",
+				attachments: [],
+				ownReaction: "",
+				reactions: []
+			)
+		)
+		
+		DispatchQueue.main.async {
+			Log.info("[ConversationViewModel] Get event message")
+			if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
+				self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [eventLogMessage]))
+			} else {
+				self.conversationMessagesSection[0].rows.insert(eventLogMessage, at: 0)
+			}
+		}
+		
+		getHistorySize()
 	}
 	
 	func resetMessage() {
