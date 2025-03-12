@@ -274,6 +274,19 @@ class MeetingViewModel: ObservableObject {
 			if let conferenceInfo = (self.displayedMeeting != nil ? self.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo()) {
 				let localAccount = core.defaultAccount
 				conferenceInfo.organizer = localAccount?.params?.identityAddress
+				
+				// Allows to have a chat room within the conference
+				conferenceInfo.setCapability(streamType: StreamType.Text, enable: true)
+				
+				// Enable end-to-end encryption if client supports it
+				if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
+					Log.info("\(MeetingViewModel.TAG) Requesting EndToEnd security level for conference")
+					 conferenceInfo.securityLevel = Conference.SecurityLevel.EndToEnd
+				} else {
+					Log.info("\(MeetingViewModel.TAG) Requesting PointToPoint security level for conference")
+					conferenceInfo.securityLevel = Conference.SecurityLevel.PointToPoint
+				}
+				
 				self.fillConferenceInfo(confInfo: conferenceInfo)
 				self.resetConferenceSchedulerAndListeners(core: core)
 				self.conferenceScheduler?.account = localAccount

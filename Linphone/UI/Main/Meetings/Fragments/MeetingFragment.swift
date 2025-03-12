@@ -323,7 +323,7 @@ struct MeetingFragment: View {
 	let model = MeetingViewModel()
 	model.subject = "Meeting subject"
 	model.conferenceUri = "linphone.com/lalalal.fr"
-	model.description = "description du meeting ça va être la bringue wesh wesh gros bien ou bien ça roule"
+	model.description = ""
 	return MeetingFragment(meetingViewModel: model
 						   , meetingsListViewModel: MeetingsListViewModel()
 						   , isShowScheduleMeetingFragment: .constant(true)
