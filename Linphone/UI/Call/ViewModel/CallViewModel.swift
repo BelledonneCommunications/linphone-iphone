@@ -95,6 +95,9 @@ class CallViewModel: ObservableObject {
 		} catch _ {
 			
 		}
+		NotificationCenter.default.addObserver(forName: Notification.Name("CallViewModelReset"), object: nil, queue: nil) { notification in
+			self.resetCallView()
+		}
 	}
 	
 	func resetCallView() {

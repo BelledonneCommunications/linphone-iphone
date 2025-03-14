@@ -56,6 +56,7 @@ class TelecomManager: ObservableObject {
 	@Published var meetingWaitingRoomDisplayed: Bool = false
 	@Published var meetingWaitingRoomSelected: Address?
 	@Published var meetingWaitingRoomName: String = ""
+	@Published var participantsInvited: Bool = false
 	
 	var actionToFulFill: CXCallAction?
 	var callkitAudioSessionActivated: Bool?
@@ -430,27 +431,29 @@ class TelecomManager: ObservableObject {
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
 		let callId = callLog?.callId ?? ""
-		if cstate == .OutgoingInit && !callInProgress {
-				if let remoteAddress = call.remoteAddress {
-					let uuid = UUID()
-					let name = remoteAddress.asStringUriOnly()
-					let handle = CXHandle(type: .generic, value: remoteAddress.asStringUriOnly())
-					let startCallAction = CXStartCallAction(call: uuid, handle: handle)
-					let transaction = CXTransaction(action: startCallAction)
-					
-					let callInfo = CallInfo.newOutgoingCallInfo(addr: remoteAddress, isSas: false, displayName: name, isVideo: true, isConference: true)
-					providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
-					providerDelegate.uuids.updateValue(uuid, forKey: callId)
-					
-					setHeldOtherCalls(core: core, exceptCallid: callId)
-					requestTransaction(transaction, action: "startCall")
-					DispatchQueue.main.async {
-						withAnimation {
-							self.callDisplayed = true
-						}
+		if !callInProgress && participantsInvited {
+			if let remoteAddress = call.remoteAddress {
+				let uuid = UUID()
+				let name = remoteAddress.asStringUriOnly()
+				let handle = CXHandle(type: .generic, value: remoteAddress.asStringUriOnly())
+				let startCallAction = CXStartCallAction(call: uuid, handle: handle)
+				let transaction = CXTransaction(action: startCallAction)
+				
+				let callInfo = CallInfo.newOutgoingCallInfo(addr: remoteAddress, isSas: false, displayName: name, isVideo: true, isConference: true)
+				providerDelegate.callInfos.updateValue(callInfo, forKey: uuid)
+				providerDelegate.uuids.updateValue(uuid, forKey: callId)
+				
+				setHeldOtherCalls(core: core, exceptCallid: callId)
+				requestTransaction(transaction, action: "startCall")
+				DispatchQueue.main.async {
+					self.participantsInvited = false
+					withAnimation {
+						self.callDisplayed = true
 					}
 				}
+			}
 		}
+		
 		if cstate == .PushIncomingReceived {
 			Log.info("PushIncomingReceived in core delegate, display callkit call")
 			TelecomManager.shared.displayIncomingCall(call: call, handle: "Calling", hasVideo: false, callId: callId, displayName: "Calling")

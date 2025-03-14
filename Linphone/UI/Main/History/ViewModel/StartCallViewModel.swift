@@ -99,6 +99,10 @@ class StartCallViewModel: ObservableObject {
 						Log.info("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
 						
 						try conference.inviteParticipants(addresses: participantsList, params: callParams)
+						
+						DispatchQueue.main.async {
+							TelecomManager.shared.participantsInvited = true
+						}
 					}
 				}
 			} catch let error {
@@ -113,6 +117,7 @@ class StartCallViewModel: ObservableObject {
 		self.conferenceDelegate = ConferenceDelegateStub(onStateChanged: { (conference: Conference, state: Conference.State) in
 			Log.info("\(StartCallViewModel.TAG) Conference state is \(state)")
 			if state == .Created {
+				NotificationCenter.default.post(name: Notification.Name("CallViewModelReset"), object: self)
 				DispatchQueue.main.async {
 					self.operationInProgress = false
 				}

@@ -150,6 +150,10 @@ class ConversationModel: ObservableObject, Identifiable {
 						Log.info("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
 						
 						try conference.inviteParticipants(addresses: participantsList, params: callParams)
+						
+						DispatchQueue.main.async {
+							TelecomManager.shared.participantsInvited = true
+						}
 					}
 				}
 			} catch let error {
@@ -157,6 +161,25 @@ class ConversationModel: ObservableObject, Identifiable {
 					"\(ConversationModel.TAG) createGroupCall: \(error)"
 				)
 			}
+		}
+	}
+	
+	func conferenceAddDelegate(core: Core, conference: Conference) {
+		self.conferenceDelegate = ConferenceDelegateStub(onStateChanged: { (conference: Conference, state: Conference.State) in
+			Log.info("\(ConversationModel.TAG) Conference state is \(state)")
+			if state == .Created {
+				NotificationCenter.default.post(name: Notification.Name("CallViewModelReset"), object: self)
+			} else if state == .CreationFailed {
+				Log.error("\(ConversationModel.TAG) Failed to create group call!")
+				DispatchQueue.main.async {
+					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
+					ToastViewModel.shared.displayToast = true
+				}
+			}
+		})
+		
+		if self.conferenceDelegate != nil {
+			conference.addDelegate(delegate: self.conferenceDelegate!)
 		}
 	}
 	
