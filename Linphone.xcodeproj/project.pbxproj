@@ -1741,7 +1741,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git";
 			requirement = {
-				branch = beta;
+				branch = stable;
 				kind = branch;
 			};
 		};
