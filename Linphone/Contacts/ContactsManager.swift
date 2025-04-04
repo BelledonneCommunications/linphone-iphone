@@ -28,6 +28,8 @@ import Combine
 
 final class ContactsManager: ObservableObject {
 	
+	static let TAG = "[ContactsManager]"
+	
 	static let shared = ContactsManager()
 	
 	private var coreContext = CoreContext.shared
@@ -42,6 +44,7 @@ final class ContactsManager: ObservableObject {
 	@Published var lastSearchSuggestions: [SearchResult] = []
 	@Published var avatarListModel: [ContactAvatarModel] = []
 	
+	private var coreDelegate: CoreDelegate?
 	private var friendListDelegate: FriendListDelegate?
 	
 	private init() {}
@@ -242,6 +245,8 @@ final class ContactsManager: ObservableObject {
 					print("\(#function) - access denied")
 				}
 			}
+			
+			self.addCoreDelegate(core: core)
 		}
 	}
 	
@@ -451,6 +456,29 @@ final class ContactsManager: ObservableObject {
 	func getFriendWithAddressInCoreQueue(address: Address?, completion: @escaping (Friend?) -> Void) {
 		self.coreContext.doOnCoreQueue { _ in
 			completion(self.getFriendWithAddress(address: address))
+		}
+	}
+	
+	func addCoreDelegate(core: Core) {
+		self.coreDelegate = CoreDelegateStub(
+			onFriendListCreated: { (_: Core, friendList: FriendList) in
+				Log.info("\(ContactsManager.TAG) Friend list \(friendList.displayName) created")
+				if self.friendListDelegate != nil {
+					friendList.addDelegate(delegate: self.friendListDelegate!)
+				}
+			}, onFriendListRemoved: { (_: Core, friendList: FriendList) in
+				Log.info("\(ContactsManager.TAG) Friend list \(friendList.displayName) removed")
+				if self.friendListDelegate != nil {
+					friendList.removeDelegate(delegate: self.friendListDelegate!)
+				}
+			}, onDefaultAccountChanged: { (_: Core, _: Account?) in
+				Log.info("\(ContactsManager.TAG) Default account changed, update all contacts' model showTrust value")
+				//updateContactsModelDependingOnDefaultAccountMode()
+			}
+		)
+		
+		if self.coreDelegate != nil {
+			core.addDelegate(delegate: self.coreDelegate!)
 		}
 	}
 }
