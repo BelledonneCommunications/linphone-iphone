@@ -181,6 +181,10 @@ final class CoreContext: ObservableObject {
 					self.shortcuts = shortcuts
 				}
 			}
+            
+            for acc in self.mCore.accountList {
+                self.forceRemotePushToMatchVoipPushSettings(account: acc)
+            }
 			
 			self.mCoreDelegate = CoreDelegateStub(onGlobalStateChanged: { (core: Core, state: GlobalState, _: String) in
 				if state == GlobalState.On {
@@ -338,7 +342,9 @@ final class CoreContext: ObservableObject {
 							
 					}
 				}
-			}, onAccountAdded: { (_: Core, _: Account) in
+			}, onAccountAdded: { (_: Core, acc: Account) in
+                self.forceRemotePushToMatchVoipPushSettings(account: acc)
+                
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
 					accountModels.append(AccountModel(account: account, core: self.mCore))
@@ -418,6 +424,14 @@ final class CoreContext: ObservableObject {
 		mCore.removeDelegate(delegate: delegate)
 	}
 	
+    func forceRemotePushToMatchVoipPushSettings(account: Account) {
+        if let params = account.params, params.pushNotificationAllowed && !params.remotePushNotificationAllowed {
+            Log.warn("account \(account.displayName()): VOIP and REMOTE push setting mismatch, force \(params.pushNotificationAllowed ? "enabling" : "disabling") of REMOTE Push")
+            let newParams = params.clone()
+            newParams?.remotePushNotificationAllowed = params.pushNotificationAllowed
+            account.params = newParams
+        }
+    }
 }
 
 // swiftlint:enable line_length
