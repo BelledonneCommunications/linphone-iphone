@@ -21,7 +21,6 @@
 		667E5D7F2B8E430C00EBCFC4 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
 		667E5D812B8E444E00EBCFC4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */; };
 		6691CA7E2B839C2D00B2A7B8 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691CA7D2B839C2D00B2A7B8 /* NotificationService.swift */; };
-		66A3E5B72CAE8E5C00FCB7FA /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		66C468FB2D2BE54800A836F7 /* PIPViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C468FA2D2BE54300A836F7 /* PIPViewModel.swift */; };
 		66C491F92B24D25B00CEA16D /* ConfigExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491F82B24D25A00CEA16D /* ConfigExtension.swift */; };
 		66C491FB2B24D32600CEA16D /* CoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FA2B24D32600CEA16D /* CoreExtension.swift */; };
@@ -64,7 +63,6 @@
 		D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */; };
 		D70C82A52C85EDCA0087F43F /* ConversationForwardMessageFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70C82A42C85EDC90087F43F /* ConversationForwardMessageFragment.swift */; };
 		D70C82A72C85F5910087F43F /* ConversationForwardMessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70C82A62C85F5910087F43F /* ConversationForwardMessageViewModel.swift */; };
-		D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */; };
 		D714035B2BE11E00004BD8CA /* CallMediaEncryptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */; };
 		D714DE602C1B3B34006C1F1D /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714DE5F2C1B3B34006C1F1D /* RegisterViewModel.swift */; };
 		D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D714DE612C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift */; };
@@ -269,7 +267,6 @@
 		D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFragment.swift; sourceTree = "<group>"; };
 		D70C82A42C85EDC90087F43F /* ConversationForwardMessageFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationForwardMessageFragment.swift; sourceTree = "<group>"; };
 		D70C82A62C85F5910087F43F /* ConversationForwardMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationForwardMessageViewModel.swift; sourceTree = "<group>"; };
-		D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMediaEncryptionModel.swift; sourceTree = "<group>"; };
 		D714DE5F2C1B3B34006C1F1D /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		D714DE612C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterCodeConfirmationFragment.swift; sourceTree = "<group>"; };
@@ -593,7 +590,6 @@
 				D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */,
 				D719ABBC2ABC67BF00B41C10 /* Linphone.entitlements */,
 				D7A2EDDA2AC19EEC005D90FC /* Info.plist */,
-				D70C93DD2AC2D0F60063CA3B /* Localizable.xcstrings */,
 				D719ABBD2ABC67BF00B41C10 /* Preview Content */,
 				D7D24D0C2AC1B4C700C6F35B /* Fonts */,
 				D7ADF6012AFE5C7C00212231 /* Ressources */,
@@ -1092,7 +1088,6 @@
 			files = (
 				667E5D7F2B8E430C00EBCFC4 /* linphonerc-factory in Resources */,
 				667E5D812B8E444E00EBCFC4 /* GoogleService-Info.plist in Resources */,
-				66A3E5B72CAE8E5C00FCB7FA /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1112,7 +1107,6 @@
 				D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */,
 				D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */,
 				D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */,
-				D70C93DE2AC2D0F60063CA3B /* Localizable.xcstrings in Resources */,
 				660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
