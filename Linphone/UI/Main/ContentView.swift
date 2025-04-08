@@ -82,15 +82,18 @@ struct ContentView: View {
 	
 	private let avatarSize = 45.0
 	@State private var imagePath: URL?
+	@State private var imageTmp: Image?
 	
 	var body: some View {
-		let pub = NotificationCenter.default
+		let contactLoaded = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ContactLoaded"))
-		let pub2 = NotificationCenter.default
+		let contactAdded = NotificationCenter.default
 				.publisher(for: NSNotification.Name("ContactAdded"))
 				.compactMap { $0.userInfo?["address"] as? String }
 		let imageChanged = NotificationCenter.default
 			.publisher(for: NSNotification.Name("ImageChanged"))
+		let coreStarted = NotificationCenter.default
+			.publisher(for: NSNotification.Name("CoreStarted"))
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
 				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
@@ -316,7 +319,8 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
-												if (accountProfileViewModel.accountModelIndex ?? 0) < CoreContext.shared.accounts.count {
+												if let accountModelIndex = accountProfileViewModel.accountModelIndex,
+												   accountModelIndex < CoreContext.shared.accounts.count {
 													AsyncImage(url: imagePath) { image in
 														switch image {
 														case .empty:
@@ -328,13 +332,31 @@ struct ContentView: View {
 																.aspectRatio(contentMode: .fill)
 																.frame(width: avatarSize, height: avatarSize)
 																.clipShape(Circle())
+																.onAppear {
+																	imageTmp = image
+																}
 														case .failure:
-															Image(uiImage: contactsManager.textToImage(
-																firstName: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].avatarModel?.name ?? "",
-																lastName: ""))
-															.resizable()
-															.frame(width: avatarSize, height: avatarSize)
-															.clipShape(Circle())
+															if CoreContext.shared.accounts[accountModelIndex].avatarModel != nil {
+																let tmpImage = contactsManager.textToImage(
+																	firstName: CoreContext.shared.accounts[accountModelIndex].avatarModel!.name,
+																	lastName: "")
+																Image(uiImage: tmpImage)
+																	.resizable()
+																	.frame(width: avatarSize, height: avatarSize)
+																	.clipShape(Circle())
+																	.onAppear {
+																		accountProfileViewModel.saveImage(image: tmpImage, name: CoreContext.shared.accounts[accountModelIndex].avatarModel!.name, prefix: "-default")
+																	}
+															} else if let cachedImage = imageTmp {
+																cachedImage
+																	.resizable()
+																	.aspectRatio(contentMode: .fill)
+																	.frame(width: avatarSize, height: avatarSize)
+																	.clipShape(Circle())
+															} else {
+																ProgressView()
+																	.frame(width: avatarSize, height: avatarSize)
+															}
 														@unknown default:
 															EmptyView()
 														}
@@ -343,17 +365,13 @@ struct ContentView: View {
 														openMenu()
 													}
 													.onAppear {
-														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-														   accountModelIndex < CoreContext.shared.accounts.count {
-															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
-															if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
-																imagePath = imagePathTmp
-															}
+														let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
+														if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
+															imagePath = imagePathTmp
 														}
 													}
-													.onChange(of: CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0].usernaneAvatar) { _ in
-														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-														   accountModelIndex < CoreContext.shared.accounts.count {
+													.onChange(of: CoreContext.shared.accounts[accountModelIndex].usernaneAvatar) { username in
+														if !username.isEmpty {
 															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
 															if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
 																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
@@ -362,8 +380,7 @@ struct ContentView: View {
 														}
 													}
 													.onReceive(imageChanged) { _ in
-														if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-														   accountModelIndex < CoreContext.shared.accounts.count {
+														if !CoreContext.shared.accounts[accountModelIndex].usernaneAvatar.isEmpty {
 															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
 															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
 															imagePath = imagePathTmp
@@ -1366,12 +1383,15 @@ struct ContentView: View {
 					self.index = 2
 				}
 			}
-			.onReceive(pub) { _ in
+			.onReceive(contactLoaded) { _ in
 				conversationsListViewModel.updateChatRoomsList()
 				historyListViewModel.refreshHistoryAvatarModel()
 			}
-			.onReceive(pub2) { address in
+			.onReceive(contactAdded) { address in
 				conversationsListViewModel.updateChatRoom(address: address)
+			}
+			.onReceive(coreStarted) { _ in
+				accountProfileViewModel.setAvatarModel()
 			}
 		}
 		.overlay {
@@ -1396,7 +1416,6 @@ struct ContentView: View {
 			orientation = UIDevice.current.orientation
 			if newPhase == .active {
 				conversationsListViewModel.computeChatRoomsList(filter: "")
-				accountProfileViewModel.setAvatarModel()
 			}
 		}
 	}

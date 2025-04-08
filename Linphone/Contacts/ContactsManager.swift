@@ -46,11 +46,12 @@ final class ContactsManager: ObservableObject {
 	
 	private var coreDelegate: CoreDelegate?
 	private var friendListDelegate: FriendListDelegate?
+	private var magicSearchDelegate: MagicSearchDelegate?
 	
 	private init() {}
 	
 	func fetchContacts() {
-		coreContext.doOnCoreQueue { core in
+		self.coreContext.doOnCoreQueue { core in
 			if core.globalState == GlobalState.Shutdown || core.globalState == GlobalState.Off {
 				print("\(#function) - Core is being stopped or already destroyed, abort")
 			} else {
@@ -91,12 +92,12 @@ final class ContactsManager: ObservableObject {
 				}
 			}
 			
-			MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-			
 			let store = CNContactStore()
 			store.requestAccess(for: .contacts) { (granted, error) in
 				if let error = error {
 					print("\(#function) - failed to request access", error)
+					self.addFriendListDelegate()
+					self.addCoreDelegate(core: core)
 					return
 				}
 				if granted {
@@ -105,10 +106,16 @@ final class ContactsManager: ObservableObject {
 								CNContactPostalAddressesKey, CNContactIdentifierKey,
 								CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
 								CNContactOrganizationNameKey, CNContactImageDataAvailableKey, CNContactImageDataKey, CNContactThumbnailImageDataKey]
+					
 					let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
+					
+					let dispatchGroup = DispatchGroup()
+					
 					do {
-						var contactCounter = 0
 						try store.enumerateContacts(with: request, usingBlock: { (contact, _) in
+							
+							dispatchGroup.enter()
+							
 							let newContact = Contact(
 								identifier: contact.identifier,
 								firstName: contact.givenName,
@@ -129,51 +136,7 @@ final class ContactsManager: ObservableObject {
 										name: contact.givenName + contact.familyName,
 										prefix: "",
 										contact: newContact, linphoneFriend: false, existingFriend: nil) {
-											if (self.friendList?.friends.count ?? 0) == contactCounter {
-												// Every contact properly added, proceed
-												self.linphoneFriendList?.updateSubscriptions()
-												self.friendList?.updateSubscriptions()
-												
-												if let friendListDelegate = self.friendListDelegate {
-													self.friendList?.removeDelegate(delegate: friendListDelegate)
-												}
-												
-												self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
-													var addedAvatarListModel: [ContactAvatarModel] = []
-													linphoneFriend.phoneNumbers.forEach { _ in
-														let address = try? Factory.Instance.createAddress(addr: sipUri)
-														if address != nil {
-															linphoneFriend.edit()
-															linphoneFriend.addAddress(address: address!)
-															linphoneFriend.done()
-															
-															let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
-															addedAvatarListModel.append(
-																ContactAvatarModel(
-																	friend: linphoneFriend,
-																	name: linphoneFriend.name ?? "",
-																	address: addressTmp,
-																	withPresence: true
-																)
-															)
-															
-															DispatchQueue.main.async {
-																NotificationCenter.default.post(
-																	name: NSNotification.Name("ContactAdded"),
-																	object: nil,
-																	userInfo: ["address": addressTmp]
-																)
-															}
-														}
-													}
-													
-													DispatchQueue.main.async {
-														self.avatarListModel += addedAvatarListModel
-														self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
-													}
-												})
-												self.friendList?.addDelegate(delegate: self.friendListDelegate!)
-											}
+											dispatchGroup.leave()
 										}
 								}
 							} else {
@@ -183,70 +146,30 @@ final class ContactsManager: ObservableObject {
 										name: contact.givenName + contact.familyName,
 										prefix: "-default",
 										contact: newContact, linphoneFriend: false, existingFriend: nil) {
-											if (self.friendList?.friends.count ?? 0) == contactCounter {
-												// Every contact properly added, proceed
-												self.linphoneFriendList?.updateSubscriptions()
-												self.friendList?.updateSubscriptions()
-												
-												if let friendListDelegate = self.friendListDelegate {
-													self.friendList?.removeDelegate(delegate: friendListDelegate)
-												}
-												
-												self.friendListDelegate = FriendListDelegateStub(onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
-													var addedAvatarListModel: [ContactAvatarModel] = []
-													linphoneFriend.phoneNumbers.forEach { _ in
-														let address = try? Factory.Instance.createAddress(addr: sipUri)
-														if address != nil {
-															linphoneFriend.edit()
-															linphoneFriend.addAddress(address: address!)
-															linphoneFriend.done()
-															
-															let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
-															addedAvatarListModel.append(
-																ContactAvatarModel(
-																	friend: linphoneFriend,
-																	name: linphoneFriend.name ?? "",
-																	address: addressTmp,
-																	withPresence: true
-																)
-															)
-															
-															DispatchQueue.main.async {
-																NotificationCenter.default.post(
-																	name: NSNotification.Name("ContactAdded"),
-																	object: nil,
-																	userInfo: ["address": addressTmp]
-																)
-															}
-														}
-													}
-													
-													DispatchQueue.main.async {
-														self.avatarListModel += addedAvatarListModel
-														self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
-													}
-												})
-												self.friendList?.addDelegate(delegate: self.friendListDelegate!)
-											}
+											dispatchGroup.leave()
 										}
 								}
 							}
-							
-							if !(contact.givenName.isEmpty && contact.familyName.isEmpty) {
-								contactCounter += 1
-							}
 						})
 						
+						dispatchGroup.notify(queue: .main) {
+							self.addFriendListDelegate()
+							self.addCoreDelegate(core: core)
+							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						}
 					} catch let error {
 						print("\(#function) - Failed to enumerate contact", error)
+						self.addFriendListDelegate()
+						self.addCoreDelegate(core: core)
+						MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 					}
-					
 				} else {
 					print("\(#function) - access denied")
+					self.addFriendListDelegate()
+					self.addCoreDelegate(core: core)
+					MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 				}
 			}
-			
-			self.addCoreDelegate(core: core)
 		}
 	}
 	
@@ -456,6 +379,106 @@ final class ContactsManager: ObservableObject {
 	func getFriendWithAddressInCoreQueue(address: Address?, completion: @escaping (Friend?) -> Void) {
 		self.coreContext.doOnCoreQueue { _ in
 			completion(self.getFriendWithAddress(address: address))
+		}
+	}
+	
+	func addFriendListDelegate() {
+		self.linphoneFriendList?.updateSubscriptions()
+		self.friendList?.updateSubscriptions()
+		CoreContext.shared.mCore.friendsLists.forEach { friendList in
+			friendList.updateSubscriptions()
+		}
+		
+		if let friendListDelegate = self.friendListDelegate {
+			CoreContext.shared.mCore.friendsLists.forEach { friendList in
+				friendList.removeDelegate(delegate: friendListDelegate)
+			}
+		}
+		
+		self.friendListDelegate = FriendListDelegateStub(
+			onContactCreated: { (friendList: FriendList, linphoneFriend: Friend) in
+				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactCreated")
+			},
+			onContactDeleted: { (friendList: FriendList, linphoneFriend: Friend) in
+				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactDeleted")
+			},
+			onContactUpdated: { (friendList: FriendList, newFriend: Friend, oldFriend: Friend) in
+				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactUpdated")
+			},
+			onSyncStatusChanged: { (friendList: FriendList, status: FriendList.SyncStatus?, message: String?) in
+				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onSyncStatusChanged")
+				if status == .Successful {
+					friendList.friends.forEach { friend in
+						let addressTmp = friend.address?.clone()?.asStringUriOnly() ?? ""
+						
+						let newContact = Contact(
+							identifier: UUID().uuidString,
+							firstName: friend.name ?? addressTmp,
+							lastName: "",
+							organizationName: "",
+							jobTitle: "",
+							displayName: friend.address?.displayName ?? "",
+							sipAddresses: friend.addresses.map { $0.asStringUriOnly() },
+							phoneNumbers: [],
+							imageData: ""
+						)
+						
+						self.textToImageInMainThread(firstName: friend.name ?? addressTmp, lastName: "") { image in
+							self.saveImage(
+								image: image,
+								name: friend.name ?? addressTmp,
+								prefix: "-default",
+								contact: newContact, linphoneFriend: false, existingFriend: friend) {
+									
+								}
+						}
+					}
+				}
+				
+				MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			},
+			onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
+				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")
+			},
+			onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
+				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onNewSipAddressDiscovered \(linphoneFriend.name ?? "")")
+				var addedAvatarListModel: [ContactAvatarModel] = []
+				linphoneFriend.phoneNumbers.forEach { _ in
+					let address = try? Factory.Instance.createAddress(addr: sipUri)
+					if address != nil {
+						linphoneFriend.edit()
+						linphoneFriend.addAddress(address: address!)
+						linphoneFriend.done()
+						
+						let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
+						addedAvatarListModel.append(
+							ContactAvatarModel(
+								friend: linphoneFriend,
+								name: linphoneFriend.name ?? "",
+								address: addressTmp,
+								withPresence: true
+							)
+						)
+						
+						DispatchQueue.main.async {
+							NotificationCenter.default.post(
+								name: NSNotification.Name("ContactAdded"),
+								object: nil,
+								userInfo: ["address": addressTmp]
+							)
+						}
+					}
+				}
+				
+				DispatchQueue.main.async {
+					self.avatarListModel += addedAvatarListModel
+					self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
+				}
+			}
+		)
+		
+		CoreContext.shared.mCore.friendsLists.forEach { friendList in
+			friendList.addDelegate(delegate: self.friendListDelegate!)
 		}
 	}
 	

@@ -98,47 +98,55 @@ class AccountModel: ObservableObject {
 		
 		let preferences = UserDefaults.standard
 		
-		let photoAvatarModelKey = "photo_avatar_model" + usernaneAvatarTmp
+		let photoAvatarModelKey = usernaneAvatarTmp
 		
-		if preferences.object(forKey: photoAvatarModelKey) == nil {
-			preferences.set(photoAvatarModelKey, forKey: photoAvatarModelKey)
-		} else {
-			photoAvatarModelTmp = preferences.string(forKey: photoAvatarModelKey)!
-		}
-		
-		DispatchQueue.main.async { [self] in
-			switch state {
-			case .Cleared, .None:
-				humanReadableRegistrationState = "drawer_menu_account_connection_status_cleared".localized()
-				summary = "manage_account_status_cleared_summary".localized()
-				registrationStateAssociatedUIColor = .orangeWarning600
-			case .Progress:
-				humanReadableRegistrationState = "drawer_menu_account_connection_status_progress".localized()
-				summary = "manage_account_status_progress_summary".localized()
-				registrationStateAssociatedUIColor = .greenSuccess500
-			case .Failed:
-				humanReadableRegistrationState = "drawer_menu_account_connection_status_failed".localized()
-				summary = "manage_account_status_failed_summary".localized()
-				registrationStateAssociatedUIColor = .redDanger500
-			case .Ok:
-				humanReadableRegistrationState = "drawer_menu_account_connection_status_connected".localized()
-				summary = "manage_account_status_connected_summary".localized()
-				registrationStateAssociatedUIColor = .greenSuccess500
-			case .Refreshing:
-				humanReadableRegistrationState = "drawer_menu_account_connection_status_refreshing".localized()
-				summary = "manage_account_status_progress_summary".localized()
-				registrationStateAssociatedUIColor = .grayMain2c500
+		if !photoAvatarModelKey.isEmpty {
+			if preferences.object(forKey: photoAvatarModelKey) == nil {
+				DispatchQueue.main.async {
+					self.saveImage(
+						image: ContactsManager.shared.textToImage(
+							firstName: usernaneAvatarTmp, lastName: ""),
+						name: usernaneAvatarTmp,
+						prefix: "-default")
+				}
+			} else {
+				photoAvatarModelTmp = preferences.string(forKey: photoAvatarModelKey)!
 			}
 			
-			isRegistrered = state == .Ok
-			isDefaultAccount = isDefault
-			self.displayName = displayName
-			address.map {self.address = $0}
-			
-			photoAvatarModel = photoAvatarModelTmp
-			displayNameAvatar = displayNameTmp
-			usernaneAvatar = usernaneAvatarTmp
-			imagePathAvatar = getImagePath()
+			DispatchQueue.main.async { [self] in
+				switch state {
+				case .Cleared, .None:
+					humanReadableRegistrationState = "drawer_menu_account_connection_status_cleared".localized()
+					summary = "manage_account_status_cleared_summary".localized()
+					registrationStateAssociatedUIColor = .orangeWarning600
+				case .Progress:
+					humanReadableRegistrationState = "drawer_menu_account_connection_status_progress".localized()
+					summary = "manage_account_status_progress_summary".localized()
+					registrationStateAssociatedUIColor = .greenSuccess500
+				case .Failed:
+					humanReadableRegistrationState = "drawer_menu_account_connection_status_failed".localized()
+					summary = "manage_account_status_failed_summary".localized()
+					registrationStateAssociatedUIColor = .redDanger500
+				case .Ok:
+					humanReadableRegistrationState = "drawer_menu_account_connection_status_connected".localized()
+					summary = "manage_account_status_connected_summary".localized()
+					registrationStateAssociatedUIColor = .greenSuccess500
+				case .Refreshing:
+					humanReadableRegistrationState = "drawer_menu_account_connection_status_refreshing".localized()
+					summary = "manage_account_status_progress_summary".localized()
+					registrationStateAssociatedUIColor = .grayMain2c500
+				}
+				
+				isRegistrered = state == .Ok
+				isDefaultAccount = isDefault
+				self.displayName = displayName
+				address.map {self.address = $0}
+				
+				photoAvatarModel = photoAvatarModelTmp
+				displayNameAvatar = displayNameTmp
+				usernaneAvatar = usernaneAvatarTmp
+				imagePathAvatar = getImagePath()
+			}
 		}
 	}
 	
@@ -246,6 +254,28 @@ class AccountModel: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("Account \(self.account.displayName()) has been removed")
 			core.removeAccount(account: self.account)
+		}
+	}
+	
+	func saveImage(image: UIImage, name: String, prefix: String) {
+		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
+			return
+		}
+		
+		let photoAvatarModelKey = name
+		
+		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
+			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)
+			
+			self.photoAvatarModel = ""
+			self.imagePathAvatar = nil
+			NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
+			
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				self.photoAvatarModel = result
+				self.imagePathAvatar = self.getImagePath()
+				NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
+			}
 		}
 	}
 }

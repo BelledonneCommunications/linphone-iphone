@@ -34,36 +34,38 @@ class AccountProfileViewModel: ObservableObject {
 	func saveChangesWhenLeaving() {
 		if accountModelIndex != nil {
 			CoreContext.shared.doOnCoreQueue { _ in
-				let displayNameAccountModel = CoreContext.shared.accounts[self.accountModelIndex!].displayNameAvatar
-				let newParams = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.clone()
-				if (displayNameAccountModel != newParams?.identityAddress?.displayName)
-					&& (newParams?.identityAddress?.displayName != nil || !displayNameAccountModel.isEmpty) {
-					if let newIdentityAddress = newParams?.identityAddress?.clone() {
-						try? newIdentityAddress.setDisplayname(newValue: displayNameAccountModel)
-						try? newParams?.setIdentityaddress(newValue: newIdentityAddress)
-					}
-					
-					if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
-						let usernameTmp = CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
+				if self.accountModelIndex! < CoreContext.shared.accounts.count {
+					let displayNameAccountModel = CoreContext.shared.accounts[self.accountModelIndex!].displayNameAvatar
+					let newParams = CoreContext.shared.accounts[self.accountModelIndex!].account.params?.clone()
+					if (displayNameAccountModel != newParams?.identityAddress?.displayName)
+						&& (newParams?.identityAddress?.displayName != nil || !displayNameAccountModel.isEmpty) {
+						if let newIdentityAddress = newParams?.identityAddress?.clone() {
+							try? newIdentityAddress.setDisplayname(newValue: displayNameAccountModel)
+							try? newParams?.setIdentityaddress(newValue: newIdentityAddress)
+						}
 						
-						DispatchQueue.main.async {
-							self.saveImage(
-								image: ContactsManager.shared.textToImage(
-									firstName: displayNameAccountModel.isEmpty ? usernameTmp : displayNameAccountModel, lastName: ""),
-								name: usernameTmp,
-								prefix: "-default")
+						if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
+							let usernameTmp = CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
+							
+							DispatchQueue.main.async {
+								self.saveImage(
+									image: ContactsManager.shared.textToImage(
+										firstName: displayNameAccountModel.isEmpty ? usernameTmp : displayNameAccountModel, lastName: ""),
+									name: usernameTmp,
+									prefix: "-default")
+							}
 						}
 					}
+					
+					if self.dialPlanSelected != nil
+						&& (self.dialPlanSelected!.countryCallingCode != newParams?.internationalPrefix || self.dialPlanSelected!.isoCountryCode != newParams?.internationalPrefixIsoCountryCode) {
+						newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
+						newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
+						newParams?.useInternationalPrefixForCallsAndChats = true
+					}
+					
+					CoreContext.shared.accounts[self.accountModelIndex!].account.params = newParams
 				}
-				
-				if self.dialPlanSelected != nil
-					&& (self.dialPlanSelected!.countryCallingCode != newParams?.internationalPrefix || self.dialPlanSelected!.isoCountryCode != newParams?.internationalPrefixIsoCountryCode) {
-					newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
-					newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
-					newParams?.useInternationalPrefixForCallsAndChats = true
-				}
-				
-				CoreContext.shared.accounts[self.accountModelIndex!].account.params = newParams
 			}
 		}
 	}
@@ -118,7 +120,7 @@ class AccountProfileViewModel: ObservableObject {
 			return
 		}
 		
-		let photoAvatarModelKey = "photo_avatar_model" + CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
+		let photoAvatarModelKey = CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
 		
 		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
 			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)

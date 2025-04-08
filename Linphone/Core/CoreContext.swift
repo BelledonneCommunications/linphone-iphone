@@ -282,6 +282,9 @@ final class CoreContext: ObservableObject {
 				
 				switch state {
 				case .Ok:
+					DispatchQueue.main.async {
+						NotificationCenter.default.post(name: NSNotification.Name("CoreStarted"), object: nil)
+					}
 					ContactsManager.shared.fetchContacts()
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
