@@ -261,8 +261,10 @@ final class CoreContext: ObservableObject {
 				}
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
+						/*
 						ToastViewModel.shared.toastMessage = "Success_qr_code_validated"
 						ToastViewModel.shared.displayToast = true
+						*/
 						self.accounts = accountModels
 					}
 				}
