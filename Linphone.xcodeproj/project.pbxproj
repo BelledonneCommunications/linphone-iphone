@@ -178,6 +178,7 @@
 		D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */; };
 		D7DC09712CFDBF9A00A6D47C /* AccountProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */; };
 		D7E2E69F2CE356C90080DA0D /* PopupViewWithTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E2E69E2CE356C90080DA0D /* PopupViewWithTextField.swift */; };
+		D7E394C52DAC6561005FA0DD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D737AEED2DA011F2005C1280 /* Localizable.strings */; };
 		D7E6ADF32B9875C20009A2BC /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6ADF22B9875C20009A2BC /* Message.swift */; };
 		D7E6ADF52B9876ED0009A2BC /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6ADF42B9876ED0009A2BC /* Attachment.swift */; };
 		D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6D0482AE933AD00A57AAF /* FavoriteContactsListFragment.swift */; };
@@ -1092,6 +1093,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				667E5D7F2B8E430C00EBCFC4 /* linphonerc-factory in Resources */,
+				D7E394C52DAC6561005FA0DD /* Localizable.strings in Resources */,
 				667E5D812B8E444E00EBCFC4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
