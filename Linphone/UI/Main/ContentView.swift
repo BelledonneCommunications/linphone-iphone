@@ -51,7 +51,7 @@ struct ContentView: View {
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
-	@State var index = 0
+	@Binding var index: Int
 	@State private var orientation = UIDevice.current.orientation
 	@State var sideMenuIsOpen: Bool = false
 	
@@ -143,6 +143,7 @@ struct ContentView: View {
 										
 										Button(action: {
 											self.index = 0
+											sharedMainViewModel.changeIndexView(indexViewInt: 0)
 											historyViewModel.displayedCall = nil
 											conversationViewModel.displayedConversation = nil
 											meetingViewModel.displayedMeeting = nil
@@ -188,6 +189,7 @@ struct ContentView: View {
 											
 											Button(action: {
 												self.index = 1
+												sharedMainViewModel.changeIndexView(indexViewInt: 1)
 												contactViewModel.indexDisplayedFriend = nil
 												conversationViewModel.displayedConversation = nil
 												meetingViewModel.displayedMeeting = nil
@@ -237,6 +239,7 @@ struct ContentView: View {
 											
 											Button(action: {
 												self.index = 2
+												sharedMainViewModel.changeIndexView(indexViewInt: 2)
 												historyViewModel.displayedCall = nil
 												contactViewModel.indexDisplayedFriend = nil
 												meetingViewModel.displayedMeeting = nil
@@ -263,6 +266,7 @@ struct ContentView: View {
 										
 										Button(action: {
 											self.index = 3
+											sharedMainViewModel.changeIndexView(indexViewInt: 3)
 											contactViewModel.indexDisplayedFriend = nil
 											historyViewModel.displayedCall = nil
 											conversationViewModel.displayedConversation = nil
@@ -733,6 +737,7 @@ struct ContentView: View {
 									Spacer()
 									Button(action: {
 										self.index = 0
+										sharedMainViewModel.changeIndexView(indexViewInt: 0)
 										historyViewModel.displayedCall = nil
 										conversationViewModel.displayedConversation = nil
 										meetingViewModel.displayedMeeting = nil
@@ -780,6 +785,7 @@ struct ContentView: View {
 										
 										Button(action: {
 											self.index = 1
+											sharedMainViewModel.changeIndexView(indexViewInt: 1)
 											contactViewModel.indexDisplayedFriend = nil
 											conversationViewModel.displayedConversation = nil
 											meetingViewModel.displayedMeeting = nil
@@ -831,6 +837,7 @@ struct ContentView: View {
 										
 										Button(action: {
 											self.index = 2
+											sharedMainViewModel.changeIndexView(indexViewInt: 2)
 											historyViewModel.displayedCall = nil
 											contactViewModel.indexDisplayedFriend = nil
 											meetingViewModel.displayedMeeting = nil
@@ -858,6 +865,7 @@ struct ContentView: View {
 									Spacer()
 									Button(action: {
 										self.index = 3
+										sharedMainViewModel.changeIndexView(indexViewInt: 3)
 										contactViewModel.indexDisplayedFriend = nil
 										historyViewModel.displayedCall = nil
 										conversationViewModel.displayedConversation = nil
@@ -1198,6 +1206,7 @@ struct ContentView: View {
 									contactViewModel.indexDisplayedFriend = nil
 									historyViewModel.displayedCall = nil
 									index = 2
+									sharedMainViewModel.changeIndexView(indexViewInt: 2)
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 										withAnimation {
 											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: contactViewModel.displayedConversation!)
@@ -1381,6 +1390,7 @@ struct ContentView: View {
 			.onChange(of: navigationManager.selectedCallId) { newCallId in
 				if newCallId != nil {
 					self.index = 2
+					sharedMainViewModel.changeIndexView(indexViewInt: 2)
 				}
 			}
 			.onReceive(contactLoaded) { _ in
@@ -1454,7 +1464,8 @@ class NavigationManager: ObservableObject {
 		meetingsListViewModel: MeetingsListViewModel(),
 		meetingViewModel: MeetingViewModel(),
 		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
-		accountProfileViewModel: AccountProfileViewModel()
+		accountProfileViewModel: AccountProfileViewModel(),
+		index: .constant(0)
 	)
 }
 // swiftlint:enable type_body_length

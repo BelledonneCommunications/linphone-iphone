@@ -131,6 +131,8 @@ struct LinphoneApp: App {
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
+	@State var index: Int = 0
+	
 	@State private var contactViewModel: ContactViewModel?
 	@State private var editContactViewModel: EditContactViewModel?
 	@State private var historyViewModel: HistoryViewModel?
@@ -192,10 +194,12 @@ struct LinphoneApp: App {
 						meetingsListViewModel: meetingsListViewModel!,
 						meetingViewModel: meetingViewModel!,
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
-						accountProfileViewModel: accountProfileViewModel!
+						accountProfileViewModel: accountProfileViewModel!,
+						index: $index
 					)
 					.environmentObject(navigationManager)
 					.onAppear {
+						index = sharedMainViewModel.indexView
 						// Link the navigation manager to the AppDelegate
 						delegate.navigationManager = navigationManager
 						

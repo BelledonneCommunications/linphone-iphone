@@ -27,16 +27,24 @@ class SharedMainViewModel: ObservableObject {
 	@Published var generalTermsAccepted = false
 	@Published var displayProfileMode = false
 	@Published var defaultAvatar: URL?
+	@Published var indexView: Int = 0
 	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
 	let displayProfileModeKey = "display_profile_mode"
 	let defaultAvatarKey = "default_avatar"
+	let indexViewKey = "index_view"
 	
 	var maxWidth = 600.0
 	
 	private init() {
 		let preferences = UserDefaults.standard
+		
+		if preferences.object(forKey: indexViewKey) == nil {
+			preferences.set(indexView, forKey: indexViewKey)
+		} else {
+			indexView = preferences.integer(forKey: indexViewKey)
+		}
 		
 		if preferences.object(forKey: welcomeViewKey) == nil {
 			preferences.set(welcomeViewDisplayed, forKey: welcomeViewKey)
@@ -98,5 +106,12 @@ class SharedMainViewModel: ObservableObject {
 		
 		defaultAvatar = defaultAvatarURL
 		preferences.set(defaultAvatar, forKey: defaultAvatarKey)
+	}
+	
+	func changeIndexView(indexViewInt: Int) {
+		let preferences = UserDefaults.standard
+		
+		indexView = indexViewInt
+		preferences.set(indexView, forKey: indexViewKey)
 	}
 }
