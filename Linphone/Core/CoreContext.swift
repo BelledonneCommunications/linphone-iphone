@@ -255,16 +255,12 @@ final class CoreContext: ObservableObject {
 				}
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
-				var accountModels: [AccountModel] = []
-				for account in self.mCore.accountList {
-					accountModels.append(AccountModel(account: account, core: self.mCore))
-				}
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
-						/*
-						ToastViewModel.shared.toastMessage = "Success_qr_code_validated"
-						ToastViewModel.shared.displayToast = true
-						*/
+						var accountModels: [AccountModel] = []
+						for account in self.mCore.accountList {
+							accountModels.append(AccountModel(account: account, core: self.mCore))
+						}
 						self.accounts = accountModels
 					}
 				}

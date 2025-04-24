@@ -90,12 +90,17 @@ class URIHandler {
 	
 	private static func initiateConfiguration(url: URL) {
 		if autoRemoteProvisioningOnConfigUriHandler() {
-			CoreContext.shared.performActionOnCoreQueueWhenCoreIsStarted { core in
+			CoreContext.shared.doOnCoreQueue { core in
 				Log.info("[URIHandler] provisioning app with URI: \(url.resourceSpecifier)")
 				do {
 					addCoreDelegate()
-					core.config?.setString(section: "misc", key: "config-uri", value: url.resourceSpecifier)
-					try core.setProvisioninguri(newValue: url.resourceSpecifier)
+					var urlString = url.resourceSpecifier
+					if urlString.starts(with: "//") {
+						urlString = String(urlString.dropFirst(2))
+					}
+					
+					core.config?.setString(section: "misc", key: "config-uri", value: urlString)
+					try core.setProvisioninguri(newValue: urlString)
 					core.stop()
 					try core.start()
 				} catch {

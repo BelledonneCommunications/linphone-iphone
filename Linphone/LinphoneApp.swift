@@ -158,12 +158,18 @@ struct LinphoneApp: App {
 						ToastView()
 							.zIndex(3)
 					}
+					.onOpenURL { url in
+						URIHandler.handleURL(url: url)
+					}
 				} else if coreContext.accounts.isEmpty || sharedMainViewModel.displayProfileMode {
 					ZStack {
 						AssistantView()
 						
 						ToastView()
 							.zIndex(3)
+					}
+					.onOpenURL { url in
+						URIHandler.handleURL(url: url)
 					}
 				} else if !coreContext.accounts.isEmpty
 							&& contactViewModel != nil
@@ -236,8 +242,6 @@ struct LinphoneApp: App {
 						meetingViewModel = MeetingViewModel()
 						conversationForwardMessageViewModel = ConversationForwardMessageViewModel()
 						accountProfileViewModel = AccountProfileViewModel()
-					}.onOpenURL { url in
-						URIHandler.handleURL(url: url)
 					}
 			}
 		}.onChange(of: scenePhase) { newPhase in

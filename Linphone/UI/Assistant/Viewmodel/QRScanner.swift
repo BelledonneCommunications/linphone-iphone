@@ -76,6 +76,8 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 							core.stop()
 							try? core.start()
 						}
+						ToastViewModel.shared.toastMessage = "Success_qr_code_validated"
+						ToastViewModel.shared.displayToast = true
 					} else {
 						ToastViewModel.shared.toastMessage = "Invalide URI"
 						ToastViewModel.shared.displayToast.toggle()
