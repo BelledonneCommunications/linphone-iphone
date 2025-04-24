@@ -81,6 +81,7 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func initialiseCore() throws {
+		Log.info("Initialising core 0000")
 #if USE_CRASHLYTICS
 		FirebaseApp.configure()
 #endif
@@ -357,12 +358,8 @@ final class CoreContext: ObservableObject {
 			})
 			self.mCore.addDelegate(delegate: self.mCoreDelegate)
 			
-			self.mIterateSuscription = Timer.publish(every: 0.02, on: .main, in: .common)
-				.autoconnect()
-				.receive(on: coreQueue)
-				.sink { _ in
-					self.mCore.iterate()
-				}
+			self.mCore.autoIterateEnabled = true
+			
 			try? self.mCore.start()
 		}
 	}
