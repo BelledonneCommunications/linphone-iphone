@@ -44,7 +44,6 @@ final class CoreContext: ObservableObject {
 	@Published var accounts: [AccountModel] = []
 	@Published var shortcuts: [ShortcutModel] = []
 	var mCore: Core!
-	private var mIterateSuscription: AnyCancellable?
 	
 	var bearerAuthInfoPendingPasswordUpdate: AuthInfo?
 	
