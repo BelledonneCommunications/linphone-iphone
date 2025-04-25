@@ -159,7 +159,7 @@ import linphonesw
 			title: VoipTexts.dialog_privacy_policy,
 			style: .default,
 			handler: { action in
-				openUrl(urlString: "https://www.linphone.org/privacy-policy")
+				openUrl(urlString: "https://linphone.org/en/privacy-policy")
 			})
 
 		rls.addAction(accept)

@@ -145,10 +145,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *message = NSLocalizedString(@"I accept Belledonne Communications’ terms of use and privacy policy", nil);
 	NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:message attributes:@{NSForegroundColorAttributeName : [UIColor systemGrayColor]}];
 	[attributedString addAttribute:NSLinkAttributeName
-						 value:@"https://www.linphone.org/general-terms"
+						 value:@"https://www.linphone.org/en/terms-of-use"
 						 range:[[attributedString string] rangeOfString:NSLocalizedString(@"terms of use", nil)]];
 	[attributedString addAttribute:NSLinkAttributeName
-						 value:@"https://www.linphone.org/privacy-policy"
+						 value:@"https://linphone.org/en/privacy-policy"
 						 range:[[attributedString string] rangeOfString:NSLocalizedString(@"privacy policy", nil)]];
 
 	NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : [UIColor redColor],

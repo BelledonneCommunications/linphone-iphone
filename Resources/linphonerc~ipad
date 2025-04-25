@@ -21,7 +21,7 @@ unexpected_pushkit=0
 reg_expires=1314000
 
 [misc]
-file_transfer_server_url=https://www.linphone.org:444/lft.php
+file_transfer_server_url=https://files.linphone.org/http-file-transfer-server/hft.php
 max_calls=3
 
 [net]

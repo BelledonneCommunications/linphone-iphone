@@ -414,6 +414,7 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		}
 		[self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
 	}
+	
 	/* Quality Reporting migration */
 	if ([self lpConfigBoolForKey:@"quality_report_migration_done"] == FALSE) {
 		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
@@ -441,9 +442,10 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		}
 		[self lpConfigSetBool:TRUE forKey:@"quality_report_migration_done"];
 	}
+	
 	/* File transfer migration */
-	if ([self lpConfigBoolForKey:@"file_transfer_migration_done"] == FALSE) {
-		const char *newURL = "https://www.linphone.org:444/lft.php";
+	if ([self lpConfigBoolForKey:@"file_transfer_migration_done"] == FALSE || [@"https://www.linphone.org:444/lft.php" isEqualToString:[NSString stringWithUTF8String:linphone_core_get_file_transfer_server(LC)]]) {
+		const char *newURL = "https://files.linphone.org/http-file-transfer-server/hft.php";
 		LOGI(@"Migrating sharing server url from %s to %s", linphone_core_get_file_transfer_server(LC), newURL);
 		linphone_core_set_file_transfer_server(LC, newURL);
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
@@ -483,9 +485,10 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		}
 		[self lpConfigSetBool:TRUE forKey:@"push_notification_migration_done"];
 	}
-	if ([self lpConfigBoolForKey:@"publish_enabled_migration_done"] == FALSE) {
+	
+	if ([self lpConfigBoolForKey:@"publish_enabled_migration_done"] == FALSE || [@"https://www.linphone.org:444/lft.php" isEqualToString:[NSString stringWithUTF8String:linphone_core_get_log_collection_upload_server_url(LC)]]) {
 		const MSList *accounts = linphone_core_get_account_list(theLinphoneCore);
-		linphone_core_set_log_collection_upload_server_url(LC, "https://www.linphone.org:444/lft.php");
+		linphone_core_set_log_collection_upload_server_url(LC, "https://files.linphone.org/http-file-transfer-server/hft.php");
 		[self lpConfigSetBool:TRUE forKey:@"update_presence_model_timestamp_before_publish_expires_refresh"];
 		
 		while (accounts)

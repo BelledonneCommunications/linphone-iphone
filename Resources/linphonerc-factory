@@ -44,7 +44,7 @@ linphone_specs=groupchat,lime
 zrtp_key_agreements_suites=MS_ZRTP_KEY_AGREEMENT_K255_KYB512
 
 [misc]
-version_check_url_root=https://linphone.org/releases
+version_check_url_root=https://download.linphone.org/releases
 prefer_basic_chat_room=-1
 
 

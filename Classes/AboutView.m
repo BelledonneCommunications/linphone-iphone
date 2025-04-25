@@ -84,7 +84,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onPolicyTap {
-	NSString *url = @"https://www.linphone.org/privacy-policy";
+	NSString *url = @"https://linphone.org/en/privacy-policy";
 	[SwiftUtil openUrlWithUrlString:url];
 }
 
