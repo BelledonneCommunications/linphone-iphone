@@ -54,7 +54,7 @@ final class CoreContext: ObservableObject {
 	private var actionsToPerformOnCoreQueueWhenCoreIsStarted: [((Core) -> Void)] = []
 	private var callStateCallBacks: [((Call.State) -> Void)] = []
 	private var configuringStateCallBacks: [((ConfiguringState) -> Void)] = []
-
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -181,10 +181,10 @@ final class CoreContext: ObservableObject {
 					self.shortcuts = shortcuts
 				}
 			}
-            
-            for acc in self.mCore.accountList {
-                self.forceRemotePushToMatchVoipPushSettings(account: acc)
-            }
+			
+			for acc in self.mCore.accountList {
+				self.forceRemotePushToMatchVoipPushSettings(account: acc)
+			}
 			
 			self.mCoreDelegate = CoreDelegateStub(onGlobalStateChanged: { (core: Core, state: GlobalState, _: String) in
 				if state == GlobalState.On {
@@ -295,13 +295,13 @@ final class CoreContext: ObservableObject {
 					Log.info("[onAccountRegistrationStateChanged] Account \(account.displayName()) registration was cleared. Looking for auth info")
 					// Moved removeAuthInfo to "failed" state to prevent removing auth info when deactivating an account
 					/*
-					if let authInfo = account.findAuthInfo() {
-						Log.info("[onAccountRegistrationStateChanged] Found auth info for account, removing it")
-						core.removeAuthInfo(info: authInfo)
-					} else {
-						Log.warn("[onAccountRegistrationStateChanged] Failed to find matching auth info for account")
-					}
-					*/
+					 if let authInfo = account.findAuthInfo() {
+					 Log.info("[onAccountRegistrationStateChanged] Found auth info for account, removing it")
+					 core.removeAuthInfo(info: authInfo)
+					 } else {
+					 Log.warn("[onAccountRegistrationStateChanged] Failed to find matching auth info for account")
+					 }
+					 */
 				case .Failed:  // If registration failed, remove account from core
 					if self.networkStatusIsConnected {
 						let params = account.params
@@ -339,12 +339,12 @@ final class CoreContext: ObservableObject {
 							ToastViewModel.shared.toastMessage = "Registration_failed"
 							ToastViewModel.shared.displayToast = true
 						}
-							
+						
 					}
 				}
 			}, onAccountAdded: { (_: Core, acc: Account) in
-                self.forceRemotePushToMatchVoipPushSettings(account: acc)
-                
+				self.forceRemotePushToMatchVoipPushSettings(account: acc)
+				
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
 					accountModels.append(AccountModel(account: account, core: self.mCore))
@@ -379,7 +379,7 @@ final class CoreContext: ObservableObject {
 		coreQueue.sync {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
-		
+			
 			try? self.mCore.start()
 			Log.info("App is in foreground, PUBLISHING presence as Online")
 			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
@@ -424,14 +424,29 @@ final class CoreContext: ObservableObject {
 		mCore.removeDelegate(delegate: delegate)
 	}
 	
-    func forceRemotePushToMatchVoipPushSettings(account: Account) {
-        if let params = account.params, params.pushNotificationAllowed && !params.remotePushNotificationAllowed {
-            Log.warn("account \(account.displayName()): VOIP and REMOTE push setting mismatch, force \(params.pushNotificationAllowed ? "enabling" : "disabling") of REMOTE Push")
-            let newParams = params.clone()
-            newParams?.remotePushNotificationAllowed = params.pushNotificationAllowed
-            account.params = newParams
-        }
-    }
+	func forceRemotePushToMatchVoipPushSettings(account: Account) {
+		if let params = account.params, params.pushNotificationAllowed && !params.remotePushNotificationAllowed {
+			Log.warn("account \(account.displayName()): VOIP and REMOTE push setting mismatch, force \(params.pushNotificationAllowed ? "enabling" : "disabling") of REMOTE Push")
+			let newParams = params.clone()
+			newParams?.remotePushNotificationAllowed = params.pushNotificationAllowed
+			account.params = newParams
+		}
+	}
+	
+	func copyDatabaseFileToDocumentsDirectory() {
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)?
+			.appendingPathComponent("Library/Application Support/linphone") {
+			let rcFileUrl = rcDir.appendingPathComponent("linphone.db")
+			let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+			if directory != nil {
+				do {
+					try FileManager.default.copyItem(at: rcFileUrl, to: directory!.appendingPathComponent("linphone.db"))
+				} catch {
+					print("Error: ", error)
+				}
+			}
+		}
+	}
 }
 
 // swiftlint:enable line_length
