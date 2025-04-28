@@ -183,7 +183,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - UITextViewDelegate
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction {
-	return [[UIApplication sharedApplication] openURL:URL];
+	[[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:nil];
+	return NO;
 }
 
 #pragma mark - Utils
