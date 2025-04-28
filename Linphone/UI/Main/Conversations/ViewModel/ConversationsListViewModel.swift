@@ -53,9 +53,9 @@ class ConversationsListViewModel: ObservableObject {
 			
 			chatRooms.forEach { chatRoom in
 				if filter.isEmpty {
-					let model = ConversationModel(chatRoom: chatRoom)
-					self.conversationsListTmp.append(model)
 					DispatchQueue.main.async {
+						let model = ConversationModel(chatRoom: chatRoom)
+						self.conversationsListTmp.append(model)
 						self.conversationsList.append(model)
 					}
 				}
