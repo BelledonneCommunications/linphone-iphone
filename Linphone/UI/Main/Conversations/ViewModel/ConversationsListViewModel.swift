@@ -24,6 +24,8 @@ import Combine
 // swiftlint:disable line_length
 class ConversationsListViewModel: ObservableObject {
 	
+	static let TAG = "[ConversationsListViewModel]"
+	
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
 	
@@ -35,6 +37,8 @@ class ConversationsListViewModel: ObservableObject {
 	@Published var unreadMessages: Int = 0
 	
 	var selectedConversation: ConversationModel?
+	
+	var currentFilter: String = ""
 	
 	init() {
 		computeChatRoomsList(filter: "")
@@ -51,14 +55,21 @@ class ConversationsListViewModel: ObservableObject {
 				self.conversationsList = []
 			}
 			
+			var conversationsTmp: [ConversationModel] = []
+			var count = 0
+			print("ConversationModelInit 0000")
 			chatRooms.forEach { chatRoom in
 				if filter.isEmpty {
-					DispatchQueue.main.async {
-						let model = ConversationModel(chatRoom: chatRoom)
-						self.conversationsListTmp.append(model)
-						self.conversationsList.append(model)
-					}
+					print("ConversationModelInit 1111")
+					let model = ConversationModel(chatRoom: chatRoom)
+					conversationsTmp.append(model)
+					count += 1
 				}
+			}
+			
+			DispatchQueue.main.async {
+				self.conversationsListTmp = conversationsTmp
+				self.conversationsList = conversationsTmp
 			}
 			
 			self.updateUnreadMessagesCount()
@@ -220,11 +231,15 @@ class ConversationsListViewModel: ObservableObject {
 					}
 				}
 				self.updateUnreadMessagesCount()
-			}, onChatRoomStateChanged: { (core: Core, _: ChatRoom, state: ChatRoom.State) in
+			}, onChatRoomStateChanged: { (core: Core, chatroom: ChatRoom, state: ChatRoom.State) in
 				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
 				if core.globalState == .On {
 					switch state {
-					case .Created, .Deleted, .Terminated:
+					case .Created:
+						print("")
+						//self.addChatRoom(chatRoom: chatroom)
+						//self.computeChatRoomsList(filter: "")
+					case .Deleted:
 						self.computeChatRoomsList(filter: "")
 					default:
 						break
@@ -234,6 +249,78 @@ class ConversationsListViewModel: ObservableObject {
 			core.addDelegate(delegate: self.coreConversationDelegate!)
 		}
 	}
+	
+	private func addChatRoom(chatRoom: ChatRoom) {
+		let identifier = chatRoom.identifier
+		let chatRoomAccount = chatRoom.account
+		let defaultAccount = LinphoneUtils.getDefaultAccount()
+		
+		print("ConversationModelInit 2222")
+		//print("addChatRoomaddChatRoom \(chatRoomAccount?.contactAddress?.asStringUriOnly()) \(defaultAccount?.contactAddress?.asStringUriOnly())")
+		if defaultAccount == nil || chatRoomAccount == nil { //} || chatRoomAccount != defaultAccount {
+			Log.warn(
+				"\(ConversationsListViewModel.TAG) Chat room with identifier \(identifier ?? "Identifier error") was created but not displaying it because it doesn't belong to currently default account"
+			)
+			return
+		}
+		
+		let hideEmptyChatRooms = coreContext.mCore.config == nil ? true : coreContext.mCore.config!.getBool(section: "misc", key: "hide_empty_chat_rooms", defaultValue: true)
+		// Hide empty chat rooms only applies to 1-1 conversations
+		if (hideEmptyChatRooms && !LinphoneUtils.isChatRoomAGroup(chatRoom: chatRoom) && chatRoom.lastMessageInHistory == nil) {
+			Log.warn("\(ConversationsListViewModel.TAG) Chat room with identifier \(identifier ?? "Identifier error") is empty, not adding it to match Core setting")
+			return
+		}
+		
+		let currentList = conversationsListTmp
+		let found = currentList.first(where: {$0.chatRoom.identifier == identifier})
+		if (found != nil) {
+			Log.warn("\(ConversationsListViewModel.TAG) Created chat room with identifier \(identifier ?? "Identifier error") is already in the list, skipping")
+			return
+		}
+		
+		if !currentFilter.isEmpty {
+			let filteredRooms = defaultAccount!.filterChatRooms(filter: currentFilter)
+			let found = filteredRooms.first(where: {$0.identifier == chatRoom.identifier})
+			if found == nil {
+				return
+			}
+		}
+		
+		var newList: [ConversationModel] = []
+		let model = ConversationModel(chatRoom: chatRoom)
+		newList.append(model)
+		newList.append(contentsOf: currentList)
+		Log.info("\(ConversationsListViewModel.TAG) Adding chat room with identifier \(identifier ?? "Identifier error") to list")
+		
+		DispatchQueue.main.async {
+			self.conversationsList = newList
+		}
+	}
+	
+	/*
+	@WorkerThread
+	private fun removeChatRoom(chatRoom: ChatRoom) {
+		val currentList = conversations.value.orEmpty()
+		val identifier = chatRoom.identifier
+		val found = currentList.find {
+			it.chatRoom.identifier == identifier
+		}
+		if (found != null) {
+			val newList = arrayListOf<ConversationModel>()
+			newList.addAll(currentList)
+			newList.remove(found)
+			found.destroy()
+			Log.i("$TAG Removing chat room with identifier [$identifier] from list")
+			conversations.postValue(newList)
+		} else {
+			Log.w(
+				"$TAG Failed to find item in list matching deleted chat room identifier [$identifier]"
+			)
+		}
+		
+		showGreenToast(R.string.conversation_deleted_toast, R.drawable.chat_teardrop_text)
+	}
+	*/
 	
 	func reorderChatRooms() {
 		Log.info("[ConversationsListViewModel] Re-ordering conversations")
@@ -339,6 +426,7 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func filterConversations(filter: String) {
+		currentFilter = filter
 		conversationsList.removeAll()
 		conversationsListTmp.forEach { conversation in
 			if conversation.subject.lowercased().contains(filter.lowercased()) || !conversation.participantsAddress.filter({ $0.lowercased().contains(filter.lowercased()) }).isEmpty {
@@ -348,6 +436,7 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func resetFilterConversations() {
+		currentFilter = ""
 		conversationsList = conversationsListTmp
 	}
 }
