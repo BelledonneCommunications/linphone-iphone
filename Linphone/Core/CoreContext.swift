@@ -155,6 +155,8 @@ final class CoreContext: ObservableObject {
 			
 			self.mCore.imdnToEverybodyThreshold = 1
 			
+			//self.copyDatabaseFileToDocumentsDirectory()
+			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
 			if shortcutsCount > 0 {
 				var shortcuts: [ShortcutModel] = []
@@ -440,6 +442,9 @@ final class CoreContext: ObservableObject {
 			let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 			if directory != nil {
 				do {
+					if FileManager.default.fileExists(atPath: directory!.appendingPathComponent("linphone.db").path) {
+						try FileManager.default.removeItem(at: directory!.appendingPathComponent("linphone.db"))
+					}
 					try FileManager.default.copyItem(at: rcFileUrl, to: directory!.appendingPathComponent("linphone.db"))
 				} catch {
 					print("Error: ", error)
