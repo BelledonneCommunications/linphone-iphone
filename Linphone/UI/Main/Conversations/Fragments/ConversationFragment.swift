@@ -910,7 +910,7 @@ struct ConversationFragment: View {
 									}
 									
 									Button {
-										conversationForwardMessageViewModel.initConversationsLists(convsList: conversationsListViewModel.conversationsListTmp)
+										conversationForwardMessageViewModel.initConversationsLists(convsList: conversationsListViewModel.conversationsList)
 										conversationForwardMessageViewModel.selectedMessage = conversationViewModel.selectedMessage
 										conversationViewModel.selectedMessage = nil
 										withAnimation {

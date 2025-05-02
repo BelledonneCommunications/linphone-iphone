@@ -32,7 +32,6 @@ class ConversationsListViewModel: ObservableObject {
 	private var coreConversationDelegate: CoreDelegate?
 	
 	@Published var conversationsList: [ConversationModel] = []
-	var conversationsListTmp: [ConversationModel] = []
 	
 	@Published var unreadMessages: Int = 0
 	
@@ -47,38 +46,39 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func computeChatRoomsList(filter: String) {
 		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			let chatRooms = account != nil ? account!.chatRooms : core.chatRooms
-			
-			self.conversationsListTmp = []
-			DispatchQueue.main.async {
-				self.conversationsList = []
-			}
-			
-			var conversationsTmp: [ConversationModel] = []
-			var count = 0
-			chatRooms.forEach { chatRoom in
-				if filter.isEmpty {
-					let model = ConversationModel(chatRoom: chatRoom)
-					conversationsTmp.append(model)
-					count += 1
+			if let account = core.defaultAccount {
+				//let chatRooms = account != nil ? account.chatRooms : core.chatRooms
+				
+				self.currentFilter = filter
+				DispatchQueue.main.async {
+					self.conversationsList = []
 				}
+				
+				let conversationsListTmp = account.filterChatRooms(filter: filter)
+				var conversationsTmp: [ConversationModel] = []
+				var count = 0
+				conversationsListTmp.forEach { chatRoom in
+					if filter.isEmpty {
+						let model = ConversationModel(chatRoom: chatRoom)
+						conversationsTmp.append(model)
+						count += 1
+					}
+				}
+				
+				DispatchQueue.main.async {
+					self.conversationsList = conversationsTmp
+				}
+				
+				self.updateUnreadMessagesCount()
 			}
-			
-			DispatchQueue.main.async {
-				self.conversationsListTmp = conversationsTmp
-				self.conversationsList = conversationsTmp
-			}
-			
-			self.updateUnreadMessagesCount()
 		}
 	}
 	
 	func updateChatRoomsList() {
 		CoreContext.shared.doOnCoreQueue { _ in
-			if !self.conversationsListTmp.isEmpty {
+			if !self.conversationsList.isEmpty {
 				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
-					self.conversationsListTmp.forEach { conversationModel in
+					self.conversationsList.forEach { conversationModel in
 						if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
 							if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
 								if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAvatarModel.address) {
@@ -137,7 +137,7 @@ class ConversationsListViewModel: ObservableObject {
 	func updateChatRoom(address: String) {
 		CoreContext.shared.doOnCoreQueue { _ in
 			if let contactAvatarModel = self.contactsManager.avatarListModel.first(where: { $0.addresses.contains(address) }) {
-				self.conversationsListTmp.forEach { conversationModel in
+				self.conversationsList.forEach { conversationModel in
 					if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
 						if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
 							if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAvatarModel.address) {
@@ -267,7 +267,7 @@ class ConversationsListViewModel: ObservableObject {
 			return
 		}
 		
-		let currentList = conversationsListTmp
+		let currentList = conversationsList
 		let found = currentList.first(where: {$0.chatRoom.identifier == identifier})
 		if (found != nil) {
 			Log.warn("\(ConversationsListViewModel.TAG) Created chat room with identifier \(identifier ?? "Identifier error") is already in the list, skipping")
@@ -423,17 +423,24 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func filterConversations(filter: String) {
 		currentFilter = filter
-		conversationsList.removeAll()
-		conversationsListTmp.forEach { conversation in
-			if conversation.subject.lowercased().contains(filter.lowercased()) || !conversation.participantsAddress.filter({ $0.lowercased().contains(filter.lowercased()) }).isEmpty {
-				conversationsList.append(conversation)
+		coreContext.doOnCoreQueue { core in
+			if let account = core.defaultAccount {
+				let conversationsListTmp = account.filterChatRooms(filter: filter)
+				var conversationsTmp: [ConversationModel] = []
+				conversationsListTmp.forEach { chatRoom in
+					let model = ConversationModel(chatRoom: chatRoom)
+					conversationsTmp.append(model)
+				}
+				
+				DispatchQueue.main.async {
+					self.conversationsList = conversationsTmp
+				}
 			}
 		}
 	}
 	
 	func resetFilterConversations() {
-		currentFilter = ""
-		conversationsList = conversationsListTmp
+		filterConversations(filter: "")
 	}
 }
 // swiftlint:enable line_length

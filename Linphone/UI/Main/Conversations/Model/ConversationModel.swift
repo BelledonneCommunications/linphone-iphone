@@ -89,7 +89,6 @@ class ConversationModel: ObservableObject, Identifiable {
 		
 		getContentTextMessage(chatRoom: chatRoom)
 		getChatRoomSubject(chatRoom: chatRoom)
-		//getUnreadMessagesCount()
 	}
 	
 	func leave() {
