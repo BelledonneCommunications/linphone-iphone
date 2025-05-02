@@ -40,29 +40,18 @@ class ConversationsListViewModel: ObservableObject {
 	var currentFilter: String = ""
 	
 	init() {
-		computeChatRoomsList(filter: "")
+		computeChatRoomsList()
 		addConversationDelegate()
 	}
 	
-	func computeChatRoomsList(filter: String) {
+	func computeChatRoomsList() {
 		coreContext.doOnCoreQueue { core in
 			if let account = core.defaultAccount {
-				//let chatRooms = account != nil ? account.chatRooms : core.chatRooms
-				
-				self.currentFilter = filter
-				DispatchQueue.main.async {
-					self.conversationsList = []
-				}
-				
-				let conversationsListTmp = account.filterChatRooms(filter: filter)
+				let conversationsListTmp = account.filterChatRooms(filter: self.currentFilter)
 				var conversationsTmp: [ConversationModel] = []
-				var count = 0
 				conversationsListTmp.forEach { chatRoom in
-					if filter.isEmpty {
-						let model = ConversationModel(chatRoom: chatRoom)
-						conversationsTmp.append(model)
-						count += 1
-					}
+					let model = ConversationModel(chatRoom: chatRoom)
+					conversationsTmp.append(model)
 				}
 				
 				DispatchQueue.main.async {
@@ -234,11 +223,9 @@ class ConversationsListViewModel: ObservableObject {
 				if core.globalState == .On {
 					switch state {
 					case .Created:
-						print("")
-						//self.addChatRoom(chatRoom: chatroom)
-						//self.computeChatRoomsList(filter: "")
+						self.addChatRoom(chatRoom: chatroom)
 					case .Deleted:
-						self.computeChatRoomsList(filter: "")
+						self.removeChatRoom(chatRoom: chatroom)
 					default:
 						break
 					}
@@ -293,30 +280,25 @@ class ConversationsListViewModel: ObservableObject {
 		}
 	}
 	
-	/*
-	@WorkerThread
-	private fun removeChatRoom(chatRoom: ChatRoom) {
-		val currentList = conversations.value.orEmpty()
-		val identifier = chatRoom.identifier
-		val found = currentList.find {
-			it.chatRoom.identifier == identifier
-		}
-		if (found != null) {
-			val newList = arrayListOf<ConversationModel>()
-			newList.addAll(currentList)
-			newList.remove(found)
-			found.destroy()
-			Log.i("$TAG Removing chat room with identifier [$identifier] from list")
-			conversations.postValue(newList)
+	private func removeChatRoom(chatRoom: ChatRoom) {
+		let currentList = conversationsList
+		let identifier = chatRoom.identifier
+		let foundIndex = currentList.firstIndex(where: {$0.chatRoom.identifier == identifier})
+		if foundIndex != nil {
+			var newList: [ConversationModel] = []
+			newList.append(contentsOf: currentList)
+			newList.remove(at: foundIndex!)
+			Log.info("\(ConversationsListViewModel.TAG) Removing chat room with identifier \(identifier ?? "Identifier error") from list")
+			
+			DispatchQueue.main.async {
+				self.conversationsList = newList
+			}
 		} else {
-			Log.w(
-				"$TAG Failed to find item in list matching deleted chat room identifier [$identifier]"
+			Log.warn(
+				"\(ConversationsListViewModel.TAG) Failed to find item in list matching deleted chat room identifier \(identifier ?? "Identifier error")"
 			)
 		}
-		
-		showGreenToast(R.string.conversation_deleted_toast, R.drawable.chat_teardrop_text)
 	}
-	*/
 	
 	func reorderChatRooms() {
 		Log.info("[ConversationsListViewModel] Re-ordering conversations")

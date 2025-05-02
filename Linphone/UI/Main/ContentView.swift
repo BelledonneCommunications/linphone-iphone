@@ -1425,7 +1425,7 @@ struct ContentView: View {
 		.onChange(of: scenePhase) { newPhase in
 			orientation = UIDevice.current.orientation
 			if newPhase == .active {
-				conversationsListViewModel.computeChatRoomsList(filter: "")
+				conversationsListViewModel.computeChatRoomsList()
 			}
 		}
 	}

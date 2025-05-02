@@ -395,7 +395,6 @@ struct ConversationFragment: View {
 													if index == 0 {
 														displayFloatingButton = false
 														conversationViewModel.markAsRead()
-														conversationsListViewModel.computeChatRoomsList(filter: "")
 													}
 												}
 												.onDisappear {
@@ -410,7 +409,6 @@ struct ConversationFragment: View {
 								.listStyle(.plain)
 								.onAppear {
 									conversationViewModel.markAsRead()
-									conversationsListViewModel.computeChatRoomsList(filter: "")
 								}
 								
 								if displayFloatingButton {

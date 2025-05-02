@@ -646,7 +646,6 @@ struct ConversationInfoFragment: View {
 										Button(
 											action: {
 												conversationViewModel.displayedConversation!.deleteChatRoom()
-												conversationsListViewModel.computeChatRoomsList(filter: "")
 												conversationViewModel.displayedConversation = nil
 											},
 											label: {

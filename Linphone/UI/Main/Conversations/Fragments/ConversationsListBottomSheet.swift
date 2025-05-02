@@ -177,7 +177,6 @@ struct ConversationsListBottomSheet: View {
 			
 			Button {
 				conversationsListViewModel.selectedConversation!.deleteChatRoom()
-				conversationsListViewModel.computeChatRoomsList(filter: "")
 				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {
