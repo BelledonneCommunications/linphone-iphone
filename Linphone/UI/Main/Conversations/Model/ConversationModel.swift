@@ -83,13 +83,13 @@ class ConversationModel: ObservableObject, Identifiable {
 		
 		self.lastMessageState = 0
 
-		self.unreadMessagesCount = 0
+		self.unreadMessagesCount = chatRoom.unreadMessagesCount
 
 		self.avatarModel = ContactAvatarModel(friend: nil, name: chatRoom.subject ?? "", address: chatRoom.peerAddress?.asStringUriOnly() ?? "", withPresence: false)
 		
-		getContentTextMessage()
-		getChatRoomSubject()
-		getUnreadMessagesCount()
+		getContentTextMessage(chatRoom: chatRoom)
+		getChatRoomSubject(chatRoom: chatRoom)
+		//getUnreadMessagesCount()
 	}
 	
 	func leave() {
@@ -183,8 +183,8 @@ class ConversationModel: ObservableObject, Identifiable {
 		}
 	}
 	
-	func getContentTextMessage() {
-		let lastMessage = self.chatRoom.lastMessageInHistory
+	func getContentTextMessage(chatRoom: ChatRoom) {
+		let lastMessage = chatRoom.lastMessageInHistory
 		if lastMessage != nil {
 			var fromAddressFriend = lastMessage!.fromAddress != nil
 			? self.contactsManager.getFriendWithAddress(address: lastMessage!.fromAddress)?.name ?? nil
@@ -224,24 +224,25 @@ class ConversationModel: ObservableObject, Identifiable {
 		}
 	}
 	
-	func getChatRoomSubject() {
-		let addressFriend = (self.chatRoom.participants.first != nil && self.chatRoom.participants.first!.address != nil)
-		? self.contactsManager.getFriendWithAddress(address: self.chatRoom.participants.first?.address)
+	func getChatRoomSubject(chatRoom: ChatRoom) {
+		let chatRoomParticipants = chatRoom.participants
+		let addressFriend = (chatRoomParticipants.first != nil && chatRoomParticipants.first!.address != nil)
+		? self.contactsManager.getFriendWithAddress(address: chatRoomParticipants.first?.address)
 		: nil
 		
 		var subjectTmp = ""
 		
 		if self.isGroup {
-			subjectTmp = self.chatRoom.subject!
+			subjectTmp = chatRoom.subject!
 		} else if addressFriend != nil {
 			subjectTmp = addressFriend!.name!
 		} else {
-			if self.chatRoom.participants.first != nil
-				&& self.chatRoom.participants.first!.address != nil {
+			if chatRoomParticipants.first != nil
+				&& chatRoomParticipants.first!.address != nil {
 				
-				subjectTmp = self.chatRoom.participants.first!.address!.displayName != nil
-				? self.chatRoom.participants.first!.address!.displayName!
-				: (self.chatRoom.participants.first!.address!.username ?? String(self.chatRoom.participants.first!.address!.asStringUriOnly().dropFirst(4)))
+				subjectTmp = chatRoomParticipants.first!.address!.displayName != nil
+				? chatRoomParticipants.first!.address!.displayName!
+				: (chatRoomParticipants.first!.address!.username ?? String(chatRoomParticipants.first!.address!.asStringUriOnly().dropFirst(4)))
 				
 			}
 		}
@@ -267,7 +268,7 @@ class ConversationModel: ObservableObject, Identifiable {
 			avatarModelTmp = ContactAvatarModel(
 				friend: nil,
 				name: subjectTmp,
-				address: self.chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
+				address: chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
 				withPresence: false
 			)
 		}

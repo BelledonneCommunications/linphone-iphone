@@ -57,10 +57,8 @@ class ConversationsListViewModel: ObservableObject {
 			
 			var conversationsTmp: [ConversationModel] = []
 			var count = 0
-			print("ConversationModelInit 0000")
 			chatRooms.forEach { chatRoom in
 				if filter.isEmpty {
-					print("ConversationModelInit 1111")
 					let model = ConversationModel(chatRoom: chatRoom)
 					conversationsTmp.append(model)
 					count += 1
@@ -255,8 +253,6 @@ class ConversationsListViewModel: ObservableObject {
 		let chatRoomAccount = chatRoom.account
 		let defaultAccount = LinphoneUtils.getDefaultAccount()
 		
-		print("ConversationModelInit 2222")
-		//print("addChatRoomaddChatRoom \(chatRoomAccount?.contactAddress?.asStringUriOnly()) \(defaultAccount?.contactAddress?.asStringUriOnly())")
 		if defaultAccount == nil || chatRoomAccount == nil { //} || chatRoomAccount != defaultAccount {
 			Log.warn(
 				"\(ConversationsListViewModel.TAG) Chat room with identifier \(identifier ?? "Identifier error") was created but not displaying it because it doesn't belong to currently default account"
