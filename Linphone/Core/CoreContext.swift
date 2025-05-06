@@ -46,6 +46,7 @@ final class CoreContext: ObservableObject {
 	var mCore: Core!
 	
 	var bearerAuthInfoPendingPasswordUpdate: AuthInfo?
+	var imdnToEverybodyThreshold: Bool = true
 	
 	let monitor = NWPathMonitor()
 	var networkStatusIsConnected: Bool = true // updated on core queue
@@ -154,7 +155,7 @@ final class CoreContext: ObservableObject {
 			self.mCore.config!.setString(section: "misc", key: "version_check_url_root", value: "https://download.linphone.org/releases")
 			
 			self.mCore.imdnToEverybodyThreshold = 1
-			
+			self.imdnToEverybodyThreshold = self.mCore.imdnToEverybodyThreshold == 1
 			//self.copyDatabaseFileToDocumentsDirectory()
 			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)

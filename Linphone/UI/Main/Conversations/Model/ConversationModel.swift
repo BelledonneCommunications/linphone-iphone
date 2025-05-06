@@ -28,6 +28,8 @@ class ConversationModel: ObservableObject, Identifiable {
 	private var contactsManager = ContactsManager.shared
 	
 	var chatRoom: ChatRoom
+	var lastMessage: ChatMessage?
+	
 	let isDisabledBecauseNotSecured: Bool = false
 	
 	static let TAG = "[Conversation Model]"
@@ -51,6 +53,7 @@ class ConversationModel: ObservableObject, Identifiable {
 	@Published var avatarModel: ContactAvatarModel
 	
 	private var conferenceDelegate: ConferenceDelegate?
+	private var chatMessageDelegate: ChatMessageDelegate?
 	
 	init(chatRoom: ChatRoom) {
 		self.chatRoom = chatRoom
@@ -76,6 +79,8 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.isEphemeral = chatRoom.ephemeralEnabled
 		
 		self.encryptionEnabled = chatRoom.currentParams != nil && chatRoom.currentParams!.encryptionEnabled
+		
+		self.lastMessage = nil
 		
 		self.lastMessageText = ""
 		
@@ -182,9 +187,37 @@ class ConversationModel: ObservableObject, Identifiable {
 		}
 	}
 	
+	func chatMessageAddDelegate() {
+		if self.lastMessage != nil && self.chatMessageDelegate != nil {
+			self.lastMessage!.removeDelegate(delegate: self.chatMessageDelegate!)
+		}
+		
+		self.chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, msgState: ChatMessage.State) in
+			let lastMessageStateTmp = msgState.rawValue
+			DispatchQueue.main.async {
+				self.lastMessageState = lastMessageStateTmp
+			}
+		})
+		
+		if self.lastMessage != nil && self.chatMessageDelegate != nil {
+			self.lastMessage!.addDelegate(delegate: self.chatMessageDelegate!)
+		}
+	}
+	
+	func chatMessageRemoveDelegate() {
+		if self.lastMessage != nil && chatMessageDelegate != nil {
+			self.lastMessage!.removeDelegate(delegate: chatMessageDelegate!)
+		}
+	}
+	
 	func getContentTextMessage(chatRoom: ChatRoom) {
 		let lastMessage = chatRoom.lastMessageInHistory
 		if lastMessage != nil {
+			if !(CoreContext.shared.imdnToEverybodyThreshold && !lastMessage!.isOutgoing) {
+				self.lastMessage = lastMessage
+				self.chatMessageAddDelegate()
+			}
+			
 			var fromAddressFriend = lastMessage!.fromAddress != nil
 			? self.contactsManager.getFriendWithAddress(address: lastMessage!.fromAddress)?.name ?? nil
 			: nil

@@ -241,6 +241,10 @@
 "conversation_reply_to_message_title" = "En réponse à : ";
 "conversation_text_field_hint" = "Dites quelque chose…";
 "conversations_list_empty" = "Aucune conversation pour le moment…";
+"conversation_take_picture_label" = "Prendre une photo";
+"conversation_pick_file_from_gallery_label" = "Ouvrir la gallerie";
+"conversation_pick_any_file_label" = "Choisir un fichier";
+"conversation_file_cant_be_opened_error_toast" = "Impossible d'ouvrir le fichier!";
 "debug_logs_copied_to_clipboard_toast" = "Les journaux ont été ajoutés au presse-papier";
 "Default" = "Default";
 "Default mode" = "Default mode";

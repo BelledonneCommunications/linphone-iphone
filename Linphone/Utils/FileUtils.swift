@@ -32,6 +32,27 @@ class FileUtil: NSObject {
 		case unknown
 	}
 	
+	public class func formUrlEncode(_ inputString: String) -> String {
+		// https://www.w3.org/TR/html5/sec-forms.html#application-x-www-form-urlencoded-encoding-algorithm
+		// Encode tous les caractères sauf *-._A-Za-z0-9, remplace les espaces par '+'
+		
+		guard !inputString.isEmpty else {
+			return inputString
+		}
+
+		// Définir les caractères autorisés (non encodés)
+		var allowed = CharacterSet.alphanumerics
+		allowed.insert(charactersIn: "*-._")
+
+		// Appliquer l'encodage pour les autres caractères
+		var encoded = inputString.addingPercentEncoding(withAllowedCharacters: allowed) ?? ""
+
+		// Remplacer les espaces (déjà encodés en %20) par '+'
+		encoded = encoded.replacingOccurrences(of: "%20", with: "+")
+
+		return encoded
+	}
+	
 	public class func bundleFilePath(_ file: NSString) -> String? {
 		return Bundle.main.path(forResource: file.deletingPathExtension, ofType: file.pathExtension)
 	}

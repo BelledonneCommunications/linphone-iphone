@@ -122,8 +122,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
 	
 	static func saveMedia(name: String, data: Data, type: AttachmentType) -> URL? {
 		do {
-			let path = FileManager.default.temporaryDirectory.appendingPathComponent((name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-			
+			let path = FileManager.default.temporaryDirectory.appendingPathComponent(name)
 			_ = try data.write(to: path)
 			
 			if type == .video {

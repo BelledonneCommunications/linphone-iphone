@@ -126,14 +126,6 @@ struct ConversationRow: View {
 				Spacer()
 				
 				HStack {
-					if !conversation.encryptionEnabled {
-						Image("warning-circle")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.redDanger500)
-							.frame(width: 18, height: 18, alignment: .trailing)
-					}
-					
 					Text(conversationsListViewModel.getCallTime(startDate: conversation.lastUpdateTime))
 						.foregroundStyle(Color.grayMain2c400)
 						.default_text_style(styleSize: 14)
@@ -148,6 +140,14 @@ struct ConversationRow: View {
 							 && conversation.lastMessageIsOutgoing == true)
 						&& conversation.unreadMessagesCount == 0 {
 						Text("")
+							.frame(width: 18, height: 18, alignment: .trailing)
+					}
+					
+					if !conversation.encryptionEnabled {
+						Image("lock-simple-open-bold")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeWarning600)
 							.frame(width: 18, height: 18, alignment: .trailing)
 					}
 					

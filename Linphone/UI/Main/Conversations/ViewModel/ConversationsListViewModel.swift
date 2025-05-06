@@ -198,6 +198,9 @@ class ConversationsListViewModel: ObservableObject {
 				let model = ConversationModel(chatRoom: chatRoom)
 				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
 				let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
+				if index != nil {
+					self.conversationsList[index!].chatMessageRemoveDelegate()
+				}
 				DispatchQueue.main.async {
 					if index != nil {
 						self.conversationsList.remove(at: index!)

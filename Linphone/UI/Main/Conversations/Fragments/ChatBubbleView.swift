@@ -340,7 +340,7 @@ struct ChatBubbleView: View {
 																.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
 																.frame(width: 10, height: 10)
 																.padding(.top, 1)
-														} else if eventLogMessage.message.status != nil {
+														} else if eventLogMessage.message.status != nil && !(CoreContext.shared.imdnToEverybodyThreshold && !eventLogMessage.message.isOutgoing) {
 															Image(conversationViewModel.getImageIMDN(status: eventLogMessage.message.status!))
 																.renderingMode(.template)
 																.resizable()
@@ -374,8 +374,10 @@ struct ChatBubbleView: View {
 													}
 												}
 												.onTapGesture {
-													conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
-													conversationViewModel.prepareBottomSheetForDeliveryStatus()
+													if !(CoreContext.shared.imdnToEverybodyThreshold && !eventLogMessage.message.isOutgoing) {
+														conversationViewModel.selectedMessageToDisplayDetails = eventLogMessage
+														conversationViewModel.prepareBottomSheetForDeliveryStatus()
+													}
 												}
 												.disabled(conversationViewModel.selectedMessage != nil)
 												.padding(.top, -4)
@@ -542,7 +544,6 @@ struct ChatBubbleView: View {
 								onImageTapped: {
 									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
 								})
-							
 							.overlay(
 								Group {
 									if eventLogMessage.message.attachments.first!.type == .video {
@@ -645,10 +646,24 @@ struct ChatBubbleView: View {
 							.frame(maxWidth: .infinity, alignment: .leading)
 							.lineLimit(1)
 						
-						Text(eventLogMessage.message.attachments.first!.size.formatBytes())
-							.default_text_style_300(styleSize: 14)
-							.frame(maxWidth: .infinity, alignment: .leading)
-							.lineLimit(1)
+						if eventLogMessage.message.attachments.first!.size > 0 {
+							Text(eventLogMessage.message.attachments.first!.size.formatBytes())
+							 .default_text_style_300(styleSize: 14)
+							 .frame(maxWidth: .infinity, alignment: .leading)
+							 .lineLimit(1)
+						} else {
+							if let size = self.getFileSize(atPath: eventLogMessage.message.attachments.first!.full.path) {
+								Text(size.formatBytes())
+									.default_text_style_300(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+							} else {
+								Text(eventLogMessage.message.attachments.first!.size.formatBytes())
+									.default_text_style_300(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+							}
+						}
 					}
 					.padding(.horizontal, 10)
 					.frame(maxWidth: .infinity, alignment: .leading)
@@ -762,10 +777,24 @@ struct ChatBubbleView: View {
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.lineLimit(1)
 							
-							Text(attachment.size.formatBytes())
-								.default_text_style_300(styleSize: 14)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.lineLimit(1)
+							if attachment.size > 0 {
+								Text(attachment.size.formatBytes())
+								 .default_text_style_300(styleSize: 14)
+								 .frame(maxWidth: .infinity, alignment: .leading)
+								 .lineLimit(1)
+							} else {
+								if let size = self.getFileSize(atPath: attachment.full.path) {
+									Text(size.formatBytes())
+										.default_text_style_300(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
+								} else {
+									Text(attachment.size.formatBytes())
+										.default_text_style_300(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
+								}
+							}
 						}
 						.padding(.horizontal, 10)
 						.frame(maxWidth: .infinity, alignment: .leading)
@@ -829,6 +858,18 @@ struct ChatBubbleView: View {
 				}
 			}
 		}
+	}
+	
+	private func getFileSize(atPath path: String) -> Int? {
+		do {
+			let attributes = try FileManager.default.attributesOfItem(atPath: path)
+			if let fileSize = attributes[.size] as? Int {
+				return fileSize
+			}
+		} catch {
+			print("Error: \(error)")
+		}
+		return nil
 	}
 }
 

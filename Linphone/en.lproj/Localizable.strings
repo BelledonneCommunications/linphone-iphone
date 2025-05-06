@@ -241,6 +241,10 @@
 "conversation_reply_to_message_title" = "Replying to: ";
 "conversation_text_field_hint" = "Say something…";
 "conversations_list_empty" = "No conversation for the moment…";
+"conversation_take_picture_label" = "Take picture";
+"conversation_pick_file_from_gallery_label" = "Open gallery";
+"conversation_pick_any_file_label" = "Pick file";
+"conversation_file_cant_be_opened_error_toast" = "File can't be opened!";
 "debug_logs_copied_to_clipboard_toast" = "Debug logs copied to clipboard";
 "Default" = "Default";
 "Default mode" = "Default mode";

@@ -49,8 +49,19 @@ class FloatingButton: UIButton {
 
 	private func setupButton() {
 		// Set the button's appearance
-		self.setImage(UIImage(named: "caret-down")?.withRenderingMode(.alwaysTemplate), for: .normal)
-		self.tintColor = .white
+		if let originalImage = UIImage(named: "caret-double-down")?.withRenderingMode(.alwaysTemplate) {
+			let newSize = CGSize(width: originalImage.size.width / 1.5, height: originalImage.size.height / 1.5)
+			
+			UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+			originalImage.draw(in: CGRect(origin: .zero, size: newSize))
+			var resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+			UIGraphicsEndImageContext()
+			
+			resizedImage = resizedImage?.withRenderingMode(.alwaysTemplate)
+			
+			self.setImage(resizedImage, for: .normal)
+			self.tintColor = .white
+		}
 		self.backgroundColor = UIColor(Color.orangeMain500)
 		self.layer.cornerRadius = 30
 		self.layer.shadowColor = UIColor.black.withAlphaComponent(0.2).cgColor

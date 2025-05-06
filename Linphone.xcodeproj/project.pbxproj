@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
@@ -56,6 +56,7 @@
 		C6A5A9482C10B6A30070FEA4 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A5A9472C10B6A30070FEA4 /* AuthState.swift */; };
 		C6DC4E3D2C199C4E009096FD /* BundleExtenion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DC4E3C2C199C4E009096FD /* BundleExtenion.swift */; };
 		C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DC4E3E2C19C289009096FD /* SideMenuEntry.swift */; };
+		D703F7082DC8C605005B8F75 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D703F7072DC8C5FF005B8F75 /* FilePicker.swift */; };
 		D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */; };
 		D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */; };
 		D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */; };
@@ -262,6 +263,7 @@
 		C6A5A9472C10B6A30070FEA4 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
 		C6DC4E3C2C199C4E009096FD /* BundleExtenion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtenion.swift; sourceTree = "<group>"; };
 		C6DC4E3E2C19C289009096FD /* SideMenuEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuEntry.swift; sourceTree = "<group>"; };
+		D703F7072DC8C5FF005B8F75 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationModel.swift; sourceTree = "<group>"; };
 		D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListBottomSheet.swift; sourceTree = "<group>"; };
@@ -413,7 +415,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */,
+				4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -542,6 +544,7 @@
 		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D703F7072DC8C5FF005B8F75 /* FilePicker.swift */,
 				D717A10D2CEB770D00849D92 /* ShareSheetController.swift */,
 				66C491F72B24D25A00CEA16D /* Extensions */,
 				66C491FC2B24D36500CEA16D /* AudioRouteUtils.swift */,
@@ -1346,6 +1349,7 @@
 				D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */,
 				66D382052CEB7E0A0063E1C5 /* ShortcutModel.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
+				D703F7082DC8C605005B8F75 /* FilePicker.swift in Sources */,
 				C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */,
 				D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */,
 				66C468FB2D2BE54800A836F7 /* PIPViewModel.swift in Sources */,

@@ -452,23 +452,19 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getHistorySize() {
-		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				let historySize = self.displayedConversation!.chatRoom.historyEventsSize
-				DispatchQueue.main.async {
-					self.displayedConversationHistorySize = historySize
-				}
+		if self.displayedConversation != nil {
+			let historySize = self.displayedConversation!.chatRoom.historyEventsSize
+			DispatchQueue.main.async {
+				self.displayedConversationHistorySize = historySize
 			}
 		}
 	}
 	
 	func getUnreadMessagesCount() {
-		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
-				DispatchQueue.main.async {
-					self.displayedConversationUnreadMessagesCount = unreadMessagesCount
-				}
+		if self.displayedConversation != nil {
+			let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+			DispatchQueue.main.async {
+				self.displayedConversationUnreadMessagesCount = unreadMessagesCount
 			}
 		}
 	}
@@ -490,44 +486,42 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getParticipantConversationModel() {
-		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				DispatchQueue.main.async {
-					self.isUserAdmin = false
-					self.participantConversationModelAdmin.removeAll()
-					self.participantConversationModel.removeAll()
-				}
-				self.displayedConversation!.chatRoom.participants.forEach { participant in
-					if participant.address != nil {
-						ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!) { avatarResult in
-							let avatarModelTmp = avatarResult
-							if participant.isAdmin {
-								DispatchQueue.main.async {
-									self.participantConversationModelAdmin.append(avatarModelTmp)
-									self.participantConversationModel.append(avatarModelTmp)
-								}
-							} else {
-								DispatchQueue.main.async {
-									self.participantConversationModel.append(avatarModelTmp)
-								}
+		if self.displayedConversation != nil {
+			DispatchQueue.main.async {
+				self.isUserAdmin = false
+				self.participantConversationModelAdmin.removeAll()
+				self.participantConversationModel.removeAll()
+			}
+			self.displayedConversation!.chatRoom.participants.forEach { participant in
+				if participant.address != nil {
+					ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!) { avatarResult in
+						let avatarModelTmp = avatarResult
+						if participant.isAdmin {
+							DispatchQueue.main.async {
+								self.participantConversationModelAdmin.append(avatarModelTmp)
+								self.participantConversationModel.append(avatarModelTmp)
+							}
+						} else {
+							DispatchQueue.main.async {
+								self.participantConversationModel.append(avatarModelTmp)
 							}
 						}
 					}
 				}
-				
-				if !self.displayedConversation!.isReadOnly {
-					if let currentUser = self.displayedConversation?.chatRoom.me,
-					   let address = currentUser.address {
-						ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
-							let avatarModelTmp = avatarResult
-							DispatchQueue.main.async {
-								if currentUser.isAdmin {
-									self.isUserAdmin = true
-									self.participantConversationModelAdmin.append(avatarModelTmp)
-								}
-								self.participantConversationModel.append(avatarModelTmp)
-								self.myParticipantConversationModel = avatarModelTmp
+			}
+			
+			if !self.displayedConversation!.isReadOnly {
+				if let currentUser = self.displayedConversation?.chatRoom.me,
+				   let address = currentUser.address {
+					ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
+						let avatarModelTmp = avatarResult
+						DispatchQueue.main.async {
+							if currentUser.isAdmin {
+								self.isUserAdmin = true
+								self.participantConversationModelAdmin.append(avatarModelTmp)
 							}
+							self.participantConversationModel.append(avatarModelTmp)
+							self.myParticipantConversationModel = avatarModelTmp
 						}
 					}
 				}
@@ -549,12 +543,6 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getMessages() {
-		self.getHistorySize()
-		self.getUnreadMessagesCount()
-		self.getParticipantConversationModel()
-		self.computeComposingLabel()
-		self.getEphemeralTime()
-		
 		self.mediasToSend.removeAll()
 		self.messageToReply = nil
 		
@@ -563,6 +551,12 @@ class ConversationViewModel: ObservableObject {
 		self.attachments.removeAll()
 		
 		coreContext.doOnCoreQueue { _ in
+			self.getHistorySize()
+			self.getUnreadMessagesCount()
+			self.getParticipantConversationModel()
+			self.computeComposingLabel()
+		 	self.getEphemeralTime()
+			
 			if self.displayedConversation != nil {
 				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
 				
@@ -1930,18 +1924,14 @@ class ConversationViewModel: ObservableObject {
 								switch attachment.type {
 								case .image:
 									content.type = "image"
-									/*
-									 case .audio:
-									 content.type = "audio"
-									 */
+								case .audio:
+									content.type = "audio"
 								case .video:
 									content.type = "video"
-									/*
-									 case .pdf:
-									 content.type = "application"
-									 case .plainText:
-									 content.type = "text"
-									 */
+								case .pdf:
+									content.type = "application"
+								case .text:
+									content.type = "text"
 								default:
 									content.type = "file"
 								}
@@ -1953,25 +1943,21 @@ class ConversationViewModel: ObservableObject {
 								
 								if message != nil {
 									
-									let path = FileManager.default.temporaryDirectory.appendingPathComponent((attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-									let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
-													  + (attachment.full.lastPathComponent.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-									/*
-									 let data = try Data(contentsOf: path)
-									 let decodedData: () = try data.write(to: path)
-									 */
-									
-									do {
-										if FileManager.default.fileExists(atPath: newPath!.path) {
-											try FileManager.default.removeItem(atPath: newPath!.path)
+									let path = FileManager.default.temporaryDirectory.appendingPathComponent(attachment.full.lastPathComponent)
+									if let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
+														 + (attachment.full.lastPathComponent)) {
+										do {
+											if FileManager.default.fileExists(atPath: newPath.path) {
+												try FileManager.default.removeItem(atPath: newPath.path)
+											}
+											try FileManager.default.moveItem(atPath: path.path, toPath: newPath.path)
+											
+											content.filePath = newPath.path
+											
+											message!.addFileContent(content: content)
+										} catch {
+											Log.error(error.localizedDescription)
 										}
-										try FileManager.default.moveItem(atPath: path.path, toPath: newPath!.path)
-										
-										let filePathTmp = newPath?.absoluteString
-										content.filePath = String(filePathTmp!.dropFirst(7))
-										message!.addFileContent(content: content)
-									} catch {
-										Log.error(error.localizedDescription)
 									}
 								}
 							} catch {
@@ -2027,10 +2013,9 @@ class ConversationViewModel: ObservableObject {
 			if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: conversationModel.chatRoom.peerAddress, participants: nil) {
 				if LinphoneUtils.getChatRoomId(room: newChatRoom) == conversationModel.id {
 					self.addConversationDelegate(chatRoom: newChatRoom)
-					let conversation = ConversationModel(chatRoom: newChatRoom)
 					DispatchQueue.main.async {
 						withAnimation {
-							self.displayedConversation = conversation
+							self.displayedConversation = conversationModel
 						}
 						self.getMessages()
 					}
@@ -2596,31 +2581,29 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getEphemeralTime() {
-		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				
-				let lifetime = self.displayedConversation!.chatRoom.ephemeralLifetime
-				DispatchQueue.main.async {
-					switch lifetime {
-					case 60:
-						self.isEphemeral = true
-						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_minute", comment: "")
-					case 3600:
-						self.isEphemeral = true
-						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_hour", comment: "")
-					case 86400:
-						self.isEphemeral = true
-						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_day", comment: "")
-					case 259200:
-						self.isEphemeral = true
-						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_three_days", comment: "")
-					case 604800:
-						self.isEphemeral = true
-						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_week", comment: "")
-					default:
-						self.isEphemeral = false
-						self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
-					}
+		if self.displayedConversation != nil {
+			
+			let lifetime = self.displayedConversation!.chatRoom.ephemeralLifetime
+			DispatchQueue.main.async {
+				switch lifetime {
+				case 60:
+					self.isEphemeral = true
+					self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_minute", comment: "")
+				case 3600:
+					self.isEphemeral = true
+					self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_hour", comment: "")
+				case 86400:
+					self.isEphemeral = true
+					self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_day", comment: "")
+				case 259200:
+					self.isEphemeral = true
+					self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_three_days", comment: "")
+				case 604800:
+					self.isEphemeral = true
+					self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_one_week", comment: "")
+				default:
+					self.isEphemeral = false
+					self.ephemeralTime = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
 				}
 			}
 		}

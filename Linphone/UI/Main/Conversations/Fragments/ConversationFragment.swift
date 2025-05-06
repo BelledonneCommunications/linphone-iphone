@@ -55,8 +55,11 @@ struct ConversationFragment: View {
 	
 	@State private var displayFloatingButton = false
 	
+	@State private var areFilePickersOpen = false
+	
 	@State private var isShowPhotoLibrary = false
 	@State private var isShowCamera = false
+	@State private var isShowFilePicker = false
 	
 	@State private var mediasIsLoading = false
 	@State private var voiceRecordingInProgress = false
@@ -115,6 +118,23 @@ struct ConversationFragment: View {
 									self.mediasIsLoading = false
 								}
 							}
+							.edgesIgnoringSafeArea(.all)
+						})
+						.sheet(isPresented: $isShowFilePicker, onDismiss: {
+							isShowFilePicker = false
+						}, content: {
+							FilePicker(onDocumentsPicked: { urlList in
+								FilePicker.convertToAttachmentArray(fromResults: urlList) { mediasOrNil, errorOrNil in
+									if let error = errorOrNil {
+										print(error)
+									}
+									
+									if let medias = mediasOrNil {
+										conversationViewModel.mediasToSend.append(contentsOf: medias)
+									}
+									self.mediasIsLoading = false
+								}
+							})
 							.edgesIgnoringSafeArea(.all)
 						})
 						.fullScreenCover(isPresented: $isShowCamera) {
@@ -421,7 +441,7 @@ struct ConversationFragment: View {
 									} label: {
 										ZStack {
 											
-											Image("caret-down")
+											Image("caret-double-down")
 												.renderingMode(.template)
 												.foregroundStyle(.white)
 												.padding()
@@ -555,23 +575,40 @@ struct ConversationFragment: View {
 														.fill(Color(.white))
 														.frame(width: 100, height: 100)
 													
-													AsyncImage(url: attachment.thumbnail) { image in
-														ZStack {
-															image
-																.resizable()
-																.interpolation(.medium)
-																.aspectRatio(contentMode: .fill)
-															
-															if attachment.type == .video {
-																Image("play-fill")
-																	.renderingMode(.template)
-																	.resizable()
-																	.foregroundStyle(.white)
-																	.frame(width: 40, height: 40, alignment: .leading)
+													VStack {
+														if attachment.type == .image || attachment.type == .gif || attachment.type == .video {
+															AsyncImage(url: attachment.thumbnail) { image in
+																ZStack {
+																	image
+																		.resizable()
+																		.interpolation(.medium)
+																		.aspectRatio(contentMode: .fill)
+																	
+																	if attachment.type == .video {
+																		Image("play-fill")
+																			.renderingMode(.template)
+																			.resizable()
+																			.foregroundStyle(.white)
+																			.frame(width: 40, height: 40, alignment: .leading)
+																	}
+																}
+															} placeholder: {
+																ProgressView()
 															}
+														} else {
+															VStack {
+																Spacer()
+																Text(attachment.name)
+																	.foregroundStyle(Color.grayMain2c700)
+																	.default_text_style_800(styleSize: 14)
+																	.truncationMode(.middle)
+																	.frame(maxWidth: .infinity, alignment: .center)
+																	.multilineTextAlignment(.center)
+																	.lineLimit(2)
+																Spacer()
+															}
+															.background(Color.grayMain2c200)
 														}
-													} placeholder: {
-														ProgressView()
 													}
 													.layoutPriority(-1)
 													.onTapGesture {
@@ -620,46 +657,94 @@ struct ConversationFragment: View {
 							.transition(.move(edge: .bottom))
 						}
 						
+						if areFilePickersOpen {
+							ZStack(alignment: .top) {
+								HStack {
+									Button {
+										self.areFilePickersOpen.toggle()
+										self.isShowCamera = true
+									} label: {
+										VStack {
+											Image("camera")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+											
+											Text("conversation_take_picture_label")
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.default_text_style_300(styleSize: 15)
+												.frame(maxWidth: .infinity, alignment: .center)
+												.lineLimit(1)
+										}
+									}
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+									
+									Button {
+										self.areFilePickersOpen.toggle()
+										self.isShowPhotoLibrary = true
+										self.mediasIsLoading = true
+									} label: {
+										VStack {
+											Image("image")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+											
+											Text("conversation_pick_file_from_gallery_label")
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.default_text_style_300(styleSize: 15)
+												.frame(maxWidth: .infinity, alignment: .center)
+												.lineLimit(1)
+										}
+									}
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+									
+									Button {
+										self.areFilePickersOpen.toggle()
+										self.isShowFilePicker = true
+										self.mediasIsLoading = true
+									} label: {
+										VStack {
+											Image("file")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+											
+											Text("conversation_pick_any_file_label")
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.default_text_style_300(styleSize: 15)
+												.frame(maxWidth: .infinity, alignment: .center)
+												.lineLimit(1)
+										}
+									}
+									.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.all, 20)
+								.background(Color.gray100)
+							}
+							.transition(.move(edge: .bottom))
+						}
+						
 						HStack(spacing: 0) {
 							if !voiceRecordingInProgress {
 								Button {
+									withAnimation {
+										areFilePickersOpen.toggle()
+									}
 								} label: {
-									Image("smiley")
+									Image(areFilePickersOpen ? "x" : "paperclip")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
+										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
 										.frame(width: 28, height: 28, alignment: .leading)
 										.padding(.all, 6)
 										.padding(.top, 4)
-								}
-								.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-								
-								Button {
-									self.isShowPhotoLibrary = true
-									self.mediasIsLoading = true
-								} label: {
-									Image("paperclip")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-										.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
-										.padding(.all, isMessageTextFocused ? 0 : 6)
-										.padding(.top, 4)
 										.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
-								}
-								.padding(.horizontal, isMessageTextFocused ? 0 : 2)
-								
-								Button {
-									self.isShowCamera = true
-								} label: {
-									Image("camera")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-										.frame(width: isMessageTextFocused ? 0 : 28, height: isMessageTextFocused ? 0 : 28, alignment: .leading)
-										.padding(.all, isMessageTextFocused ? 0 : 6)
-										.padding(.top, 4)
-										.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
+										.animation(.none, value: areFilePickersOpen)
 								}
 								.padding(.horizontal, isMessageTextFocused ? 0 : 2)
 								
