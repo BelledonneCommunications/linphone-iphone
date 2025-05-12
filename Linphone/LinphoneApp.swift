@@ -148,81 +148,93 @@ struct LinphoneApp: App {
 	@State private var conversationForwardMessageViewModel: ConversationForwardMessageViewModel?
 	@State private var accountProfileViewModel: AccountProfileViewModel?
 	
+	@State private var pendingURL: URL?
+	
 	var body: some Scene {
 		WindowGroup {
-			if coreContext.coreIsStarted {
-				if !sharedMainViewModel.welcomeViewDisplayed {
-					ZStack {
-						WelcomeView()
-
-						ToastView()
-							.zIndex(3)
-					}
-					.onOpenURL { url in
-						URIHandler.handleURL(url: url)
-					}
-				} else if coreContext.accounts.isEmpty || sharedMainViewModel.displayProfileMode {
-					ZStack {
-						AssistantView()
-						
-						ToastView()
-							.zIndex(3)
-					}
-					.onOpenURL { url in
-						URIHandler.handleURL(url: url)
-					}
-				} else if !coreContext.accounts.isEmpty
-							&& contactViewModel != nil
-							&& editContactViewModel != nil
-							&& historyViewModel != nil
-							&& historyListViewModel != nil
-							&& startCallViewModel != nil
-							&& startConversationViewModel != nil
-							&& callViewModel != nil
-							&& meetingWaitingRoomViewModel != nil
-							&& conversationsListViewModel != nil
-							&& conversationViewModel != nil 
-							&& meetingsListViewModel != nil
-							&& meetingViewModel != nil 
-							&& conversationForwardMessageViewModel != nil
-							&& accountProfileViewModel != nil {
-					ContentView(
-						contactViewModel: contactViewModel!,
-						editContactViewModel: editContactViewModel!,
-						historyViewModel: historyViewModel!,
-						historyListViewModel: historyListViewModel!,
-						startCallViewModel: startCallViewModel!,
-						startConversationViewModel: startConversationViewModel!,
-						callViewModel: callViewModel!,
-						meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
-						conversationsListViewModel: conversationsListViewModel!,
-						conversationViewModel: conversationViewModel!,
-						meetingsListViewModel: meetingsListViewModel!,
-						meetingViewModel: meetingViewModel!,
-						conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
-						accountProfileViewModel: accountProfileViewModel!,
-						index: $index
-					)
-					.environmentObject(navigationManager)
-					.onAppear {
-						index = sharedMainViewModel.indexView
-						// Link the navigation manager to the AppDelegate
-						delegate.navigationManager = navigationManager
-						
-						// Check if the app was launched with a notification payload
-						if let callId = delegate.launchNotificationCallId, let peerAddr = delegate.launchNotificationPeerAddr, let localAddr = delegate.launchNotificationLocalAddr {
-							// Notify the app to navigate to the chat room
-							navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
+			if coreContext.coreHasStartedOnce {
+				ZStack {
+					if !sharedMainViewModel.welcomeViewDisplayed {
+						ZStack {
+							WelcomeView()
+							
+							ToastView()
+								.zIndex(3)
 						}
-						
-						accountProfileViewModel!.setAvatarModel()
+					} else if coreContext.accounts.isEmpty || sharedMainViewModel.displayProfileMode {
+						ZStack {
+							AssistantView()
+							
+							ToastView()
+								.zIndex(3)
+						}
+					} else if !coreContext.accounts.isEmpty
+								&& contactViewModel != nil
+								&& editContactViewModel != nil
+								&& historyViewModel != nil
+								&& historyListViewModel != nil
+								&& startCallViewModel != nil
+								&& startConversationViewModel != nil
+								&& callViewModel != nil
+								&& meetingWaitingRoomViewModel != nil
+								&& conversationsListViewModel != nil
+								&& conversationViewModel != nil
+								&& meetingsListViewModel != nil
+								&& meetingViewModel != nil
+								&& conversationForwardMessageViewModel != nil
+								&& accountProfileViewModel != nil {
+						ContentView(
+							contactViewModel: contactViewModel!,
+							editContactViewModel: editContactViewModel!,
+							historyViewModel: historyViewModel!,
+							historyListViewModel: historyListViewModel!,
+							startCallViewModel: startCallViewModel!,
+							startConversationViewModel: startConversationViewModel!,
+							callViewModel: callViewModel!,
+							meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
+							conversationsListViewModel: conversationsListViewModel!,
+							conversationViewModel: conversationViewModel!,
+							meetingsListViewModel: meetingsListViewModel!,
+							meetingViewModel: meetingViewModel!,
+							conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
+							accountProfileViewModel: accountProfileViewModel!,
+							index: $index
+						)
+						.environmentObject(navigationManager)
+						.onAppear {
+							index = sharedMainViewModel.indexView
+							// Link the navigation manager to the AppDelegate
+							delegate.navigationManager = navigationManager
+							
+							// Check if the app was launched with a notification payload
+							if let callId = delegate.launchNotificationCallId, let peerAddr = delegate.launchNotificationPeerAddr, let localAddr = delegate.launchNotificationLocalAddr {
+								// Notify the app to navigate to the chat room
+								navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
+							}
+							
+							accountProfileViewModel!.setAvatarModel()
+						}
+					} else {
+						SplashScreen()
 					}
-					.onOpenURL { url in
-						URIHandler.handleURL(url: url)
+					
+					if coreContext.coreIsStarted {
+						VStack {
+							
+						}
+						.onAppear {
+							if let url = pendingURL {
+								URIHandler.handleURL(url: url)
+								pendingURL = nil
+							}
+						}
 					}
-				} else {
-					SplashScreen().onOpenURL { url in
+				}
+				.onOpenURL { url in
+					if coreContext.coreIsStarted {
 						URIHandler.handleURL(url: url)
+					} else {
+						pendingURL = url
 					}
 				}
 			} else {

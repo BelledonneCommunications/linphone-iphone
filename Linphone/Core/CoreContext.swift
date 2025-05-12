@@ -40,6 +40,7 @@ final class CoreContext: ObservableObject {
 	var coreVersion: String = Core.getVersion
 	@Published var loggedIn: Bool = false
 	@Published var loggingInProgress: Bool = false
+	@Published var coreHasStartedOnce: Bool = false
 	@Published var coreIsStarted: Bool = false
 	@Published var accounts: [AccountModel] = []
 	@Published var shortcuts: [ShortcutModel] = []
@@ -81,7 +82,7 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func initialiseCore() throws {
-		Log.info("Initialising core 0000")
+		Log.info("Initialising core")
 #if USE_CRASHLYTICS
 		FirebaseApp.configure()
 #endif
@@ -128,11 +129,9 @@ final class CoreContext: ObservableObject {
 				}
 			}
 			
-			Log.info("Initialising core")
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: nil, appGroupId: Config.appGroupName, mainCore: true)
 			
 			linphone_core_set_push_and_app_delegate_dispatch_queue(self.mCore.getCobject, Unmanaged.passUnretained(coreQueue).toOpaque())
-			self.mCore.autoIterateEnabled = false
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
 			
@@ -221,8 +220,13 @@ final class CoreContext: ObservableObject {
 						accountModels.append(AccountModel(account: account, core: self.mCore))
 					}
 					DispatchQueue.main.async {
+						self.coreHasStartedOnce = true
 						self.coreIsStarted = true
 						self.accounts = accountModels
+					}
+				} else {
+					DispatchQueue.main.async {
+						self.coreIsStarted = state == GlobalState.On
 					}
 				}
 			}, onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
@@ -411,7 +415,7 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func performActionOnCoreQueueWhenCoreIsStarted(action: @escaping (_ core: Core) -> Void ) {
-		if coreIsStarted {
+		if coreHasStartedOnce {
 			CoreContext.shared.doOnCoreQueue { core in
 				action(core)
 			}
