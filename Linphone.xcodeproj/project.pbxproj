@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
@@ -176,6 +176,11 @@
 		D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */; };
 		D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */; };
 		D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */; };
+		D7D5AD7F2DD34F0E00016721 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD7E2DD34F0E00016721 /* AppAuth */; };
+		D7D5AD812DD34F1A00016721 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD802DD34F1A00016721 /* FirebaseAnalytics */; };
+		D7D5AD832DD34F2300016721 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD822DD34F2300016721 /* FirebaseCrashlytics */; };
+		D7D5AD852DD34F3700016721 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD842DD34F3700016721 /* FirebaseAnalytics */; };
+		D7D5AD872DD34F3C00016721 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD862DD34F3C00016721 /* FirebaseCrashlytics */; };
 		D7DA67622ACCB2FA00E95002 /* LoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */; };
 		D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */; };
 		D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */; };
@@ -407,6 +412,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7D5AD872DD34F3C00016721 /* FirebaseCrashlytics in Frameworks */,
+				D7D5AD852DD34F3700016721 /* FirebaseAnalytics in Frameworks */,
 				C618BF582D75CA0D005A00E0 /* linphonesw in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,8 +422,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7D5AD7F2DD34F0E00016721 /* AppAuth in Frameworks */,
 				C618BF562D75CA03005A00E0 /* linphonesw in Frameworks */,
-				4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */,
+				D7D5AD832DD34F2300016721 /* FirebaseCrashlytics in Frameworks */,
+				D7D5AD812DD34F1A00016721 /* FirebaseAnalytics in Frameworks */,
+				4ED1F0A881A9ACB5977A8987 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -513,13 +523,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		A31AF2AB8C6A3D7B7EA3B424 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		C6A5A9462C10B64A0070FEA4 /* SingleSignOn */ = {
 			isa = PBXGroup;
 			children = (
@@ -571,7 +574,6 @@
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				660AAF7C2B839272004C0FA6 /* msgNotificationService */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
-				A31AF2AB8C6A3D7B7EA3B424 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1019,7 +1021,6 @@
 				660AAF772B839271004C0FA6 /* Sources */,
 				660AAF782B839271004C0FA6 /* Frameworks */,
 				660AAF792B839271004C0FA6 /* Resources */,
-				6677CE082C73D71A0020FD0E /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -1039,7 +1040,6 @@
 				660AAF802B839272004C0FA6 /* Embed Foundation Extensions */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
 				D7FB55122AD53FE200A5AB15 /* Run Script */,
-				66BF2D4B2B558A3100A5F2E3 /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -1070,7 +1070,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "linphone" */;
+			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1081,6 +1081,8 @@
 			mainGroup = D719ABAA2ABC67BF00B41C10;
 			packageReferences = (
 				C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
+				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -1127,54 +1129,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		6677CE082C73D71A0020FD0E /* Crashlytics */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
-				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
-			);
-			name = Crashlytics;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
-		};
-		66BF2D4B2B558A3100A5F2E3 /* Crashlytics */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
-				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
-			);
-			name = Crashlytics;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n\n";
-		};
 		D7FB55122AD53FE200A5AB15 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -1716,7 +1670,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "linphone" */ = {
+		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D719ABC02ABC67BF00B41C10 /* Debug */,
@@ -1745,6 +1699,22 @@
 				kind = branch;
 			};
 		};
+		D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1757,6 +1727,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
 			productName = linphonesw;
+		};
+		D7D5AD7E2DD34F0E00016721 /* AppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuth;
+		};
+		D7D5AD802DD34F1A00016721 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		D7D5AD822DD34F2300016721 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		D7D5AD842DD34F3700016721 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		D7D5AD862DD34F3C00016721 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
