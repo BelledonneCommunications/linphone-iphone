@@ -36,7 +36,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 		let tokenStr = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
 		Log.info("Received remote push token : \(tokenStr)")
 		CoreContext.shared.doOnCoreQueue { core in
-			Log.warn("Push are disabled for this version, do not forward push token to the core")
 			Log.info("Forwarding remote push token to core")
 			core.didRegisterForRemotePushWithStringifiedToken(deviceTokenStr: tokenStr + ":remote")
 		}
