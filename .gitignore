@@ -5,6 +5,4 @@ xcuserdata/
 Pods/
 .DS_Store
 build
-GoogleService-Info.plist
-msgNotificationService/GoogleService-Info.plist
 Linphone.xcodeproj/xcuserdata

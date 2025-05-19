@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>221368768663-b8e48em01it3pt04vp1k0ddrgrcrju65.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.221368768663-b8e48em01it3pt04vp1k0ddrgrcrju65</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDJTtlRCM7IqdVUU2dSIYq2YIsTz6bqnkI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>221368768663</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.linphone.phone.msgNotificationService</string>
+	<key>PROJECT_ID</key>
+	<string>linphone-iphone</string>
+	<key>STORAGE_BUCKET</key>
+	<string>linphone-iphone.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:221368768663:ios:ccf2c32eadcd3a0f9431d2</string>
+	<key>DATABASE_URL</key>
+	<string>https://linphone-iphone.firebaseio.com</string>
+</dict>
+</plist>
