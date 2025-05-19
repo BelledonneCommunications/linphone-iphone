@@ -287,7 +287,7 @@
 		D717630C2BD7BD0E00464097 /* ParticipantsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsListFragment.swift; sourceTree = "<group>"; };
 		D717A10D2CEB770D00849D92 /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
 		D71968912B86369D00DF4459 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
-		D719ABB32ABC67BF00B41C10 /* Linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinphoneApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneApp.swift; sourceTree = "<group>"; };
 		D719ABB82ABC67BF00B41C10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -580,7 +580,7 @@
 		D719ABB42ABC67BF00B41C10 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D719ABB32ABC67BF00B41C10 /* Linphone.app */,
+				D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */,
 				660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */,
 			);
 			name = Products;
@@ -1031,24 +1031,24 @@
 			productReference = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		D719ABB22ABC67BF00B41C10 /* Linphone */ = {
+		D719ABB22ABC67BF00B41C10 /* LinphoneApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "Linphone" */;
+			buildConfigurationList = D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "LinphoneApp" */;
 			buildPhases = (
 				D719ABAF2ABC67BF00B41C10 /* Sources */,
 				D719ABB02ABC67BF00B41C10 /* Frameworks */,
 				660AAF802B839272004C0FA6 /* Embed Foundation Extensions */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
-				D7FB55122AD53FE200A5AB15 /* Run Script */,
+				D72F04F52DDB2CB800F4C713 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				660AAF7E2B839272004C0FA6 /* PBXTargetDependency */,
 			);
-			name = Linphone;
+			name = LinphoneApp;
 			productName = Linphone;
-			productReference = D719ABB32ABC67BF00B41C10 /* Linphone.app */;
+			productReference = D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1070,7 +1070,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */;
+			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "LinphoneApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1088,7 +1088,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D719ABB22ABC67BF00B41C10 /* Linphone */,
+				D719ABB22ABC67BF00B41C10 /* LinphoneApp */,
 				660AAF7A2B839271004C0FA6 /* msgNotificationService */,
 			);
 		};
@@ -1129,24 +1129,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		D7FB55122AD53FE200A5AB15 /* Run Script */ = {
+		D72F04F52DDB2CB800F4C713 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 12;
+			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1349,7 +1347,7 @@
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1392,7 +1390,7 @@
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1458,7 +1456,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1481,6 +1479,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = LinphoneApp;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1519,7 +1518,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1535,6 +1534,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = LinphoneApp;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -1549,7 +1549,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";
@@ -1609,7 +1609,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
@@ -1670,7 +1670,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */ = {
+		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "LinphoneApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D719ABC02ABC67BF00B41C10 /* Debug */,
@@ -1679,7 +1679,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "Linphone" */ = {
+		D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "LinphoneApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D719ABC32ABC67BF00B41C10 /* Debug */,
