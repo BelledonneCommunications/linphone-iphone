@@ -19,6 +19,7 @@
 
 import Foundation
 import linphonesw
+import SwiftUI
 
 class ParticipantModel: ObservableObject {
 	

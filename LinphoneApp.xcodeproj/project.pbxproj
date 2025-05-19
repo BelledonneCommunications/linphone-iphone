@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 660D8A702B517D260092694D /* GoogleService-Info.plist */; };
 		6613A0AE2BAEB7DF008923A4 /* MeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613A0AD2BAEB7DF008923A4 /* MeetingFragment.swift */; };
@@ -42,6 +41,8 @@
 		66FBFC4B2B83BD7B00BC6AB1 /* CoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C491FA2B24D32600CEA16D /* CoreExtension.swift */; };
 		66FDB7812C7C689A00561566 /* EventEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FDB7802C7C689A00561566 /* EventEditViewController.swift */; };
 		C60E8F192C0F649200A06DB8 /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60E8F182C0F649200A06DB8 /* UIApplicationExtension.swift */; };
+		C618BF562D75CA03005A00E0 /* linphonesw in Frameworks */ = {isa = PBXBuildFile; productRef = C618BF552D75CA03005A00E0 /* linphonesw */; };
+		C618BF582D75CA0D005A00E0 /* linphonesw in Frameworks */ = {isa = PBXBuildFile; productRef = C618BF572D75CA0D005A00E0 /* linphonesw */; };
 		C62817282C1B389700DBA646 /* SideMenuAccountRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62817272C1B389700DBA646 /* SideMenuAccountRow.swift */; };
 		C628172E2C1C3A3600DBA646 /* AccountExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C628172D2C1C3A3600DBA646 /* AccountExtension.swift */; };
 		C62817302C1C3DCC00DBA646 /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C628172F2C1C3DCC00DBA646 /* AccountModel.swift */; };
@@ -174,6 +175,11 @@
 		D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */; };
 		D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */; };
 		D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */; };
+		D7D5AD7F2DD34F0E00016721 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD7E2DD34F0E00016721 /* AppAuth */; };
+		D7D5AD812DD34F1A00016721 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD802DD34F1A00016721 /* FirebaseAnalytics */; };
+		D7D5AD832DD34F2300016721 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD822DD34F2300016721 /* FirebaseCrashlytics */; };
+		D7D5AD852DD34F3700016721 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD842DD34F3700016721 /* FirebaseAnalytics */; };
+		D7D5AD872DD34F3C00016721 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD862DD34F3C00016721 /* FirebaseCrashlytics */; };
 		D7DA67622ACCB2FA00E95002 /* LoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */; };
 		D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */; };
 		D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */; };
@@ -281,7 +287,7 @@
 		D717630C2BD7BD0E00464097 /* ParticipantsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantsListFragment.swift; sourceTree = "<group>"; };
 		D717A10D2CEB770D00849D92 /* ShareSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheetController.swift; sourceTree = "<group>"; };
 		D71968912B86369D00DF4459 /* ChatBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubbleView.swift; sourceTree = "<group>"; };
-		D719ABB32ABC67BF00B41C10 /* Linphone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Linphone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinphoneApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinphoneApp.swift; sourceTree = "<group>"; };
 		D719ABB82ABC67BF00B41C10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -408,6 +414,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7D5AD872DD34F3C00016721 /* FirebaseCrashlytics in Frameworks */,
+				D7D5AD852DD34F3700016721 /* FirebaseAnalytics in Frameworks */,
+				C618BF582D75CA0D005A00E0 /* linphonesw in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,7 +424,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4ED1F0A881A9ACB5977A8987 /* BuildFile in Frameworks */,
+				D7D5AD7F2DD34F0E00016721 /* AppAuth in Frameworks */,
+				C618BF562D75CA03005A00E0 /* linphonesw in Frameworks */,
+				D7D5AD832DD34F2300016721 /* FirebaseCrashlytics in Frameworks */,
+				D7D5AD812DD34F1A00016721 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,13 +524,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		A31AF2AB8C6A3D7B7EA3B424 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		C6A5A9462C10B64A0070FEA4 /* SingleSignOn */ = {
 			isa = PBXGroup;
 			children = (
@@ -571,14 +576,13 @@
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				660AAF7C2B839272004C0FA6 /* msgNotificationService */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
-				A31AF2AB8C6A3D7B7EA3B424 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
 		D719ABB42ABC67BF00B41C10 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D719ABB32ABC67BF00B41C10 /* Linphone.app */,
+				D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */,
 				660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */,
 			);
 			name = Products;
@@ -1019,7 +1023,6 @@
 				660AAF772B839271004C0FA6 /* Sources */,
 				660AAF782B839271004C0FA6 /* Frameworks */,
 				660AAF792B839271004C0FA6 /* Resources */,
-				6677CE082C73D71A0020FD0E /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -1030,25 +1033,24 @@
 			productReference = 660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		D719ABB22ABC67BF00B41C10 /* Linphone */ = {
+		D719ABB22ABC67BF00B41C10 /* LinphoneApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "Linphone" */;
+			buildConfigurationList = D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "LinphoneApp" */;
 			buildPhases = (
 				D719ABAF2ABC67BF00B41C10 /* Sources */,
 				D719ABB02ABC67BF00B41C10 /* Frameworks */,
 				660AAF802B839272004C0FA6 /* Embed Foundation Extensions */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
-				D7FB55122AD53FE200A5AB15 /* Run Script */,
-				66BF2D4B2B558A3100A5F2E3 /* Crashlytics */,
+				D72F04F52DDB2CB800F4C713 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				660AAF7E2B839272004C0FA6 /* PBXTargetDependency */,
 			);
-			name = Linphone;
+			name = LinphoneApp;
 			productName = Linphone;
-			productReference = D719ABB32ABC67BF00B41C10 /* Linphone.app */;
+			productReference = D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1070,7 +1072,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */;
+			buildConfigurationList = D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "LinphoneApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1080,11 +1082,16 @@
 				fr,
 			);
 			mainGroup = D719ABAA2ABC67BF00B41C10;
+			packageReferences = (
+				C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
+				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D719ABB22ABC67BF00B41C10 /* Linphone */,
+				D719ABB22ABC67BF00B41C10 /* LinphoneApp */,
 				660AAF7A2B839271004C0FA6 /* msgNotificationService */,
 			);
 		};
@@ -1125,72 +1132,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		6677CE082C73D71A0020FD0E /* Crashlytics */ = {
+		D72F04F52DDB2CB800F4C713 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
-				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
 			);
-			name = Crashlytics;
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n";
-		};
-		66BF2D4B2B558A3100A5F2E3 /* Crashlytics */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
-				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
-			);
-			name = Crashlytics;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "val=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*USE_CRASHLYTICS=\\([0-9]*\\)\"`\nif [ $val = 1 ]; then\n    ${PODS_ROOT}/FirebaseCrashlytics/run\nfi\n\n";
-		};
-		D7FB55122AD53FE200A5AB15 /* Run Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 12;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1406,7 +1363,7 @@
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1449,7 +1406,7 @@
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1515,7 +1472,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1538,6 +1495,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = LinphoneApp;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1576,7 +1534,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
+				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1592,6 +1550,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = LinphoneApp;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
@@ -1606,7 +1565,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";
@@ -1666,7 +1625,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
@@ -1727,7 +1686,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "Linphone" */ = {
+		D719ABAE2ABC67BF00B41C10 /* Build configuration list for PBXProject "LinphoneApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D719ABC02ABC67BF00B41C10 /* Debug */,
@@ -1736,7 +1695,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "Linphone" */ = {
+		D719ABC22ABC67BF00B41C10 /* Build configuration list for PBXNativeTarget "LinphoneApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D719ABC32ABC67BF00B41C10 /* Debug */,
@@ -1746,6 +1705,71 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git";
+			requirement = {
+				branch = stable;
+				kind = branch;
+			};
+		};
+		D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C618BF552D75CA03005A00E0 /* linphonesw */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
+			productName = linphonesw;
+		};
+		C618BF572D75CA0D005A00E0 /* linphonesw */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
+			productName = linphonesw;
+		};
+		D7D5AD7E2DD34F0E00016721 /* AppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuth;
+		};
+		D7D5AD802DD34F1A00016721 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		D7D5AD822DD34F2300016721 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		D7D5AD842DD34F3700016721 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		D7D5AD862DD34F3C00016721 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D719ABAB2ABC67BF00B41C10 /* Project object */;
 }

@@ -21,6 +21,7 @@ import SwiftUI
 import linphonesw
 import AVFAudio
 import Combine
+import SwiftUI
 
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length

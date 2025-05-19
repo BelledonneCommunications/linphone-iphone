@@ -18,6 +18,7 @@
  */
 
 import linphonesw
+import SwiftUI
 
 class SettingsViewModel: ObservableObject {
 	
