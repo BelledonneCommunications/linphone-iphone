@@ -12,8 +12,8 @@ Linphone is dual licensed, and is available either :
 
 ## Documentation
 
--   Supported features and RFCs : https://www.linphone.org/technical-corner/linphone/features
--   Linphone public wiki : https://wiki.linphone.org/xwiki/wiki/public/view/Linphone/
+- Supported features and RFCs : https://www.linphone.org/technical-corner/linphone/features
+- Linphone public wiki : https://wiki.linphone.org/xwiki/wiki/public/view/Linphone/
 
 
 # How can I contribute?
@@ -35,9 +35,9 @@ If you want to dig through Linphone code or report a bug, please read `CONTRIBUT
 
 Enter the Beta :
 - Download TestFlight from the App Store and log in it with your apple-id
--Tap the public link on your iOS device. The public link : https://testflight.apple.com/join/LUlmZWjH
--Touch View in TestFlight or Start Testing. You can also touch Accept, Install, or Update for Linphone app.
--And voilà ! You can update your beta version with the same public link when a new one is available
+- Tap the public link on your iOS device. The public link : https://testflight.apple.com/join/LUlmZWjH
+- Touch View in TestFlight or Start Testing. You can also touch Accept, Install, or Update for Linphone app.
+- And voilà ! You can update your beta version with the same public link when a new one is available
 
 Send a crash report :
  - It is done automatically by TestFlight
@@ -58,57 +58,78 @@ Report a bug :
 
 ## What's new
 
-Now the default way of building linphone-iphone is to use CocoaPods to retrieve the linphone-sdk frameworks.
-Compared to previous versions, this project no longer uses submodules developper has to build in order to get a working app.
-However, if you wish to use a locally compiled SDK, read paragraph "Using a local linphone SDK" below to know how to proceed.
+With Linphone 6.0, we are switching to Swift Package Manager.  
+By default, the app uses a remote SPM repository: https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git  
+However, if you wish to use a locally built SDK, please refer to the section “Using a local Linphone SDK” below for instructions.
 
 ## Building the app
 
-If you don't have CocoaPods already, you can download and install it using :
+Open `linphone.xcodeproj` with Xcode to build and run the app.  
+The remote SPM is already configured in the app.
+
+![Image1](ReadmeImages/ReadmeImage1.png)
+
+# Using a remote Linphone SDK (Optional)
+
+If you want to switch the dependencies back to the remote SPM, here’s how to proceed:
+
+- Go to the Package Dependencies section of your project.
+
+![Image2](ReadmeImages/ReadmeImage2.png)
+
+- In the top-right corner of the screen, enter the following URI: https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git
+- Change the Dependency Rule to Branch, and enter the keyword stable.
+- Click Add Package.
+
+![Image3](ReadmeImages/ReadmeImage3.png)
+
+- A new page will open to let you add targets to the library. Normally, this is not necessary, as the dependencies on Linphone and msgNotificationService should already be present.
+- Click Add Package.
+
+![Image4](ReadmeImages/ReadmeImage4.png)
+
+- Make sure the library appears in the Frameworks, Libraries, and Embedded Content section of all targets that need it.
+
+![Image5](ReadmeImages/ReadmeImage5.png)
+
+- Add it manually if needed.
+
+![Image6](ReadmeImages/ReadmeImage6.png)
+
+# Using a local linphone SDK (Optional)
+
+- Clone the linphone-sdk repository from our GitLab:
 ```
-	sudo gem install cocoapods
-```
-**If you alreadly have Cocoapods, make sur that the version is higher than 1.7.5**.
-
-- Install the app's dependencies with cocoapods first:
-```
-	pod install
-```
-  It will download the linphone-sdk from our gitlab repository so you don't have to build anything yourself.
-- Then open `linphone.xcworkspace` file (**NOT linphone.xcodeproj**) with XCode to build and run the app.
-
-# Limitations and known bugs
-
-* Video capture will not work in simulator (not implemented in it).
-
-
-# Using a local linphone SDK
-
-- Clone the linphone-sdk repository from out gitlab:
-```
-   git clone https://gitlab.linphone.org/BC/public/linphone-sdk.git --recursive
-```
-
-- Follow the instructions in the linphone-sdk/README file to build the SDK.
-
-- Rebuild the project:
-```
-   PODFILE_PATH=<path to linphone-sdk-ios> pod install
-```
-  where <path to linphone-sdk-ios> is your build directory of the linphone-sdk project, containing the `linphone-sdk.podspec` file and a `linphone-sdk` ouptut directory comprising built frameworks and resources.
-
-- Then open linphone.xcworkspace with Xcode to build and run the app.
-
-# Enabling crashlytics
-
-We've integrated Crashlytics into liphone-iphone, which can automatically send crash reports. It is disabled by default.
-To activate it:
-
-- Replace the GoogleService-Info.plist for this project with yours (specific to your crashlytics account).
-
-- Rebuild the project:
-```
-    USE_CRASHLYTICS=true pod install
+git clone git@gitlab.linphone.org:BC/public/linphone-sdk.git
+git submodule update --init --recursive
 ```
 
-- Then open `linphone.xcworkspace` with Xcode to build and run the app.
+- Build the SDK:
+```
+cmake --preset=ios-sdk -G Ninja -B spm-ios && cmake --build spm-ios
+```
+
+- Go to the Package Dependencies section of your project (remove the remote linphonesw SPM from the package dependencies if necessary)
+
+![Image2](ReadmeImages/ReadmeImage2.png)
+
+- Click on Add Local.
+
+![Image7](ReadmeImages/ReadmeImage7.png)
+
+- Follow your path: yourSdkPath/linphone-sdk/spm-ios/linphone-sdk-swift-ios
+
+![Image8](ReadmeImages/ReadmeImage8.png)
+
+- A new page will open to let you add targets to the library. Normally, this is not necessary, as the dependencies on Linphone and msgNotificationService should already be present.
+- Click Add Package.
+
+![Image4](ReadmeImages/ReadmeImage4.png)
+
+- Make sure the library appears in the Frameworks, Libraries, and Embedded Content section of all targets that need it.
+
+![Image5](ReadmeImages/ReadmeImage5.png)
+
+- Add it manually if needed.
+
+![Image6](ReadmeImages/ReadmeImage6.png)
