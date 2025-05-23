@@ -67,20 +67,32 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func doOnCoreQueue(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
-		if synchronous {
-			coreQueue.sync {
-				lambda(self.mCore)
+		let isOnQueue = DispatchQueue.getSpecific(key: coreQueueKey) != nil
+
+		let execute = {
+			guard self.mCore.globalState != .Off else {
+				Log.warn("Skipped execution: core is off")
+				return
 			}
-		} else {
-			coreQueue.async {
-				if self.mCore.globalState != .Off {
-					lambda(self.mCore)
-				} else {
-					Log.warn("Doesn't run the asynchronous function because the core is off")
-				}
-			}
+			lambda(self.mCore)
+		}
+
+		switch (synchronous, isOnQueue) {
+		case (true, true), (false, true):
+			// Already on the queue → run directly
+			execute()
+		case (true, false):
+			coreQueue.sync(execute: execute)
+		case (false, false):
+			coreQueue.async(execute: execute)
 		}
 	}
+	
+	private let coreQueueKey: DispatchSpecificKey<Void> = {
+		let key = DispatchSpecificKey<Void>()
+		coreQueue.setSpecific(key: key, value: ())
+		return key
+	}()
 	
 	func initialiseCore() throws {
 		Log.info("Initialising core")
@@ -145,7 +157,6 @@ final class CoreContext: ObservableObject {
 			self.mCore.videoDisplayEnabled = true
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
-			self.mCore.friendListSubscriptionEnabled = true
 			
 			// Migration
 			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
@@ -230,6 +241,7 @@ final class CoreContext: ObservableObject {
 						self.coreIsStarted = state == GlobalState.On
 					}
 				}
+				
 			}, onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
 				TelecomManager.shared.onCallStateChanged(core: core, call: call, state: cstate, message: message)
 				
@@ -384,13 +396,11 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func onEnterForeground() {
-		coreQueue.sync {
+		coreQueue.async {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
 			
 			try? self.mCore.start()
-			Log.info("App is in foreground, PUBLISHING presence as Online")
-			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 		}
 	}
 	
@@ -416,7 +426,7 @@ final class CoreContext: ObservableObject {
 	}
 	
 	func performActionOnCoreQueueWhenCoreIsStarted(action: @escaping (_ core: Core) -> Void ) {
-		if coreHasStartedOnce {
+		if coreIsStarted {
 			CoreContext.shared.doOnCoreQueue { core in
 				action(core)
 			}

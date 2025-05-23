@@ -88,7 +88,7 @@ final class ContactsManager: ObservableObject {
 						linphoneFriendList.displayName = self.linphoneAddressBookFriendList
 						core.addFriendList(list: linphoneFriendList)
 					}
-					linphoneFriendList.subscriptionsEnabled = true
+					core.friendListSubscriptionEnabled = true
 				}
 			}
 			
@@ -383,8 +383,6 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func addFriendListDelegate() {
-		self.linphoneFriendList?.updateSubscriptions()
-		self.friendList?.updateSubscriptions()
 		CoreContext.shared.mCore.friendsLists.forEach { friendList in
 			friendList.updateSubscriptions()
 		}
