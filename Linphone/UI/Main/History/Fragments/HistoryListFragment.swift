@@ -119,7 +119,7 @@ struct HistoryListFragment: View {
 											.onEnded { _ in
 												withAnimation {
 													doCall(index: index)
-													historyViewModel.displayedCall = nil
+													SharedMainViewModel.shared.displayedCall = nil
 												}
 											}
 									)
@@ -133,7 +133,7 @@ struct HistoryListFragment: View {
 					.background(.white)
 					.onTapGesture {
 						withAnimation {
-							historyViewModel.displayedCall = historyListViewModel.callLogs[index]
+							SharedMainViewModel.shared.displayedCall = historyListViewModel.callLogs[index]
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {

@@ -21,8 +21,6 @@ import SwiftUI
 
 struct PermissionsFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	var permissionManager = PermissionManager.shared
 	
 	@Environment(\.dismiss) var dismiss
@@ -47,7 +45,7 @@ struct PermissionsFragment: View {
 		.onReceive(permissionManager.$allPermissionsHaveBeenDisplayed, perform: { (granted) in
 			if granted {
 				withAnimation {
-					sharedMainViewModel.changeWelcomeView()
+					SharedMainViewModel.shared.changeWelcomeView()
 				}
 			}
 		})
@@ -156,7 +154,7 @@ struct PermissionsFragment: View {
 				}
 				.padding(.bottom)
 			}
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.frame(maxHeight: .infinity)
 			.padding(.horizontal, 20)
 			
@@ -164,7 +162,7 @@ struct PermissionsFragment: View {
 			
 			Button(action: {
 				withAnimation {
-					sharedMainViewModel.changeWelcomeView()
+					SharedMainViewModel.shared.changeWelcomeView()
 				}
 			}, label: {
 				Text("assistant_permissions_skip_permissions")
@@ -180,7 +178,7 @@ struct PermissionsFragment: View {
 					.inset(by: 0.5)
 					.stroke(Color.orangeMain500, lineWidth: 1)
 			)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal)
 			
 			Button {
@@ -195,7 +193,7 @@ struct PermissionsFragment: View {
 			.padding(.vertical, 10)
 			.background(Color.orangeMain500)
 			.cornerRadius(60)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal)
 			.padding(.bottom)
 			

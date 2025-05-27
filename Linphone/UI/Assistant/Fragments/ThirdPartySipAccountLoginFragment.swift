@@ -21,7 +21,6 @@ import SwiftUI
 
 struct ThirdPartySipAccountLoginFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
 	
@@ -214,7 +213,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 				)
 				.padding(.bottom)
 			}
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal, 20)
 			
 			Spacer()
@@ -235,7 +234,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 				: Color.orangeMain500)
 			.cornerRadius(60)
 			.disabled(accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty || accountLoginViewModel.domain.isEmpty)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal)
 			.padding(.bottom)
 			

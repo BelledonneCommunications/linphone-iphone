@@ -21,8 +21,6 @@ import SwiftUI
 
 struct WelcomeView: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	@State private var index = 0
 	
 	var body: some View {
@@ -123,7 +121,7 @@ struct WelcomeView: View {
 				.cornerRadius(60)
 				.padding(.horizontal)
 				.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			} else {
 				Button(action: {
 					withAnimation {
@@ -141,7 +139,7 @@ struct WelcomeView: View {
 				.cornerRadius(60)
 				.padding(.horizontal)
 				.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			}
 			
 			Image("mountain2")

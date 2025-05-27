@@ -24,7 +24,6 @@ import UniformTypeIdentifiers
 struct AccountProfileFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	@ObservedObject var registerViewModel: RegisterViewModel
@@ -592,7 +591,7 @@ struct AccountProfileFragment: View {
 									.cornerRadius(15)
 									.padding(.horizontal)
 								}
-								.frame(maxWidth: sharedMainViewModel.maxWidth)
+								.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 								.onAppear {
 									accountModel.requestDevicesList()
 								}

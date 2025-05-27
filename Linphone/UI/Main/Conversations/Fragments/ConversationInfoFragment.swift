@@ -24,7 +24,6 @@ struct ConversationInfoFragment: View {
 	@State private var orientation = UIDevice.current.orientation
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
@@ -50,7 +49,7 @@ struct ConversationInfoFragment: View {
 		let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0]
 		NavigationView {
 			GeometryReader { geometry in
-				if conversationViewModel.displayedConversation != nil {
+				if SharedMainViewModel.shared.displayedConversation != nil {
 					VStack(spacing: 1) {
 						Rectangle()
 							.foregroundColor(Color.orangeMain500)
@@ -90,12 +89,12 @@ struct ConversationInfoFragment: View {
 									}
 									
 									VStack(spacing: 0) {
-										if conversationViewModel.displayedConversation != nil && !conversationViewModel.displayedConversation!.isGroup {
+										if SharedMainViewModel.shared.displayedConversation != nil && !SharedMainViewModel.shared.displayedConversation!.isGroup {
 											
-											Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 100)
+											Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation!.avatarModel, avatarSize: 100)
 												.padding(.top, 4)
 											
-											Text(conversationViewModel.displayedConversation!.avatarModel.name)
+											Text(SharedMainViewModel.shared.displayedConversation!.avatarModel.name)
 												.foregroundStyle(Color.grayMain2c700)
 												.multilineTextAlignment(.center)
 												.default_text_style(styleSize: 14)
@@ -109,9 +108,9 @@ struct ConversationInfoFragment: View {
 												.frame(maxWidth: .infinity)
 												.padding(.top, 5)
 											
-											if !conversationViewModel.displayedConversation!.avatarModel.lastPresenceInfo.isEmpty {
-												Text(conversationViewModel.displayedConversation!.avatarModel.lastPresenceInfo)
-													.foregroundStyle(conversationViewModel.displayedConversation!.avatarModel.lastPresenceInfo == "Online"
+											if !SharedMainViewModel.shared.displayedConversation!.avatarModel.lastPresenceInfo.isEmpty {
+												Text(SharedMainViewModel.shared.displayedConversation!.avatarModel.lastPresenceInfo)
+													.foregroundStyle(SharedMainViewModel.shared.displayedConversation!.avatarModel.lastPresenceInfo == "Online"
 																	 ? Color.greenSuccess500
 																	 : Color.orangeWarning600)
 													.multilineTextAlignment(.center)
@@ -127,11 +126,11 @@ struct ConversationInfoFragment: View {
 													.frame(height: 20)
 											}
 										} else {
-											Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 100)
+											Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation!.avatarModel, avatarSize: 100)
 												.padding(.top, 4)
 											
 											HStack {
-												Text(conversationViewModel.displayedConversation!.avatarModel.name)
+												Text(SharedMainViewModel.shared.displayedConversation!.avatarModel.name)
 													.foregroundStyle(Color.grayMain2c700)
 													.multilineTextAlignment(.center)
 													.default_text_style(styleSize: 14)
@@ -162,12 +161,12 @@ struct ConversationInfoFragment: View {
 									.padding(.bottom, 2)
 									.background(Color.gray100)
 									
-									if !conversationViewModel.displayedConversation!.isReadOnly {
+									if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
 										HStack {
 											Spacer()
 											
 											Button(action: {
-												conversationViewModel.displayedConversation!.toggleMute()
+												SharedMainViewModel.shared.displayedConversation!.toggleMute()
 												isMuted = !isMuted
 											}, label: {
 												VStack {
@@ -193,10 +192,10 @@ struct ConversationInfoFragment: View {
 											Spacer()
 											
 											Button(action: {
-												if conversationViewModel.displayedConversation!.isGroup {
+												if SharedMainViewModel.shared.displayedConversation!.isGroup {
 													isShowStartCallGroupPopup.toggle()
 												} else {
-													conversationViewModel.displayedConversation!.call()
+													SharedMainViewModel.shared.displayedConversation!.call()
 												}
 											}, label: {
 												VStack {
@@ -222,10 +221,10 @@ struct ConversationInfoFragment: View {
 											Spacer()
 											
 											Button(action: {
-												if conversationViewModel.displayedConversation != nil {
-													meetingViewModel.subject = conversationViewModel.displayedConversation!.subject
+												if SharedMainViewModel.shared.displayedConversation != nil {
+													meetingViewModel.subject = SharedMainViewModel.shared.displayedConversation!.subject
 													meetingViewModel.participants = conversationViewModel.participants
-													conversationViewModel.displayedConversation = nil
+													SharedMainViewModel.shared.displayedConversation = nil
 													indexPage = 3
 													withAnimation {
 														isShowScheduleMeetingFragment = true
@@ -260,7 +259,7 @@ struct ConversationInfoFragment: View {
 										.background(Color.gray100)
 									}
 									
-									if conversationViewModel.displayedConversation!.isGroup {
+									if SharedMainViewModel.shared.displayedConversation!.isGroup {
 										HStack(alignment: .center) {
 											Text("conversation_info_participants_list_title")
 												.default_text_style_800(styleSize: 18)
@@ -354,13 +353,13 @@ struct ConversationInfoFragment: View {
 																			where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 																		if friendIndex != nil {
 																			withAnimation {
-																				conversationViewModel.displayedConversation = nil
+																				SharedMainViewModel.shared.displayedConversation = nil
 																				indexPage = 0
-																				contactViewModel.indexDisplayedFriend = friendIndex
+																				SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
 																			}
 																		} else {
 																			withAnimation {
-																				conversationViewModel.displayedConversation = nil
+																				SharedMainViewModel.shared.displayedConversation = nil
 																				indexPage = 0
 																				
 																				isShowEditContactFragment.toggle()
@@ -522,11 +521,11 @@ struct ConversationInfoFragment: View {
 										.padding(.top, 20)
 									
 									VStack(spacing: 0) {
-										if !conversationViewModel.displayedConversation!.isReadOnly {
-											if !conversationViewModel.displayedConversation!.isGroup {
+										if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
+											if !SharedMainViewModel.shared.displayedConversation!.isGroup {
 												Button(
 													action: {
-														if conversationViewModel.displayedConversation != nil {
+														if SharedMainViewModel.shared.displayedConversation != nil {
 															
 															let addressConv = conversationViewModel.participantConversationModel.first?.address ?? ""
 															
@@ -534,13 +533,13 @@ struct ConversationInfoFragment: View {
 																where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 															if friendIndex != nil {
 																withAnimation {
-																	conversationViewModel.displayedConversation = nil
+																	SharedMainViewModel.shared.displayedConversation = nil
 																	indexPage = 0
-																	contactViewModel.indexDisplayedFriend = friendIndex
+																	SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
 																}
 															} else {
 																withAnimation {
-																	conversationViewModel.displayedConversation = nil
+																	SharedMainViewModel.shared.displayedConversation = nil
 																	indexPage = 0
 																	
 																	isShowEditContactFragment.toggle()
@@ -614,11 +613,11 @@ struct ConversationInfoFragment: View {
 											
 											Divider()
 											
-											if conversationViewModel.displayedConversation!.isGroup {
+											if SharedMainViewModel.shared.displayedConversation!.isGroup {
 												Button(
 													action: {
-														conversationViewModel.displayedConversation!.leave()
-														conversationViewModel.displayedConversation!.isReadOnly = true
+														SharedMainViewModel.shared.displayedConversation!.leave()
+														SharedMainViewModel.shared.displayedConversation!.isReadOnly = true
 														isShowInfoConversationFragment = false
 													},
 													label: {
@@ -645,8 +644,8 @@ struct ConversationInfoFragment: View {
 										
 										Button(
 											action: {
-												conversationViewModel.displayedConversation!.deleteChatRoom()
-												conversationViewModel.displayedConversation = nil
+												SharedMainViewModel.shared.displayedConversation!.deleteChatRoom()
+												SharedMainViewModel.shared.displayedConversation = nil
 											},
 											label: {
 												HStack {
@@ -673,7 +672,7 @@ struct ConversationInfoFragment: View {
 									.cornerRadius(15)
 									.padding(.all)
 								}
-								.frame(maxWidth: sharedMainViewModel.maxWidth)
+								.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 							}
 							.frame(maxWidth: .infinity)
 							.padding(.top, 2)

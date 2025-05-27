@@ -35,7 +35,6 @@ import Firebase
 final class CoreContext: ObservableObject {
 	
 	static let shared = CoreContext()
-	private var sharedMainViewModel = SharedMainViewModel.shared
 	var pipViewModel = PIPViewModel()
 	
 	var coreVersion: String = Core.getVersion
@@ -151,7 +150,7 @@ final class CoreContext: ObservableObject {
 			let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String
 			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
 			
-			let userAgent = "\(appName ?? "Linphone")iOS/\(version ?? "6.0.0") Beta (\(UIDevice.current.localizedModel.replacingOccurrences(of: "'", with: ""))) LinphoneSDK"
+			let userAgent = "LinphoneiOS/\(version ?? "6.0.0") Beta (\(UIDevice.current.localizedModel.replacingOccurrences(of: "'", with: ""))) LinphoneSDK"
 			self.mCore.setUserAgent(name: userAgent, version: self.coreVersion)
 			self.mCore.videoCaptureEnabled = true
 			self.mCore.videoDisplayEnabled = true
@@ -372,7 +371,7 @@ final class CoreContext: ObservableObject {
 				DispatchQueue.main.async {
 					self.accounts = accountModels
 				}
-			}, onAccountRemoved: { (_: Core, _: Account) in
+			}, onAccountRemoved: { (_: Core, acc: Account) in
 				var accountModels: [AccountModel] = []
 				for account in self.mCore.accountList {
 					accountModels.append(AccountModel(account: account, core: self.mCore))

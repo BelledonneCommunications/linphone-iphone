@@ -21,7 +21,6 @@ import SwiftUI
 import linphonesw
 
 struct ConversationForwardMessageFragment: View {
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
@@ -210,7 +209,7 @@ struct ConversationForwardMessageFragment: View {
 							isShowConversationForwardMessageFragment = false
 							
 							if conversationForwardMessageViewModel.displayedConversation != nil {
-								if conversationViewModel.displayedConversation != nil {
+								if SharedMainViewModel.shared.displayedConversation != nil {
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 										self.conversationViewModel.changeDisplayedChatRoom(conversationModel: conversationForwardMessageViewModel.displayedConversation!)
 									}

@@ -21,7 +21,6 @@ import SwiftUI
 
 struct ProfileModeFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@State var options: Int = 1
 	@State private var isShowPopup = false
@@ -116,13 +115,13 @@ struct ProfileModeFragment: View {
 						.background(Color.gray100)
 						.cornerRadius(15)
 					}
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 					.padding()
 					
 					Spacer()
 					
 					Button(action: {
-						sharedMainViewModel.changeHideProfileMode()
+						SharedMainViewModel.shared.changeHideProfileMode()
 					}, label: {
 						Text("dialog_continue")
 							.default_text_style_white_600(styleSize: 20)
@@ -135,14 +134,14 @@ struct ProfileModeFragment: View {
 					.cornerRadius(60)
 					.padding(.horizontal)
 					.padding(.bottom, geometry.safeAreaInsets.bottom.isEqual(to: 0.0) ? 20 : 0)
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				}
 				.frame(minHeight: geometry.size.height)
 			}
 			.onAppear {
 				UserDefaults.standard.set(false, forKey: "display_profile_mode")
 				// Skip this view
-				sharedMainViewModel.changeHideProfileMode()
+				SharedMainViewModel.shared.changeHideProfileMode()
 			}
 			
 			if self.isShowPopup {

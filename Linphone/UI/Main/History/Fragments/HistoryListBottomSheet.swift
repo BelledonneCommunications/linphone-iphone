@@ -26,7 +26,6 @@ struct HistoryListBottomSheet: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var historyViewModel: HistoryViewModel
@@ -83,7 +82,7 @@ struct HistoryListBottomSheet: View {
 					let friendIndex = contactsManager.lastSearch.firstIndex(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall})})
 					if friendIndex != nil {
 						withAnimation {
-							contactViewModel.indexDisplayedFriend = friendIndex
+							SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
 						}
 					}
 				} else if historyViewModel.selectedCall != nil {

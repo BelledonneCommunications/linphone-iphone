@@ -30,26 +30,25 @@ struct ContentView: View {
 	@EnvironmentObject var navigationManager: NavigationManager
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	var magicSearch = MagicSearchSingleton.shared
 	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var historyListViewModel: HistoryListViewModel
-	@ObservedObject var startCallViewModel: StartCallViewModel
-	@ObservedObject var startConversationViewModel: StartConversationViewModel
-	@ObservedObject var callViewModel: CallViewModel
-	@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
-	@ObservedObject var meetingViewModel: MeetingViewModel
-	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+	//@ObservedObject var editContactViewModel: EditContactViewModel
+	
+	//@ObservedObject var historyViewModel: HistoryViewModel
+	//@ObservedObject var historyListViewModel: HistoryListViewModel
+	//@ObservedObject var startCallViewModel: StartCallViewModel
+	//@ObservedObject var startConversationViewModel: StartConversationViewModel
+	//@ObservedObject var callViewModel: CallViewModel
+	//@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
+	//@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	//@ObservedObject var conversationViewModel: ConversationViewModel
+	//@ObservedObject var meetingsListViewModel: MeetingsListViewModel
+	//@ObservedObject var meetingViewModel: MeetingViewModel
+	//@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
+	//@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@Binding var index: Int
 	@State private var orientation = UIDevice.current.orientation
@@ -96,6 +95,7 @@ struct ContentView: View {
 			.publisher(for: NSNotification.Name("CoreStarted"))
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
+				/*
 				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
 					HStack {
 						Image("phone")
@@ -130,7 +130,7 @@ struct ContentView: View {
 						}
 					}
 				}
-				
+				*/
 				ZStack {
 					VStack(spacing: 0) {
 						HStack(spacing: 0) {
@@ -143,10 +143,10 @@ struct ContentView: View {
 										
 										Button(action: {
 											self.index = 0
-											sharedMainViewModel.changeIndexView(indexViewInt: 0)
-											historyViewModel.displayedCall = nil
-											conversationViewModel.displayedConversation = nil
-											meetingViewModel.displayedMeeting = nil
+											SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+											SharedMainViewModel.shared.displayedCall = nil
+											SharedMainViewModel.shared.displayedConversation = nil
+											SharedMainViewModel.shared.displayedMeeting = nil
 										}, label: {
 											VStack {
 												Image("address-book")
@@ -167,6 +167,7 @@ struct ContentView: View {
 										.frame(height: geometry.size.height/4)
 										
 										ZStack {
+											/*
 											if historyListViewModel.missedCallsCount > 0 {
 												VStack {
 													HStack {
@@ -186,16 +187,18 @@ struct ContentView: View {
 												.padding(.bottom, 30)
 												.padding(.leading, 30)
 											}
-											
+											*/
 											Button(action: {
 												self.index = 1
-												sharedMainViewModel.changeIndexView(indexViewInt: 1)
-												contactViewModel.indexDisplayedFriend = nil
-												conversationViewModel.displayedConversation = nil
-												meetingViewModel.displayedMeeting = nil
+												SharedMainViewModel.shared.changeIndexView(indexViewInt: 1)
+												SharedMainViewModel.shared.indexDisplayedFriend = nil
+												SharedMainViewModel.shared.displayedConversation = nil
+												SharedMainViewModel.shared.displayedMeeting = nil
+												/*
 												if historyListViewModel.missedCallsCount > 0 {
 													historyListViewModel.resetMissedCallsCount()
 												}
+												*/
 											}, label: {
 												VStack {
 													Image("phone")
@@ -217,6 +220,7 @@ struct ContentView: View {
 										.frame(height: geometry.size.height/4)
 										
 										ZStack {
+											/*
 											if conversationsListViewModel.unreadMessages > 0 {
 												VStack {
 													HStack {
@@ -236,13 +240,13 @@ struct ContentView: View {
 												.padding(.bottom, 30)
 												.padding(.leading, 30)
 											}
-											
+											*/
 											Button(action: {
 												self.index = 2
-												sharedMainViewModel.changeIndexView(indexViewInt: 2)
-												historyViewModel.displayedCall = nil
-												contactViewModel.indexDisplayedFriend = nil
-												meetingViewModel.displayedMeeting = nil
+												SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+												SharedMainViewModel.shared.indexDisplayedFriend = nil
+												SharedMainViewModel.shared.displayedCall = nil
+												SharedMainViewModel.shared.displayedMeeting = nil
 											}, label: {
 												VStack {
 													Image("chat-teardrop-text")
@@ -266,10 +270,10 @@ struct ContentView: View {
 										
 										Button(action: {
 											self.index = 3
-											sharedMainViewModel.changeIndexView(indexViewInt: 3)
-											contactViewModel.indexDisplayedFriend = nil
-											historyViewModel.displayedCall = nil
-											conversationViewModel.displayedConversation = nil
+											SharedMainViewModel.shared.changeIndexView(indexViewInt: 3)
+											SharedMainViewModel.shared.indexDisplayedFriend = nil
+											SharedMainViewModel.shared.displayedCall = nil
+											SharedMainViewModel.shared.displayedConversation = nil
 										}, label: {
 											VStack {
 												Image("video-conference")
@@ -323,6 +327,7 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
+												/*
 												if let accountModelIndex = accountProfileViewModel.accountModelIndex,
 												   accountModelIndex < CoreContext.shared.accounts.count {
 													AsyncImage(url: imagePath) { image in
@@ -378,7 +383,7 @@ struct ContentView: View {
 														if !username.isEmpty {
 															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
 															if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
-																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
+																SharedMainViewModel.shared.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
 																imagePath = imagePathTmp
 															}
 														}
@@ -386,12 +391,12 @@ struct ContentView: View {
 													.onReceive(imageChanged) { _ in
 														if !CoreContext.shared.accounts[accountModelIndex].usernaneAvatar.isEmpty {
 															let imagePathTmp = CoreContext.shared.accounts[accountModelIndex].getImagePath()
-															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
+															SharedMainViewModel.shared.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
 															imagePath = imagePathTmp
 														}
 													}
 												}
-												
+												*/
 												Text(String(localized: index == 0 ? "bottom_navigation_contacts_label" : (index == 1 ? "bottom_navigation_calls_label" : (index == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
 													.default_text_style_white_800(styleSize: 20)
 													.padding(.leading, 10)
@@ -428,7 +433,7 @@ struct ContentView: View {
 													Menu {
 														if index == 0 {
 															Button {
-																contactViewModel.indexDisplayedFriend = nil
+																SharedMainViewModel.shared.indexDisplayedFriend = nil
 																isMenuOpen = false
 																magicSearch.allContact = true
 																MagicSearchSingleton.shared.searchForContacts(
@@ -447,7 +452,7 @@ struct ContentView: View {
 															}
 															
 															Button {
-																contactViewModel.indexDisplayedFriend = nil
+																SharedMainViewModel.shared.indexDisplayedFriend = nil
 																isMenuOpen = false
 																magicSearch.allContact = false
 																MagicSearchSingleton.shared.searchForContacts(
@@ -515,12 +520,12 @@ struct ContentView: View {
 														MagicSearchSingleton.shared.searchForContacts(
 															sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 													} else if index == 1 {
-														historyListViewModel.resetFilterCallLogs()
+														//historyListViewModel.resetFilterCallLogs()
 													} else if index == 2 {
-														conversationsListViewModel.resetFilterConversations()
+														//conversationsListViewModel.resetFilterConversations()
 													} else if index == 3 {
-														meetingsListViewModel.currentFilter = ""
-														meetingsListViewModel.computeMeetingsList()
+														//meetingsListViewModel.currentFilter = ""
+														//meetingsListViewModel.computeMeetingsList()
 													}
 												} label: {
 													Image("caret-left")
@@ -562,19 +567,19 @@ struct ContentView: View {
 																sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 														} else if index == 1 {
 															if text.isEmpty {
-																historyListViewModel.resetFilterCallLogs()
+																//historyListViewModel.resetFilterCallLogs()
 															} else {
-																historyListViewModel.filterCallLogs(filter: text)
+																//historyListViewModel.filterCallLogs(filter: text)
 															}
 														} else if index == 2 {
 															if text.isEmpty {
-																conversationsListViewModel.resetFilterConversations()
+																//conversationsListViewModel.resetFilterConversations()
 															} else {
-																conversationsListViewModel.filterConversations(filter: text)
+																//conversationsListViewModel.filterConversations(filter: text)
 															}
 														} else if index == 3 {
-															meetingsListViewModel.currentFilter = text
-															meetingsListViewModel.computeMeetingsList()
+															//meetingsListViewModel.currentFilter = text
+															//meetingsListViewModel.computeMeetingsList()
 														}
 													}
 												} else {
@@ -604,12 +609,12 @@ struct ContentView: View {
 															MagicSearchSingleton.shared.searchForContacts(
 																sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 														} else if index == 1 {
-															historyListViewModel.filterCallLogs(filter: text)
+															//historyListViewModel.filterCallLogs(filter: text)
 														} else if index == 2 {
-															conversationsListViewModel.filterConversations(filter: text)
+															//conversationsListViewModel.filterConversations(filter: text)
 														} else if index == 3 {
-															meetingsListViewModel.currentFilter = text
-															meetingsListViewModel.computeMeetingsList()
+															//meetingsListViewModel.currentFilter = text
+															//meetingsListViewModel.computeMeetingsList()
 														}
 													}
 												}
@@ -636,13 +641,14 @@ struct ContentView: View {
 										
 										if self.index == 0 {
 											ContactsView(
-												contactViewModel: contactViewModel,
-												historyViewModel: historyViewModel,
-												editContactViewModel: editContactViewModel,
+												//contactViewModel: contactViewModel,
+												//historyViewModel: historyViewModel,
+												//editContactViewModel: editContactViewModel,
 												isShowEditContactFragment: $isShowEditContactFragment,
 												isShowDeletePopup: $isShowDeleteContactPopup,
 												text: $text
 											)
+											.environmentObject(ContactViewModel())
 											.roundedCorner(25, corners: [.topRight, .topLeft])
 											.shadow(
 												color: (orientation == .landscapeLeft
@@ -653,6 +659,13 @@ struct ContentView: View {
 												radius: 25
 											)
 										} else if self.index == 1 {
+											//TODO a changer
+											NavigationView {
+												ZStack(alignment: .bottomTrailing) {
+												}
+											}
+											.navigationViewStyle(.stack)
+											/*
 											HistoryView(
 												historyListViewModel: historyListViewModel,
 												historyViewModel: historyViewModel,
@@ -672,7 +685,15 @@ struct ContentView: View {
 												: .black.opacity(0.2),
 												radius: 25
 											)
+											*/
 										} else if self.index == 2 {
+											//TODO a changer
+											NavigationView {
+												ZStack(alignment: .bottomTrailing) {
+												}
+											}
+											.navigationViewStyle(.stack)
+											/*
 											ConversationsView(
 												conversationViewModel: conversationViewModel,
 												conversationsListViewModel: conversationsListViewModel,
@@ -688,7 +709,15 @@ struct ContentView: View {
 												: .black.opacity(0.2),
 												radius: 25
 											)
+											*/
 										} else if self.index == 3 {
+											//TODO a changer
+											NavigationView {
+												ZStack(alignment: .bottomTrailing) {
+												}
+											}
+											.navigationViewStyle(.stack)
+											/*
 											MeetingsView(
 												meetingsListViewModel: meetingsListViewModel,
 												meetingViewModel: meetingViewModel,
@@ -705,6 +734,7 @@ struct ContentView: View {
 												: .black.opacity(0.2),
 												radius: 25
 											)
+											*/
 										}
 									}
 								}
@@ -737,10 +767,10 @@ struct ContentView: View {
 									Spacer()
 									Button(action: {
 										self.index = 0
-										sharedMainViewModel.changeIndexView(indexViewInt: 0)
-										historyViewModel.displayedCall = nil
-										conversationViewModel.displayedConversation = nil
-										meetingViewModel.displayedMeeting = nil
+										SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+										SharedMainViewModel.shared.displayedCall = nil
+										SharedMainViewModel.shared.displayedConversation = nil
+										SharedMainViewModel.shared.displayedMeeting = nil
 									}, label: {
 										VStack {
 											Image("address-book")
@@ -763,6 +793,7 @@ struct ContentView: View {
 									Spacer()
 									
 									ZStack {
+										/*
 										if historyListViewModel.missedCallsCount > 0 {
 											VStack {
 												HStack {
@@ -782,16 +813,18 @@ struct ContentView: View {
 											.padding(.bottom, 30)
 											.padding(.leading, 30)
 										}
-										
+										*/
 										Button(action: {
 											self.index = 1
-											sharedMainViewModel.changeIndexView(indexViewInt: 1)
-											contactViewModel.indexDisplayedFriend = nil
-											conversationViewModel.displayedConversation = nil
-											meetingViewModel.displayedMeeting = nil
+											SharedMainViewModel.shared.changeIndexView(indexViewInt: 1)
+											SharedMainViewModel.shared.indexDisplayedFriend = nil
+											SharedMainViewModel.shared.displayedConversation = nil
+											SharedMainViewModel.shared.displayedMeeting = nil
+											/*
 											if historyListViewModel.missedCallsCount > 0 {
 												historyListViewModel.resetMissedCallsCount()
 											}
+											*/
 										}, label: {
 											VStack {
 												Image("phone")
@@ -815,6 +848,7 @@ struct ContentView: View {
 									Spacer()
 									
 									ZStack {
+										/*
 										if conversationsListViewModel.unreadMessages > 0 {
 											VStack {
 												HStack {
@@ -834,13 +868,13 @@ struct ContentView: View {
 											.padding(.bottom, 30)
 											.padding(.leading, 30)
 										}
-										
+										*/
 										Button(action: {
 											self.index = 2
-											sharedMainViewModel.changeIndexView(indexViewInt: 2)
-											historyViewModel.displayedCall = nil
-											contactViewModel.indexDisplayedFriend = nil
-											meetingViewModel.displayedMeeting = nil
+											SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+											SharedMainViewModel.shared.indexDisplayedFriend = nil
+											SharedMainViewModel.shared.displayedCall = nil
+											SharedMainViewModel.shared.displayedMeeting = nil
 										}, label: {
 											VStack {
 												Image("chat-teardrop-text")
@@ -865,10 +899,10 @@ struct ContentView: View {
 									Spacer()
 									Button(action: {
 										self.index = 3
-										sharedMainViewModel.changeIndexView(indexViewInt: 3)
-										contactViewModel.indexDisplayedFriend = nil
-										historyViewModel.displayedCall = nil
-										conversationViewModel.displayedConversation = nil
+										SharedMainViewModel.shared.changeIndexView(indexViewInt: 3)
+										SharedMainViewModel.shared.indexDisplayedFriend = nil
+										SharedMainViewModel.shared.displayedCall = nil
+										SharedMainViewModel.shared.displayedConversation = nil
 									}, label: {
 										VStack {
 											Image("video-conference")
@@ -900,8 +934,8 @@ struct ContentView: View {
 						}
 					}
 					
-					if contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil ||
-						meetingViewModel.displayedMeeting != nil {
+					if SharedMainViewModel.shared.indexDisplayedFriend != nil || SharedMainViewModel.shared.displayedCall != nil || SharedMainViewModel.shared.displayedConversation != nil ||
+						SharedMainViewModel.shared.displayedMeeting != nil {
 						HStack(spacing: 0) {
 							Spacer()
 								.frame(maxWidth:
@@ -912,6 +946,7 @@ struct ContentView: View {
 									   : 0
 								)
 							if self.index == 0 {
+								/*
 								ContactFragment(
 									contactViewModel: contactViewModel,
 									editContactViewModel: editContactViewModel,
@@ -924,10 +959,12 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
+								 */
 							} else if self.index == 1 {
-								if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.avatarModel != nil {
+								/*
+								if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.avatarModel != nil {
 									HistoryContactFragment(
-										contactAvatarModel: historyViewModel.displayedCall!.avatarModel!,
+										contactAvatarModel: SharedMainViewModel.shared.displayedCall!.avatarModel!,
 										historyViewModel: historyViewModel,
 										historyListViewModel: historyListViewModel,
 										contactViewModel: contactViewModel,
@@ -940,7 +977,9 @@ struct ContentView: View {
 									.background(Color.gray100)
 									.ignoresSafeArea(.keyboard)
 								}
+								 */
 							} else if self.index == 2 {
+								/*
 								ConversationFragment(
 									conversationViewModel: conversationViewModel,
 									conversationsListViewModel: conversationsListViewModel,
@@ -958,11 +997,14 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
+								 */
 							} else if self.index == 3 {
+								/*
 								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
 									.ignoresSafeArea(.keyboard)
+								 */
 							}
 							
 						}
@@ -990,6 +1032,7 @@ struct ContentView: View {
 						.zIndex(1)
 					}
 					
+					/*
 					SideMenu(
 						accountProfileViewModel: accountProfileViewModel,
 						width: geometry.size.width / 5 * 4,
@@ -1029,7 +1072,7 @@ struct ContentView: View {
 						.zIndex(3)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
 						.onAppear {
-							contactViewModel.indexDisplayedFriend = nil
+							SharedMainViewModel.shared.indexDisplayedFriend = nil
 						}
 					}
 					
@@ -1091,8 +1134,8 @@ struct ContentView: View {
 						PopupView(isShowPopup: $isShowDeleteContactPopup,
 								  title: Text(String(format: String(localized: "contact_dialog_delete_title"),contactViewModel.selectedFriend != nil
 									? contactViewModel.selectedFriend!.name!
-													 : (contactViewModel.indexDisplayedFriend != nil
-														? contactsManager.lastSearch[contactViewModel.indexDisplayedFriend!].friend!.name!
+													 : (SharedMainViewModel.shared.indexDisplayedFriend != nil
+														? contactsManager.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!.name!
 														: "Error Name"))),
 								  content: Text("contact_dialog_delete_message"),
 								  titleFirstButton: Text("dialog_cancel"),
@@ -1101,16 +1144,16 @@ struct ContentView: View {
 								  titleSecondButton: Text("dialog_ok"),
 								  actionSecondButton: {
 							if contactViewModel.selectedFriendToDelete != nil {
-								if contactViewModel.indexDisplayedFriend != nil {
+								if SharedMainViewModel.shared.indexDisplayedFriend != nil {
 									withAnimation {
-										contactViewModel.indexDisplayedFriend = nil
+										SharedMainViewModel.shared.indexDisplayedFriend = nil
 									}
 								}
 								contactViewModel.selectedFriendToDelete!.remove()
-							} else if contactViewModel.indexDisplayedFriend != nil {
-								let tmpIndex = contactViewModel.indexDisplayedFriend
+							} else if SharedMainViewModel.shared.indexDisplayedFriend != nil {
+								let tmpIndex = SharedMainViewModel.shared.indexDisplayedFriend
 								withAnimation {
-									contactViewModel.indexDisplayedFriend = nil
+									SharedMainViewModel.shared.indexDisplayedFriend = nil
 								}
 								contactsManager.lastSearch[tmpIndex!].friend!.remove()
 							}
@@ -1141,7 +1184,7 @@ struct ContentView: View {
 								  actionSecondButton: {
 							historyListViewModel.removeCallLogs()
 							self.isShowDeleteAllHistoryPopup.toggle()
-							historyViewModel.displayedCall = nil
+							SharedMainViewModel.shared.displayedCall = nil
 							
 							ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
 							ToastViewModel.shared.displayToast.toggle()
@@ -1185,7 +1228,7 @@ struct ContentView: View {
 					
 					if isShowSipAddressesPopup {
 						SipAddressesPopup(
-							contactAvatarModel: ContactsManager.shared.avatarListModel[contactViewModel.indexDisplayedFriend != nil ? contactViewModel.indexDisplayedFriend! : 0],
+							contactAvatarModel: ContactsManager.shared.avatarListModel[SharedMainViewModel.shared.indexDisplayedFriend != nil ? SharedMainViewModel.shared.indexDisplayedFriend! : 0],
 							contactViewModel: contactViewModel,
 							isShowSipAddressesPopup: $isShowSipAddressesPopup,
 							isShowSipAddressesPopupType: $isShowSipAddressesPopupType
@@ -1203,10 +1246,10 @@ struct ContentView: View {
 							.zIndex(3)
 							.onDisappear {
 								if contactViewModel.displayedConversation != nil {
-									contactViewModel.indexDisplayedFriend = nil
-									historyViewModel.displayedCall = nil
+									SharedMainViewModel.shared.indexDisplayedFriend = nil
+									SharedMainViewModel.shared.displayedCall = nil
 									index = 2
-									sharedMainViewModel.changeIndexView(indexViewInt: 2)
+									SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
 									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 										withAnimation {
 											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: contactViewModel.displayedConversation!)
@@ -1263,13 +1306,13 @@ struct ContentView: View {
 								  content: Text("meeting_schedule_cancel_dialog_message"),
 								  titleFirstButton: Text("dialog_cancel"),
 								  actionFirstButton: {
-							meetingViewModel.displayedMeeting = nil
+							SharedMainViewModel.shared.displayedMeeting = nil
 							meetingsListViewModel.deleteSelectedMeeting()
 							self.isShowSendCancelMeetingNotificationPopup.toggle(
 							) },
 								  titleSecondButton: Text("dialog_ok"),
 								  actionSecondButton: {
-							meetingViewModel.displayedMeeting = nil
+							SharedMainViewModel.shared.displayedMeeting = nil
 							if let meetingToDelete = self.meetingsListViewModel.selectedMeetingToDelete {
 								self.meetingViewModel.cancelMeetingWithNotifications(meeting: meetingToDelete)
 								meetingsListViewModel.deleteSelectedMeeting()
@@ -1294,8 +1337,8 @@ struct ContentView: View {
 							},
 							titleSecondButton: Text("dialog_ok"),
 							actionSecondButton: {
-								if conversationViewModel.displayedConversation != nil {
-									conversationViewModel.displayedConversation!.createGroupCall()
+								if SharedMainViewModel.shared.displayedConversation != nil {
+									SharedMainViewModel.shared.displayedConversation!.createGroupCall()
 								}
 								self.isShowStartCallGroupPopup.toggle()
 							}
@@ -1318,8 +1361,8 @@ struct ContentView: View {
 							},
 							titleSecondButton: Text("dialog_ok"),
 							actionSecondButton: {
-								if conversationViewModel.displayedConversation != nil {
-									conversationViewModel.displayedConversation!.createGroupCall()
+								if SharedMainViewModel.shared.displayedConversation != nil {
+									SharedMainViewModel.shared.displayedConversation!.createGroupCall()
 								}
 								self.isShowStartCallGroupPopup.toggle()
 							}
@@ -1382,7 +1425,7 @@ struct ContentView: View {
 							UIApplication.shared.isIdleTimerDisabled = false
 						}
 					}
-					
+					*/
 					ToastView()
 						.zIndex(6)
 				}
@@ -1390,18 +1433,18 @@ struct ContentView: View {
 			.onChange(of: navigationManager.selectedCallId) { newCallId in
 				if newCallId != nil {
 					self.index = 2
-					sharedMainViewModel.changeIndexView(indexViewInt: 2)
+					SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
 				}
 			}
 			.onReceive(contactLoaded) { _ in
-				conversationsListViewModel.updateChatRoomsList()
-				historyListViewModel.refreshHistoryAvatarModel()
+				//conversationsListViewModel.updateChatRoomsList()
+				//historyListViewModel.refreshHistoryAvatarModel()
 			}
 			.onReceive(contactAdded) { address in
-				conversationsListViewModel.updateChatRoom(address: address)
+				//conversationsListViewModel.updateChatRoom(address: address)
 			}
 			.onReceive(coreStarted) { _ in
-				accountProfileViewModel.setAvatarModel()
+				//accountProfileViewModel.setAvatarModel()
 			}
 		}
 		.overlay {
@@ -1415,17 +1458,19 @@ struct ContentView: View {
 			}
 		}
 		.onRotate { newOrientation in
-			if (contactViewModel.indexDisplayedFriend != nil || historyViewModel.displayedCall != nil || conversationViewModel.displayedConversation != nil) && searchIsActive {
+			/*
+			if (SharedMainViewModel.shared.indexDisplayedFriend != nil || SharedMainViewModel.shared.displayedCall != nil || SharedMainViewModel.shared.displayedConversation != nil) && searchIsActive {
 				self.focusedField = false
 			} else if searchIsActive {
 				self.focusedField = true
 			}
+			*/
 			orientation = newOrientation
 		}
 		.onChange(of: scenePhase) { newPhase in
 			orientation = UIDevice.current.orientation
 			if newPhase == .active {
-				conversationsListViewModel.computeChatRoomsList()
+				//conversationsListViewModel.computeChatRoomsList()
 			}
 		}
 	}
@@ -1451,20 +1496,20 @@ class NavigationManager: ObservableObject {
 
 #Preview {
 	ContentView(
-		contactViewModel: ContactViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		historyViewModel: HistoryViewModel(),
-		historyListViewModel: HistoryListViewModel(),
-		startCallViewModel: StartCallViewModel(),
-		startConversationViewModel: StartConversationViewModel(),
-		callViewModel: CallViewModel(),
-		meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
-		conversationsListViewModel: ConversationsListViewModel(),
-		conversationViewModel: ConversationViewModel(),
-		meetingsListViewModel: MeetingsListViewModel(),
-		meetingViewModel: MeetingViewModel(),
-		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
-		accountProfileViewModel: AccountProfileViewModel(),
+		//contactViewModel: ContactViewModel(),
+		//editContactViewModel: EditContactViewModel(),
+		//historyViewModel: HistoryViewModel(),
+		//historyListViewModel: HistoryListViewModel(),
+		//startCallViewModel: StartCallViewModel(),
+		//startConversationViewModel: StartConversationViewModel(),
+		//callViewModel: CallViewModel(),
+		//meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
+		//conversationsListViewModel: ConversationsListViewModel(),
+		//conversationViewModel: ConversationViewModel(),
+		//meetingsListViewModel: MeetingsListViewModel(),
+		//meetingViewModel: MeetingViewModel(),
+		//conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
+		//accountProfileViewModel: AccountProfileViewModel(),
 		index: .constant(0)
 	)
 }

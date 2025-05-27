@@ -75,7 +75,7 @@ struct ScheduleMeetingFragment: View {
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
-									if let meeting = meetingViewModel.displayedMeeting {
+									if let meeting = SharedMainViewModel.shared.displayedMeeting {
 										// reload meeting to cancel change from edit
 										meetingViewModel.loadExistingMeeting(meeting: meeting)
 									}
@@ -83,7 +83,7 @@ struct ScheduleMeetingFragment: View {
 								}
 							}
 						
-						Text(meetingViewModel.displayedMeeting != nil ? "meeting_schedule_edit_title" : "meeting_schedule_title" )
+						Text(SharedMainViewModel.shared.displayedMeeting != nil ? "meeting_schedule_edit_title" : "meeting_schedule_title" )
 							.multilineTextAlignment(.leading)
 							.default_text_style_orange_800(styleSize: 16)
 						
@@ -463,7 +463,7 @@ struct ScheduleMeetingFragment: View {
 			.padding(.horizontal)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			// .frame(maxWidth: sharedMainViewModel.maxWidth)
+			// .frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
 		.background(.black.opacity(0.65))

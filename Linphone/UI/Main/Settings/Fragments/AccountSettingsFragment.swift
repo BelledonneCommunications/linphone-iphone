@@ -22,8 +22,6 @@ import SwiftUI
 // swiftlint:disable type_body_length
 struct AccountSettingsFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	@StateObject private var accountSettingsViewModel: AccountSettingsViewModel
 	
 	@Environment(\.dismiss) var dismiss
@@ -482,7 +480,7 @@ struct AccountSettingsFragment: View {
 								}
 							}
 						}
-						.frame(maxWidth: sharedMainViewModel.maxWidth)
+						.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 					}
 					.frame(maxWidth: .infinity)
 				}

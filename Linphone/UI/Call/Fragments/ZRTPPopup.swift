@@ -24,7 +24,6 @@ import Foundation
 struct ZRTPPopup: View {
 	
 	@ObservedObject private var telecomManager = TelecomManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var callViewModel: CallViewModel
 	
@@ -293,7 +292,7 @@ struct ZRTPPopup: View {
 			.padding(.horizontal, 2)
 			.frame(maxHeight: .infinity)
 			.shadow(color: callViewModel.cacheMismatch ? Color.orangeWarning600 : Color.blueInfo500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth * 1.2)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth * 1.2)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 			.onAppear {
 				callViewModel.remoteAuthenticationTokens()
@@ -388,7 +387,7 @@ struct ZRTPPopup: View {
 			.padding(.horizontal, 2)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.redDanger500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth * 1.2)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth * 1.2)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 			.onAppear {
 				callViewModel.remoteAuthenticationTokens()

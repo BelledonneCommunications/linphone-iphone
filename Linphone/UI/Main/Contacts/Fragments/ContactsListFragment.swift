@@ -85,7 +85,7 @@ struct ContactsListFragment: View {
 			.background(.white)
 			.onTapGesture {
 				withAnimation {
-					contactViewModel.indexDisplayedFriend = index
+					SharedMainViewModel.shared.indexDisplayedFriend = index
 				}
 				
 				if index < contactsManager.lastSearch.count && contactsManager.lastSearch[index].friend != nil 

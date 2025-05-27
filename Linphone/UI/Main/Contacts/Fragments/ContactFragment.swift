@@ -37,7 +37,7 @@ struct ContactFragment: View {
 	@State private var showShareSheet = false
 	
 	var body: some View {
-		let indexDisplayed = contactViewModel.indexDisplayedFriend != nil ? contactViewModel.indexDisplayedFriend! : 0
+		let indexDisplayed = SharedMainViewModel.shared.indexDisplayedFriend != nil ? SharedMainViewModel.shared.indexDisplayedFriend! : 0
 		if ContactsManager.shared.avatarListModel.count > indexDisplayed {
 			if #available(iOS 16.0, *), idiom != .pad {
 				ContactInnerFragment(
@@ -58,7 +58,7 @@ struct ContactFragment: View {
 						.presentationDetents([.fraction(0.2)])
 				}
 				.sheet(isPresented: $showShareSheet) {
-					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!)
 						.presentationDetents([.medium])
 						.edgesIgnoringSafeArea(.bottom)
 				}
@@ -80,7 +80,7 @@ struct ContactFragment: View {
 					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
 				} onDismiss: {}
 					.sheet(isPresented: $showShareSheet) {
-						ShareSheet(friendToShare: ContactsManager.shared.lastSearch[contactViewModel.indexDisplayedFriend!].friend!)
+						ShareSheet(friendToShare: ContactsManager.shared.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!)
 							.edgesIgnoringSafeArea(.bottom)
 					}
 			}

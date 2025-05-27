@@ -27,8 +27,6 @@ struct ChatBubbleView: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	let eventLogMessage: EventLogMessage
@@ -58,7 +56,7 @@ struct ChatBubbleView: View {
 							if eventLogMessage.message.isOutgoing {
 								Spacer()
 							}
-							if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
+							if SharedMainViewModel.shared.displayedConversation != nil && SharedMainViewModel.shared.displayedConversation!.isGroup
 								&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
 								VStack {
 									Avatar(
@@ -68,15 +66,15 @@ struct ChatBubbleView: View {
 									)
 									.padding(.top, 30)
 								}
-							} else if conversationViewModel.displayedConversation != nil
-										&& conversationViewModel.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
+							} else if SharedMainViewModel.shared.displayedConversation != nil
+										&& SharedMainViewModel.shared.displayedConversation!.isGroup && !eventLogMessage.message.isOutgoing {
 								VStack {
 								}
 								.padding(.leading, 43)
 							}
 							
 							VStack(alignment: .leading, spacing: 0) {
-								if conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup
+								if SharedMainViewModel.shared.displayedConversation != nil && SharedMainViewModel.shared.displayedConversation!.isGroup
 									&& !eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage {
 									Text(conversationViewModel.participantConversationModel.first(where: {$0.address == eventLogMessage.message.address})?.name ?? "")
 										.default_text_style(styleSize: 12)
@@ -332,7 +330,7 @@ struct ChatBubbleView: View {
 														.padding(.top, 1)
 														.padding(.trailing, -4)
 													
-													if (conversationViewModel.displayedConversation != nil && conversationViewModel.displayedConversation!.isGroup)
+													if (SharedMainViewModel.shared.displayedConversation != nil && SharedMainViewModel.shared.displayedConversation!.isGroup)
 														|| eventLogMessage.message.isOutgoing {
 														if eventLogMessage.message.status == .sending {
 															ProgressView()

@@ -24,8 +24,6 @@ struct ContactListBottomSheet: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	@ObservedObject var contactViewModel: ContactViewModel
 	
 	@State private var orientation = UIDevice.current.orientation

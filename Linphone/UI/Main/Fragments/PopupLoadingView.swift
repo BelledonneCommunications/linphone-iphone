@@ -21,8 +21,6 @@ import SwiftUI
 
 struct PopupLoadingView: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(alignment: .leading) {
@@ -47,7 +45,7 @@ struct PopupLoadingView: View {
 			.frame(maxHeight: .infinity)
 			.frame(maxWidth: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
 	}

@@ -48,7 +48,6 @@ class MeetingViewModel: ObservableObject {
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerDelegate: ConferenceSchedulerDelegate?
 	var conferenceInfoToEdit: ConferenceInfo?
-	@Published var displayedMeeting: MeetingModel? // if nil, then we are currently creating a new meeting
 	@Published var myself: SelectedAddressModel?
 	@Published var fromDate: Date
 	@Published var toDate: Date
@@ -180,8 +179,8 @@ class MeetingViewModel: ObservableObject {
 			if state == ConferenceScheduler.State.Error {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
-					self.errorMsg = (self.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
-					ToastViewModel.shared.toastMessage = (self.displayedMeeting != nil) ? "meeting_failed_to_edit_toast" : "meeting_failed_to_schedule_toast"
+					self.errorMsg = (SharedMainViewModel.shared.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
+					ToastViewModel.shared.toastMessage = (SharedMainViewModel.shared.displayedMeeting != nil) ? "meeting_failed_to_edit_toast" : "meeting_failed_to_schedule_toast"
 					ToastViewModel.shared.displayToast = true
 				}
 			} else if state == ConferenceScheduler.State.Ready {
@@ -271,7 +270,7 @@ class MeetingViewModel: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("\(MeetingViewModel.TAG) Scheduling \(self.isBroadcastSelected ? "broadcast" : "meeting")")
 			
-			if let conferenceInfo = (self.displayedMeeting != nil ? self.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo()) {
+			if let conferenceInfo = (SharedMainViewModel.shared.displayedMeeting != nil ? SharedMainViewModel.shared.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo()) {
 				let localAccount = core.defaultAccount
 				conferenceInfo.organizer = localAccount?.params?.identityAddress
 				
@@ -362,7 +361,7 @@ class MeetingViewModel: ObservableObject {
 			self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
 			self.computeDateLabels()
 			self.computeTimeLabels()
-			self.displayedMeeting = meeting
+			SharedMainViewModel.shared.displayedMeeting = meeting
 	}
 	
 	func cancelMeetingWithNotifications(meeting: MeetingModel) {

@@ -24,7 +24,6 @@ import linphonesw
 
 struct ContactInnerFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
@@ -67,7 +66,7 @@ struct ContactInnerFragment: View {
 								.padding(.leading, -10)
 								.onTapGesture {
 									withAnimation {
-										contactViewModel.indexDisplayedFriend = nil
+										SharedMainViewModel.shared.indexDisplayedFriend = nil
 									}
 								}
 						}
@@ -118,7 +117,7 @@ struct ContactInnerFragment: View {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
 								VStack(spacing: 0) {
-									if contactViewModel.indexDisplayedFriend != nil {
+									if SharedMainViewModel.shared.indexDisplayedFriend != nil {
 										Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
 										
 										Text(contactAvatarModel.name)
@@ -258,7 +257,7 @@ struct ContactInnerFragment: View {
 									actionEditButton: editNativeContact
 								)
 							}
-							.frame(maxWidth: sharedMainViewModel.maxWidth)
+							.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 						}
 						.frame(maxWidth: .infinity)
 					}

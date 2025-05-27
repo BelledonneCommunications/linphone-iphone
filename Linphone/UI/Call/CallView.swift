@@ -204,7 +204,7 @@ struct CallView: View {
 						}
 				}
 				
-				if isShowConversationFragment && conversationViewModel.displayedConversation != nil {
+				if isShowConversationFragment && SharedMainViewModel.shared.displayedConversation != nil {
 					ConversationFragment(
 						conversationViewModel: conversationViewModel,
 						conversationsListViewModel: conversationsListViewModel,
@@ -225,7 +225,7 @@ struct CallView: View {
 					.zIndex(4)
 					.transition(.move(edge: .bottom))
 					.onDisappear {
-						conversationViewModel.displayedConversation = nil
+						SharedMainViewModel.shared.displayedConversation = nil
 						isShowConversationFragment = false
 					}
 				}
@@ -2277,10 +2277,10 @@ struct CallView: View {
 											.progressViewStyle(CircularProgressViewStyle(tint: .white))
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
-												if callViewModel.displayedConversation != nil {
+												if SharedMainViewModel.shared.displayedConversation != nil {
 													indexPage = 2
-													self.conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
-													callViewModel.displayedConversation = nil
+													self.conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+													SharedMainViewModel.shared.displayedConversation = nil
 													withAnimation {
 														telecomManager.callDisplayed = false
 													}
@@ -2648,8 +2648,8 @@ struct CallView: View {
 											.progressViewStyle(CircularProgressViewStyle(tint: .white))
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
-												if callViewModel.displayedConversation != nil {
-													conversationViewModel.changeDisplayedChatRoom(conversationModel: callViewModel.displayedConversation!)
+												if SharedMainViewModel.shared.displayedConversation != nil {
+													conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
 												}
 											}
 									}

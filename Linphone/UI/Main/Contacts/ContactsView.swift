@@ -21,9 +21,7 @@ import SwiftUI
 
 struct ContactsView: View {
 	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
+	@EnvironmentObject var contactViewModel: ContactViewModel
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDeletePopup: Bool
@@ -36,8 +34,8 @@ struct ContactsView: View {
 				
 				Button {
 					withAnimation {
-						editContactViewModel.selectedEditFriend = nil
-						editContactViewModel.resetValues()
+						contactViewModel.selectedEditFriend = nil
+						//editContactViewModel.resetValues()
 						isShowEditContactFragment.toggle()
 					}
 				} label: {
@@ -63,9 +61,9 @@ struct ContactsView: View {
 
 #Preview {
 	ContactsView(
-		contactViewModel: ContactViewModel(),
-		historyViewModel: HistoryViewModel(),
-		editContactViewModel: EditContactViewModel(),
+		//contactViewModel: ContactViewModel(),
+		//historyViewModel: HistoryViewModel(),
+		//editContactViewModel: EditContactViewModel(),
 		isShowEditContactFragment: .constant(false),
 		isShowDeletePopup: .constant(false),
 		text: .constant("")

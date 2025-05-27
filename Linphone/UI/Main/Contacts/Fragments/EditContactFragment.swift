@@ -24,7 +24,6 @@ import linphonesw
 struct EditContactFragment: View {
 	
 	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Environment(\.dismiss) var dismiss
 	
@@ -460,7 +459,7 @@ struct EditContactFragment: View {
 									.focused($isJobTitleFocused)
 							}
 						}
-						.frame(maxWidth: sharedMainViewModel.maxWidth)
+						.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 						.padding(.horizontal)
 					}
 					.frame(maxWidth: .infinity)
@@ -536,7 +535,7 @@ struct EditContactFragment: View {
 								let result = ContactsManager.shared.lastSearch.firstIndex(where: {
 									$0.friend!.name == newContact.firstName + " " + newContact.lastName
 								})
-								contactViewModel.indexDisplayedFriend = result
+								SharedMainViewModel.shared.indexDisplayedFriend = result
 							}
 						}
 						

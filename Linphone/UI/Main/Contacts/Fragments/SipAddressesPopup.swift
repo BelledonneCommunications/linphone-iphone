@@ -23,7 +23,6 @@ import linphonesw
 struct SipAddressesPopup: View {
 	
 	@ObservedObject private var telecomManager = TelecomManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var contactViewModel: ContactViewModel
@@ -97,7 +96,7 @@ struct SipAddressesPopup: View {
 			.cornerRadius(20)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
     }

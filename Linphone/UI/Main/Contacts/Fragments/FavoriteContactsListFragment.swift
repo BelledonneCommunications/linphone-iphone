@@ -53,7 +53,7 @@ struct FavoriteContactsListFragment: View {
 						.background(.white)
 						.onTapGesture {
 							withAnimation {
-								contactViewModel.indexDisplayedFriend = index
+								SharedMainViewModel.shared.indexDisplayedFriend = index
 							}
 						}
 						.onLongPressGesture(minimumDuration: 0.2) {

@@ -21,7 +21,6 @@ import SwiftUI
 
 struct ThirdPartySipAccountWarningFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
 	
@@ -135,7 +134,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 				}
 				.padding(.vertical)
 			}
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal, 20)
 			
 			Spacer()
@@ -156,7 +155,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 					.inset(by: 0.5)
 					.stroke(Color.orangeMain500, lineWidth: 1)
 			)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal)
 			
 			NavigationLink(destination: {
@@ -172,7 +171,7 @@ struct ThirdPartySipAccountWarningFragment: View {
 			.padding(.vertical, 10)
 			.background(Color.orangeMain500)
 			.cornerRadius(60)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal)
 			.padding(.bottom)
 			

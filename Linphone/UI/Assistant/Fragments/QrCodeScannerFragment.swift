@@ -22,7 +22,6 @@ import SwiftUI
 struct QrCodeScannerFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Environment(\.dismiss) var dismiss
 	

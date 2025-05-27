@@ -89,7 +89,7 @@ struct MeetingFragment: View {
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
-									meetingViewModel.displayedMeeting = nil
+									SharedMainViewModel.shared.displayedMeeting = nil
 								}
 							}
 						Spacer()
@@ -129,12 +129,12 @@ struct MeetingFragment: View {
 							}
 							Button(role: .destructive) {
 								withAnimation {
-									meetingsListViewModel.selectedMeetingToDelete = meetingViewModel.displayedMeeting
+									meetingsListViewModel.selectedMeetingToDelete = SharedMainViewModel.shared.displayedMeeting
 									if let myself = meetingViewModel.myself, myself.isOrganizer == true {
 										isShowSendCancelMeetingNotificationPopup.toggle()
 									} else {
 										// If we're not organizer, directly delete the conference
-										meetingViewModel.displayedMeeting = nil
+										SharedMainViewModel.shared.displayedMeeting = nil
 										meetingsListViewModel.deleteSelectedMeeting()
 									}
 								}
@@ -299,7 +299,7 @@ struct MeetingFragment: View {
 				Spacer()
 				
 				Button(action: {
-					meetingViewModel.joinMeeting(addressUri: meetingViewModel.displayedMeeting?.address ?? "")
+					meetingViewModel.joinMeeting(addressUri: SharedMainViewModel.shared.displayedMeeting?.address ?? "")
 				}, label: {
 					Text("meeting_info_join_title")
 						.bold()

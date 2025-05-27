@@ -88,7 +88,6 @@ final class ContactsManager: ObservableObject {
 						linphoneFriendList.displayName = self.linphoneAddressBookFriendList
 						core.addFriendList(list: linphoneFriendList)
 					}
-					core.friendListSubscriptionEnabled = true
 				}
 			}
 			
@@ -383,17 +382,13 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func addFriendListDelegate() {
+		CoreContext.shared.mCore.friendListSubscriptionEnabled = true
+		
 		CoreContext.shared.mCore.friendsLists.forEach { friendList in
 			friendList.updateSubscriptions()
 		}
 		
-		if let friendListDelegate = self.friendListDelegate {
-			CoreContext.shared.mCore.friendsLists.forEach { friendList in
-				friendList.removeDelegate(delegate: friendListDelegate)
-			}
-		}
-		
-		self.friendListDelegate = FriendListDelegateStub(
+		let friendListDelegateTmp = FriendListDelegateStub(
 			onContactCreated: { (friendList: FriendList, linphoneFriend: Friend) in
 				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactCreated")
 			},
@@ -438,14 +433,13 @@ final class ContactsManager: ObservableObject {
 			onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
 				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")
 			},
-			onNewSipAddressDiscovered: { (_: FriendList, linphoneFriend: Friend, sipUri: String) in
+			onNewSipAddressDiscovered: { (friendList: FriendList, linphoneFriend: Friend, sipUri: String) in
 				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onNewSipAddressDiscovered \(linphoneFriend.name ?? "")")
 				var addedAvatarListModel: [ContactAvatarModel] = []
-				linphoneFriend.phoneNumbers.forEach { _ in
-					let address = try? Factory.Instance.createAddress(addr: sipUri)
-					if address != nil {
+				if !self.avatarListModel.contains(where: {$0.friend?.name == linphoneFriend.name}) {
+					if let address = try? Factory.Instance.createAddress(addr: sipUri) {
 						linphoneFriend.edit()
-						linphoneFriend.addAddress(address: address!)
+						linphoneFriend.addAddress(address: address)
 						linphoneFriend.done()
 						
 						let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
@@ -458,7 +452,12 @@ final class ContactsManager: ObservableObject {
 							)
 						)
 						
+						addedAvatarListModel += self.avatarListModel
+						addedAvatarListModel = addedAvatarListModel.sorted { $0.name < $1.name }
+						
 						DispatchQueue.main.async {
+							self.avatarListModel = addedAvatarListModel
+							
 							NotificationCenter.default.post(
 								name: NSNotification.Name("ContactAdded"),
 								object: nil,
@@ -467,16 +466,11 @@ final class ContactsManager: ObservableObject {
 						}
 					}
 				}
-				
-				DispatchQueue.main.async {
-					self.avatarListModel += addedAvatarListModel
-					self.avatarListModel = self.avatarListModel.sorted { $0.name < $1.name }
-				}
 			}
 		)
 		
 		CoreContext.shared.mCore.friendsLists.forEach { friendList in
-			friendList.addDelegate(delegate: self.friendListDelegate!)
+			friendList.addDelegate(delegate: friendListDelegateTmp)
 		}
 	}
 	

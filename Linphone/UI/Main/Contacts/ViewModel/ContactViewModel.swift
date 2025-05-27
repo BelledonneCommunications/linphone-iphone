@@ -23,8 +23,7 @@ import SwiftUI
 
 // swiftlint:disable line_length
 class ContactViewModel: ObservableObject {
-	
-	@Published var indexDisplayedFriend: Int?
+	@Published var selectedEditFriend: Friend?
 	
 	var stringToCopy: String = ""
     

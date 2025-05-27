@@ -30,6 +30,11 @@ class SharedMainViewModel: ObservableObject {
 	@Published var defaultAvatar: URL?
 	@Published var indexView: Int = 0
 	
+	@Published var indexDisplayedFriend: Int?
+	@Published var displayedCall: HistoryModel?
+	@Published var displayedConversation: ConversationModel?
+	@Published var displayedMeeting: MeetingModel?
+	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
 	let displayProfileModeKey = "display_profile_mode"

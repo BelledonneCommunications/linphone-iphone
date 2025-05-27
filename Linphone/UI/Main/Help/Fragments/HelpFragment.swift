@@ -21,8 +21,6 @@ import SwiftUI
 
 struct HelpFragment: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	@ObservedObject var helpViewModel: HelpViewModel
 	
 	@Binding var isShowHelpFragment: Bool
@@ -234,7 +232,7 @@ struct HelpFragment: View {
 									}
 								})
 							}
-							.frame(maxWidth: sharedMainViewModel.maxWidth)
+							.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 							.padding(.all, 20)
 						}
 						.frame(maxWidth: .infinity)

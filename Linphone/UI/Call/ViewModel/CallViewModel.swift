@@ -86,7 +86,6 @@ class CallViewModel: ObservableObject {
 	@Published var letters4: String = "DD"
 	
 	@Published var operationInProgress: Bool = false
-	@Published var displayedConversation: ConversationModel?
 	
 	private var chatRoomDelegate: ChatRoomDelegate?
 	
@@ -1176,7 +1175,7 @@ class CallViewModel: ObservableObject {
 					
 					let model = ConversationModel(chatRoom: existingConversation!)
 					DispatchQueue.main.async {
-						self.displayedConversation = model
+						SharedMainViewModel.shared.displayedConversation = model
 						self.operationInProgress = false
 					}
 				} else {
@@ -1237,7 +1236,7 @@ class CallViewModel: ObservableObject {
 								Log.info("\(CallViewModel.TAG) 1-1 conversation \(chatRoomId) has been created")
 								let model = ConversationModel(chatRoom: chatRoom)
 								DispatchQueue.main.async {
-									self.displayedConversation = model
+									SharedMainViewModel.shared.displayedConversation = model
 									self.operationInProgress = false
 								}
 							} else {
@@ -1250,7 +1249,7 @@ class CallViewModel: ObservableObject {
 							
 							let model = ConversationModel(chatRoom: chatRoom)
 							DispatchQueue.main.async {
-								self.displayedConversation = model
+								SharedMainViewModel.shared.displayedConversation = model
 								self.operationInProgress = false
 							}
 							
@@ -1332,12 +1331,12 @@ class CallViewModel: ObservableObject {
 			}
 			
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-				self.displayedConversation = model
+				SharedMainViewModel.shared.displayedConversation = model
 				self.operationInProgress = false
 			}
 		} else {
 			DispatchQueue.main.async {
-				self.displayedConversation = model
+				SharedMainViewModel.shared.displayedConversation = model
 				self.operationInProgress = false
 			}
 		}
@@ -1373,12 +1372,12 @@ class CallViewModel: ObservableObject {
 					}
 					
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.displayedConversation = model
+						SharedMainViewModel.shared.displayedConversation = model
 						self.operationInProgress = false
 					}
 				} else {
 					DispatchQueue.main.async {
-						self.displayedConversation = model
+						SharedMainViewModel.shared.displayedConversation = model
 						self.operationInProgress = false
 					}
 				}

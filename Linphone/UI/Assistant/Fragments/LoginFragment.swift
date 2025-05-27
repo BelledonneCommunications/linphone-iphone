@@ -22,7 +22,6 @@ import SwiftUI
 struct LoginFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
 	
 	@State private var isSecured: Bool = true
@@ -203,7 +202,7 @@ struct LoginFragment: View {
 				.padding(.bottom)
 				
 				Button(action: {
-					sharedMainViewModel.changeDisplayProfileMode()
+					SharedMainViewModel.shared.changeDisplayProfileMode()
 					self.accountLoginViewModel.login()
 					coreContext.loggingInProgress = true
 				}, label: {
@@ -278,7 +277,7 @@ struct LoginFragment: View {
 						.frame(maxWidth: .infinity)
 					
 				})
-				.disabled(!sharedMainViewModel.generalTermsAccepted)
+				.disabled(!SharedMainViewModel.shared.generalTermsAccepted)
 				.padding(.horizontal, 20)
 				.padding(.vertical, 10)
 				.cornerRadius(60)
@@ -291,7 +290,7 @@ struct LoginFragment: View {
 				.simultaneousGesture(
 					TapGesture().onEnded {
 						self.linkActive = "SIP"
-						if !sharedMainViewModel.generalTermsAccepted {
+						if !SharedMainViewModel.shared.generalTermsAccepted {
 							withAnimation {
 								self.isShowPopup.toggle()
 							}
@@ -301,7 +300,7 @@ struct LoginFragment: View {
 					}
 				)
 			}
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal, 20)
 			
 			Spacer()
@@ -319,7 +318,7 @@ struct LoginFragment: View {
 						.default_text_style_white_600(styleSize: 20)
 						.frame(height: 35)
 				})
-				.disabled(!sharedMainViewModel.generalTermsAccepted)
+				.disabled(!SharedMainViewModel.shared.generalTermsAccepted)
 				.padding(.horizontal, 20)
 				.padding(.vertical, 10)
 				.background(Color.orangeMain500)
@@ -328,7 +327,7 @@ struct LoginFragment: View {
 				.simultaneousGesture(
 					TapGesture().onEnded {
 						self.linkActive = "REG"
-						if !sharedMainViewModel.generalTermsAccepted {
+						if !SharedMainViewModel.shared.generalTermsAccepted {
 							withAnimation {
 								self.isShowPopup.toggle()
 							}
@@ -352,7 +351,7 @@ struct LoginFragment: View {
 	}
 	
 	func acceptGeneralTerms() {
-		sharedMainViewModel.changeGeneralTerms()
+		SharedMainViewModel.shared.changeGeneralTerms()
 		self.isShowPopup.toggle()
 		switch linkActive {
 		case "SIP":

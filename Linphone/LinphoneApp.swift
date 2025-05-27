@@ -128,11 +128,10 @@ struct LinphoneApp: App {
 	@StateObject var navigationManager = NavigationManager()
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@State var index: Int = 0
 	
-	@State private var contactViewModel: ContactViewModel?
+	/*
 	@State private var editContactViewModel: EditContactViewModel?
 	@State private var historyViewModel: HistoryViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
@@ -146,6 +145,7 @@ struct LinphoneApp: App {
 	@State private var meetingViewModel: MeetingViewModel?
 	@State private var conversationForwardMessageViewModel: ConversationForwardMessageViewModel?
 	@State private var accountProfileViewModel: AccountProfileViewModel?
+	*/
 	
 	@State private var pendingURL: URL?
 	
@@ -153,55 +153,40 @@ struct LinphoneApp: App {
 		WindowGroup {
 			if coreContext.coreHasStartedOnce {
 				ZStack {
-					if !sharedMainViewModel.welcomeViewDisplayed {
+					if !SharedMainViewModel.shared.welcomeViewDisplayed {
 						ZStack {
 							WelcomeView()
 							
 							ToastView()
 								.zIndex(3)
 						}
-					} else if coreContext.accounts.isEmpty || sharedMainViewModel.displayProfileMode {
+					} else if (coreContext.coreIsStarted && coreContext.accounts.isEmpty) || SharedMainViewModel.shared.displayProfileMode {
 						ZStack {
 							AssistantView()
 							
 							ToastView()
 								.zIndex(3)
 						}
-					} else if !coreContext.accounts.isEmpty
-								&& contactViewModel != nil
-								&& editContactViewModel != nil
-								&& historyViewModel != nil
-								&& historyListViewModel != nil
-								&& startCallViewModel != nil
-								&& startConversationViewModel != nil
-								&& callViewModel != nil
-								&& meetingWaitingRoomViewModel != nil
-								&& conversationsListViewModel != nil
-								&& conversationViewModel != nil
-								&& meetingsListViewModel != nil
-								&& meetingViewModel != nil
-								&& conversationForwardMessageViewModel != nil
-								&& accountProfileViewModel != nil {
+					} else {
 						ContentView(
-							contactViewModel: contactViewModel!,
-							editContactViewModel: editContactViewModel!,
-							historyViewModel: historyViewModel!,
-							historyListViewModel: historyListViewModel!,
-							startCallViewModel: startCallViewModel!,
-							startConversationViewModel: startConversationViewModel!,
-							callViewModel: callViewModel!,
-							meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
-							conversationsListViewModel: conversationsListViewModel!,
-							conversationViewModel: conversationViewModel!,
-							meetingsListViewModel: meetingsListViewModel!,
-							meetingViewModel: meetingViewModel!,
-							conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
-							accountProfileViewModel: accountProfileViewModel!,
+							//editContactViewModel: editContactViewModel!,
+							//historyViewModel: historyViewModel!,
+							//historyListViewModel: historyListViewModel!,
+							//startCallViewModel: startCallViewModel!,
+							//startConversationViewModel: startConversationViewModel!,
+							//callViewModel: callViewModel!,
+							//meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
+							//conversationsListViewModel: conversationsListViewModel!,
+							//conversationViewModel: conversationViewModel!,
+							//meetingsListViewModel: meetingsListViewModel!,
+							//meetingViewModel: meetingViewModel!,
+							//conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
+							//accountProfileViewModel: accountProfileViewModel!,
 							index: $index
 						)
 						.environmentObject(navigationManager)
 						.onAppear {
-							index = sharedMainViewModel.indexView
+							index = SharedMainViewModel.shared.indexView
 							// Link the navigation manager to the AppDelegate
 							delegate.navigationManager = navigationManager
 							
@@ -211,10 +196,8 @@ struct LinphoneApp: App {
 								navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
 							}
 							
-							accountProfileViewModel!.setAvatarModel()
+							//accountProfileViewModel!.setAvatarModel()
 						}
-					} else {
-						SplashScreen()
 					}
 					
 					if coreContext.coreIsStarted {
@@ -238,22 +221,6 @@ struct LinphoneApp: App {
 				}
 			} else {
 				SplashScreen()
-					.onDisappear {
-						contactViewModel = ContactViewModel()
-						editContactViewModel = EditContactViewModel()
-						historyViewModel = HistoryViewModel()
-						historyListViewModel = HistoryListViewModel()
-						startCallViewModel = StartCallViewModel()
-						startConversationViewModel = StartConversationViewModel()
-						callViewModel = CallViewModel()
-						meetingWaitingRoomViewModel = MeetingWaitingRoomViewModel()
-						conversationsListViewModel = ConversationsListViewModel()
-						conversationViewModel = ConversationViewModel()
-						meetingsListViewModel = MeetingsListViewModel()
-						meetingViewModel = MeetingViewModel()
-						conversationForwardMessageViewModel = ConversationForwardMessageViewModel()
-						accountProfileViewModel = AccountProfileViewModel()
-					}
 			}
 		}.onChange(of: scenePhase) { newPhase in
 			if !TelecomManager.shared.callInProgress {

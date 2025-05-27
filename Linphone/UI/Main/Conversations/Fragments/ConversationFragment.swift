@@ -31,7 +31,6 @@ struct ConversationFragment: View {
 	@EnvironmentObject var navigationManager: NavigationManager
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
@@ -89,7 +88,7 @@ struct ConversationFragment: View {
 							orientation = newOrientation
 						}
 						.onAppear {
-							displayedChatroomPeerAddr = conversationViewModel.displayedConversation?.remoteSipUri
+							displayedChatroomPeerAddr = SharedMainViewModel.shared.displayedConversation?.remoteSipUri
 						}
 						.onDisappear {
 							displayedChatroomPeerAddr = nil
@@ -150,7 +149,7 @@ struct ConversationFragment: View {
 							orientation = newOrientation
 						}
 						.onAppear {
-							displayedChatroomPeerAddr = conversationViewModel.displayedConversation?.remoteSipUri
+							displayedChatroomPeerAddr = SharedMainViewModel.shared.displayedConversation?.remoteSipUri
 						}
 						.onDisappear {
 							displayedChatroomPeerAddr = nil
@@ -187,7 +186,7 @@ struct ConversationFragment: View {
 			}
 			.onChange(of: scenePhase) { newPhase in
 				if newPhase == .active {
-					if conversationViewModel.displayedConversation != nil && (navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(conversationViewModel.displayedConversation!.remoteSipUri)) {
+					if SharedMainViewModel.shared.displayedConversation != nil && (navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(SharedMainViewModel.shared.displayedConversation!.remoteSipUri)) {
 						conversationViewModel.resetDisplayedChatRoom()
 					}
 				}
@@ -202,7 +201,7 @@ struct ConversationFragment: View {
 	func innerView(geometry: GeometryProxy) -> some View {
 		ZStack {
 			VStack(spacing: 1) {
-				if conversationViewModel.displayedConversation != nil {
+				if SharedMainViewModel.shared.displayedConversation != nil {
 					Rectangle()
 						.foregroundColor(Color.orangeMain500)
 						.edgesIgnoringSafeArea(.top)
@@ -224,16 +223,16 @@ struct ConversationFragment: View {
 										if isShowConversationFragment {
 											isShowConversationFragment = false
 										}
-										conversationViewModel.displayedConversation = nil
+										SharedMainViewModel.shared.displayedConversation = nil
 									}
 								}
 						}
 						
-						Avatar(contactAvatarModel: conversationViewModel.displayedConversation!.avatarModel, avatarSize: 50)
+						Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation!.avatarModel, avatarSize: 50)
 							.padding(.top, 4)
 						
 						VStack(spacing: 1) {
-							Text(conversationViewModel.displayedConversation!.subject)
+							Text(SharedMainViewModel.shared.displayedConversation!.subject)
 								.default_text_style(styleSize: 16)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.padding(.top, 4)
@@ -277,12 +276,12 @@ struct ConversationFragment: View {
 						
 						Spacer()
 						
-						if !conversationViewModel.displayedConversation!.isReadOnly {
+						if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
 							Button {
-								if conversationViewModel.displayedConversation!.isGroup {
+								if SharedMainViewModel.shared.displayedConversation!.isGroup {
 									isShowStartCallGroupPopup.toggle()
 								} else {
-									conversationViewModel.displayedConversation!.call()
+									SharedMainViewModel.shared.displayedConversation!.call()
 								}
 							} label: {
 								Image("phone")
@@ -314,10 +313,10 @@ struct ConversationFragment: View {
 								}
 							}
 							
-							if !conversationViewModel.displayedConversation!.isReadOnly {
+							if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
 								Button {
 									isMenuOpen = false
-									conversationViewModel.displayedConversation!.toggleMute()
+									SharedMainViewModel.shared.displayedConversation!.toggleMute()
 									isMuted = !isMuted
 								} label: {
 									HStack {
@@ -360,7 +359,7 @@ struct ConversationFragment: View {
 								.padding(.top, 4)
 								.onChange(of: isMuted) { _ in }
 								.onAppear {
-									isMuted = conversationViewModel.displayedConversation!.isMuted
+									isMuted = SharedMainViewModel.shared.displayedConversation!.isMuted
 								}
 						}
 						.onTapGesture {
@@ -503,7 +502,7 @@ struct ConversationFragment: View {
 						.transition(.move(edge: .bottom))
 					}
 					
-					if conversationViewModel.displayedConversation != nil && !conversationViewModel.displayedConversation!.isReadOnly {
+					if SharedMainViewModel.shared.displayedConversation != nil && !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
 						if conversationViewModel.messageToReply != nil {
 							ZStack(alignment: .top) {
 								HStack {
@@ -845,8 +844,8 @@ struct ConversationFragment: View {
 			}
 			.blur(radius: conversationViewModel.selectedMessage != nil ? 8 : 0)
 			
-			if conversationViewModel.selectedMessage != nil && conversationViewModel.displayedConversation != nil {
-				let iconSize = ((geometry.size.width - (conversationViewModel.displayedConversation!.isGroup ? 43 : 10) - 10) / 6) - 30
+			if conversationViewModel.selectedMessage != nil && SharedMainViewModel.shared.displayedConversation != nil {
+				let iconSize = ((geometry.size.width - (SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 10) - 10) / 6) - 30
 				
 				ScrollView {
 					VStack {
@@ -932,7 +931,7 @@ struct ConversationFragment: View {
 							}
 							.frame(maxWidth: .infinity)
 							.padding(.horizontal, 10)
-							.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
+							.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
 							.shadow(color: .black.opacity(0.1), radius: 10)
 							
 							ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: conversationViewModel.selectedMessage!, geometryProxy: geometry)
@@ -1044,7 +1043,7 @@ struct ConversationFragment: View {
 							.frame(maxWidth: .infinity)
 							.padding(.horizontal, 10)
 							.padding(.bottom, 20)
-							.padding(.leading, conversationViewModel.displayedConversation!.isGroup ? 43 : 0)
+							.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
 							.shadow(color: .black.opacity(0.1), radius: 10)
 						}
 					}

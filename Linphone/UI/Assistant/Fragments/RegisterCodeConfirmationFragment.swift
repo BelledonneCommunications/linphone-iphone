@@ -21,7 +21,7 @@ import SwiftUI
 
 // swiftlint:disable line_length
 struct RegisterCodeConfirmationFragment: View {
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	
 	@ObservedObject var registerViewModel: RegisterViewModel
 	
 	@Environment(\.dismiss) var dismiss
@@ -163,7 +163,7 @@ struct RegisterCodeConfirmationFragment: View {
 					Spacer()
 					Spacer()
 				}
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				.padding(.horizontal, 20)
 			}
 			

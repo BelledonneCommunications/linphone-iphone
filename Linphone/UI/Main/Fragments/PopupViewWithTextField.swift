@@ -9,8 +9,6 @@ import SwiftUI
 
 struct PopupViewWithTextField: View {
 	
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	
 	@FocusState var isMessageTextFocused: Bool
@@ -76,7 +74,7 @@ struct PopupViewWithTextField: View {
 			.padding(.horizontal)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
     }

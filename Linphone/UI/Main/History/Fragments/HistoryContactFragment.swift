@@ -28,7 +28,6 @@ struct HistoryContactFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var historyViewModel: HistoryViewModel
@@ -44,7 +43,7 @@ struct HistoryContactFragment: View {
 	
 	var body: some View {
 		NavigationView {
-			if historyViewModel.displayedCall != nil {
+			if SharedMainViewModel.shared.displayedCall != nil {
 				VStack(spacing: 1) {
 					Rectangle()
 						.foregroundColor(Color.orangeMain500)
@@ -64,7 +63,7 @@ struct HistoryContactFragment: View {
 								.padding(.leading, -10)
 								.onTapGesture {
 									withAnimation {
-										historyViewModel.displayedCall = nil
+										SharedMainViewModel.shared.displayedCall = nil
 									}
 								}
 						}
@@ -75,42 +74,42 @@ struct HistoryContactFragment: View {
 						Spacer()
 						
 						Menu {
-							if historyViewModel.displayedCall != nil && !historyViewModel.displayedCall!.isConf {
+							if SharedMainViewModel.shared.displayedCall != nil && !SharedMainViewModel.shared.displayedCall!.isConf {
 								Button {
 									isMenuOpen = false
 									
-									if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.addressFriend != nil {
-										let addressCall = historyViewModel.displayedCall!.addressFriend!.address
+									if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.addressFriend != nil {
+										let addressCall = SharedMainViewModel.shared.displayedCall!.addressFriend!.address
 										
 										if addressCall != nil {
 											let friendIndex = contactsManager.lastSearch.firstIndex(
 												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall!.asStringUriOnly()})})
 											if friendIndex != nil {
 												withAnimation {
-													historyViewModel.displayedCall = nil
+													SharedMainViewModel.shared.displayedCall = nil
 													indexPage = 0
 													
-													contactViewModel.indexDisplayedFriend = friendIndex
+													SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
 												}
 											}
 										}
 									} else {
 										withAnimation {
-											historyViewModel.displayedCall = nil
+											SharedMainViewModel.shared.displayedCall = nil
 											indexPage = 0
 											
 											isShowEditContactFragment.toggle()
 											editContactViewModel.sipAddresses.removeAll()
-											editContactViewModel.sipAddresses.append(String(historyViewModel.displayedCall?.address.dropFirst(4) ?? ""))
+											editContactViewModel.sipAddresses.append(String(SharedMainViewModel.shared.displayedCall?.address.dropFirst(4) ?? ""))
 											editContactViewModel.sipAddresses.append("")
 										}
 									}
 									
 								} label: {
 									HStack {
-										Text(historyViewModel.displayedCall!.addressFriend != nil ? "menu_see_existing_contact" : "menu_add_address_to_contacts")
+										Text(SharedMainViewModel.shared.displayedCall!.addressFriend != nil ? "menu_see_existing_contact" : "menu_add_address_to_contacts")
 										Spacer()
-										Image(historyViewModel.displayedCall!.addressFriend != nil ? "user-circle" : "plus-circle")
+										Image(SharedMainViewModel.shared.displayedCall!.addressFriend != nil ? "user-circle" : "plus-circle")
 											.resizable()
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
@@ -121,14 +120,14 @@ struct HistoryContactFragment: View {
 							Button {
 								isMenuOpen = false
 								
-								if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.isOutgoing {
+								if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.isOutgoing {
 									UIPasteboard.general.setValue(
-										historyViewModel.displayedCall!.address.dropFirst(4),
+										SharedMainViewModel.shared.displayedCall!.address.dropFirst(4),
 										forPasteboardType: UTType.plainText.identifier
 									)
 								} else {
 									UIPasteboard.general.setValue(
-										historyViewModel.displayedCall!.address.dropFirst(4),
+										SharedMainViewModel.shared.displayedCall!.address.dropFirst(4),
 										forPasteboardType: UTType.plainText.identifier
 									)
 								}
@@ -150,10 +149,10 @@ struct HistoryContactFragment: View {
 							Button(role: .destructive) {
 								isMenuOpen = false
 								
-								if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.isOutgoing {
-									historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.address
+								if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.isOutgoing {
+									historyListViewModel.callLogsAddressToDelete = SharedMainViewModel.shared.displayedCall!.address
 								} else {
-									historyListViewModel.callLogsAddressToDelete = historyViewModel.displayedCall!.address
+									historyListViewModel.callLogsAddressToDelete = SharedMainViewModel.shared.displayedCall!.address
 								}
 								
 								isShowDeleteAllHistoryPopup.toggle()
@@ -197,26 +196,26 @@ struct HistoryContactFragment: View {
 								}
 								
 								VStack(spacing: 0) {
-									if historyViewModel.displayedCall != nil && !historyViewModel.displayedCall!.isConf {
-										if historyViewModel.displayedCall!.avatarModel != nil {
-											Avatar(contactAvatarModel: historyViewModel.displayedCall!.avatarModel!, avatarSize: 100)
+									if SharedMainViewModel.shared.displayedCall != nil && !SharedMainViewModel.shared.displayedCall!.isConf {
+										if SharedMainViewModel.shared.displayedCall!.avatarModel != nil {
+											Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedCall!.avatarModel!, avatarSize: 100)
 										}
 										
-										Text(historyViewModel.displayedCall!.addressName)
+										Text(SharedMainViewModel.shared.displayedCall!.addressName)
 											.foregroundStyle(Color.grayMain2c700)
 											.multilineTextAlignment(.center)
 											.default_text_style(styleSize: 14)
 											.frame(maxWidth: .infinity)
 											.padding(.top, 10)
 										
-										Text(historyViewModel.displayedCall!.address)
+										Text(SharedMainViewModel.shared.displayedCall!.address)
 											.foregroundStyle(Color.grayMain2c700)
 											.multilineTextAlignment(.center)
 											.default_text_style(styleSize: 14)
 											.frame(maxWidth: .infinity)
 											.padding(.top, 5)
 										
-										if historyViewModel.displayedCall!.avatarModel != nil {
+										if SharedMainViewModel.shared.displayedCall!.avatarModel != nil {
 											Text(contactAvatarModel.lastPresenceInfo)
 												.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
 																 ? Color.greenSuccess500
@@ -245,7 +244,7 @@ struct HistoryContactFragment: View {
 										.background(Color.grayMain2c200)
 										.clipShape(Circle())
 										
-										Text(historyViewModel.displayedCall!.subject)
+										Text(SharedMainViewModel.shared.displayedCall!.subject)
 											.foregroundStyle(Color.grayMain2c700)
 											.multilineTextAlignment(.center)
 											.default_text_style(styleSize: 14)
@@ -262,9 +261,9 @@ struct HistoryContactFragment: View {
 								HStack {
 									Spacer()
 									
-									if historyViewModel.displayedCall != nil && !historyViewModel.displayedCall!.isConf {
+									if SharedMainViewModel.shared.displayedCall != nil && !SharedMainViewModel.shared.displayedCall!.isConf {
 										Button(action: {
-											telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.addressLinphone)
+											telecomManager.doCallOrJoinConf(address: SharedMainViewModel.shared.displayedCall!.addressLinphone)
 										}, label: {
 											VStack {
 												HStack(alignment: .center) {
@@ -287,7 +286,7 @@ struct HistoryContactFragment: View {
 										Spacer()
 										
 										Button(action: {
-											contactViewModel.createOneToOneChatRoomWith(remote: historyViewModel.displayedCall!.addressLinphone)
+											contactViewModel.createOneToOneChatRoomWith(remote: SharedMainViewModel.shared.displayedCall!.addressLinphone)
 										}, label: {
 											VStack {
 												HStack(alignment: .center) {
@@ -310,7 +309,7 @@ struct HistoryContactFragment: View {
 										Spacer()
 										
 										Button(action: {
-											telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.addressLinphone, isVideo: true)
+											telecomManager.doCallOrJoinConf(address: SharedMainViewModel.shared.displayedCall!.addressLinphone, isVideo: true)
 										}, label: {
 											VStack {
 												HStack(alignment: .center) {
@@ -332,15 +331,15 @@ struct HistoryContactFragment: View {
 									} else {
 										Button(action: {
 											withAnimation {
-												if historyViewModel.displayedCall != nil && historyViewModel.displayedCall!.address.hasPrefix("sip:conference-focus@sip.linphone.org") {
+												if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.address.hasPrefix("sip:conference-focus@sip.linphone.org") {
 													do {
-														let meetingAddress = try Factory.Instance.createAddress(addr: historyViewModel.displayedCall!.address)
+														let meetingAddress = try Factory.Instance.createAddress(addr: SharedMainViewModel.shared.displayedCall!.address)
 														
 														telecomManager.meetingWaitingRoomDisplayed = true
 														telecomManager.meetingWaitingRoomSelected = meetingAddress
 													} catch {}
 												} else {
-													telecomManager.doCallOrJoinConf(address: historyViewModel.displayedCall!.addressLinphone)
+													telecomManager.doCallOrJoinConf(address: SharedMainViewModel.shared.displayedCall!.addressLinphone)
 												}
 											}
 										}, label: {
@@ -372,8 +371,8 @@ struct HistoryContactFragment: View {
 								
 								VStack(spacing: 0) {
 									
-									let addressFriend = historyViewModel.displayedCall != nil
-									? historyViewModel.displayedCall!.address : nil
+									let addressFriend = SharedMainViewModel.shared.displayedCall != nil
+									? SharedMainViewModel.shared.displayedCall!.address : nil
 									
 									let callLogsFilter = historyListViewModel.callLogs.filter({ $0.address == addressFriend})
 									
@@ -430,7 +429,7 @@ struct HistoryContactFragment: View {
 								.cornerRadius(15)
 								.padding(.all)
 							}
-							.frame(maxWidth: sharedMainViewModel.maxWidth)
+							.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 						}
 						.frame(maxWidth: .infinity)
 						.padding(.top, 2)

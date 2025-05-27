@@ -29,7 +29,6 @@ struct DialerBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject private var magicSearch = MagicSearchSingleton.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
@@ -91,7 +90,7 @@ struct DialerBottomSheet: View {
 					}
 					.padding(.horizontal, 20)
 					.padding(.top, 10)
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 					
 					Spacer()
 				} else {
@@ -173,7 +172,7 @@ struct DialerBottomSheet: View {
 					}
 				}
 				.padding(.horizontal, 60)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				
 				HStack {
 					Button {
@@ -251,7 +250,7 @@ struct DialerBottomSheet: View {
 				}
 				.padding(.horizontal, 60)
 				.padding(.top, 10)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				
 				HStack {
 					Button {
@@ -329,7 +328,7 @@ struct DialerBottomSheet: View {
 				}
 				.padding(.horizontal, 60)
 				.padding(.top, 10)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				
 				HStack {
 					Button {
@@ -440,7 +439,7 @@ struct DialerBottomSheet: View {
 				}
 				.padding(.horizontal, 60)
 				.padding(.top, 10)
-				.frame(maxWidth: sharedMainViewModel.maxWidth)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				
 				if currentCall == nil {
 					HStack {
@@ -526,7 +525,7 @@ struct DialerBottomSheet: View {
 					}
 					.padding(.horizontal, 60)
 					.padding(.top, 20)
-					.frame(maxWidth: sharedMainViewModel.maxWidth)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				}
 				
 				Spacer()

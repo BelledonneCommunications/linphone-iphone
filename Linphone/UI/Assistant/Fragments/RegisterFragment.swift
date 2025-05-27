@@ -22,7 +22,7 @@
 import SwiftUI
 
 struct RegisterFragment: View {
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
+	
 	@ObservedObject var registerViewModel: RegisterViewModel
 	
 	@Environment(\.dismiss) var dismiss
@@ -307,7 +307,7 @@ struct RegisterFragment: View {
 				.padding(.bottom)
 				.frame(maxWidth: .infinity)
 			}
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal, 20)
 			
 			Spacer()

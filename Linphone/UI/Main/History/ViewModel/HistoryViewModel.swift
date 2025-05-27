@@ -23,8 +23,6 @@ import Combine
 
 class HistoryViewModel: ObservableObject {
 	
-	@Published var displayedCall: HistoryModel?
-	
 	var selectedCall: HistoryModel?
 	
 	init() {}

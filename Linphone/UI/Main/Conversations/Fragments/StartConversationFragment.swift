@@ -22,7 +22,6 @@ import linphonesw
 
 // swiftlint:disable type_body_length
 struct StartConversationFragment: View {
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
@@ -388,7 +387,7 @@ struct StartConversationFragment: View {
 			.padding(.horizontal)
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: sharedMainViewModel.maxWidth)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 			.onDisappear {
 				startConversationViewModel.messageText = ""
