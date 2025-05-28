@@ -26,9 +26,8 @@ struct ContactInnerActionsFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var contactAvatarModel: ContactAvatarModel
+	@EnvironmentObject var contactAvatarModel: ContactAvatarModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@State private var informationIsOpen = true
 	
@@ -36,6 +35,7 @@ struct ContactInnerActionsFragment: View {
 	@Binding var showShareSheet: Bool
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
+	@Binding var isShowEditContactFragmentInContactDetails: Bool
 	
 	var actionEditButton: () -> Void
 	
@@ -102,7 +102,7 @@ struct ContactInnerActionsFragment: View {
 						}
 					}
 					.onLongPressGesture(minimumDuration: 0.2) {
-						contactViewModel.stringToCopy = contactAvatarModel.addresses[index]
+						contactsListViewModel.stringToCopy = contactAvatarModel.addresses[index]
 						showingSheet.toggle()
 					}
 					
@@ -142,7 +142,7 @@ struct ContactInnerActionsFragment: View {
 					}
 					.background(.white)
 					.onLongPressGesture(minimumDuration: 0.2) {
-						contactViewModel.stringToCopy =
+						contactsListViewModel.stringToCopy =
 						contactAvatarModel.friend!.phoneNumbersWithLabel[index].phoneNumber
 						showingSheet.toggle()
 					}
@@ -238,9 +238,8 @@ struct ContactInnerActionsFragment: View {
 				}
 			} else {
 				NavigationLink(destination: EditContactFragment(
-						editContactViewModel: editContactViewModel,
-						contactViewModel: contactViewModel,
-						isShowEditContactFragment: .constant(false),
+						friend: contactAvatarModel.friend!,
+						isShowEditContactFragment: $isShowEditContactFragmentInContactDetails,
 						isShowDismissPopup: $isShowDismissPopup)) {
 						HStack {
 							Image("pencil-simple")
@@ -259,13 +258,12 @@ struct ContactInnerActionsFragment: View {
 						}
 						.padding(.vertical, 15)
 						.padding(.horizontal, 20)
-				}
-				.simultaneousGesture(
-					TapGesture().onEnded {
-						editContactViewModel.selectedEditFriend = contactAvatarModel.friend!
-						editContactViewModel.resetValues()
-					}
-				)
+						}
+						.simultaneousGesture(
+							TapGesture().onEnded {
+								isShowEditContactFragmentInContactDetails = true
+							}
+						)
 			}
 			
 			VStack {
@@ -365,13 +363,11 @@ struct ContactInnerActionsFragment: View {
 
 #Preview {
 	ContactInnerActionsFragment(
-		contactViewModel: ContactViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
 		showingSheet: .constant(false),
 		showShareSheet: .constant(false),
 		isShowDeletePopup: .constant(false),
 		isShowDismissPopup: .constant(false),
+		isShowEditContactFragmentInContactDetails: .constant(false),
 		actionEditButton: {}
 	)
 }

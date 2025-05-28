@@ -32,7 +32,7 @@ struct HistoryContactFragment: View {
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
-	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var contactsListViewModel: ContactsListViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@State var isMenuOpen = false
@@ -286,7 +286,7 @@ struct HistoryContactFragment: View {
 										Spacer()
 										
 										Button(action: {
-											contactViewModel.createOneToOneChatRoomWith(remote: SharedMainViewModel.shared.displayedCall!.addressLinphone)
+											contactsListViewModel.createOneToOneChatRoomWith(remote: SharedMainViewModel.shared.displayedCall!.addressLinphone)
 										}, label: {
 											VStack {
 												HStack(alignment: .center) {
@@ -452,7 +452,7 @@ struct HistoryContactFragment: View {
 		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
 		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
-		contactViewModel: ContactViewModel(),
+		contactsListViewModel: ContactsListViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		isShowDeleteAllHistoryPopup: .constant(false),
 		isShowEditContactFragment: .constant(false),

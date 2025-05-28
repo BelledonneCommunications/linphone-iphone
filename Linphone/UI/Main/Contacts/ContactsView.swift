@@ -21,7 +21,7 @@ import SwiftUI
 
 struct ContactsView: View {
 	
-	@EnvironmentObject var contactViewModel: ContactViewModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDeletePopup: Bool
@@ -30,12 +30,11 @@ struct ContactsView: View {
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ContactsFragment(contactViewModel: contactViewModel, isShowDeletePopup: $isShowDeletePopup, text: $text)
+				ContactsFragment(isShowDeletePopup: $isShowDeletePopup, text: $text)
 				
 				Button {
 					withAnimation {
-						contactViewModel.selectedEditFriend = nil
-						//editContactViewModel.resetValues()
+						contactsListViewModel.selectedEditFriend = nil
 						isShowEditContactFragment.toggle()
 					}
 				} label: {
@@ -49,6 +48,7 @@ struct ContactsView: View {
 					
 				}
 				.padding()
+				
 				// For testing crashlytics
 				/*Button(action: CoreContext.shared.crashForCrashlytics, label: {
 					Text("CRASH ME")
@@ -61,9 +61,6 @@ struct ContactsView: View {
 
 #Preview {
 	ContactsView(
-		//contactViewModel: ContactViewModel(),
-		//historyViewModel: HistoryViewModel(),
-		//editContactViewModel: EditContactViewModel(),
 		isShowEditContactFragment: .constant(false),
 		isShowDeletePopup: .constant(false),
 		text: .constant("")

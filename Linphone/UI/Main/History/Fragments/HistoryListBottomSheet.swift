@@ -29,7 +29,7 @@ struct HistoryListBottomSheet: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var contactsListViewModel: ContactsListViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	
@@ -225,7 +225,7 @@ struct HistoryListBottomSheet: View {
 #Preview {
 	HistoryListBottomSheet(
 		historyViewModel: HistoryViewModel(),
-		contactViewModel: ContactViewModel(),
+		contactsListViewModel: ContactsListViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		historyListViewModel: HistoryListViewModel(),
 		showingSheet: .constant(false),

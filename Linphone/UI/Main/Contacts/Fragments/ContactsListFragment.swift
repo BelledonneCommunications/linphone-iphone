@@ -24,8 +24,7 @@ struct ContactsListFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@Binding var showingSheet: Bool
 	
@@ -88,22 +87,21 @@ struct ContactsListFragment: View {
 					SharedMainViewModel.shared.indexDisplayedFriend = index
 				}
 				
-				if index < contactsManager.lastSearch.count && contactsManager.lastSearch[index].friend != nil 
-					&& contactsManager.lastSearch[index].friend!.address != nil {
-					startCallFunc(contactsManager.lastSearch[index].friend!.address!)
+				if index < contactsManager.avatarListModel.count && contactsManager.avatarListModel[index].friend != nil
+					&& contactsManager.avatarListModel[index].friend!.address != nil {
+					startCallFunc(contactsManager.avatarListModel[index].friend!.address!)
 				}
-		  	}
-		  	.onLongPressGesture(minimumDuration: 0.2) {
-				contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
-				showingSheet.toggle()
+			}
+			.onLongPressGesture(minimumDuration: 0.2) {
+				if index < contactsManager.avatarListModel.count && contactsManager.avatarListModel[index].friend != nil {
+					contactsListViewModel.selectedFriend = contactsManager.avatarListModel[index].friend
+					showingSheet.toggle()
+				}
 			}
 		}
 	}
 }
 
 #Preview {
-    ContactsListFragment(contactViewModel: ContactViewModel()
-						 , contactsListViewModel: ContactsListViewModel()
-						 , showingSheet: .constant(false)
-						 , startCallFunc: {_ in })
+    ContactsListFragment(showingSheet: .constant(false), startCallFunc: {_ in })
 }

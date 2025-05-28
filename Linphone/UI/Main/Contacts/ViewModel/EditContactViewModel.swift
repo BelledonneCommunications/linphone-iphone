@@ -22,7 +22,7 @@ import SwiftUI
 
 class EditContactViewModel: ObservableObject {
 	
-	@Published var selectedEditFriend: Friend?
+	let selectedEditFriend: Friend?
 	
 	@Published var identifier: String = ""
 	@Published var firstName: String = ""
@@ -31,9 +31,9 @@ class EditContactViewModel: ObservableObject {
 	@Published var phoneNumbers: [String] = []
 	@Published var company: String = ""
 	@Published var jobTitle: String = ""
-	@Published var removePopup: Bool = false
 	
-	init() {
+	init(friend: Friend? = nil) {
+		self.selectedEditFriend = friend
 		resetValues()
 	}
 	

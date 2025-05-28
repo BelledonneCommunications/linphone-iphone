@@ -24,8 +24,8 @@ struct SipAddressesPopup: View {
 	
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var contactAvatarModel: ContactAvatarModel
-	@ObservedObject var contactViewModel: ContactViewModel
+	@EnvironmentObject var contactAvatarModel: ContactAvatarModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@Binding var isShowSipAddressesPopup: Bool
 	@Binding var isShowSipAddressesPopupType: Int
@@ -80,7 +80,7 @@ struct SipAddressesPopup: View {
 							} else {
 								withAnimation {
 									isShowSipAddressesPopup = false
-									contactViewModel.createOneToOneChatRoomWith(remote: address)
+									contactsListViewModel.createOneToOneChatRoomWith(remote: address)
 									isShowSipAddressesPopupType = 0
 								}
 							}
@@ -104,8 +104,6 @@ struct SipAddressesPopup: View {
 
 #Preview {
 	SipAddressesPopup(
-		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
-		contactViewModel: ContactViewModel(),
 		isShowSipAddressesPopup: .constant(true),
 		isShowSipAddressesPopupType: .constant(0)
 	)

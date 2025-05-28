@@ -184,8 +184,7 @@ struct StartConversationFragment: View {
 								.padding(.horizontal, 16)
 							}
 							
-							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false)
-												 , startCallFunc: { addr in
+							ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
 									startConversationViewModel.createOneToOneChatRoomWith(remote: addr)
 							})
 							.padding(.horizontal, 16)

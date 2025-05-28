@@ -23,14 +23,12 @@ import linphonesw
 // swiftlint:disable type_body_length
 struct EditContactFragment: View {
 	
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	
 	@Environment(\.dismiss) var dismiss
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
-	var contactViewModel: ContactViewModel
+	@StateObject private var editContactViewModel: EditContactViewModel
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDismissPopup: Bool
@@ -47,6 +45,12 @@ struct EditContactFragment: View {
 	@State private var showPhotoPicker = false
 	@State private var selectedImage: UIImage?
 	@State private var removedImage = false
+	
+	init(friend: Friend? = nil, isShowEditContactFragment: Binding<Bool>, isShowDismissPopup: Binding<Bool>) {
+		_editContactViewModel = StateObject(wrappedValue: EditContactViewModel(friend: friend))
+		self._isShowEditContactFragment = isShowEditContactFragment
+		self._isShowDismissPopup = isShowDismissPopup
+	}
 	
 	var body: some View {
 		ZStack {
@@ -468,16 +472,13 @@ struct EditContactFragment: View {
 			}
 			.background(.white)
 			
-			if editContactViewModel.removePopup {
+			if !isShowEditContactFragment {
 				ZStack {
 					
 				}.onAppear {
-					if editContactViewModel.selectedEditFriend == nil {
-						delayColorDismiss()
-					} else {
+					if editContactViewModel.selectedEditFriend != nil {
 						dismiss()
 					}
-					editContactViewModel.removePopup = false
 				}
 			}
 		}
@@ -558,8 +559,6 @@ struct EditContactFragment: View {
 
 #Preview {
 	EditContactFragment(
-		editContactViewModel: EditContactViewModel(),
-		contactViewModel: ContactViewModel(),
 		isShowEditContactFragment: .constant(false),
 		isShowDismissPopup: .constant(false)
 	)

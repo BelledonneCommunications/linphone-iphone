@@ -216,7 +216,7 @@ struct StartCallFragment: View {
 								.padding(.horizontal, 16)
 							}
 							
-							ContactsListFragment(contactViewModel: ContactViewModel(), contactsListViewModel: ContactsListViewModel(), showingSheet: .constant(false)
+							ContactsListFragment(showingSheet: .constant(false)
 												 , startCallFunc: { addr in
 								if callViewModel.isTransferInsteadCall {
 									showingDialer = false

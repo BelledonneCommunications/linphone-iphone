@@ -37,7 +37,7 @@ struct CallView: View {
 	@ObservedObject var conversationViewModel: ConversationViewModel
 	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
-	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var contactsListViewModel: ContactsListViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	@ObservedObject var meetingViewModel: MeetingViewModel
 	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
@@ -209,7 +209,7 @@ struct CallView: View {
 						conversationViewModel: conversationViewModel,
 						conversationsListViewModel: conversationsListViewModel,
 						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-						contactViewModel: contactViewModel,
+						contactsListViewModel: contactsListViewModel,
 						editContactViewModel: editContactViewModel,
 						meetingViewModel: meetingViewModel,
 						accountProfileViewModel: accountProfileViewModel,
@@ -2864,7 +2864,7 @@ struct PressedButtonStyle: ButtonStyle {
 		conversationViewModel: ConversationViewModel(),
 		conversationsListViewModel: ConversationsListViewModel(),
 		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
-		contactViewModel: ContactViewModel(),
+		contactsListViewModel: ContactsListViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		meetingViewModel: MeetingViewModel(),
 		accountProfileViewModel: AccountProfileViewModel(),

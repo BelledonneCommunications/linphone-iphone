@@ -32,9 +32,10 @@ import SwiftUI
 import Firebase
 #endif
 
-final class CoreContext: ObservableObject {
-	
-	static let shared = CoreContext()
+class CoreContext: ObservableObject {
+    
+    static let shared = CoreContext()
+    
 	var pipViewModel = PIPViewModel()
 	
 	var coreVersion: String = Core.getVersion
@@ -426,7 +427,7 @@ final class CoreContext: ObservableObject {
 	
 	func performActionOnCoreQueueWhenCoreIsStarted(action: @escaping (_ core: Core) -> Void ) {
 		if coreIsStarted {
-			CoreContext.shared.doOnCoreQueue { core in
+			doOnCoreQueue { core in
 				action(core)
 			}
 		} else {

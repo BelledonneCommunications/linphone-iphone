@@ -23,7 +23,7 @@ struct ContactsFragment: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var contactViewModel: ContactViewModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@Binding var isShowDeletePopup: Bool
 	
@@ -34,10 +34,9 @@ struct ContactsFragment: View {
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet, text: $text)
+				ContactsInnerFragment(showingSheet: $showingSheet, text: $text)
 					.sheet(isPresented: $showingSheet) {
 						ContactsListBottomSheet(
-							contactViewModel: contactViewModel,
 							isShowDeletePopup: $isShowDeletePopup,
 							showingSheet: $showingSheet,
 							showShareSheet: $showShareSheet
@@ -45,22 +44,21 @@ struct ContactsFragment: View {
 						.presentationDetents([.fraction(0.2)])
 					}
 					.sheet(isPresented: $showShareSheet) {
-						ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+						ShareSheet(friendToShare: contactsListViewModel.selectedFriendToShare!)
 							.presentationDetents([.medium])
 							.edgesIgnoringSafeArea(.bottom)
 					}
 			} else {
-				ContactsInnerFragment(contactViewModel: contactViewModel, showingSheet: $showingSheet, text: $text)
+				ContactsInnerFragment(showingSheet: $showingSheet, text: $text)
 					.halfSheet(showSheet: $showingSheet) {
 						ContactsListBottomSheet(
-							contactViewModel: contactViewModel,
 							isShowDeletePopup: $isShowDeletePopup,
 							showingSheet: $showingSheet,
 							showShareSheet: $showShareSheet
 						)
 					} onDismiss: {}
 					.sheet(isPresented: $showShareSheet) {
-						ShareSheet(friendToShare: contactViewModel.selectedFriendToShare!)
+						ShareSheet(friendToShare: contactsListViewModel.selectedFriendToShare!)
 							.edgesIgnoringSafeArea(.bottom)
 					}
 			}
@@ -69,5 +67,5 @@ struct ContactsFragment: View {
 }
 
 #Preview {
-	ContactsFragment(contactViewModel: ContactViewModel(), isShowDeletePopup: .constant(false), text: .constant(""))
+	ContactsFragment(isShowDeletePopup: .constant(false), text: .constant(""))
 }

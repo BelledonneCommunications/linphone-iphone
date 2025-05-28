@@ -24,7 +24,7 @@ struct HistoryFragment: View {
 	
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var contactsListViewModel: ContactsListViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@State private var showingSheet = false
@@ -39,7 +39,7 @@ struct HistoryFragment: View {
 					.sheet(isPresented: $showingSheet) {
 						HistoryListBottomSheet(
 							historyViewModel: historyViewModel,
-							contactViewModel: contactViewModel,
+							contactsListViewModel: contactsListViewModel,
 							editContactViewModel: editContactViewModel,
 							historyListViewModel: historyListViewModel,
 							showingSheet: $showingSheet,
@@ -53,7 +53,7 @@ struct HistoryFragment: View {
 					.halfSheet(showSheet: $showingSheet) {
 						HistoryListBottomSheet(
 							historyViewModel: historyViewModel,
-							contactViewModel: contactViewModel,
+							contactsListViewModel: contactsListViewModel,
 							editContactViewModel: editContactViewModel,
 							historyListViewModel: historyListViewModel,
 							showingSheet: $showingSheet,
@@ -70,7 +70,7 @@ struct HistoryFragment: View {
 	HistoryFragment(
 		historyListViewModel: HistoryListViewModel(),
 		historyViewModel: HistoryViewModel(),
-		contactViewModel: ContactViewModel(),
+		contactsListViewModel: ContactsListViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		index: .constant(1),
 		isShowEditContactFragment: .constant(false),

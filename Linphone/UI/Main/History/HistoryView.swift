@@ -24,7 +24,7 @@ struct HistoryView: View {
 	
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var contactViewModel: ContactViewModel
+	@ObservedObject var contactsListViewModel: ContactsListViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
 	
 	@Binding var index: Int
@@ -38,7 +38,7 @@ struct HistoryView: View {
 				HistoryFragment(
 					historyListViewModel: historyListViewModel,
 					historyViewModel: historyViewModel,
-					contactViewModel: contactViewModel,
+					contactsListViewModel: contactsListViewModel,
 					editContactViewModel: editContactViewModel,
 					index: $index,
 					isShowEditContactFragment: $isShowEditContactFragment,
@@ -74,7 +74,7 @@ struct HistoryView: View {
 	HistoryFragment(
 		historyListViewModel: HistoryListViewModel(),
 		historyViewModel: HistoryViewModel(),
-		contactViewModel: ContactViewModel(),
+		contactsListViewModel: ContactsListViewModel(),
 		editContactViewModel: EditContactViewModel(),
 		index: .constant(1),
 		isShowEditContactFragment: .constant(false),

@@ -27,10 +27,8 @@ struct ContactInnerFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var contactAvatarModel: ContactAvatarModel
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var contactAvatarModel: ContactAvatarModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
 	
@@ -43,6 +41,7 @@ struct ContactInnerFragment: View {
 	@Binding var isShowDismissPopup: Bool
 	@Binding var isShowSipAddressesPopup: Bool
 	@Binding var isShowSipAddressesPopupType: Int
+	@Binding var isShowEditContactFragmentInContactDetails: Bool
 	
 	var body: some View {
 		NavigationView {
@@ -87,9 +86,8 @@ struct ContactInnerFragment: View {
 							})
 						} else {
 							NavigationLink(destination: EditContactFragment(
-								editContactViewModel: editContactViewModel,
-								contactViewModel: contactViewModel,
-								isShowEditContactFragment: .constant(false),
+								friend: contactAvatarModel.friend,
+								isShowEditContactFragment: $isShowEditContactFragmentInContactDetails,
 								isShowDismissPopup: $isShowDismissPopup)) {
 									Image("pencil-simple")
 										.renderingMode(.template)
@@ -101,10 +99,9 @@ struct ContactInnerFragment: View {
 								}
 								.simultaneousGesture(
 									TapGesture().onEnded {
-										editContactViewModel.selectedEditFriend = contactAvatarModel.friend
-										editContactViewModel.resetValues()
+										isShowEditContactFragmentInContactDetails = true
 									}
-								)
+						  )
 						}
 					}
 					.frame(maxWidth: .infinity)
@@ -181,7 +178,7 @@ struct ContactInnerFragment: View {
 										if contactAvatarModel.addresses.count <= 1 {
 											do {
 												let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
-												contactViewModel.createOneToOneChatRoomWith(remote: address)
+												contactsListViewModel.createOneToOneChatRoomWith(remote: address)
 											} catch {
 												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
 											}
@@ -248,12 +245,11 @@ struct ContactInnerFragment: View {
 								.background(Color.gray100)
 								
 								ContactInnerActionsFragment(
-									contactViewModel: contactViewModel,
-									editContactViewModel: editContactViewModel,
-									contactAvatarModel: contactAvatarModel, showingSheet: $showingSheet,
+									showingSheet: $showingSheet,
 									showShareSheet: $showShareSheet,
 									isShowDeletePopup: $isShowDeletePopup,
 									isShowDismissPopup: $isShowDismissPopup,
+									isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails,
 									actionEditButton: editNativeContact
 								)
 							}
@@ -301,15 +297,12 @@ struct ContactInnerFragment: View {
 
 #Preview {
 	ContactInnerFragment(
-		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: true),
-		contactViewModel: ContactViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		conversationViewModel: ConversationViewModel(),
 		isShowDeletePopup: .constant(false),
 		showingSheet: .constant(false),
 		showShareSheet: .constant(false),
 		isShowDismissPopup: .constant(false),
 		isShowSipAddressesPopup: .constant(false),
-		isShowSipAddressesPopupType: .constant(0)
+		isShowSipAddressesPopupType: .constant(0),
+		isShowEditContactFragmentInContactDetails: .constant(false)
 	)
 }

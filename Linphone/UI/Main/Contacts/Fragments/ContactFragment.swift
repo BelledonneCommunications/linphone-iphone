@@ -24,37 +24,23 @@ struct ContactFragment: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var contactViewModel: ContactViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var contactAvatarModel: ContactAvatarModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
 	@Binding var isShowSipAddressesPopup: Bool
 	@Binding var isShowSipAddressesPopupType: Int
+	@Binding var isShowEditContactFragmentInContactDetails: Bool
 	
 	@State private var showingSheet = false
 	@State private var showShareSheet = false
 	
 	var body: some View {
-		let indexDisplayed = SharedMainViewModel.shared.indexDisplayedFriend != nil ? SharedMainViewModel.shared.indexDisplayedFriend! : 0
-		if ContactsManager.shared.avatarListModel.count > indexDisplayed {
-			if #available(iOS 16.0, *), idiom != .pad {
-				ContactInnerFragment(
-					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
-					contactViewModel: contactViewModel,
-					editContactViewModel: editContactViewModel,
-					conversationViewModel: conversationViewModel,
-					cnContact: CNContact(),
-					isShowDeletePopup: $isShowDeletePopup,
-					showingSheet: $showingSheet,
-					showShareSheet: $showShareSheet,
-					isShowDismissPopup: $isShowDismissPopup,
-					isShowSipAddressesPopup: $isShowSipAddressesPopup,
-					isShowSipAddressesPopupType: $isShowSipAddressesPopupType
-				)
+		if #available(iOS 16.0, *), idiom != .pad {
+			contactInnerContent(contactsListViewModel: contactsListViewModel)
 				.sheet(isPresented: $showingSheet) {
-					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+					ContactListBottomSheet(contactsListViewModel: contactsListViewModel, showingSheet: $showingSheet)
 						.presentationDetents([.fraction(0.2)])
 				}
 				.sheet(isPresented: $showShareSheet) {
@@ -62,40 +48,39 @@ struct ContactFragment: View {
 						.presentationDetents([.medium])
 						.edgesIgnoringSafeArea(.bottom)
 				}
-			} else {
-				ContactInnerFragment(
-					contactAvatarModel: ContactsManager.shared.avatarListModel[indexDisplayed],
-					contactViewModel: contactViewModel,
-					editContactViewModel: editContactViewModel,
-					conversationViewModel: conversationViewModel,
-					cnContact: CNContact(),
-					isShowDeletePopup: $isShowDeletePopup,
-					showingSheet: $showingSheet,
-					showShareSheet: $showShareSheet,
-					isShowDismissPopup: $isShowDismissPopup,
-					isShowSipAddressesPopup: $isShowSipAddressesPopup,
-					isShowSipAddressesPopupType: $isShowSipAddressesPopupType
-				)
+		} else {
+			contactInnerContent(contactsListViewModel: contactsListViewModel)
 				.halfSheet(showSheet: $showingSheet) {
-					ContactListBottomSheet(contactViewModel: contactViewModel, showingSheet: $showingSheet)
+					ContactListBottomSheet(contactsListViewModel: contactsListViewModel, showingSheet: $showingSheet)
 				} onDismiss: {}
-					.sheet(isPresented: $showShareSheet) {
-						ShareSheet(friendToShare: ContactsManager.shared.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!)
-							.edgesIgnoringSafeArea(.bottom)
-					}
-			}
+				.sheet(isPresented: $showShareSheet) {
+					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!)
+						.edgesIgnoringSafeArea(.bottom)
+				}
 		}
+	}
+	
+	@ViewBuilder
+	private func contactInnerContent(contactsListViewModel: ContactsListViewModel) -> some View {
+		ContactInnerFragment(
+			cnContact: CNContact(),
+			isShowDeletePopup: $isShowDeletePopup,
+			showingSheet: $showingSheet,
+			showShareSheet: $showShareSheet,
+			isShowDismissPopup: $isShowDismissPopup,
+			isShowSipAddressesPopup: $isShowSipAddressesPopup,
+			isShowSipAddressesPopupType: $isShowSipAddressesPopupType,
+			isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails
+		)
 	}
 }
 
 #Preview {
 	ContactFragment(
-		contactViewModel: ContactViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		conversationViewModel: ConversationViewModel(),
 		isShowDeletePopup: .constant(false),
 		isShowDismissPopup: .constant(false),
 		isShowSipAddressesPopup: .constant(false),
-		isShowSipAddressesPopupType: .constant(0)
+		isShowSipAddressesPopupType: .constant(0),
+		isShowEditContactFragmentInContactDetails: .constant(false)
 	)
 }

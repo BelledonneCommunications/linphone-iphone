@@ -30,14 +30,17 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 	var launchNotificationPeerAddr: String?
 	var launchNotificationLocalAddr: String?
 	
-	var navigationManager: NavigationManager?
+	var coreContext: CoreContext?
+ 	var navigationManager: NavigationManager?
 	
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 		let tokenStr = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
 		Log.info("Received remote push token : \(tokenStr)")
-		CoreContext.shared.doOnCoreQueue { core in
-			Log.info("Forwarding remote push token to core")
-			core.didRegisterForRemotePushWithStringifiedToken(deviceTokenStr: tokenStr + ":remote")
+		if let coreContext = coreContext {
+			coreContext.doOnCoreQueue { core in
+				Log.info("Forwarding remote push token to core")
+				core.didRegisterForRemotePushWithStringifiedToken(deviceTokenStr: tokenStr + ":remote")
+			}
 		}
 	}
 	
@@ -92,14 +95,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 		} else {
 			// Only display notification if we're not in the chatroom they come from
 			if displayedChatroomPeerAddr != strPeerAddr {
-				CoreContext.shared.doOnCoreQueue { core in
-					let nilParams: ConferenceParams? = nil
-					if 	let peerAddr = try? Factory.Instance.createAddress(addr: strPeerAddr!)
-							, let chatroom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: peerAddr, participants: nil), chatroom.muted {
-						Log.info("message comes from a muted chatroom, ignore it")
-						return
+				if let coreContext = coreContext {
+					coreContext.doOnCoreQueue { core in
+						let nilParams: ConferenceParams? = nil
+						if 	let peerAddr = try? Factory.Instance.createAddress(addr: strPeerAddr!)
+								, let chatroom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: peerAddr, participants: nil), chatroom.muted {
+							Log.info("message comes from a muted chatroom, ignore it")
+							return
+						}
+						completionHandler([.banner, .sound])
 					}
-					completionHandler([.banner, .sound])
 				}
 			}
 		}
@@ -108,13 +113,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 	
 	func applicationWillTerminate(_ application: UIApplication) {
 		Log.info("IOS applicationWillTerminate")
-		CoreContext.shared.doOnCoreQueue(synchronous: true) { core in
-			Log.info("applicationWillTerminate - Stopping linphone core")
-			MagicSearchSingleton.shared.destroyMagicSearch()
-			if core.globalState != GlobalState.Off {
-				core.stop()
-			} else {
-				Log.info("applicationWillTerminate - Core already stopped")
+		if let coreContext = coreContext {
+			coreContext.doOnCoreQueue(synchronous: true) { core in
+				Log.info("applicationWillTerminate - Stopping linphone core")
+				MagicSearchSingleton.shared.destroyMagicSearch()
+				if core.globalState != GlobalState.Off {
+					core.stop()
+				} else {
+					Log.info("applicationWillTerminate - Core already stopped")
+				}
 			}
 		}
 	}
@@ -125,27 +132,12 @@ struct LinphoneApp: App {
 	
 	@Environment(\.scenePhase) var scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-	@StateObject var navigationManager = NavigationManager()
 	
-	@ObservedObject private var coreContext = CoreContext.shared
+    @StateObject private var coreContext = CoreContext.shared
+	@StateObject private var navigationManager = NavigationManager()
 	
-	@State var index: Int = 0
-	
-	/*
-	@State private var editContactViewModel: EditContactViewModel?
-	@State private var historyViewModel: HistoryViewModel?
-	@State private var historyListViewModel: HistoryListViewModel?
-	@State private var startCallViewModel: StartCallViewModel?
-	@State private var startConversationViewModel: StartConversationViewModel?
-	@State private var callViewModel: CallViewModel?
-	@State private var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel?
-	@State private var conversationsListViewModel: ConversationsListViewModel?
-	@State private var conversationViewModel: ConversationViewModel?
-	@State private var meetingsListViewModel: MeetingsListViewModel?
-	@State private var meetingViewModel: MeetingViewModel?
-	@State private var conversationForwardMessageViewModel: ConversationForwardMessageViewModel?
-	@State private var accountProfileViewModel: AccountProfileViewModel?
-	*/
+	@ObservedObject private var telecomManager = TelecomManager.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@State private var pendingURL: URL?
 	
@@ -153,14 +145,14 @@ struct LinphoneApp: App {
 		WindowGroup {
 			if coreContext.coreHasStartedOnce {
 				ZStack {
-					if !SharedMainViewModel.shared.welcomeViewDisplayed {
+					if !sharedMainViewModel.welcomeViewDisplayed {
 						ZStack {
 							WelcomeView()
 							
 							ToastView()
 								.zIndex(3)
 						}
-					} else if (coreContext.coreIsStarted && coreContext.accounts.isEmpty) || SharedMainViewModel.shared.displayProfileMode {
+					} else if (coreContext.coreIsStarted && coreContext.accounts.isEmpty) || sharedMainViewModel.displayProfileMode {
 						ZStack {
 							AssistantView()
 							
@@ -168,36 +160,21 @@ struct LinphoneApp: App {
 								.zIndex(3)
 						}
 					} else {
-						ContentView(
-							//editContactViewModel: editContactViewModel!,
-							//historyViewModel: historyViewModel!,
-							//historyListViewModel: historyListViewModel!,
-							//startCallViewModel: startCallViewModel!,
-							//startConversationViewModel: startConversationViewModel!,
-							//callViewModel: callViewModel!,
-							//meetingWaitingRoomViewModel: meetingWaitingRoomViewModel!,
-							//conversationsListViewModel: conversationsListViewModel!,
-							//conversationViewModel: conversationViewModel!,
-							//meetingsListViewModel: meetingsListViewModel!,
-							//meetingViewModel: meetingViewModel!,
-							//conversationForwardMessageViewModel: conversationForwardMessageViewModel!,
-							//accountProfileViewModel: accountProfileViewModel!,
-							index: $index
-						)
-						.environmentObject(navigationManager)
-						.onAppear {
-							index = SharedMainViewModel.shared.indexView
-							// Link the navigation manager to the AppDelegate
-							delegate.navigationManager = navigationManager
-							
-							// Check if the app was launched with a notification payload
-							if let callId = delegate.launchNotificationCallId, let peerAddr = delegate.launchNotificationPeerAddr, let localAddr = delegate.launchNotificationLocalAddr {
-								// Notify the app to navigate to the chat room
-								navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
+						ContentView()
+							.environmentObject(navigationManager)
+							.onAppear {
+								// Link the navigation manager to the AppDelegate
+								delegate.coreContext = coreContext
+								delegate.navigationManager = navigationManager
+								
+								// Check if the app was launched with a notification payload
+								if let callId = delegate.launchNotificationCallId, let peerAddr = delegate.launchNotificationPeerAddr, let localAddr = delegate.launchNotificationLocalAddr {
+									// Notify the app to navigate to the chat room
+									navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
+								}
+								
+								//accountProfileViewModel!.setAvatarModel()
 							}
-							
-							//accountProfileViewModel!.setAvatarModel()
-						}
 					}
 					
 					if coreContext.coreIsStarted {
@@ -223,7 +200,7 @@ struct LinphoneApp: App {
 				SplashScreen()
 			}
 		}.onChange(of: scenePhase) { newPhase in
-			if !TelecomManager.shared.callInProgress {
+			if !telecomManager.callInProgress {
 				if newPhase == .active {
 					Log.info("Entering foreground")
 					coreContext.onEnterForeground()

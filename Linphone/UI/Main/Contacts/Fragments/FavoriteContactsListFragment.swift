@@ -24,8 +24,7 @@ struct FavoriteContactsListFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
-    @ObservedObject var contactViewModel: ContactViewModel
-    @ObservedObject var favoriteContactsListViewModel: FavoriteContactsListViewModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
     
     @Binding var showingSheet: Bool
     
@@ -57,7 +56,7 @@ struct FavoriteContactsListFragment: View {
 							}
 						}
 						.onLongPressGesture(minimumDuration: 0.2) {
-							contactViewModel.selectedFriend = contactsManager.lastSearch[index].friend
+							contactsListViewModel.selectedFriend = contactsManager.lastSearch[index].friend
 							showingSheet.toggle()
 						}
 						.frame(minWidth: 70, maxWidth: 70)
@@ -72,7 +71,5 @@ struct FavoriteContactsListFragment: View {
 
 #Preview {
     FavoriteContactsListFragment(
-        contactViewModel: ContactViewModel(),
-        favoriteContactsListViewModel: FavoriteContactsListViewModel(),
         showingSheet: .constant(false))
 }

@@ -24,7 +24,7 @@ struct ContactsInnerFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
-	@ObservedObject var contactViewModel: ContactViewModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@State private var isFavoriteOpen = true
 	
@@ -57,10 +57,7 @@ struct ContactsInnerFragment: View {
 				}
 				
 				if isFavoriteOpen {
-					FavoriteContactsListFragment(
-						contactViewModel: contactViewModel,
-						favoriteContactsListViewModel: FavoriteContactsListViewModel(),
-						showingSheet: $showingSheet)
+					FavoriteContactsListFragment(showingSheet: $showingSheet)
 					.zIndex(-1)
 					.transition(.move(edge: .top))
 				}
@@ -77,8 +74,7 @@ struct ContactsInnerFragment: View {
 			
 			VStack {
 				List {
-                    ContactsListFragment(contactViewModel: contactViewModel, contactsListViewModel: ContactsListViewModel(),
-										 showingSheet: $showingSheet, startCallFunc: {_ in })}
+                    ContactsListFragment(showingSheet: $showingSheet, startCallFunc: {_ in })}
 				.safeAreaInset(edge: .top, content: {
 					Spacer()
 						.frame(height: 12)
@@ -108,5 +104,5 @@ struct ContactsInnerFragment: View {
 }
 
 #Preview {
-	ContactsInnerFragment(contactViewModel: ContactViewModel(), showingSheet: .constant(false), text: .constant(""))
+	ContactsInnerFragment(showingSheet: .constant(false), text: .constant(""))
 }

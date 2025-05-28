@@ -27,7 +27,7 @@ struct ContactsListBottomSheet: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var contactViewModel: ContactViewModel
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
 	
@@ -57,10 +57,10 @@ struct ContactsListBottomSheet: View {
 			
 			Spacer()
 			Button {
-				if contactViewModel.selectedFriend != nil {
-					contactViewModel.selectedFriend!.edit()
-					contactViewModel.selectedFriend!.starred.toggle()
-					contactViewModel.selectedFriend!.done()
+				if contactsListViewModel.selectedFriend != nil {
+					contactsListViewModel.selectedFriend!.edit()
+					contactsListViewModel.selectedFriend!.starred.toggle()
+					contactsListViewModel.selectedFriend!.done()
 				}
 				
 				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
@@ -78,19 +78,19 @@ struct ContactsListBottomSheet: View {
 				}
 			} label: {
 				HStack {
-					Image(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
+					Image(contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
 						.renderingMode(.template)
 						.resizable()
 						.foregroundStyle(
-							contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
+							contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
 							? Color.redDanger500
 							: Color.grayMain2c500
 						)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
-					Text(contactViewModel.selectedFriend != nil && contactViewModel.selectedFriend!.starred == true
-						 ? "contact_details_add_to_favourites"
-						 : "contact_details_remove_from_favourites")
+					Text(contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
+						 ? "contact_details_remove_from_favourites"
+						 : "contact_details_add_to_favourites")
 					.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -117,7 +117,7 @@ struct ContactsListBottomSheet: View {
 					dismiss()
 				}
                 
-                contactViewModel.selectedFriendToShare = contactViewModel.selectedFriend
+                contactsListViewModel.selectedFriendToShare = contactsListViewModel.selectedFriend
 				
 				DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 					showShareSheet.toggle()
@@ -146,7 +146,7 @@ struct ContactsListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
-				if contactViewModel.selectedFriend != nil {
+				if contactsListViewModel.selectedFriend != nil {
 					isShowDeletePopup.toggle()
 				}
 				
@@ -186,7 +186,7 @@ struct ContactsListBottomSheet: View {
 			orientation = newOrientation
 		}
 		.onDisappear {
-			contactViewModel.selectedFriend = nil
+			contactsListViewModel.selectedFriend = nil
 		}
 	}
 }
