@@ -33,6 +33,8 @@ class HistoryListViewModel: ObservableObject {
 	
 	@Published var missedCallsCount: Int = 0
 	
+	@Published var selectedCall: HistoryModel?
+	
 	init() {
 		computeCallLogsList()
 		updateMissedCallsCount()
@@ -247,8 +249,10 @@ class HistoryListViewModel: ObservableObject {
 	}
 	
 	func refreshHistoryAvatarModel() {
-		callLogs.forEach { historyModel in
-			historyModel.refreshAvatarModel()
+		coreContext.doOnCoreQueue { _ in
+			self.callLogs.forEach { historyModel in
+				historyModel.refreshAvatarModel()
+			}
 		}
 	}
 }

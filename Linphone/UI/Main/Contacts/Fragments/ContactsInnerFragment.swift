@@ -33,7 +33,7 @@ struct ContactsInnerFragment: View {
 	
 	var body: some View {
 		VStack(alignment: .leading) {
-			if !contactsManager.avatarListModel.filter({ $0.friend?.starred == true }).isEmpty {
+			if contactsManager.avatarListModel.contains(where: { $0.starred }) {
 				HStack(alignment: .center) {
 					Text("contacts_list_favourites_title")
 						.default_text_style_800(styleSize: 16)

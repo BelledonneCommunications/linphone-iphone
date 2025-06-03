@@ -37,8 +37,11 @@ struct Avatar: View {
     }
 	
 	var body: some View {
-		if contactAvatarModel.friend != nil && contactAvatarModel.friend!.photo != nil {
-			AsyncImage(url: ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.friend!.photo!)) { image in
+		if let photoPath = contactAvatarModel.friend?.photo {
+			let uniqueUrl = ContactsManager.shared.getImagePath(friendPhotoPath: photoPath)
+			let finalUrl = uniqueUrl.appendingQueryItem("v", value: UUID().uuidString)
+
+			AsyncImage(url: finalUrl) { image in
 				switch image {
 				case .empty:
 					ProgressView()

@@ -27,17 +27,15 @@ struct HistoryListBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
-	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var historyListViewModel: HistoryListViewModel
+	@EnvironmentObject var historyListViewModel: HistoryListViewModel
 	
 	@State private var orientation = UIDevice.current.orientation
 	
 	@Binding var showingSheet: Bool
-	@Binding var index: Int
 	@Binding var isShowEditContactFragment: Bool
+	@Binding var isShowEditContactFragmentAddress: String
 	
 	var body: some View {
 		VStack(alignment: .leading) {
@@ -74,30 +72,28 @@ struct HistoryListBottomSheet: View {
 					dismiss()
 				}
 				
-				index = 0
+				sharedMainViewModel.changeIndexView(indexViewInt: 0)
 				
-				if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.addressFriend != nil {
-					let addressCall = historyViewModel.selectedCall!.address
+				if historyListViewModel.selectedCall != nil && historyListViewModel.selectedCall!.addressFriend != nil {
+					let addressCall = historyListViewModel.selectedCall!.address
 					
-					let friendIndex = contactsManager.lastSearch.firstIndex(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall})})
+					let friendIndex = contactsManager.avatarListModel.first(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall})})
 					if friendIndex != nil {
 						withAnimation {
-							SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
+							SharedMainViewModel.shared.displayedFriend = friendIndex
 						}
 					}
-				} else if historyViewModel.selectedCall != nil {
-					let addressCall = historyViewModel.selectedCall!.address
+				} else if historyListViewModel.selectedCall != nil {
+					let addressCall = historyListViewModel.selectedCall!.address
 					
 					withAnimation {
 						isShowEditContactFragment.toggle()
-						editContactViewModel.sipAddresses.removeAll()
-						editContactViewModel.sipAddresses.append(String(addressCall.dropFirst(4)))
-						editContactViewModel.sipAddresses.append("")
+						isShowEditContactFragmentAddress = String(addressCall.dropFirst(4))
 					}
 				}
 			} label: {
 				HStack {
-					if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.addressFriend != nil {
+					if historyListViewModel.selectedCall != nil && historyListViewModel.selectedCall!.addressFriend != nil {
 						Image("user-circle")
 							.renderingMode(.template)
 							.resizable()
@@ -130,14 +126,14 @@ struct HistoryListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
-				if historyViewModel.selectedCall != nil && historyViewModel.selectedCall!.isOutgoing {
+				if historyListViewModel.selectedCall != nil && historyListViewModel.selectedCall!.isOutgoing {
 					UIPasteboard.general.setValue(
-						historyViewModel.selectedCall!.address.dropFirst(4),
+						historyListViewModel.selectedCall!.address.dropFirst(4),
 						forPasteboardType: UTType.plainText.identifier
 					)
 				} else {
 					UIPasteboard.general.setValue(
-						historyViewModel.selectedCall!.address.dropFirst(4),
+						historyListViewModel.selectedCall!.address.dropFirst(4),
 						forPasteboardType: UTType.plainText.identifier
 					)
 				}
@@ -180,8 +176,8 @@ struct HistoryListBottomSheet: View {
 			.frame(maxWidth: .infinity)
 			
 			Button {
-				if historyViewModel.selectedCall != nil {
-					historyListViewModel.removeCallLog(historyModel: historyViewModel.selectedCall!)
+				if historyListViewModel.selectedCall != nil {
+					historyListViewModel.removeCallLog(historyModel: historyListViewModel.selectedCall!)
 				}
 				
 				if #available(iOS 16.0, *) {
@@ -224,12 +220,8 @@ struct HistoryListBottomSheet: View {
 
 #Preview {
 	HistoryListBottomSheet(
-		historyViewModel: HistoryViewModel(),
-		contactsListViewModel: ContactsListViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		historyListViewModel: HistoryListViewModel(),
 		showingSheet: .constant(false),
-		index: .constant(1),
-		isShowEditContactFragment: .constant(false)
+		isShowEditContactFragment: .constant(false),
+		isShowEditContactFragmentAddress: .constant("")
 	)
 }

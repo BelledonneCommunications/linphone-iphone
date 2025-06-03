@@ -25,8 +25,15 @@ extension URL {
 		components?.scheme = value
 		return components?.url
 	}
+	
 	var resourceSpecifier: String {
 		let nrl: NSURL = self as NSURL
 		return nrl.resourceSpecifier ?? self.absoluteString
+	}
+	
+	func appendingQueryItem(_ name: String, value: String) -> URL {
+		guard var components = URLComponents(url: self, resolvingAgainstBaseURL: true) else { return self }
+		components.queryItems = (components.queryItems ?? []) + [URLQueryItem(name: name, value: value)]
+		return components.url ?? self
 	}
 }

@@ -349,13 +349,13 @@ struct ConversationInfoFragment: View {
 																	action: {
 																		let addressConv = participantConversationModel.address
 																		
-																		let friendIndex = contactsManager.lastSearch.firstIndex(
+																		let friendIndex = contactsManager.avatarListModel.first(
 																			where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 																		if friendIndex != nil {
 																			withAnimation {
 																				SharedMainViewModel.shared.displayedConversation = nil
 																				indexPage = 0
-																				SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
+																				SharedMainViewModel.shared.displayedFriend = friendIndex
 																			}
 																		} else {
 																			withAnimation {
@@ -529,13 +529,13 @@ struct ConversationInfoFragment: View {
 															
 															let addressConv = conversationViewModel.participantConversationModel.first?.address ?? ""
 															
-															let friendIndex = contactsManager.lastSearch.firstIndex(
+															let friendIndex = contactsManager.avatarListModel.first(
 																where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 															if friendIndex != nil {
 																withAnimation {
 																	SharedMainViewModel.shared.displayedConversation = nil
 																	indexPage = 0
-																	SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
+																	SharedMainViewModel.shared.displayedFriend = friendIndex
 																}
 															} else {
 																withAnimation {

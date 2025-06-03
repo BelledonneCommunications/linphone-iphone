@@ -27,8 +27,7 @@ struct HistoryListFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var historyListViewModel: HistoryListViewModel
-	@ObservedObject var historyViewModel: HistoryViewModel
+	@EnvironmentObject var historyListViewModel: HistoryListViewModel
 	
 	@Binding var showingSheet: Bool
 	@Binding var text: String
@@ -36,110 +35,8 @@ struct HistoryListFragment: View {
 	var body: some View {
 		VStack {
 			List {
-				ForEach(0..<historyListViewModel.callLogs.count, id: \.self) { index in
-					HStack {
-						HStack {
-							if !historyListViewModel.callLogs[index].isConf {
-								if historyListViewModel.callLogs[index].avatarModel != nil {
-									Avatar(contactAvatarModel: historyListViewModel.callLogs[index].avatarModel!, avatarSize: 50)
-								} else {
-									if !historyListViewModel.callLogs[index].addressName.isEmpty {
-										Image(uiImage: contactsManager.textToImage(
-											firstName: historyListViewModel.callLogs[index].addressName,
-											lastName: historyListViewModel.callLogs[index].addressName.components(separatedBy: " ").count > 1
-											? historyListViewModel.callLogs[index].addressName.components(separatedBy: " ")[1]
-											: ""))
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-									} else {
-										VStack {
-											Image("profil-picture-default")
-												.renderingMode(.template)
-												.resizable()
-												.frame(width: 28, height: 28)
-												.foregroundStyle(Color.grayMain2c600)
-										}
-										.frame(width: 50, height: 50)
-										.background(Color.grayMain2c200)
-										.clipShape(Circle())
-									}
-								}
-							} else {
-								VStack {
-									Image("users-three-square")
-										.renderingMode(.template)
-										.resizable()
-										.frame(width: 28, height: 28)
-										.foregroundStyle(Color.grayMain2c600)
-								}
-								.frame(width: 50, height: 50)
-								.background(Color.grayMain2c200)
-								.clipShape(Circle())
-							}
-							
-							VStack(spacing: 0) {
-								Spacer()
-								if !historyListViewModel.callLogs[index].isConf {
-									Text(historyListViewModel.callLogs[index].addressName)
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-								} else {
-									Text(historyListViewModel.callLogs[index].subject)
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-								}
-								
-								HStack {
-									Image(historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, isOutgoing: historyListViewModel.callLogs[index].isOutgoing))
-										.resizable()
-										.frame(
-											width: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, isOutgoing: historyListViewModel.callLogs[index].isOutgoing).contains("rejected") ? 12 : 8,
-											height: historyListViewModel.getCallIconResId(callStatus: historyListViewModel.callLogs[index].status, isOutgoing: historyListViewModel.callLogs[index].isOutgoing).contains("rejected") ? 6 : 8)
-									Text(historyListViewModel.getCallTime(startDate: historyListViewModel.callLogs[index].startDate))
-										.default_text_style_300(styleSize: 12)
-										.frame(maxWidth: .infinity, alignment: .leading)
-									
-									Spacer()
-								}
-								
-								Spacer()
-							}
-							
-							if !historyListViewModel.callLogs[index].isConf {
-								Image("phone")
-									.resizable()
-									.frame(width: 25, height: 25)
-									.padding(.all, 10)
-									.padding(.trailing, 5)
-									.highPriorityGesture(
-										TapGesture()
-											.onEnded { _ in
-												withAnimation {
-													doCall(index: index)
-													SharedMainViewModel.shared.displayedCall = nil
-												}
-											}
-									)
-							}
-						}
-					}
-					.frame(height: 50)
-					.buttonStyle(.borderless)
-					.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
-					.listRowSeparator(.hidden)
-					.background(.white)
-					.onTapGesture {
-						withAnimation {
-							SharedMainViewModel.shared.displayedCall = historyListViewModel.callLogs[index]
-						}
-					}
-					.onLongPressGesture(minimumDuration: 0.2) {
-						historyViewModel.selectedCall = historyListViewModel.callLogs[index]
-						showingSheet.toggle()
-					}
+				ForEach(historyListViewModel.callLogs) { historyModel in
+					HistoryRow(historyModel: historyModel, showingSheet: $showingSheet)
 				}
 			}
 			.safeAreaInset(edge: .top, content: {
@@ -169,14 +66,131 @@ struct HistoryListFragment: View {
 		.navigationTitle("")
 		.navigationBarHidden(true)
 	}
+}
+
+struct HistoryRow: View {
+	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	func doCall(index: Int) {
-		telecomManager.doCallOrJoinConf(address: historyListViewModel.callLogs[index].addressLinphone)
+	@EnvironmentObject var historyListViewModel: HistoryListViewModel
+	
+	@ObservedObject var historyModel: HistoryModel
+	
+	@Binding var showingSheet: Bool
+
+	var body: some View {
+		HStack {
+			HStack {
+				if !historyModel.isConf {
+					if historyModel.avatarModel != nil {
+						Avatar(contactAvatarModel: historyModel.avatarModel!, avatarSize: 50)
+					} else {
+						if !historyModel.addressName.isEmpty {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: historyModel.addressName,
+								lastName: historyModel.addressName.components(separatedBy: " ").count > 1
+								? historyModel.addressName.components(separatedBy: " ")[1]
+								: ""))
+							.resizable()
+							.frame(width: 50, height: 50)
+							.clipShape(Circle())
+						} else {
+							VStack {
+								Image("profil-picture-default")
+									.renderingMode(.template)
+									.resizable()
+									.frame(width: 28, height: 28)
+									.foregroundStyle(Color.grayMain2c600)
+							}
+							.frame(width: 50, height: 50)
+							.background(Color.grayMain2c200)
+							.clipShape(Circle())
+						}
+					}
+				} else {
+					VStack {
+						Image("users-three-square")
+							.renderingMode(.template)
+							.resizable()
+							.frame(width: 28, height: 28)
+							.foregroundStyle(Color.grayMain2c600)
+					}
+					.frame(width: 50, height: 50)
+					.background(Color.grayMain2c200)
+					.clipShape(Circle())
+				}
+				
+				VStack(spacing: 0) {
+					Spacer()
+					if !historyModel.isConf {
+						Text(historyModel.addressName)
+							.default_text_style(styleSize: 14)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.lineLimit(1)
+					} else {
+						Text(historyModel.subject)
+							.default_text_style(styleSize: 14)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.lineLimit(1)
+					}
+					
+					HStack {
+						Image(historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing))
+							.resizable()
+							.frame(
+								width: historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing).contains("rejected") ? 12 : 8,
+								height: historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing).contains("rejected") ? 6 : 8)
+						Text(historyListViewModel.getCallTime(startDate: historyModel.startDate))
+							.default_text_style_300(styleSize: 12)
+							.frame(maxWidth: .infinity, alignment: .leading)
+						
+						Spacer()
+					}
+					
+					Spacer()
+				}
+				
+				if !historyModel.isConf {
+					Image("phone")
+						.resizable()
+						.frame(width: 25, height: 25)
+						.padding(.all, 10)
+						.padding(.trailing, 5)
+						.highPriorityGesture(
+							TapGesture()
+								.onEnded { _ in
+									withAnimation {
+										doCall(historyModel: historyModel)
+										SharedMainViewModel.shared.displayedCall = nil
+									}
+								}
+						)
+				}
+			}
+		}
+		.frame(height: 50)
+		.buttonStyle(.borderless)
+		.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
+		.listRowSeparator(.hidden)
+		.background(.white)
+		.onTapGesture {
+			withAnimation {
+				SharedMainViewModel.shared.displayedCall = historyModel
+			}
+		}
+		.onLongPressGesture(minimumDuration: 0.2) {
+			historyListViewModel.selectedCall = historyModel
+			showingSheet.toggle()
+		}
+	}
+	
+	func doCall(historyModel: HistoryModel) {
+		telecomManager.doCallOrJoinConf(address: historyModel.addressLinphone)
 	}
 }
 
 #Preview {
-	HistoryListFragment(historyListViewModel: HistoryListViewModel(), historyViewModel: HistoryViewModel(), showingSheet: .constant(false), text: .constant(""))
+	HistoryListFragment(showingSheet: .constant(false), text: .constant(""))
 }
 
 // swiftlint:enable line_length

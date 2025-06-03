@@ -31,42 +31,49 @@ struct FavoriteContactsListFragment: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack {
-                ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
-					if contactsManager.lastSearch[index].friend != nil && contactsManager.lastSearch[index].friend!.starred == true {
-						VStack {
-							VStack {
-								if contactsManager.lastSearch[index].friend!.photo != nil
-									&& !contactsManager.lastSearch[index].friend!.photo!.isEmpty {
-									Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
-								} else {
-									Image("profil-picture-default")
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-								}
-								Text((contactsManager.lastSearch[index].friend?.name)!)
-									.default_text_style(styleSize: 16)
-									.frame( maxWidth: .infinity, alignment: .center)
-							}
-						}
-						.background(.white)
-						.onTapGesture {
-							withAnimation {
-								SharedMainViewModel.shared.indexDisplayedFriend = index
-							}
-						}
-						.onLongPressGesture(minimumDuration: 0.2) {
-							contactsListViewModel.selectedFriend = contactsManager.lastSearch[index].friend
-							showingSheet.toggle()
-						}
-						.frame(minWidth: 70, maxWidth: 70)
-					}
+				ForEach(contactsManager.avatarListModel) { contactAvatarModel in
+					FavoriteContactRow(contactAvatarModel: contactAvatarModel, showingSheet: $showingSheet)
                 }
             }
 			.padding(.horizontal, 10)
 			.padding(.bottom, 10)
         }
     }
+}
+
+struct FavoriteContactRow: View {
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
+	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
+	
+	@ObservedObject var contactAvatarModel: ContactAvatarModel
+	
+	@Binding var showingSheet: Bool
+	
+	var body: some View {
+		if contactAvatarModel.starred == true {
+			VStack {
+				VStack {
+					Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 50)
+					
+					Text(contactAvatarModel.name)
+						.default_text_style(styleSize: 16)
+						.frame( maxWidth: .infinity, alignment: .center)
+				}
+			}
+			.background(.white)
+			.onTapGesture {
+				withAnimation {
+					SharedMainViewModel.shared.displayedFriend = contactAvatarModel
+				}
+			}
+			.onLongPressGesture(minimumDuration: 0.2) {
+				contactsListViewModel.selectedFriend = contactAvatarModel
+				showingSheet.toggle()
+			}
+			.frame(minWidth: 70, maxWidth: 70)
+		}
+	}
 }
 
 #Preview {

@@ -106,7 +106,7 @@ struct ContactInnerActionsFragment: View {
 						showingSheet.toggle()
 					}
 					
-					if contactAvatarModel.friend != nil && !contactAvatarModel.friend!.phoneNumbers.isEmpty
+					if !contactAvatarModel.phoneNumbersWithLabel.isEmpty
 						|| index < contactAvatarModel.addresses.count - 1 {
 						VStack {
 							Divider()
@@ -114,22 +114,22 @@ struct ContactInnerActionsFragment: View {
 						.padding(.horizontal)
 					}
 				}
-				if contactAvatarModel.friend != nil {
-					ForEach(0..<contactAvatarModel.friend!.phoneNumbers.count, id: \.self) { index in
+				
+				ForEach(contactAvatarModel.phoneNumbersWithLabel.indices, id: \.self) { index in
+					let entry = contactAvatarModel.phoneNumbersWithLabel[index]
 					HStack {
 						HStack {
 							VStack {
-								if contactAvatarModel.friend!.phoneNumbersWithLabel[index].label != nil
-									&& !contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!.isEmpty {
-									Text(String(localized: "phone_number") + " \(contactAvatarModel.friend!.phoneNumbersWithLabel[index].label!)) :")
+								if !entry.label.isEmpty {
+									Text(String(localized: "phone_number") + " (\(entry.label)):")
 										.default_text_style_700(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 								} else {
-									Text(String(localized: "phone_number") + " :")
+									Text(String(localized: "phone_number") + ":")
 										.default_text_style_700(styleSize: 14)
 										.frame(maxWidth: .infinity, alignment: .leading)
 								}
-								Text(contactAvatarModel.friend!.phoneNumbersWithLabel[index].phoneNumber)
+								Text(entry.phoneNumber)
 									.default_text_style(styleSize: 14)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.lineLimit(1)
@@ -142,19 +142,17 @@ struct ContactInnerActionsFragment: View {
 					}
 					.background(.white)
 					.onLongPressGesture(minimumDuration: 0.2) {
-						contactsListViewModel.stringToCopy =
-						contactAvatarModel.friend!.phoneNumbersWithLabel[index].phoneNumber
+						contactsListViewModel.stringToCopy = entry.phoneNumber
 						showingSheet.toggle()
 					}
 					
-					if index < contactAvatarModel.friend!.phoneNumbers.count - 1 {
+					if index < contactAvatarModel.phoneNumbersWithLabel.count - 1 {
 						VStack {
 							Divider()
 						}
 						.padding(.horizontal)
 					}
 				}
-			}
 		}
 			.background(.white)
 			.cornerRadius(15)
@@ -163,29 +161,20 @@ struct ContactInnerActionsFragment: View {
 			.transition(.move(edge: .top))
 	}
 		
-		if contactAvatarModel.friend != nil && (contactAvatarModel.friend!.organization != nil
-				 && !contactAvatarModel.friend!.organization!.isEmpty)
-				|| (contactAvatarModel.friend!.jobTitle != nil
-					&& !contactAvatarModel.friend!.jobTitle!.isEmpty) {
+		if !contactAvatarModel.organization.isEmpty || !contactAvatarModel.jobTitle.isEmpty {
 			VStack {
-				if contactAvatarModel.friend!.organization != nil
-					&& !contactAvatarModel.friend!.organization!.isEmpty {
-					Text(.init(String(format:"**%@ :** %@", String(localized: "contact_editor_company"), contactAvatarModel.friend!.organization!)))
+				if !contactAvatarModel.organization.isEmpty {
+					Text(.init(String(format:"**%@ :** %@", String(localized: "contact_editor_company"), contactAvatarModel.organization)))
 						.default_text_style(styleSize: 14)
 						.padding(.vertical, 15)
 						.padding(.horizontal, 20)
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
 				
-				if contactAvatarModel.friend!.jobTitle != nil
-					&& !contactAvatarModel.friend!.jobTitle!.isEmpty {
-					Text(.init(String(format:"**%@ :** %@", String(localized: "contact_editor_job_title"), contactAvatarModel.friend!.jobTitle!)))
+				if !contactAvatarModel.jobTitle.isEmpty {
+					Text(.init(String(format:"**%@ :** %@", String(localized: "contact_editor_job_title"), contactAvatarModel.jobTitle)))
 						.default_text_style(styleSize: 14)
-						.padding(.top, 
-								 contactAvatarModel.friend!.organization != nil
-								 && !contactAvatarModel.friend!.organization!.isEmpty
-								 ? 0 : 15
-						)
+						.padding(.top, !contactAvatarModel.organization.isEmpty ? 0 : 15)
 						.padding(.bottom, 15)
 						.padding(.horizontal, 20)
 						.frame(maxWidth: .infinity, alignment: .leading)
@@ -238,7 +227,7 @@ struct ContactInnerActionsFragment: View {
 				}
 			} else {
 				NavigationLink(destination: EditContactFragment(
-						friend: contactAvatarModel.friend!,
+						contactAvatarModel: contactAvatarModel,
 						isShowEditContactFragment: $isShowEditContactFragmentInContactDetails,
 						isShowDismissPopup: $isShowDismissPopup)) {
 						HStack {
@@ -272,20 +261,16 @@ struct ContactInnerActionsFragment: View {
 			.padding(.horizontal)
 			
 			Button {
-				if contactAvatarModel.friend != nil {
-					contactAvatarModel.friend!.edit()
-					contactAvatarModel.friend!.starred.toggle()
-					contactAvatarModel.friend!.done()
-				}
+				contactsListViewModel.toggleStarredSelectedFriend()
 			} label: {
 				HStack {
-					Image(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true ? "heart-fill" : "heart")
-					.renderingMode(.template)
-					.resizable()
-					.foregroundStyle(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true ? Color.redDanger500 : Color.grayMain2c500)
-					.frame(width: 25, height: 25)
-					.padding(.all, 10)
-					Text(contactAvatarModel.friend != nil && contactAvatarModel.friend!.starred == true
+					Image(contactAvatarModel.starred == true ? "heart-fill" : "heart")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(contactAvatarModel.starred == true ? Color.redDanger500 : Color.grayMain2c500)
+						.frame(width: 25, height: 25)
+						.padding(.all, 10)
+					Text(contactAvatarModel.starred == true
 						 ? "contact_details_remove_from_favourites"
 						 : "contact_details_add_to_favourites")
 					.default_text_style(styleSize: 14)

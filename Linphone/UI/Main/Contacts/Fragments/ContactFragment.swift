@@ -44,7 +44,7 @@ struct ContactFragment: View {
 						.presentationDetents([.fraction(0.2)])
 				}
 				.sheet(isPresented: $showShareSheet) {
-					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!)
+					ShareSheet(friendToShare: contactAvatarModel)
 						.presentationDetents([.medium])
 						.edgesIgnoringSafeArea(.bottom)
 				}
@@ -54,7 +54,7 @@ struct ContactFragment: View {
 					ContactListBottomSheet(contactsListViewModel: contactsListViewModel, showingSheet: $showingSheet)
 				} onDismiss: {}
 				.sheet(isPresented: $showShareSheet) {
-					ShareSheet(friendToShare: ContactsManager.shared.lastSearch[SharedMainViewModel.shared.indexDisplayedFriend!].friend!)
+					ShareSheet(friendToShare: contactAvatarModel)
 						.edgesIgnoringSafeArea(.bottom)
 				}
 		}

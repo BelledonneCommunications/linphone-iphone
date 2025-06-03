@@ -91,13 +91,14 @@ final class MagicSearchSingleton: ObservableObject {
 					}
 				}
 				
+				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
+					contactAvatarModel.removeFriendDelegate()
+				}
+				
 				DispatchQueue.main.async {
 					self.contactsManager.lastSearch = sortedLastSearch
 					self.contactsManager.lastSearchSuggestions = lastSearchSuggestions
 					
-					self.contactsManager.avatarListModel.forEach { contactAvatarModel in
-						contactAvatarModel.removeFriendDelegate()
-					}
 					self.contactsManager.avatarListModel.removeAll()
 					self.contactsManager.avatarListModel += addedAvatarListModel
 					

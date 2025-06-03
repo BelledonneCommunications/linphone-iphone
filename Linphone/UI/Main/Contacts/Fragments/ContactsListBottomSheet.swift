@@ -57,13 +57,7 @@ struct ContactsListBottomSheet: View {
 			
 			Spacer()
 			Button {
-				if contactsListViewModel.selectedFriend != nil {
-					contactsListViewModel.selectedFriend!.edit()
-					contactsListViewModel.selectedFriend!.starred.toggle()
-					contactsListViewModel.selectedFriend!.done()
-				}
-				
-				MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				self.contactsListViewModel.toggleStarredSelectedFriend()
 				
 				if #available(iOS 16.0, *) {
 					if idiom != .pad {

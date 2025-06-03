@@ -65,7 +65,7 @@ struct ContactInnerFragment: View {
 								.padding(.leading, -10)
 								.onTapGesture {
 									withAnimation {
-										SharedMainViewModel.shared.indexDisplayedFriend = nil
+										SharedMainViewModel.shared.displayedFriend = nil
 									}
 								}
 						}
@@ -86,7 +86,7 @@ struct ContactInnerFragment: View {
 							})
 						} else {
 							NavigationLink(destination: EditContactFragment(
-								friend: contactAvatarModel.friend,
+								contactAvatarModel: contactAvatarModel,
 								isShowEditContactFragment: $isShowEditContactFragmentInContactDetails,
 								isShowDismissPopup: $isShowDismissPopup)) {
 									Image("pencil-simple")
@@ -114,7 +114,7 @@ struct ContactInnerFragment: View {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
 								VStack(spacing: 0) {
-									if SharedMainViewModel.shared.indexDisplayedFriend != nil {
+									if SharedMainViewModel.shared.displayedFriend != nil {
 										Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
 										
 										Text(contactAvatarModel.name)

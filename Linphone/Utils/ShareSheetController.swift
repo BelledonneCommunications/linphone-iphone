@@ -24,7 +24,7 @@ import linphonesw
 struct ShareSheet: UIViewControllerRepresentable {
 	typealias Callback = (_ activityType: UIActivity.ActivityType?, _ completed: Bool, _ returnedItems: [Any]?, _ error: Error?) -> Void
 	
-	let friendToShare: Friend
+	let friendToShare: ContactAvatarModel
 	var activityItems: [Any] = []
 	let applicationActivities: [UIActivity]? = nil
 	let excludedActivityTypes: [UIActivity.ActivityType]? = nil
@@ -34,25 +34,23 @@ struct ShareSheet: UIViewControllerRepresentable {
 		let directoryURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
 		
 		if directoryURL != nil {
-			if friendToShare.name != nil {
-				let filename = friendToShare.name!.replacingOccurrences(of: " ", with: "")
-				
-				let fileURL = directoryURL!
-					.appendingPathComponent(filename)
-					.appendingPathExtension("vcf")
-				
-				if friendToShare.vcard != nil {
-					try? friendToShare.vcard!.asVcard4String().write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
-					
-					let controller = UIActivityViewController(
-					activityItems: [fileURL],
-					applicationActivities: applicationActivities
-					)
-					controller.excludedActivityTypes = excludedActivityTypes
-					controller.completionWithItemsHandler = callback
-					return controller
-				}
-			}
+			let filename = friendToShare.name.replacingOccurrences(of: " ", with: "")
+			   
+			   let fileURL = directoryURL!
+				   .appendingPathComponent(filename)
+				   .appendingPathExtension("vcf")
+			   
+			   if let vCard = friendToShare.vcard {
+				   try? vCard.asVcard4String().write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
+				   
+				   let controller = UIActivityViewController(
+				   activityItems: [fileURL],
+				   applicationActivities: applicationActivities
+				   )
+				   controller.excludedActivityTypes = excludedActivityTypes
+				   controller.completionWithItemsHandler = callback
+				   return controller
+			   }
 		}
 		
 		let controller = UIActivityViewController(

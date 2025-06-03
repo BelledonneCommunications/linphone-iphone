@@ -32,6 +32,7 @@ struct EditContactFragment: View {
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDismissPopup: Bool
+	let isShowEditContactFragmentAddress: String
 	
 	@State private var delayedColor = Color.white
 	
@@ -46,10 +47,11 @@ struct EditContactFragment: View {
 	@State private var selectedImage: UIImage?
 	@State private var removedImage = false
 	
-	init(friend: Friend? = nil, isShowEditContactFragment: Binding<Bool>, isShowDismissPopup: Binding<Bool>) {
-		_editContactViewModel = StateObject(wrappedValue: EditContactViewModel(friend: friend))
+	init(contactAvatarModel: ContactAvatarModel? = nil, isShowEditContactFragment: Binding<Bool>, isShowDismissPopup: Binding<Bool>, isShowEditContactFragmentAddress: String = "") {
+		_editContactViewModel = StateObject(wrappedValue: EditContactViewModel(contactAvatarModel: contactAvatarModel))
 		self._isShowEditContactFragment = isShowEditContactFragment
 		self._isShowDismissPopup = isShowDismissPopup
+		self.isShowEditContactFragmentAddress = isShowEditContactFragmentAddress
 	}
 	
 	var body: some View {
@@ -152,18 +154,9 @@ struct EditContactFragment: View {
 					VStack(spacing: 0) {
 						VStack(spacing: 0) {
 							VStack(spacing: 0) {
-								if editContactViewModel.selectedEditFriend != nil
-									&& editContactViewModel.selectedEditFriend!.photo != nil
-									&& !editContactViewModel.selectedEditFriend!.photo!.isEmpty && selectedImage == nil && !removedImage {
+								if editContactViewModel.selectedEditFriend != nil && selectedImage == nil && !removedImage {
 									
-									Avatar(contactAvatarModel: 
-											ContactAvatarModel(
-												friend: editContactViewModel.selectedEditFriend!,
-												name: editContactViewModel.selectedEditFriend?.name ?? "",
-												address: editContactViewModel.selectedEditFriend?.address?.asStringUriOnly() ?? "",
-												withPresence: false
-											), avatarSize: 100
-									)
+									Avatar(contactAvatarModel: editContactViewModel.selectedEditFriend!, avatarSize: 100)
 									
 								} else if selectedImage == nil {
 									Image("profil-picture-default")
@@ -179,9 +172,8 @@ struct EditContactFragment: View {
 								}
 								
 								if editContactViewModel.selectedEditFriend != nil
-									&& editContactViewModel.selectedEditFriend!.photo != nil
-									&& !editContactViewModel.selectedEditFriend!.photo!.isEmpty
-									&& (editContactViewModel.selectedEditFriend!.photo!.suffix(11) != "default.png" || selectedImage != nil) && !removedImage {
+									&& !editContactViewModel.selectedEditFriend!.photo.isEmpty
+									&& (editContactViewModel.selectedEditFriend!.photo.suffix(11) != "default.png" || selectedImage != nil) && !removedImage {
 									HStack {
 										Spacer()
 										
@@ -213,6 +205,7 @@ struct EditContactFragment: View {
 															removedImage = false
 														}
 													}
+													showPhotoPicker = false
 												}
 											}
 											.edgesIgnoringSafeArea(.all)
@@ -265,6 +258,7 @@ struct EditContactFragment: View {
 														removedImage = false
 													}
 												}
+												showPhotoPicker = false
 											}
 										}
 										.edgesIgnoringSafeArea(.all)
@@ -323,13 +317,13 @@ struct EditContactFragment: View {
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								ForEach(0..<editContactViewModel.sipAddresses.count, id: \.self) { index in
+								ForEach(editContactViewModel.sipAddresses.indices, id: \.self) { index in
 									
 									HStack(alignment: .center) {
 										TextField("sip_address", text: $editContactViewModel.sipAddresses[index])
 											.default_text_style(styleSize: 15)
 											.disableAutocorrection(true)
-									  		.autocapitalization(.none)
+											.autocapitalization(.none)
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
@@ -378,7 +372,7 @@ struct EditContactFragment: View {
 										TextField("phone_number", text: $editContactViewModel.phoneNumbers[index])
 											.default_text_style(styleSize: 15)
 											.textContentType(.oneTimeCode)
-		   									.keyboardType(.numberPad)
+											.keyboardType(.numberPad)
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
@@ -483,6 +477,14 @@ struct EditContactFragment: View {
 			}
 		}
 		.navigationBarHidden(true)
+		.onAppear {
+			if !self.isShowEditContactFragmentAddress.isEmpty {
+				DispatchQueue.main.async {
+					editContactViewModel.sipAddresses[0] = isShowEditContactFragmentAddress
+					editContactViewModel.sipAddresses.append("")
+				}
+			}
+		}
 	}
 	
 	@Sendable private func delayColor() async {
@@ -500,59 +502,86 @@ struct EditContactFragment: View {
 	}
 	
 	func addOrEditFriend() {
-		let newContact = Contact(
-			identifier: editContactViewModel.identifier,
-			firstName: editContactViewModel.firstName,
-			lastName: editContactViewModel.lastName,
-			organizationName: editContactViewModel.company,
-			jobTitle: editContactViewModel.jobTitle,
-			displayName: "",
-			sipAddresses: editContactViewModel.sipAddresses.map { $0 },
-			phoneNumbers: editContactViewModel.phoneNumbers.map { PhoneNumber(numLabel: "", num: $0)},
-			imageData: ""
-		)
-		
-		if editContactViewModel.selectedEditFriend != nil && selectedImage == nil &&
-			!removedImage && editContactViewModel.selectedEditFriend!.photo!.suffix(11) != "default.png" {
-			ContactsManager.shared.saveFriend(
-				result: String(editContactViewModel.selectedEditFriend!.photo!.dropFirst(6)),
-				contact: newContact,
-				existingFriend: editContactViewModel.selectedEditFriend, completion: {_ in }
+		CoreContext.shared.doOnCoreQueue { core in
+			let newContact = Contact(
+				identifier: editContactViewModel.identifier,
+				firstName: editContactViewModel.firstName,
+				lastName: editContactViewModel.lastName,
+				organizationName: editContactViewModel.company,
+				jobTitle: editContactViewModel.jobTitle,
+				displayName: "",
+				sipAddresses: editContactViewModel.sipAddresses.map { $0 },
+				phoneNumbers: editContactViewModel.phoneNumbers.map { PhoneNumber(numLabel: "", num: $0)},
+				imageData: ""
 			)
-		} else {
-			ContactsManager.shared.saveImage(
-				image: selectedImage
-				?? ContactsManager.shared.textToImage(
-					firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
-				name: editContactViewModel.firstName
-				+ editContactViewModel.lastName,
-				prefix: ((selectedImage == nil) ? "-default" : ""),
-				contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend) {
-					MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-					
-					DispatchQueue.main.async {
-						if editContactViewModel.selectedEditFriend != nil {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-								let result = ContactsManager.shared.lastSearch.firstIndex(where: {
-									$0.friend!.name == newContact.firstName + " " + newContact.lastName
-								})
-								SharedMainViewModel.shared.indexDisplayedFriend = result
-							}
+			
+			if editContactViewModel.selectedEditFriend != nil && editContactViewModel.selectedEditFriend!.friend != nil && selectedImage == nil &&
+				!removedImage && editContactViewModel.selectedEditFriend!.friend!.photo!.suffix(11) != "default.png" {
+				ContactsManager.shared.saveFriend(
+					result: String(editContactViewModel.selectedEditFriend!.friend!.photo!.dropFirst(6)),
+					contact: newContact,
+					existingFriend: editContactViewModel.selectedEditFriend!.friend, completion: {_ in
+						if let selectedFriendTmp = editContactViewModel.selectedEditFriend?.friend {
+							let addressTmp = selectedFriendTmp.address?.clone()?.asStringUriOnly() ?? ""
+							SharedMainViewModel.shared.displayedFriend?.resetContactAvatarModel(
+								friend: selectedFriendTmp,
+								name: selectedFriendTmp.name ?? "",
+								address: addressTmp,
+								withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
+							)
 						}
 						
-						delayColorDismiss()
-						if editContactViewModel.selectedEditFriend == nil {
-							withAnimation {
-								isShowEditContactFragment.toggle()
+						DispatchQueue.main.async {
+							delayColorDismiss()
+							if editContactViewModel.selectedEditFriend?.friend == nil {
+								withAnimation {
+									isShowEditContactFragment.toggle()
+								}
+							} else {
+								withAnimation {
+									dismiss()
+								}
 							}
-						} else {
-							withAnimation {
-								dismiss()
-							}
+							editContactViewModel.resetValues()
 						}
-						editContactViewModel.resetValues()
 					}
-				}
+				)
+			} else {
+				ContactsManager.shared.saveImage(
+					image: selectedImage
+					?? ContactsManager.shared.textToImage(
+						firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
+					name: editContactViewModel.firstName
+					+ editContactViewModel.lastName,
+					prefix: ((selectedImage == nil) ? "-default" : ""),
+					contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend?.friend) {
+						if let selectedFriendTmp = editContactViewModel.selectedEditFriend?.friend {
+							let addressTmp = selectedFriendTmp.address?.clone()?.asStringUriOnly() ?? ""
+							SharedMainViewModel.shared.displayedFriend?.resetContactAvatarModel(
+								friend: selectedFriendTmp,
+								name: selectedFriendTmp.name ?? "",
+								address: addressTmp,
+								withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
+							)
+						} else {
+							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						}
+						
+						DispatchQueue.main.async {
+							delayColorDismiss()
+							if editContactViewModel.selectedEditFriend?.friend == nil {
+								withAnimation {
+									isShowEditContactFragment.toggle()
+								}
+							} else {
+								withAnimation {
+									dismiss()
+								}
+							}
+							editContactViewModel.resetValues()
+						}
+					}
+			}
 		}
 	}
 }

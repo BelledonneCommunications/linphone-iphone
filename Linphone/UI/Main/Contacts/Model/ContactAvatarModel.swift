@@ -24,62 +24,96 @@ import Combine
 class ContactAvatarModel: ObservableObject, Identifiable {
 	let id = UUID()
 	
-	let friend: Friend?
+	var friend: Friend?
 	
-	let name: String
+	@Published var name: String = ""
+	@Published var address: String = ""
+	@Published var addresses: [String] = []
+	@Published var phoneNumbersWithLabel: [(label: String, phoneNumber: String)] = []
 	
-	let address: String
+	var nativeUri: String = ""
+	var withPresence: Bool?
 	
-	@Published var addresses: [String]
+	@Published var starred: Bool = false
 	
-	let nativeUri: String
+	var vcard: Vcard?
+	var organization: String = ""
+	var jobTitle: String = ""
 	
-	let withPresence: Bool?
-	
-	@Published var lastPresenceInfo: String
-	
-	@Published var presenceStatus: ConsolidatedPresence
+	@Published var photo: String = ""
+	@Published var lastPresenceInfo: String = ""
+	@Published var presenceStatus: ConsolidatedPresence = .Offline
 	
 	private var friendDelegate: FriendDelegate?
 	
 	init(friend: Friend?, name: String, address: String, withPresence: Bool?) {
-		self.friend = friend
-		self.name = name
-		self.address = address
-		var addressesTmp: [String] = []
-		if let friend = friend {
-			friend.addresses.forEach { address in
-				addressesTmp.append(address.asStringUriOnly())
-			}
-		}
-		self.addresses = addressesTmp
-		self.nativeUri = friend?.nativeUri ?? ""
-		self.withPresence = withPresence
-		if let friend = friend, withPresence == true {
-			self.lastPresenceInfo = ""
-			
-			self.presenceStatus = friend.consolidatedPresence
-			
-			if friend.consolidatedPresence == .Online || friend.consolidatedPresence == .Busy {
-				if friend.consolidatedPresence == .Online || friend.presenceModel?.latestActivityTimestamp != -1 {
-					self.lastPresenceInfo = (friend.consolidatedPresence == .Online) ?
-					"Online" : getCallTime(startDate: friend.presenceModel!.latestActivityTimestamp)
-				} else {
-					self.lastPresenceInfo = "Away"
+		self.resetContactAvatarModel(friend: friend, name: name, address: address, withPresence: withPresence)
+	}
+	
+	func resetContactAvatarModel(friend: Friend?, name: String, address: String, withPresence: Bool?) {
+		CoreContext.shared.doOnCoreQueue { _ in
+			self.friend = friend
+			let nameTmp = name
+			let addressTmp = address
+			var addressesTmp: [String] = []
+			if let friend = friend {
+				friend.addresses.forEach { address in
+					addressesTmp.append(address.asStringUriOnly())
 				}
-			} else {
-				self.lastPresenceInfo = ""
+			}
+			var phoneNumbersWithLabelTmp: [(label: String, phoneNumber: String)] = []
+			if let friend = friend {
+				friend.phoneNumbersWithLabel.forEach { phoneNum in
+					phoneNumbersWithLabelTmp.append((label: phoneNum.label ?? "", phoneNumber: phoneNum.phoneNumber))
+				}
+			}
+			let nativeUriTmp = friend?.nativeUri ?? ""
+			let withPresenceTmp = withPresence
+			let starredTmp = friend?.starred ?? false
+			let vcardTmp = friend?.vcard ?? nil
+			let organizationTmp = friend?.organization ?? ""
+			let jobTitleTmp = friend?.jobTitle ?? ""
+			let photoTmp = friend?.photo ?? ""
+			var lastPresenceInfoTmp = ""
+			var presenceStatusTmp: ConsolidatedPresence = .Offline
+			
+			if let friend = friend, withPresence == true {
+				lastPresenceInfoTmp = ""
+				
+				presenceStatusTmp = friend.consolidatedPresence
+				
+				if friend.consolidatedPresence == .Online || friend.consolidatedPresence == .Busy {
+					if friend.consolidatedPresence == .Online || friend.presenceModel?.latestActivityTimestamp != -1 {
+						lastPresenceInfoTmp = (friend.consolidatedPresence == .Online) ?
+						"Online" : self.getCallTime(startDate: friend.presenceModel!.latestActivityTimestamp)
+					} else {
+						lastPresenceInfoTmp = "Away"
+					}
+				}
+				
+				if let delegate = self.friendDelegate {
+					self.friend?.removeDelegate(delegate: delegate)
+					self.friendDelegate = nil
+				}
+				
+				self.addFriendDelegate()
 			}
 			
-			if let delegate = friendDelegate {
-				self.friend?.removeDelegate(delegate: delegate)
-				self.friendDelegate = nil
+			DispatchQueue.main.async {
+				self.name = nameTmp
+				self.address = addressTmp
+				self.addresses = addressesTmp
+				self.phoneNumbersWithLabel = phoneNumbersWithLabelTmp
+				self.nativeUri = nativeUriTmp
+				self.withPresence = withPresenceTmp
+				self.starred = starredTmp
+				self.vcard = vcardTmp
+				self.organization = organizationTmp
+				self.jobTitle = jobTitleTmp
+				self.photo = photoTmp
+				self.lastPresenceInfo = lastPresenceInfoTmp
+				self.presenceStatus = presenceStatusTmp
 			}
-			
-			addFriendDelegate()
-		} else {
-			self.lastPresenceInfo = ""
-			self.presenceStatus = .Offline
 		}
 	}
 	
@@ -110,7 +144,9 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	func removeFriendDelegate() {
 		if let delegate = friendDelegate {
 			presenceStatus = .Offline
-			friend?.removeDelegate(delegate: delegate)
+			if let friendTmp = friend {
+				friendTmp.removeDelegate(delegate: delegate)
+			}
 			friendDelegate = nil
 		}
 	}

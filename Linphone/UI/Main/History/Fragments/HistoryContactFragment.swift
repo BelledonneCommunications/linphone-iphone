@@ -30,7 +30,6 @@ struct HistoryContactFragment: View {
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
-	@ObservedObject var historyViewModel: HistoryViewModel
 	@ObservedObject var historyListViewModel: HistoryListViewModel
 	@ObservedObject var contactsListViewModel: ContactsListViewModel
 	@ObservedObject var editContactViewModel: EditContactViewModel
@@ -82,14 +81,14 @@ struct HistoryContactFragment: View {
 										let addressCall = SharedMainViewModel.shared.displayedCall!.addressFriend!.address
 										
 										if addressCall != nil {
-											let friendIndex = contactsManager.lastSearch.firstIndex(
+											let friendIndex = contactsManager.avatarListModel.first(
 												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall!.asStringUriOnly()})})
 											if friendIndex != nil {
 												withAnimation {
 													SharedMainViewModel.shared.displayedCall = nil
 													indexPage = 0
 													
-													SharedMainViewModel.shared.indexDisplayedFriend = friendIndex
+													SharedMainViewModel.shared.displayedFriend = friendIndex
 												}
 											}
 										}
@@ -450,7 +449,6 @@ struct HistoryContactFragment: View {
 #Preview {
 	HistoryContactFragment(
 		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
-		historyViewModel: HistoryViewModel(),
 		historyListViewModel: HistoryListViewModel(),
 		contactsListViewModel: ContactsListViewModel(),
 		editContactViewModel: EditContactViewModel(),

@@ -23,13 +23,13 @@ import SwiftUI
 
 // swiftlint:disable line_length
 class ContactsListViewModel: ObservableObject {
-	@Published var selectedEditFriend: Friend?
+	@Published var selectedEditFriend: ContactAvatarModel?
 	
 	var stringToCopy: String = ""
     
-    var selectedFriend: Friend?
-    var selectedFriendToShare: Friend?
-	var selectedFriendToDelete: Friend?
+    var selectedFriend: ContactAvatarModel?
+    var selectedFriendToShare: ContactAvatarModel?
+	var selectedFriendToDelete: ContactAvatarModel?
 	
 	@Published var operationInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
@@ -210,6 +210,63 @@ class ContactsListViewModel: ObservableObject {
 			}
 		})
 		chatRoom.addDelegate(delegate: contactChatRoomDelegate!)
+	}
+	
+	func deleteSelectedContact() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if self.selectedFriendToDelete != nil && self.selectedFriendToDelete!.friend != nil {
+				if SharedMainViewModel.shared.displayedFriend != nil {
+					DispatchQueue.main.async {
+						withAnimation {
+							SharedMainViewModel.shared.displayedFriend = nil
+						}
+					}
+				}
+				self.selectedFriendToDelete!.friend!.remove()
+			} else if SharedMainViewModel.shared.displayedFriend != nil {
+				DispatchQueue.main.async {
+					withAnimation {
+						SharedMainViewModel.shared.displayedFriend = nil
+					}
+				}
+				SharedMainViewModel.shared.displayedFriend!.friend!.remove()
+			}
+			
+			MagicSearchSingleton.shared.searchForContacts(
+				sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+		}
+	}
+	
+	func changeSelectedFriendToDelete() {
+		if selectedFriend != nil {
+			self.selectedFriendToDelete = self.selectedFriend
+		}
+	}
+	
+	func toggleStarredSelectedFriend() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if let contactAvatar = self.selectedFriend, let friend = contactAvatar.friend {
+				friend.edit()
+				friend.starred.toggle()
+				friend.done()
+				
+				let starredTmp = friend.starred
+				
+				DispatchQueue.main.async {
+					contactAvatar.starred = starredTmp
+				}
+			} else if let displayedFriend = SharedMainViewModel.shared.displayedFriend, let friend = displayedFriend.friend {
+				friend.edit()
+				friend.starred.toggle()
+				friend.done()
+				
+				let starredTmp = friend.starred
+				
+				DispatchQueue.main.async {
+					displayedFriend.starred = starredTmp
+				}
+			}
+		}
 	}
 }
 // swiftlint:enable line_length

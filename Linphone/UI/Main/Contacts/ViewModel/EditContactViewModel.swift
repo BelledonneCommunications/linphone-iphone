@@ -22,7 +22,7 @@ import SwiftUI
 
 class EditContactViewModel: ObservableObject {
 	
-	let selectedEditFriend: Friend?
+	let selectedEditFriend: ContactAvatarModel?
 	
 	@Published var identifier: String = ""
 	@Published var firstName: String = ""
@@ -32,8 +32,8 @@ class EditContactViewModel: ObservableObject {
 	@Published var company: String = ""
 	@Published var jobTitle: String = ""
 	
-	init(friend: Friend? = nil) {
-		self.selectedEditFriend = friend
+	init(contactAvatarModel: ContactAvatarModel? = nil) {
+		self.selectedEditFriend = contactAvatarModel
 		resetValues()
 	}
 	
@@ -50,11 +50,11 @@ class EditContactViewModel: ObservableObject {
 			
 			if self.selectedEditFriend != nil {
 				self.selectedEditFriend?.addresses.forEach({ address in
-					sipAddressesTmp.append(String(address.asStringUriOnly().dropFirst(4)))
+					sipAddressesTmp.append(String(address.dropFirst(4)))
 				})
 				
-				self.selectedEditFriend?.phoneNumbers.forEach({ phoneNumber in
-					phoneNumbersTmp.append(phoneNumber)
+				self.selectedEditFriend?.phoneNumbersWithLabel.forEach({ phoneNumber in
+					phoneNumbersTmp.append(phoneNumber.phoneNumber)
 				})
 			}
 			

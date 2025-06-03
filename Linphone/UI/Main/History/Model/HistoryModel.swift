@@ -20,15 +20,17 @@
 import Foundation
 import linphonesw
 
-class HistoryModel: ObservableObject {
+class HistoryModel: ObservableObject, Identifiable {
 	
 	private var coreContext = CoreContext.shared
 	
 	static let TAG = "[History Model]"
 	
+	let id = UUID()
+	
 	var callLog: CallLog
 	
-	var id: String
+	@Published var callLogId: String
 	@Published var subject: String
 	@Published var isConf: Bool
 	@Published var addressLinphone: Address
@@ -43,7 +45,7 @@ class HistoryModel: ObservableObject {
 	
 	init(callLog: CallLog) {
 		self.callLog = callLog
-		self.id = ""
+		self.callLogId = ""
 		self.subject = ""
 		self.isConf = false
 		
@@ -88,7 +90,7 @@ class HistoryModel: ObservableObject {
 			
 			DispatchQueue.main.async {
 				self.callLog = callLogTmp
-				self.id = idTmp
+				self.callLogId = idTmp
 				self.subject = subjectTmp
 				self.isConf = isConfTmp
 				
@@ -111,34 +113,30 @@ class HistoryModel: ObservableObject {
 	}
 	
 	func refreshAvatarModel() {
-		coreContext.doOnCoreQueue { _ in
-			guard let address = (self.callLog.dir == .Outgoing ? self.callLog.toAddress : self.callLog.fromAddress) else {
-				DispatchQueue.main.async {
-					self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
-				}
-				return
+		guard let address = (self.callLog.dir == .Outgoing ? self.callLog.toAddress : self.callLog.fromAddress) else {
+			DispatchQueue.main.async {
+				self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
 			}
+			return
+		}
+		
+		let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(address: address)
+		if let addressFriendTmp = addressFriendTmp {
+			let addressNameTmp = self.addressName
 			
-			let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(address: address)
-			if let addressFriendTmp = addressFriendTmp {
+			let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
+				guard let friend = $0.friend else { return false }
+				return friend.name == addressFriendTmp.name && friend.address?.asStringUriOnly() == addressFriendTmp.address?.asStringUriOnly()
+			}) ?? ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+			
+			DispatchQueue.main.async {
 				self.addressFriend = addressFriendTmp
-				
-				let addressNameTmp = self.addressName
-				
-				let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
-					guard let friend = $0.friend else { return false }
-					return friend.name == addressFriendTmp.name && friend.address?.asStringUriOnly() == addressFriendTmp.address?.asStringUriOnly()
-				}) ?? ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
-				
-				DispatchQueue.main.async {
-					self.addressFriend = addressFriendTmp
-					self.addressName = addressFriendTmp.name ?? addressNameTmp
-					self.avatarModel = avatarModelTmp
-				}
-			} else {
-				DispatchQueue.main.async {
-					self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
-				}
+				self.addressName = addressFriendTmp.name ?? addressNameTmp
+				self.avatarModel = avatarModelTmp
+			}
+		} else {
+			DispatchQueue.main.async {
+				self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
 			}
 		}
 	}

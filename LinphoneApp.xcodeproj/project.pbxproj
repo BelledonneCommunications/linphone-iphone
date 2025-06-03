@@ -86,7 +86,6 @@
 		D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */; };
 		D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */; };
 		D720E6AD2BAD822000DDFD87 /* ParticipantModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */; };
-		D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250622ADE9615008FB426 /* HistoryViewModel.swift */; };
 		D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72250682ADFBF2D008FB426 /* SideMenu.swift */; };
 		D72343302ACEFEF8009AA24E /* QrCodeScannerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */; };
 		D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343312ACEFF58009AA24E /* QRScannerController.swift */; };
@@ -298,7 +297,6 @@
 		D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListFragment.swift; sourceTree = "<group>"; };
 		D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFragment.swift; sourceTree = "<group>"; };
 		D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantModel.swift; sourceTree = "<group>"; };
-		D72250622ADE9615008FB426 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		D72250682ADFBF2D008FB426 /* SideMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenu.swift; sourceTree = "<group>"; };
 		D723432F2ACEFEF8009AA24E /* QrCodeScannerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QrCodeScannerFragment.swift; sourceTree = "<group>"; };
 		D72343312ACEFF58009AA24E /* QRScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerController.swift; sourceTree = "<group>"; };
@@ -685,7 +683,6 @@
 		D72250612ADE95E4008FB426 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				D72250622ADE9615008FB426 /* HistoryViewModel.swift */,
 				D732A9142B04C7FE00DB42BA /* HistoryListViewModel.swift */,
 				D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */,
 			);
@@ -1241,7 +1238,6 @@
 				D783028F2D414847009CCB60 /* DebugFragment.swift in Sources */,
 				66162A202BDFC2F900DCE913 /* AddParticipantsViewModel.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
-				D72250632ADE9615008FB426 /* HistoryViewModel.swift in Sources */,
 				D78E06302BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift in Sources */,
 				66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */,
 				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,

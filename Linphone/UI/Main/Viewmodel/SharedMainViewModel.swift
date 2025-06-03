@@ -30,7 +30,7 @@ class SharedMainViewModel: ObservableObject {
 	@Published var defaultAvatar: URL?
 	@Published var indexView: Int = 0
 	
-	@Published var indexDisplayedFriend: Int?
+	@Published var displayedFriend: ContactAvatarModel?
 	@Published var displayedCall: HistoryModel?
 	@Published var displayedConversation: ConversationModel?
 	@Published var displayedMeeting: MeetingModel?

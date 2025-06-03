@@ -22,27 +22,20 @@ import linphonesw
 
 struct HistoryView: View {
 	
-	@ObservedObject var historyListViewModel: HistoryListViewModel
-	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
+	@EnvironmentObject var historyListViewModel: HistoryListViewModel
 	
-	@Binding var index: Int
 	@Binding var isShowStartCallFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var text: String
+	@Binding var isShowEditContactFragmentAddress: String
 	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
 				HistoryFragment(
-					historyListViewModel: historyListViewModel,
-					historyViewModel: historyViewModel,
-					contactsListViewModel: contactsListViewModel,
-					editContactViewModel: editContactViewModel,
-					index: $index,
 					isShowEditContactFragment: $isShowEditContactFragment,
-					text: $text
+					text: $text,
+					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 				)
 				
 				Button {
@@ -72,12 +65,8 @@ struct HistoryView: View {
 
 #Preview {
 	HistoryFragment(
-		historyListViewModel: HistoryListViewModel(),
-		historyViewModel: HistoryViewModel(),
-		contactsListViewModel: ContactsListViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		index: .constant(1),
 		isShowEditContactFragment: .constant(false),
-		text: .constant("")
+		text: .constant(""),
+		isShowEditContactFragmentAddress: .constant("")
 	)
 }

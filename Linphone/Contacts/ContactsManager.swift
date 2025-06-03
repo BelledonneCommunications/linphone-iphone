@@ -42,7 +42,14 @@ final class ContactsManager: ObservableObject {
 	
 	@Published var lastSearch: [SearchResult] = []
 	@Published var lastSearchSuggestions: [SearchResult] = []
-	@Published var avatarListModel: [ContactAvatarModel] = []
+	@Published var avatarListModel: [ContactAvatarModel] = [] {
+		didSet {
+			setupSubscriptions()
+		}
+	}
+	
+	@Published var starredChangeTrigger = UUID()
+	private var cancellables = Set<AnyCancellable>()
 	
 	private var coreDelegate: CoreDelegate?
 	private var friendListDelegate: FriendListDelegate?
@@ -97,6 +104,7 @@ final class ContactsManager: ObservableObject {
 					print("\(#function) - failed to request access", error)
 					self.addFriendListDelegate()
 					self.addCoreDelegate(core: core)
+					MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
 					return
 				}
 				if granted {
@@ -238,9 +246,15 @@ final class ContactsManager: ObservableObject {
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 				if resultFriend != nil {
 					if linphoneFriend && existingFriend == nil {
-						_ = self.linphoneFriendList?.addFriend(linphoneFriend: resultFriend!)
+						if let linphoneFL = self.linphoneFriendList {
+							_ = linphoneFL.addFriend(linphoneFriend: resultFriend!)
+							linphoneFL.updateSubscriptions()
+						}
 					} else if existingFriend == nil {
-						_ = self.friendList?.addLocalFriend(linphoneFriend: resultFriend!)
+						if let friendListTmp = self.friendList {
+							_ = friendListTmp.addLocalFriend(linphoneFriend: resultFriend!)
+							friendListTmp.updateSubscriptions()
+						}
 					}
 				}
 				completion()
@@ -494,6 +508,17 @@ final class ContactsManager: ObservableObject {
 		
 		if self.coreDelegate != nil {
 			core.addDelegate(delegate: self.coreDelegate!)
+		}
+	}
+	
+	private func setupSubscriptions() {
+		cancellables.removeAll()
+		for contact in avatarListModel {
+			contact.$starred
+				.sink { [weak self] _ in
+					self?.starredChangeTrigger = UUID() // 🔁 Déclenche le refresh de la vue
+				}
+				.store(in: &cancellables)
 		}
 	}
 }

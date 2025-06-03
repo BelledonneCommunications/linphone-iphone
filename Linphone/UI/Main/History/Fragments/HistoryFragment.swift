@@ -22,43 +22,32 @@ import SwiftUI
 struct HistoryFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var historyListViewModel: HistoryListViewModel
-	@ObservedObject var historyViewModel: HistoryViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
+	@EnvironmentObject var historyListViewModel: HistoryListViewModel
 	
 	@State private var showingSheet = false
-	@Binding var index: Int
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var text: String
+	@Binding var isShowEditContactFragmentAddress: String
 	
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet, text: $text)
+				HistoryListFragment(showingSheet: $showingSheet, text: $text)
 					.sheet(isPresented: $showingSheet) {
 						HistoryListBottomSheet(
-							historyViewModel: historyViewModel,
-							contactsListViewModel: contactsListViewModel,
-							editContactViewModel: editContactViewModel,
-							historyListViewModel: historyListViewModel,
 							showingSheet: $showingSheet,
-							index: $index,
-							isShowEditContactFragment: $isShowEditContactFragment
+							isShowEditContactFragment: $isShowEditContactFragment,
+							isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 						)
 						.presentationDetents([.fraction(0.2)])
 					}
 			} else {
-				HistoryListFragment(historyListViewModel: historyListViewModel, historyViewModel: historyViewModel, showingSheet: $showingSheet, text: $text)
+				HistoryListFragment(showingSheet: $showingSheet, text: $text)
 					.halfSheet(showSheet: $showingSheet) {
 						HistoryListBottomSheet(
-							historyViewModel: historyViewModel,
-							contactsListViewModel: contactsListViewModel,
-							editContactViewModel: editContactViewModel,
-							historyListViewModel: historyListViewModel,
 							showingSheet: $showingSheet,
-							index: $index,
-							isShowEditContactFragment: $isShowEditContactFragment
+							isShowEditContactFragment: $isShowEditContactFragment,
+							isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 						)
 					} onDismiss: {}
 			}
@@ -68,12 +57,8 @@ struct HistoryFragment: View {
 
 #Preview {
 	HistoryFragment(
-		historyListViewModel: HistoryListViewModel(),
-		historyViewModel: HistoryViewModel(),
-		contactsListViewModel: ContactsListViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		index: .constant(1),
 		isShowEditContactFragment: .constant(false),
-		text: .constant("")
+		text: .constant(""),
+		isShowEditContactFragmentAddress: .constant("")
 	)
 }
