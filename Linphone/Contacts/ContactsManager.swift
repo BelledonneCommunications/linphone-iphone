@@ -248,12 +248,10 @@ final class ContactsManager: ObservableObject {
 					if linphoneFriend && existingFriend == nil {
 						if let linphoneFL = self.linphoneFriendList {
 							_ = linphoneFL.addFriend(linphoneFriend: resultFriend!)
-							linphoneFL.updateSubscriptions()
 						}
 					} else if existingFriend == nil {
 						if let friendListTmp = self.friendList {
 							_ = friendListTmp.addLocalFriend(linphoneFriend: resultFriend!)
-							friendListTmp.updateSubscriptions()
 						}
 					}
 				}
@@ -519,6 +517,12 @@ final class ContactsManager: ObservableObject {
 					self?.starredChangeTrigger = UUID() // 🔁 Déclenche le refresh de la vue
 				}
 				.store(in: &cancellables)
+		}
+	}
+	
+	func updateSubscriptionsLinphoneList() {
+		if let linphoneFL = self.linphoneFriendList {
+			linphoneFL.updateSubscriptions()
 		}
 	}
 }

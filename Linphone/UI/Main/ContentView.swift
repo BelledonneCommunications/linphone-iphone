@@ -954,37 +954,30 @@ struct ContentView: View {
 									   ? (geometry.size.width/100*40) + 75
 									   : 0
 								)
-							if sharedMainViewModel.indexView == 0 && sharedMainViewModel.displayedFriend != nil {
-									ContactFragment(
-										isShowDeletePopup: $isShowDeleteContactPopup,
-										isShowDismissPopup: $isShowDismissPopup,
-										isShowSipAddressesPopup: $isShowSipAddressesPopup,
-										isShowSipAddressesPopupType: $isShowSipAddressesPopupType,
-										isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails
-									)
-									.environmentObject(contactsListViewModel!)
-									.environmentObject(sharedMainViewModel.displayedFriend!)
-									.frame(maxWidth: .infinity)
-									.background(Color.gray100)
-									.ignoresSafeArea(.keyboard)
-							} else if sharedMainViewModel.indexView == 1 {
-								/*
-								if sharedMainViewModel.displayedCall != nil && sharedMainViewModel.displayedCall!.avatarModel != nil {
-									HistoryContactFragment(
-										contactAvatarModel: sharedMainViewModel.displayedCall!.avatarModel!,
-										historyViewModel: historyViewModel,
-										historyListViewModel: historyListViewModel,
-										contactsListViewModel: contactsListViewModel,
-										editContactViewModel: editContactViewModel,
-										isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
-										isShowEditContactFragment: $isShowEditContactFragment,
-										indexPage: $index
-									)
-									.frame(maxWidth: .infinity)
-									.background(Color.gray100)
-									.ignoresSafeArea(.keyboard)
-								}
-								 */
+							if sharedMainViewModel.indexView == 0 && sharedMainViewModel.displayedFriend != nil && contactsListViewModel != nil {
+								ContactFragment(
+									isShowDeletePopup: $isShowDeleteContactPopup,
+									isShowDismissPopup: $isShowDismissPopup,
+									isShowSipAddressesPopup: $isShowSipAddressesPopup,
+									isShowSipAddressesPopupType: $isShowSipAddressesPopupType,
+									isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails
+								)
+								.environmentObject(contactsListViewModel!)
+								.environmentObject(sharedMainViewModel.displayedFriend!)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								.ignoresSafeArea(.keyboard)
+							} else if sharedMainViewModel.indexView == 1 && sharedMainViewModel.displayedCall != nil && historyListViewModel != nil {
+								HistoryContactFragment(
+									isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
+									isShowEditContactFragment: $isShowEditContactFragment,
+									isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
+								)
+								.environmentObject(historyListViewModel!)
+								.environmentObject(sharedMainViewModel.displayedCall!)
+								.frame(maxWidth: .infinity)
+								.background(Color.gray100)
+								.ignoresSafeArea(.keyboard)
 							} else if sharedMainViewModel.indexView == 2 {
 								/*
 								ConversationFragment(

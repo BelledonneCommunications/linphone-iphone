@@ -530,10 +530,10 @@ struct EditContactFragment: View {
 								withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
 							)
 						}
-						
+						let friendIsNil = editContactViewModel.selectedEditFriend?.friend == nil
 						DispatchQueue.main.async {
 							delayColorDismiss()
-							if editContactViewModel.selectedEditFriend?.friend == nil {
+							if friendIsNil {
 								withAnimation {
 									isShowEditContactFragment.toggle()
 								}
@@ -565,11 +565,14 @@ struct EditContactFragment: View {
 							)
 						} else {
 							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							ContactsManager.shared.updateSubscriptionsLinphoneList()
 						}
+						
+						let friendIsNil = editContactViewModel.selectedEditFriend?.friend == nil
 						
 						DispatchQueue.main.async {
 							delayColorDismiss()
-							if editContactViewModel.selectedEditFriend?.friend == nil {
+							if friendIsNil {
 								withAnimation {
 									isShowEditContactFragment.toggle()
 								}

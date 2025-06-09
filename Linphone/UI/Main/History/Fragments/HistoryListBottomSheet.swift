@@ -74,26 +74,22 @@ struct HistoryListBottomSheet: View {
 				
 				sharedMainViewModel.changeIndexView(indexViewInt: 0)
 				
-				if historyListViewModel.selectedCall != nil && historyListViewModel.selectedCall!.addressFriend != nil {
-					let addressCall = historyListViewModel.selectedCall!.address
-					
-					let friendIndex = contactsManager.avatarListModel.first(where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall})})
+				if let selectedCall = historyListViewModel.selectedCall, selectedCall.isFriend {
+					let friendIndex = contactsManager.avatarListModel.first(where: {$0.addresses.contains(where: {$0 == selectedCall.address})})
 					if friendIndex != nil {
 						withAnimation {
 							SharedMainViewModel.shared.displayedFriend = friendIndex
 						}
 					}
-				} else if historyListViewModel.selectedCall != nil {
-					let addressCall = historyListViewModel.selectedCall!.address
-					
+				} else if let selectedCall = historyListViewModel.selectedCall {
 					withAnimation {
 						isShowEditContactFragment.toggle()
-						isShowEditContactFragmentAddress = String(addressCall.dropFirst(4))
+						isShowEditContactFragmentAddress = String(selectedCall.address.dropFirst(4))
 					}
 				}
 			} label: {
 				HStack {
-					if historyListViewModel.selectedCall != nil && historyListViewModel.selectedCall!.addressFriend != nil {
+					if let selectedCall = historyListViewModel.selectedCall, selectedCall.isFriend {
 						Image("user-circle")
 							.renderingMode(.template)
 							.resizable()

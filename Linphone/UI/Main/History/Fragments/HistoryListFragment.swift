@@ -82,8 +82,9 @@ struct HistoryRow: View {
 		HStack {
 			HStack {
 				if !historyModel.isConf {
-					if historyModel.avatarModel != nil {
+					//if historyModel.avatarModel != nil {
 						Avatar(contactAvatarModel: historyModel.avatarModel!, avatarSize: 50)
+					/*
 					} else {
 						if !historyModel.addressName.isEmpty {
 							Image(uiImage: contactsManager.textToImage(
@@ -107,6 +108,7 @@ struct HistoryRow: View {
 							.clipShape(Circle())
 						}
 					}
+					*/
 				} else {
 					VStack {
 						Image("users-three-square")

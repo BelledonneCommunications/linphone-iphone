@@ -350,7 +350,7 @@ struct ConversationInfoFragment: View {
 																		let addressConv = participantConversationModel.address
 																		
 																		let friendIndex = contactsManager.avatarListModel.first(
-																			where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+																			where: {$0.addresses.contains(where: {$0 == addressConv})})
 																		if friendIndex != nil {
 																			withAnimation {
 																				SharedMainViewModel.shared.displayedConversation = nil
@@ -530,7 +530,7 @@ struct ConversationInfoFragment: View {
 															let addressConv = conversationViewModel.participantConversationModel.first?.address ?? ""
 															
 															let friendIndex = contactsManager.avatarListModel.first(
-																where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+																where: {$0.addresses.contains(where: {$0 == addressConv})})
 															if friendIndex != nil {
 																withAnimation {
 																	SharedMainViewModel.shared.displayedConversation = nil

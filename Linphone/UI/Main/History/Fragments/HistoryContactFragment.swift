@@ -29,417 +29,390 @@ struct HistoryContactFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var contactAvatarModel: ContactAvatarModel
-	@ObservedObject var historyListViewModel: HistoryListViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
+	@EnvironmentObject var historyModel: HistoryModel
+	@EnvironmentObject var historyListViewModel: HistoryListViewModel
 	
 	@State var isMenuOpen = false
 	
 	@Binding var isShowDeleteAllHistoryPopup: Bool
 	@Binding var isShowEditContactFragment: Bool
-	@Binding var indexPage: Int
+	@Binding var isShowEditContactFragmentAddress: String
 	
 	var body: some View {
 		NavigationView {
-			if SharedMainViewModel.shared.displayedCall != nil {
-				VStack(spacing: 1) {
-					Rectangle()
-						.foregroundColor(Color.orangeMain500)
-						.edgesIgnoringSafeArea(.top)
-						.frame(height: 0)
-					
-					HStack {
-						if !(orientation == .landscapeLeft || orientation == .landscapeRight
-							 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-							Image("caret-left")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.orangeMain500)
-								.frame(width: 25, height: 25, alignment: .leading)
-								.padding(.all, 10)
-								.padding(.top, 2)
-								.padding(.leading, -10)
-								.onTapGesture {
-									withAnimation {
-										SharedMainViewModel.shared.displayedCall = nil
-									}
-								}
-						}
-						
-						Text("history_title")
-							.default_text_style_orange_800(styleSize: 20)
-						
-						Spacer()
-						
-						Menu {
-							if SharedMainViewModel.shared.displayedCall != nil && !SharedMainViewModel.shared.displayedCall!.isConf {
-								Button {
-									isMenuOpen = false
-									
-									if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.addressFriend != nil {
-										let addressCall = SharedMainViewModel.shared.displayedCall!.addressFriend!.address
-										
-										if addressCall != nil {
-											let friendIndex = contactsManager.avatarListModel.first(
-												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressCall!.asStringUriOnly()})})
-											if friendIndex != nil {
-												withAnimation {
-													SharedMainViewModel.shared.displayedCall = nil
-													indexPage = 0
-													
-													SharedMainViewModel.shared.displayedFriend = friendIndex
-												}
-											}
-										}
-									} else {
-										withAnimation {
-											SharedMainViewModel.shared.displayedCall = nil
-											indexPage = 0
-											
-											isShowEditContactFragment.toggle()
-											editContactViewModel.sipAddresses.removeAll()
-											editContactViewModel.sipAddresses.append(String(SharedMainViewModel.shared.displayedCall?.address.dropFirst(4) ?? ""))
-											editContactViewModel.sipAddresses.append("")
-										}
-									}
-									
-								} label: {
-									HStack {
-										Text(SharedMainViewModel.shared.displayedCall!.addressFriend != nil ? "menu_see_existing_contact" : "menu_add_address_to_contacts")
-										Spacer()
-										Image(SharedMainViewModel.shared.displayedCall!.addressFriend != nil ? "user-circle" : "plus-circle")
-											.resizable()
-											.frame(width: 25, height: 25, alignment: .leading)
-											.padding(.all, 10)
-									}
+			VStack(spacing: 1) {
+				Rectangle()
+					.foregroundColor(Color.orangeMain500)
+					.edgesIgnoringSafeArea(.top)
+					.frame(height: 0)
+				
+				HStack {
+					if !(orientation == .landscapeLeft || orientation == .landscapeRight
+						 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
+						Image("caret-left")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+							.padding(.top, 2)
+							.padding(.leading, -10)
+							.onTapGesture {
+								withAnimation {
+									SharedMainViewModel.shared.displayedCall = nil
 								}
 							}
-							
+					}
+					
+					Text("history_title")
+						.default_text_style_orange_800(styleSize: 20)
+					
+					Spacer()
+					
+					Menu {
+						if !historyModel.isConf {
 							Button {
 								isMenuOpen = false
 								
-								if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.isOutgoing {
-									UIPasteboard.general.setValue(
-										SharedMainViewModel.shared.displayedCall!.address.dropFirst(4),
-										forPasteboardType: UTType.plainText.identifier
-									)
+								SharedMainViewModel.shared.displayedCall = nil
+								SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+								
+								if historyModel.isFriend {
+									let friendIndex = contactsManager.avatarListModel.first(where: {$0.addresses.contains(where: {$0 == historyModel.address})})
+									if friendIndex != nil {
+										withAnimation {
+											SharedMainViewModel.shared.displayedFriend = friendIndex
+										}
+									}
 								} else {
-									UIPasteboard.general.setValue(
-										SharedMainViewModel.shared.displayedCall!.address.dropFirst(4),
-										forPasteboardType: UTType.plainText.identifier
-									)
+									withAnimation {
+										isShowEditContactFragment.toggle()
+										isShowEditContactFragmentAddress = String(historyModel.address.dropFirst(4))
+									}
 								}
-								
-								ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
-								ToastViewModel.shared.displayToast.toggle()
-								
 							} label: {
 								HStack {
-									Text("menu_copy_sip_address")
+									Text(historyModel.isFriend ? "menu_see_existing_contact" : "menu_add_address_to_contacts")
 									Spacer()
-									Image("copy")
+									Image(historyModel.isFriend ? "user-circle" : "plus-circle")
 										.resizable()
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
 								}
+							}
+						}
+						
+						Button {
+							isMenuOpen = false
+							
+							if historyModel.isOutgoing {
+								UIPasteboard.general.setValue(
+									historyModel.address.dropFirst(4),
+									forPasteboardType: UTType.plainText.identifier
+								)
+							} else {
+								UIPasteboard.general.setValue(
+									historyModel.address.dropFirst(4),
+									forPasteboardType: UTType.plainText.identifier
+								)
 							}
 							
-							Button(role: .destructive) {
-								isMenuOpen = false
-								
-								if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.isOutgoing {
-									historyListViewModel.callLogsAddressToDelete = SharedMainViewModel.shared.displayedCall!.address
+							ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
+							ToastViewModel.shared.displayToast.toggle()
+							
+						} label: {
+							HStack {
+								Text("menu_copy_sip_address")
+								Spacer()
+								Image("copy")
+									.resizable()
+									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
+							}
+						}
+						
+						Button(role: .destructive) {
+							isMenuOpen = false
+							historyListViewModel.callLogsAddressToDelete = historyModel.address
+							isShowDeleteAllHistoryPopup.toggle()
+							
+						} label: {
+							HStack {
+								Text("menu_delete_history")
+								Spacer()
+								Image("trash-simple-red")
+									.resizable()
+									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
+							}
+						}
+					} label: {
+						Image("dots-three-vertical")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.orangeMain500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+					}
+					.padding(.leading)
+					.onTapGesture {
+						isMenuOpen = true
+					}
+				}
+				.frame(maxWidth: .infinity)
+				.frame(height: 50)
+				.padding(.horizontal)
+				.padding(.bottom, 4)
+				.background(.white)
+				
+				ScrollView {
+					VStack(spacing: 0) {
+						VStack(spacing: 0) {
+							if #unavailable(iOS 16.0) {
+								Rectangle()
+									.foregroundColor(Color.gray100)
+									.frame(height: 7)
+							}
+							
+							VStack(spacing: 0) {
+								if !historyModel.isConf {
+									if let avatarModel = historyModel.avatarModel {
+										Avatar(contactAvatarModel: avatarModel, avatarSize: 100)
+									}
+									
+									Text(historyModel.addressName)
+										.foregroundStyle(Color.grayMain2c700)
+										.multilineTextAlignment(.center)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity)
+										.padding(.top, 10)
+									
+									Text(historyModel.address)
+										.foregroundStyle(Color.grayMain2c700)
+										.multilineTextAlignment(.center)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity)
+										.padding(.top, 5)
+									
+									if let avatarModel = historyModel.avatarModel {
+										Text(avatarModel.lastPresenceInfo)
+											.foregroundStyle(avatarModel.lastPresenceInfo == "Online" ? Color.greenSuccess500 : Color.orangeWarning600)
+											.multilineTextAlignment(.center)
+											.default_text_style_300(styleSize: 12)
+											.frame(maxWidth: .infinity)
+											.frame(height: 20)
+											.padding(.top, 5)
+									} else {
+										Text("")
+											.multilineTextAlignment(.center)
+											.default_text_style_300(styleSize: 12)
+											.frame(maxWidth: .infinity)
+											.frame(height: 20)
+									}
 								} else {
-									historyListViewModel.callLogsAddressToDelete = SharedMainViewModel.shared.displayedCall!.address
-								}
-								
-								isShowDeleteAllHistoryPopup.toggle()
-								
-							} label: {
-								HStack {
-									Text("menu_delete_history")
-									Spacer()
-									Image("trash-simple-red")
-										.resizable()
-										.frame(width: 25, height: 25, alignment: .leading)
-										.padding(.all, 10)
+									VStack {
+										Image("users-three-square")
+											.renderingMode(.template)
+											.resizable()
+											.frame(width: 60, height: 60)
+											.foregroundStyle(Color.grayMain2c600)
+									}
+									.frame(width: 100, height: 100)
+									.background(Color.grayMain2c200)
+									.clipShape(Circle())
+									
+									Text(historyModel.subject)
+										.foregroundStyle(Color.grayMain2c700)
+										.multilineTextAlignment(.center)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity)
+										.padding(.top, 10)
 								}
 							}
-						} label: {
-							Image("dots-three-vertical")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.orangeMain500)
-								.frame(width: 25, height: 25, alignment: .leading)
-								.padding(.all, 10)
+							.frame(minHeight: 150)
+							.frame(maxWidth: .infinity)
+							.padding(.top, 10)
+							.padding(.bottom, 2)
+							.background(Color.gray100)
+							
+							HStack {
+								Spacer()
+								
+								if !historyModel.isConf {
+									Button(action: {
+										telecomManager.doCallOrJoinConf(address: historyModel.addressLinphone)
+									}, label: {
+										VStack {
+											HStack(alignment: .center) {
+												Image("phone")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+											}
+											.padding(16)
+											.background(Color.grayMain2c200)
+											.cornerRadius(40)
+											
+											Text("contact_call_action")
+												.default_text_style(styleSize: 14)
+												.frame(minWidth: 80)
+										}
+									})
+									
+									Spacer()
+									
+									Button(action: {
+										//contactsListViewModel.createOneToOneChatRoomWith(remote: historyModel.addressLinphone)
+									}, label: {
+										VStack {
+											HStack(alignment: .center) {
+												Image("chat-teardrop-text")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+											}
+											.padding(16)
+											.background(Color.grayMain2c200)
+											.cornerRadius(40)
+											
+											Text("contact_message_action")
+												.default_text_style(styleSize: 14)
+												.frame(minWidth: 80)
+										}
+									})
+									
+									Spacer()
+									
+									Button(action: {
+										telecomManager.doCallOrJoinConf(address: historyModel.addressLinphone, isVideo: true)
+									}, label: {
+										VStack {
+											HStack(alignment: .center) {
+												Image("video-camera")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+											}
+											.padding(16)
+											.background(Color.grayMain2c200)
+											.cornerRadius(40)
+											
+											Text("contact_video_call_action")
+												.default_text_style(styleSize: 14)
+												.frame(minWidth: 80)
+										}
+									})
+								} else {
+									Button(action: {
+										withAnimation {
+											if historyModel.address.hasPrefix("sip:conference-focus@sip.linphone.org") {
+												do {
+													let meetingAddress = try Factory.Instance.createAddress(addr: historyModel.address)
+													
+													telecomManager.meetingWaitingRoomDisplayed = true
+													telecomManager.meetingWaitingRoomSelected = meetingAddress
+												} catch {}
+											} else {
+												telecomManager.doCallOrJoinConf(address: historyModel.addressLinphone)
+											}
+										}
+									}, label: {
+										VStack {
+											HStack(alignment: .center) {
+												Image("users-three-square")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+											}
+											.padding(16)
+											.background(Color.grayMain2c200)
+											.cornerRadius(40)
+											
+											Text("meeting_waiting_room_join")
+												.default_text_style(styleSize: 14)
+												.frame(minWidth: 80)
+										}
+									})
+								}
+								
+								Spacer()
+							}
+							.padding(.top, 20)
+							.padding(.bottom, 10)
+							.frame(maxWidth: .infinity)
+							.background(Color.gray100)
+							
+							VStack(spacing: 0) {
+								let callLogsFilter = historyListViewModel.callLogs.filter({ $0.address == historyModel.address })
+								
+								ForEach(0..<callLogsFilter.count, id: \.self) { index in
+									HStack {
+										VStack {
+											Image(historyListViewModel.getCallIconResId(callStatus: callLogsFilter[index].status, isOutgoing: callLogsFilter[index].isOutgoing))
+												.resizable()
+												.frame(
+													width: historyListViewModel.getCallIconResId(
+														callStatus: callLogsFilter[index].status,
+														isOutgoing: callLogsFilter[index].isOutgoing
+													).contains("rejected") ? 12 : 8,
+													height: historyListViewModel.getCallIconResId(
+														callStatus: callLogsFilter[index].status,
+														isOutgoing: callLogsFilter[index].isOutgoing
+													).contains("rejected") ? 6 : 8)
+												.padding(.top, 6)
+											
+											Spacer()
+										}
+										
+										VStack {
+											Text(historyListViewModel.getCallText(
+												callStatus: callLogsFilter[index].status,
+												isOutgoing: callLogsFilter[index].isOutgoing)
+											)
+											.default_text_style(styleSize: 14)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											
+											Text(historyListViewModel.getCallTime(startDate: callLogsFilter[index].startDate))
+												.foregroundStyle(
+													callLogsFilter[index].status != .Success
+													? Color.redDanger500
+													: Color.grayMain2c600
+												)
+												.default_text_style_300(styleSize: 12)
+												.frame(maxWidth: .infinity, alignment: .leading)
+										}
+										
+										VStack {
+											Spacer()
+											Text(callLogsFilter[index].duration.convertDurationToString())
+												.default_text_style_300(styleSize: 12)
+											Spacer()
+										}
+									}
+									.padding(.vertical, 15)
+									.padding(.horizontal, 20)
+									.frame(maxHeight: 65)
+								}
+							}
+							.background(.white)
+							.cornerRadius(15)
+							.padding(.all)
 						}
-						.padding(.leading)
-						.onTapGesture {
-							isMenuOpen = true
-						}
+						.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 					}
 					.frame(maxWidth: .infinity)
-					.frame(height: 50)
-					.padding(.horizontal)
-					.padding(.bottom, 4)
-					.background(.white)
-					
-					ScrollView {
-						VStack(spacing: 0) {
-							VStack(spacing: 0) {
-								if #unavailable(iOS 16.0) {
-									Rectangle()
-										.foregroundColor(Color.gray100)
-										.frame(height: 7)
-								}
-								
-								VStack(spacing: 0) {
-									if SharedMainViewModel.shared.displayedCall != nil && !SharedMainViewModel.shared.displayedCall!.isConf {
-										if SharedMainViewModel.shared.displayedCall!.avatarModel != nil {
-											Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedCall!.avatarModel!, avatarSize: 100)
-										}
-										
-										Text(SharedMainViewModel.shared.displayedCall!.addressName)
-											.foregroundStyle(Color.grayMain2c700)
-											.multilineTextAlignment(.center)
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity)
-											.padding(.top, 10)
-										
-										Text(SharedMainViewModel.shared.displayedCall!.address)
-											.foregroundStyle(Color.grayMain2c700)
-											.multilineTextAlignment(.center)
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity)
-											.padding(.top, 5)
-										
-										if SharedMainViewModel.shared.displayedCall!.avatarModel != nil {
-											Text(contactAvatarModel.lastPresenceInfo)
-												.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
-																 ? Color.greenSuccess500
-																 : Color.orangeWarning600)
-												.multilineTextAlignment(.center)
-												.default_text_style_300(styleSize: 12)
-												.frame(maxWidth: .infinity)
-												.frame(height: 20)
-												.padding(.top, 5)
-										} else {
-											Text("")
-												.multilineTextAlignment(.center)
-												.default_text_style_300(styleSize: 12)
-												.frame(maxWidth: .infinity)
-												.frame(height: 20)
-										}
-									} else {
-										VStack {
-											Image("users-three-square")
-												.renderingMode(.template)
-												.resizable()
-												.frame(width: 60, height: 60)
-												.foregroundStyle(Color.grayMain2c600)
-										}
-										.frame(width: 100, height: 100)
-										.background(Color.grayMain2c200)
-										.clipShape(Circle())
-										
-										Text(SharedMainViewModel.shared.displayedCall!.subject)
-											.foregroundStyle(Color.grayMain2c700)
-											.multilineTextAlignment(.center)
-											.default_text_style(styleSize: 14)
-											.frame(maxWidth: .infinity)
-											.padding(.top, 10)
-									}
-								}
-								.frame(minHeight: 150)
-								.frame(maxWidth: .infinity)
-								.padding(.top, 10)
-								.padding(.bottom, 2)
-								.background(Color.gray100)
-								
-								HStack {
-									Spacer()
-									
-									if SharedMainViewModel.shared.displayedCall != nil && !SharedMainViewModel.shared.displayedCall!.isConf {
-										Button(action: {
-											telecomManager.doCallOrJoinConf(address: SharedMainViewModel.shared.displayedCall!.addressLinphone)
-										}, label: {
-											VStack {
-												HStack(alignment: .center) {
-													Image("phone")
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
-														.frame(width: 25, height: 25)
-												}
-												.padding(16)
-												.background(Color.grayMain2c200)
-												.cornerRadius(40)
-												
-												Text("contact_call_action")
-													.default_text_style(styleSize: 14)
-													.frame(minWidth: 80)
-											}
-										})
-										
-										Spacer()
-										
-										Button(action: {
-											contactsListViewModel.createOneToOneChatRoomWith(remote: SharedMainViewModel.shared.displayedCall!.addressLinphone)
-										}, label: {
-											VStack {
-												HStack(alignment: .center) {
-													Image("chat-teardrop-text")
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
-														.frame(width: 25, height: 25)
-												}
-												.padding(16)
-												.background(Color.grayMain2c200)
-												.cornerRadius(40)
-												
-												Text("contact_message_action")
-													.default_text_style(styleSize: 14)
-													.frame(minWidth: 80)
-											}
-										})
-										
-										Spacer()
-										
-										Button(action: {
-											telecomManager.doCallOrJoinConf(address: SharedMainViewModel.shared.displayedCall!.addressLinphone, isVideo: true)
-										}, label: {
-											VStack {
-												HStack(alignment: .center) {
-													Image("video-camera")
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
-														.frame(width: 25, height: 25)
-												}
-												.padding(16)
-												.background(Color.grayMain2c200)
-												.cornerRadius(40)
-												
-												Text("contact_video_call_action")
-													.default_text_style(styleSize: 14)
-													.frame(minWidth: 80)
-											}
-										})
-									} else {
-										Button(action: {
-											withAnimation {
-												if SharedMainViewModel.shared.displayedCall != nil && SharedMainViewModel.shared.displayedCall!.address.hasPrefix("sip:conference-focus@sip.linphone.org") {
-													do {
-														let meetingAddress = try Factory.Instance.createAddress(addr: SharedMainViewModel.shared.displayedCall!.address)
-														
-														telecomManager.meetingWaitingRoomDisplayed = true
-														telecomManager.meetingWaitingRoomSelected = meetingAddress
-													} catch {}
-												} else {
-													telecomManager.doCallOrJoinConf(address: SharedMainViewModel.shared.displayedCall!.addressLinphone)
-												}
-											}
-										}, label: {
-											VStack {
-												HStack(alignment: .center) {
-													Image("users-three-square")
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
-														.frame(width: 25, height: 25)
-												}
-												.padding(16)
-												.background(Color.grayMain2c200)
-												.cornerRadius(40)
-												
-												Text("meeting_waiting_room_join")
-													.default_text_style(styleSize: 14)
-													.frame(minWidth: 80)
-											}
-										})
-									}
-									
-									Spacer()
-								}
-								.padding(.top, 20)
-								.padding(.bottom, 10)
-								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
-								
-								VStack(spacing: 0) {
-									
-									let addressFriend = SharedMainViewModel.shared.displayedCall != nil
-									? SharedMainViewModel.shared.displayedCall!.address : nil
-									
-									let callLogsFilter = historyListViewModel.callLogs.filter({ $0.address == addressFriend})
-									
-									ForEach(0..<callLogsFilter.count, id: \.self) { index in
-										HStack {
-											VStack {
-												Image(historyListViewModel.getCallIconResId(callStatus: callLogsFilter[index].status, isOutgoing: callLogsFilter[index].isOutgoing))
-													.resizable()
-													.frame(
-														width: historyListViewModel.getCallIconResId(
-															callStatus: callLogsFilter[index].status,
-															isOutgoing: callLogsFilter[index].isOutgoing
-														).contains("rejected") ? 12 : 8,
-														height: historyListViewModel.getCallIconResId(
-															callStatus: callLogsFilter[index].status,
-															isOutgoing: callLogsFilter[index].isOutgoing
-														).contains("rejected") ? 6 : 8)
-													.padding(.top, 6)
-												
-												Spacer()
-											}
-											
-											VStack {
-												Text(historyListViewModel.getCallText(
-													callStatus: callLogsFilter[index].status,
-													isOutgoing: callLogsFilter[index].isOutgoing)
-												)
-												.default_text_style(styleSize: 14)
-												.frame(maxWidth: .infinity, alignment: .leading)
-												
-												Text(historyListViewModel.getCallTime(startDate: callLogsFilter[index].startDate))
-													.foregroundStyle(
-														callLogsFilter[index].status != .Success
-														? Color.redDanger500
-														: Color.grayMain2c600
-													)
-													.default_text_style_300(styleSize: 12)
-													.frame(maxWidth: .infinity, alignment: .leading)
-											}
-											
-											VStack {
-												Spacer()
-												Text(callLogsFilter[index].duration.convertDurationToString())
-													.default_text_style_300(styleSize: 12)
-												Spacer()
-											}
-										}
-										.padding(.vertical, 15)
-										.padding(.horizontal, 20)
-										.frame(maxHeight: 65)
-									}
-								}
-								.background(.white)
-								.cornerRadius(15)
-								.padding(.all)
-							}
-							.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
-						}
-						.frame(maxWidth: .infinity)
-						.padding(.top, 2)
-					}
-					.background(Color.gray100)
+					.padding(.top, 2)
 				}
-				.background(.white)
-				.navigationBarHidden(true)
-				.onRotate { newOrientation in
-					orientation = newOrientation
-				}
+				.background(Color.gray100)
+			}
+			.background(.white)
+			.navigationBarHidden(true)
+			.onRotate { newOrientation in
+				orientation = newOrientation
 			}
 		}
 		.navigationViewStyle(.stack)
@@ -448,13 +421,9 @@ struct HistoryContactFragment: View {
 
 #Preview {
 	HistoryContactFragment(
-		contactAvatarModel: ContactAvatarModel(friend: nil, name: "", address: "", withPresence: false),
-		historyListViewModel: HistoryListViewModel(),
-		contactsListViewModel: ContactsListViewModel(),
-		editContactViewModel: EditContactViewModel(),
 		isShowDeleteAllHistoryPopup: .constant(false),
 		isShowEditContactFragment: .constant(false),
-		indexPage: .constant(1)
+		isShowEditContactFragmentAddress: .constant("")
 	)
 }
 // swiftlint:enable type_body_length

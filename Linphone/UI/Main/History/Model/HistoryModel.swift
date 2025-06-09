@@ -40,7 +40,7 @@ class HistoryModel: ObservableObject, Identifiable {
 	@Published var status: Call.Status
 	@Published var startDate: time_t
 	@Published var duration: Int
-	@Published var addressFriend: Friend?
+	@Published var isFriend: Bool = false
 	@Published var avatarModel: ContactAvatarModel?
 	
 	init(callLog: CallLog) {
@@ -126,12 +126,20 @@ class HistoryModel: ObservableObject, Identifiable {
 			
 			let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
 				guard let friend = $0.friend else { return false }
-				return friend.name == addressFriendTmp.name && friend.address?.asStringUriOnly() == addressFriendTmp.address?.asStringUriOnly()
-			}) ?? ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+				return friend.name == addressFriendTmp.name &&
+					   friend.address?.asStringUriOnly() == addressFriendTmp.address?.asStringUriOnly()
+			}) ?? ContactAvatarModel(
+				friend: nil,
+				name: self.addressName,
+				address: self.address,
+				withPresence: false
+			)
+			
+			let addressFriendNameTmp = addressFriendTmp.name ?? addressNameTmp
 			
 			DispatchQueue.main.async {
-				self.addressFriend = addressFriendTmp
-				self.addressName = addressFriendTmp.name ?? addressNameTmp
+				self.isFriend = true
+				self.addressName = addressFriendNameTmp
 				self.avatarModel = avatarModelTmp
 			}
 		} else {
