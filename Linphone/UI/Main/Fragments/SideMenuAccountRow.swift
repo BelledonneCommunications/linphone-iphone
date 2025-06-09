@@ -25,7 +25,7 @@ struct SideMenuAccountRow: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
 	@ObservedObject var model: AccountModel
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+	@EnvironmentObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State private var navigateToOption = false
 	@Binding var isOpen: Bool

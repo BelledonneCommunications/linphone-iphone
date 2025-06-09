@@ -24,9 +24,9 @@ import UniformTypeIdentifiers
 struct AccountProfileFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
 	
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
-	@ObservedObject var registerViewModel: RegisterViewModel
+	@EnvironmentObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@Binding var isShowAccountProfileFragment: Bool
 	@State var detailIsOpen: Bool = true
@@ -340,7 +340,7 @@ struct AccountProfileFragment: View {
 														}
 														Menu {
 															Picker("", selection: $accountProfileViewModel.dialPlanValueSelected) {
-																ForEach(registerViewModel.dialPlansLabelList, id: \.self) { dialPlan in
+																ForEach(sharedMainViewModel.dialPlansLabelList, id: \.self) { dialPlan in
 																	Text(dialPlan).tag(dialPlan)
 																}
 															}

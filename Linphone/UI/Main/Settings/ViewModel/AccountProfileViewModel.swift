@@ -30,7 +30,9 @@ class AccountProfileViewModel: ObservableObject {
 	
 	var accountModelIndex: Int? = 0
 	
-	init() {}
+	init() {
+		SharedMainViewModel.shared.getDialPlansList()
+	}
 	
 	func saveChangesWhenLeaving() {
 		if accountModelIndex != nil {
@@ -95,14 +97,16 @@ class AccountProfileViewModel: ObservableObject {
 				
 				let accountDisplayName = CoreContext.shared.accounts[self.accountModelIndex!].account.displayName()
 				
-				CoreContext.shared.accounts[self.accountModelIndex!].avatarModel = ContactAvatarModel(
-					friend: nil,
-					name: displayNameTmp.isEmpty ? accountDisplayName : displayNameTmp,
-					address: contactAddressTmp,
-					withPresence: false
-				)
-				
-				self.dialPlanValueSelected = dialPlanValueSelectedTmp
+				DispatchQueue.main.async {
+					CoreContext.shared.accounts[self.accountModelIndex!].avatarModel = ContactAvatarModel(
+						friend: nil,
+						name: displayNameTmp.isEmpty ? accountDisplayName : displayNameTmp,
+						address: contactAddressTmp,
+						withPresence: false
+					)
+					
+					self.dialPlanValueSelected = dialPlanValueSelectedTmp
+				}
 			}
 		}
 	}

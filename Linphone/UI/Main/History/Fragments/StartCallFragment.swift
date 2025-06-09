@@ -22,13 +22,15 @@ import linphonesw
 
 // swiftlint:disable type_body_length
 struct StartCallFragment: View {
+	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var callViewModel: CallViewModel
-	@ObservedObject var startCallViewModel: StartCallViewModel
+	@EnvironmentObject var callViewModel: CallViewModel
+	
+	@StateObject private var startCallViewModel = StartCallViewModel()
 	
 	@Binding var isShowStartCallFragment: Bool
 	@Binding var showingDialer: Bool
@@ -42,25 +44,215 @@ struct StartCallFragment: View {
 	
 	var body: some View {
 		NavigationView {
-			ZStack {
-				VStack(spacing: 1) {
+			if #available(iOS 16.4, *), idiom != .pad {
+				startCall
+					.sheet(isPresented: $showingDialer) {
+						DialerBottomSheet(
+							startCallViewModel: startCallViewModel,
+							callViewModel: callViewModel,
+							isShowStartCallFragment: $isShowStartCallFragment,
+							showingDialer: $showingDialer,
+							currentCall: nil
+						)
+						.presentationDetents([.medium])
+						.presentationBackgroundInteraction(.enabled(upThrough: .medium))
+					}
+			} else {
+				startCall
+					.halfSheet(showSheet: $showingDialer) {
+						DialerBottomSheet(
+							startCallViewModel: startCallViewModel,
+							callViewModel: callViewModel,
+							isShowStartCallFragment: $isShowStartCallFragment,
+							showingDialer: $showingDialer,
+							currentCall: nil
+						)
+					} onDismiss: {}
+			}
+		}
+		.navigationViewStyle(StackNavigationViewStyle())
+	}
+	
+	var startCall: some View {
+		ZStack {
+			VStack(spacing: 1) {
+				
+				Rectangle()
+					.foregroundColor(delayedColor)
+					.edgesIgnoringSafeArea(.top)
+					.frame(height: 0)
+					.task(delayColor)
+				
+				HStack {
+					Image("caret-left")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundStyle(Color.orangeMain500)
+						.frame(width: 25, height: 25, alignment: .leading)
+						.padding(.all, 10)
+						.padding(.top, 2)
+						.padding(.leading, -10)
+						.onTapGesture {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+								magicSearch.searchForContacts(
+									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+								
+								if callViewModel.isTransferInsteadCall == true {
+									callViewModel.isTransferInsteadCall = false
+								}
+								
+								resetCallView()
+							}
+							
+							startCallViewModel.searchField = ""
+							magicSearch.currentFilterSuggestions = ""
+							delayColorDismiss()
+							withAnimation {
+								isShowStartCallFragment.toggle()
+							}
+						}
 					
-					Rectangle()
-						.foregroundColor(delayedColor)
-						.edgesIgnoringSafeArea(.top)
-						.frame(height: 0)
-						.task(delayColor)
+					Text(!callViewModel.isTransferInsteadCall ? "history_call_start_title" : "call_transfer_current_call_title")
+						.multilineTextAlignment(.leading)
+						.default_text_style_orange_800(styleSize: 16)
 					
-					HStack {
-						Image("caret-left")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.orangeMain500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.padding(.all, 10)
-							.padding(.top, 2)
-							.padding(.leading, -10)
-							.onTapGesture {
+					Spacer()
+					
+				}
+				.frame(maxWidth: .infinity)
+				.frame(height: 50)
+				.padding(.horizontal)
+				.padding(.bottom, 4)
+				.background(.white)
+				
+				VStack(spacing: 0) {
+					ZStack(alignment: .trailing) {
+						TextField("history_call_start_search_bar_filter_hint", text: $startCallViewModel.searchField)
+							.default_text_style(styleSize: 15)
+							.frame(height: 25)
+							.focused($isSearchFieldFocused)
+							.padding(.horizontal, 30)
+							.onChange(of: startCallViewModel.searchField) { newValue in
+								magicSearch.currentFilterSuggestions = newValue
+								magicSearch.searchForSuggestions()
+							}
+							.simultaneousGesture(TapGesture().onEnded {
+								showingDialer = false
+							})
+						
+						HStack {
+							Button(action: {
+							}, label: {
+								Image("magnifying-glass")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c500)
+									.frame(width: 25, height: 25)
+							})
+							
+							Spacer()
+							
+							if startCallViewModel.searchField.isEmpty {
+								Button(action: {
+									if !showingDialer {
+										isSearchFieldFocused = false
+										
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+											showingDialer = true
+										}
+									} else {
+										showingDialer = false
+										
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+											isSearchFieldFocused = true
+										}
+									}
+								}, label: {
+									Image(!showingDialer ? "dialer" : "keyboard")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 25, height: 25)
+								})
+							} else {
+								Button(action: {
+									startCallViewModel.searchField = ""
+									magicSearch.currentFilterSuggestions = ""
+									magicSearch.searchForSuggestions()
+								}, label: {
+									Image("x")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 25, height: 25)
+								})
+							}
+						}
+					}
+					.padding(.horizontal, 15)
+					.padding(.vertical, 10)
+					.cornerRadius(60)
+					.overlay(
+						RoundedRectangle(cornerRadius: 60)
+							.inset(by: 0.5)
+							.stroke(isSearchFieldFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+					)
+					.padding(.vertical)
+					.padding(.horizontal)
+					
+					NavigationLink(destination: {
+						StartGroupCallFragment(startCallViewModel: startCallViewModel)
+					}, label: {
+						HStack {
+							HStack(alignment: .center) {
+								Image("meetings")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 20, height: 20, alignment: .leading)
+							}
+							.padding(16)
+							.background(Color.orangeMain500)
+							.cornerRadius(40)
+							
+							Text("history_call_start_create_group_call")
+								.foregroundStyle(.black)
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+							
+							Image("caret-right")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 25, height: 25, alignment: .leading)
+						}
+					})
+					.padding(.vertical, 10)
+					.padding(.horizontal, 20)
+					.background(
+						LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
+							.padding(.vertical, 10)
+							.padding(.horizontal, 40)
+					)
+					
+					ScrollView {
+						if !ContactsManager.shared.lastSearch.isEmpty {
+							HStack(alignment: .center) {
+								Text("contacts_list_all_contacts_title")
+									.default_text_style_800(styleSize: 16)
+								
+								Spacer()
+							}
+							.padding(.vertical, 10)
+							.padding(.horizontal, 16)
+						}
+						
+						ContactsListFragment(showingSheet: .constant(false)
+											 , startCallFunc: { addr in
+							if callViewModel.isTransferInsteadCall {
+								showingDialer = false
+								
 								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 									magicSearch.searchForContacts(
 										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
@@ -75,237 +267,75 @@ struct StartCallFragment: View {
 								startCallViewModel.searchField = ""
 								magicSearch.currentFilterSuggestions = ""
 								delayColorDismiss()
+								
 								withAnimation {
 									isShowStartCallFragment.toggle()
+									callViewModel.blindTransferCallTo(toAddress: addr)
+								}
+							} else {
+								showingDialer = false
+								
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+									magicSearch.searchForContacts(
+										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+									
+									if callViewModel.isTransferInsteadCall == true {
+										callViewModel.isTransferInsteadCall = false
+									}
+									
+									resetCallView()
+								}
+								
+								startCallViewModel.searchField = ""
+								magicSearch.currentFilterSuggestions = ""
+								delayColorDismiss()
+								
+								withAnimation {
+									isShowStartCallFragment.toggle()
+									telecomManager.doCallOrJoinConf(address: addr)
 								}
 							}
+						})
+						.padding(.horizontal, 16)
 						
-						Text(!callViewModel.isTransferInsteadCall ? "history_call_start_title" : "call_transfer_current_call_title")
-							.multilineTextAlignment(.leading)
-							.default_text_style_orange_800(styleSize: 16)
-						
-						Spacer()
-						
-					}
-					.frame(maxWidth: .infinity)
-					.frame(height: 50)
-					.padding(.horizontal)
-					.padding(.bottom, 4)
-					.background(.white)
-					
-					VStack(spacing: 0) {
-						ZStack(alignment: .trailing) {
-							TextField("history_call_start_search_bar_filter_hint", text: $startCallViewModel.searchField)
-								.default_text_style(styleSize: 15)
-								.frame(height: 25)
-								.focused($isSearchFieldFocused)
-								.padding(.horizontal, 30)
-								.onChange(of: startCallViewModel.searchField) { newValue in
-									magicSearch.currentFilterSuggestions = newValue
-									magicSearch.searchForSuggestions()
-								}
-								.simultaneousGesture(TapGesture().onEnded {
-									showingDialer = false
-								})
-							
-							HStack {
-								Button(action: {
-								}, label: {
-									Image("magnifying-glass")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
-										.frame(width: 25, height: 25)
-								})
-								
-								Spacer()
-								
-								if startCallViewModel.searchField.isEmpty {
-									Button(action: {
-										if !showingDialer {
-											isSearchFieldFocused = false
-											
-											DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-												showingDialer = true
-											}
-										} else {
-											showingDialer = false
-											
-											DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-												isSearchFieldFocused = true
-											}
-										}
-									}, label: {
-										Image(!showingDialer ? "dialer" : "keyboard")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
-											.frame(width: 25, height: 25)
-									})
-								} else {
-									Button(action: {
-										startCallViewModel.searchField = ""
-										magicSearch.currentFilterSuggestions = ""
-										magicSearch.searchForSuggestions()
-									}, label: {
-										Image("x")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
-											.frame(width: 25, height: 25)
-									})
-								}
-							}
-						}
-						.padding(.horizontal, 15)
-						.padding(.vertical, 10)
-						.cornerRadius(60)
-						.overlay(
-							RoundedRectangle(cornerRadius: 60)
-								.inset(by: 0.5)
-								.stroke(isSearchFieldFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-						)
-						.padding(.vertical)
-						.padding(.horizontal)
-						
-						NavigationLink(destination: {
-							StartGroupCallFragment(startCallViewModel: startCallViewModel)
-						}, label: {
-							HStack {
-								HStack(alignment: .center) {
-									Image("meetings")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 20, height: 20, alignment: .leading)
-								}
-								.padding(16)
-								.background(Color.orangeMain500)
-								.cornerRadius(40)
-								
-								Text("history_call_start_create_group_call")
-									.foregroundStyle(.black)
+						if !contactsManager.lastSearchSuggestions.isEmpty {
+							HStack(alignment: .center) {
+								Text("generic_address_picker_suggestions_list_title")
 									.default_text_style_800(styleSize: 16)
 								
 								Spacer()
-								
-								Image("caret-right")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 25, height: 25, alignment: .leading)
 							}
-						})
-						.padding(.vertical, 10)
-						.padding(.horizontal, 20)
-						.background(
-							LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
-								.padding(.vertical, 10)
-								.padding(.horizontal, 40)
-						)
-						
-						ScrollView {
-							if !ContactsManager.shared.lastSearch.isEmpty {
-								HStack(alignment: .center) {
-									Text("contacts_list_all_contacts_title")
-										.default_text_style_800(styleSize: 16)
-									
-									Spacer()
-								}
-								.padding(.vertical, 10)
-								.padding(.horizontal, 16)
-							}
-							
-							ContactsListFragment(showingSheet: .constant(false)
-												 , startCallFunc: { addr in
-								if callViewModel.isTransferInsteadCall {
-									showingDialer = false
-									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										
-										if callViewModel.isTransferInsteadCall == true {
-											callViewModel.isTransferInsteadCall = false
-										}
-										
-										resetCallView()
-									}
-									
-									startCallViewModel.searchField = ""
-									magicSearch.currentFilterSuggestions = ""
-									delayColorDismiss()
-									
-									withAnimation {
-										isShowStartCallFragment.toggle()
-										callViewModel.blindTransferCallTo(toAddress: addr)
-									}
-								} else {
-									showingDialer = false
-									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										
-										if callViewModel.isTransferInsteadCall == true {
-											callViewModel.isTransferInsteadCall = false
-										}
-										
-										resetCallView()
-									}
-									
-									startCallViewModel.searchField = ""
-									magicSearch.currentFilterSuggestions = ""
-									delayColorDismiss()
-									
-									withAnimation {
-										isShowStartCallFragment.toggle()
-										telecomManager.doCallOrJoinConf(address: addr)
-									}
-								}
-							})
+							.padding(.vertical, 10)
 							.padding(.horizontal, 16)
 							
-							if !contactsManager.lastSearchSuggestions.isEmpty {
-								HStack(alignment: .center) {
-									Text("generic_address_picker_suggestions_list_title")
-										.default_text_style_800(styleSize: 16)
-									
-									Spacer()
-								}
-								.padding(.vertical, 10)
-								.padding(.horizontal, 16)
-								
-								suggestionsList
-							}
+							suggestionsList
 						}
 					}
-					.frame(maxWidth: .infinity)
 				}
-				.background(.white)
-				
-				if !startCallViewModel.participants.isEmpty {
-					startCallPopup
-						.background(.black.opacity(0.65))
-						.onAppear {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-								isMessageTextFocused = true
-							}
-						}
-				}
-				
-				if startCallViewModel.operationInProgress {
-					PopupLoadingView()
-						.background(.black.opacity(0.65))
-						.onDisappear {
-							isShowStartCallFragment.toggle()
-						}
-				}
+				.frame(maxWidth: .infinity)
 			}
-			.navigationTitle("")
-			.navigationBarHidden(true)
+			.background(.white)
+			
+			if !startCallViewModel.participants.isEmpty {
+				startCallPopup
+					.background(.black.opacity(0.65))
+					.onAppear {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+							isMessageTextFocused = true
+						}
+					}
+			}
+			
+			if startCallViewModel.operationInProgress {
+				PopupLoadingView()
+					.background(.black.opacity(0.65))
+					.onDisappear {
+						isShowStartCallFragment.toggle()
+					}
+			}
 		}
-		.navigationViewStyle(StackNavigationViewStyle())
+		.navigationTitle("")
+		.navigationBarHidden(true)
 	}
 	
 	@Sendable private func delayColor() async {
@@ -501,8 +531,6 @@ struct StartCallFragment: View {
 
 #Preview {
 	StartCallFragment(
-		callViewModel: CallViewModel(),
-		startCallViewModel: StartCallViewModel(),
 		isShowStartCallFragment: .constant(true),
 		showingDialer: .constant(false),
 		resetCallView: {}

@@ -23,7 +23,7 @@ import UniformTypeIdentifiers
 
 struct SideMenu: View {
 	
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+	@EnvironmentObject var accountProfileViewModel: AccountProfileViewModel
 	
 	let width: CGFloat
 	@Binding var isOpen: Bool
@@ -71,7 +71,7 @@ struct SideMenu: View {
 					
 					List {
 						ForEach(0..<CoreContext.shared.accounts.count, id: \.self) { index in
-							SideMenuAccountRow(	model: CoreContext.shared.accounts[index], accountProfileViewModel: accountProfileViewModel, isOpen: $isOpen, isShowAccountProfileFragment: $isShowAccountProfileFragment)
+							SideMenuAccountRow(model: CoreContext.shared.accounts[index], isOpen: $isOpen, isShowAccountProfileFragment: $isShowAccountProfileFragment)
 							.background()
 							.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
 							.listRowSeparator(.hidden)
@@ -178,7 +178,6 @@ struct SideMenu: View {
 	GeometryReader { geometry in
 		@State var triggerNavigateToLogin: Bool = false
 		SideMenu(
-			accountProfileViewModel: AccountProfileViewModel(),
 			width: geometry.size.width / 5 * 4,
 			isOpen: .constant(true),
 			menuClose: {},

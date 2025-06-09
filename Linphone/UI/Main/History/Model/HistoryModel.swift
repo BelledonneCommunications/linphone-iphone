@@ -69,13 +69,14 @@ class HistoryModel: ObservableObject, Identifiable {
 		coreContext.doOnCoreQueue { _ in
 			let callLogTmp = callLog
 			let idTmp = callLog.callId ?? ""
-			let subjectTmp = callLog.conferenceInfo != nil && callLog.conferenceInfo!.subject != nil ? callLog.conferenceInfo!.subject! : ""
-			let isConfTmp = callLog.conferenceInfo != nil
+			let confInfoTmp = callLog.conferenceInfo
+			let subjectTmp = confInfoTmp != nil && confInfoTmp!.subject != nil ? confInfoTmp!.subject! : ""
+			let isConfTmp = confInfoTmp != nil
 			
 			let addressLinphoneTmp = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
 			
-			let addressNameTmp = callLog.conferenceInfo != nil && callLog.conferenceInfo!.subject != nil
-			? callLog.conferenceInfo!.subject!
+			let addressNameTmp = confInfoTmp != nil && confInfoTmp!.subject != nil
+			? confInfoTmp!.subject!
 			: (addressLinphoneTmp.username != nil ? addressLinphoneTmp.username ?? "" : addressLinphoneTmp.displayName ?? "")
 			
 			let addressTmp = addressLinphoneTmp.asStringUriOnly()

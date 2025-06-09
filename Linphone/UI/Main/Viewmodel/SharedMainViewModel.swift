@@ -35,6 +35,11 @@ class SharedMainViewModel: ObservableObject {
 	@Published var displayedConversation: ConversationModel?
 	@Published var displayedMeeting: MeetingModel?
 	
+	
+	@Published var dialPlansList: [DialPlan] = []
+	@Published var dialPlansLabelList: [String] = []
+	@Published var dialPlansShortLabelList: [String] = []
+	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
 	let displayProfileModeKey = "display_profile_mode"
@@ -119,5 +124,30 @@ class SharedMainViewModel: ObservableObject {
 		
 		indexView = indexViewInt
 		preferences.set(indexView, forKey: indexViewKey)
+	}
+	
+	func getDialPlansList() {
+		CoreContext.shared.doOnCoreQueue { _ in
+			let dialPlans = Factory.Instance.dialPlans
+			var dialPlansListTmp: [DialPlan] = []
+			var dialPlansLabelListTmp: [String] = []
+			var dialPlansShortLabelListTmp: [String] = []
+			
+			dialPlans.forEach { dialPlan in
+				dialPlansListTmp.append(dialPlan)
+				dialPlansLabelListTmp.append(
+					"\(dialPlan.flag) \(dialPlan.country) | +\(dialPlan.countryCallingCode)"
+				)
+				dialPlansShortLabelListTmp.append(
+					"\(dialPlan.flag) +\(dialPlan.countryCallingCode)"
+				)
+			}
+			
+			DispatchQueue.main.async {
+				self.dialPlansList = dialPlansListTmp
+				self.dialPlansLabelList = dialPlansLabelListTmp
+				self.dialPlansShortLabelList = dialPlansShortLabelListTmp
+			}
+		}
 	}
 }

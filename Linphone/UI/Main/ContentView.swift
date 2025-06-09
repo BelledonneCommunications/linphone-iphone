@@ -25,7 +25,6 @@ import linphonesw
 struct ContentView: View {
 	
 	@Environment(\.scenePhase) var scenePhase
-	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@EnvironmentObject var navigationManager: NavigationManager
 	
@@ -35,13 +34,13 @@ struct ContentView: View {
 	@ObservedObject private var magicSearch = MagicSearchSingleton.shared
 	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
+	@StateObject private var callViewModel = CallViewModel()
+	@StateObject private var accountProfileViewModel = AccountProfileViewModel()
+	
 	@State private var contactsListViewModel: ContactsListViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	
-	//@ObservedObject var startCallViewModel: StartCallViewModel
 	//@ObservedObject var startConversationViewModel: StartConversationViewModel
-	
-	//@ObservedObject var callViewModel: CallViewModel
 	
 	//@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
 	
@@ -53,7 +52,6 @@ struct ContentView: View {
 	
 	//@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
-	//@ObservedObject var accountProfileViewModel: AccountProfileViewModel
 	
 	//@Binding var index: Int
 	@State private var orientation = UIDevice.current.orientation
@@ -102,7 +100,6 @@ struct ContentView: View {
 			.publisher(for: NSNotification.Name("CoreStarted"))
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
-				/*
 				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
 					HStack {
 						Image("phone")
@@ -137,7 +134,7 @@ struct ContentView: View {
 						}
 					}
 				}
-				*/
+				
 				ZStack {
 					VStack(spacing: 0) {
 						HStack(spacing: 0) {
@@ -326,7 +323,6 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
-												/*
 												if let accountModelIndex = accountProfileViewModel.accountModelIndex,
 												   accountModelIndex < coreContext.accounts.count {
 													AsyncImage(url: imagePath) { image in
@@ -395,7 +391,7 @@ struct ContentView: View {
 														}
 													}
 												}
-												*/
+												
 												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
 													.default_text_style_white_800(styleSize: 20)
 													.padding(.leading, 10)
@@ -1032,9 +1028,7 @@ struct ContentView: View {
 						.zIndex(1)
 					}
 					
-					/*
 					SideMenu(
-						accountProfileViewModel: accountProfileViewModel,
 						width: geometry.size.width / 5 * 4,
 						isOpen: $sideMenuIsOpen,
 						menuClose: self.openMenu,
@@ -1044,9 +1038,11 @@ struct ContentView: View {
 						isShowSettingsFragment: $isShowSettingsFragment,
 						isShowHelpFragment: $isShowHelpFragment
 					)
+					.environmentObject(accountProfileViewModel)
 					.ignoresSafeArea(.all)
 					.zIndex(2)
 					
+					/*
 					if isShowLoginFragment {
 						LoginFragment(
 							accountLoginViewModel: AccountLoginViewModel(),
@@ -1077,51 +1073,18 @@ struct ContentView: View {
 						}
 					}
 					
-					/*
 					if isShowStartCallFragment {
-						if #available(iOS 16.4, *), idiom != .pad {
-							StartCallFragment(
-								callViewModel: callViewModel,
-								startCallViewModel: startCallViewModel,
-								isShowStartCallFragment: $isShowStartCallFragment,
-								showingDialer: $showingDialer,
-								resetCallView: {callViewModel.resetCallView()}
-							)
-							.zIndex(6)
-							.transition(.opacity.combined(with: .move(edge: .bottom)))
-							.sheet(isPresented: $showingDialer) {
-								DialerBottomSheet(
-									startCallViewModel: startCallViewModel,
-									callViewModel: callViewModel,
-									isShowStartCallFragment: $isShowStartCallFragment,
-									showingDialer: $showingDialer,
-									currentCall: nil
-								)
-								.presentationDetents([.medium])
-								.presentationBackgroundInteraction(.enabled(upThrough: .medium))
-							}
-						} else {
-							StartCallFragment(
-								callViewModel: callViewModel,
-								startCallViewModel: startCallViewModel,
-								isShowStartCallFragment: $isShowStartCallFragment,
-								showingDialer: $showingDialer,
-								resetCallView: {callViewModel.resetCallView()}
-							)
-							.zIndex(6)
-							.transition(.opacity.combined(with: .move(edge: .bottom)))
-							.halfSheet(showSheet: $showingDialer) {
-								DialerBottomSheet(
-									startCallViewModel: startCallViewModel,
-									callViewModel: callViewModel,
-									isShowStartCallFragment: $isShowStartCallFragment,
-									showingDialer: $showingDialer,
-									currentCall: nil
-								)
-							} onDismiss: {}
-						}
+						StartCallFragment(
+							isShowStartCallFragment: $isShowStartCallFragment,
+							showingDialer: $showingDialer,
+							resetCallView: {callViewModel.resetCallView()}
+						)
+						.environmentObject(callViewModel)
+						.zIndex(6)
+						.transition(.opacity.combined(with: .move(edge: .bottom)))
 					}
 					
+					/*
 					if isShowStartConversationFragment {
 						StartConversationFragment(
 							startConversationViewModel: startConversationViewModel,
@@ -1258,17 +1221,18 @@ struct ContentView: View {
 						.onAppear {
 						}
 					}
+					*/
 					
 					if isShowAccountProfileFragment {
 						AccountProfileFragment(
-							accountProfileViewModel: accountProfileViewModel,
-							registerViewModel: RegisterViewModel(),
 							isShowAccountProfileFragment: $isShowAccountProfileFragment
 						)
+						.environmentObject(accountProfileViewModel)
 						.zIndex(3)
 						.transition(.move(edge: .trailing))
 					}
 					
+					/*
 					if isShowSettingsFragment {
 						SettingsFragment(
 							settingsViewModel: SettingsViewModel(),
@@ -1378,7 +1342,8 @@ struct ContentView: View {
 								meetingWaitingRoomViewModel.resetMeetingRoomView()
 							}
 					}
-					
+					*/
+					/*
 					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) && !telecomManager.meetingWaitingRoomDisplayed {
 						CallView(
 							callViewModel: callViewModel,
@@ -1432,7 +1397,7 @@ struct ContentView: View {
 				//conversationsListViewModel.updateChatRoom(address: address)
 			}
 			.onReceive(coreStarted) { _ in
-				//accountProfileViewModel.setAvatarModel()
+				accountProfileViewModel.setAvatarModel()
 			}
 		}
 		.overlay {
@@ -1482,9 +1447,6 @@ class NavigationManager: ObservableObject {
 
 #Preview {
 	ContentView(
-		//startCallViewModel: StartCallViewModel(),
-		//startConversationViewModel: StartConversationViewModel(),
-		//callViewModel: CallViewModel(),
 		//meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
 		//conversationsListViewModel: ConversationsListViewModel(),
 		//conversationViewModel: ConversationViewModel(),

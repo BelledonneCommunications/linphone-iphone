@@ -42,9 +42,6 @@ class RegisterViewModel: ObservableObject {
 	@Published var transportType: String = "TLS"
 	
 	@Published var dialPlanValueSelected: String = "🇫🇷 +33"
-	@Published var dialPlansList: [DialPlan] = []
-	@Published var dialPlansLabelList: [String] = []
-	@Published var dialPlansShortLabelList: [String] = []
 	
 	private let HASHALGORITHM = "SHA-256"
 	
@@ -95,7 +92,6 @@ class RegisterViewModel: ObservableObject {
 	}
 	
 	init() {
-		getDialPlansList()
 		getAccountCreationToken()
 		
 		self.usernameError = ""
@@ -205,31 +201,6 @@ class RegisterViewModel: ObservableObject {
 		}
 	}
 	
-	func getDialPlansList() {
-		coreContext.doOnCoreQueue { _ in
-			let dialPlans = Factory.Instance.dialPlans
-			var dialPlansListTmp: [DialPlan] = []
-			var dialPlansLabelListTmp: [String] = []
-			var dialPlansShortLabelListTmp: [String] = []
-			
-			dialPlans.forEach { dialPlan in
-				dialPlansListTmp.append(dialPlan)
-				dialPlansLabelListTmp.append(
-					"\(dialPlan.flag) \(dialPlan.country) | +\(dialPlan.countryCallingCode)"
-				)
-				dialPlansShortLabelListTmp.append(
-					"\(dialPlan.flag) +\(dialPlan.countryCallingCode)"
-				)
-			}
-			
-			DispatchQueue.main.async {
-				self.dialPlansList = dialPlansListTmp
-				self.dialPlansLabelList = dialPlansLabelListTmp
-				self.dialPlansShortLabelList = dialPlansShortLabelListTmp
-			}
-		}
-	}
-	
 	func getAccountCreationToken() {
 		coreContext.doOnCoreQueue { core in
 			do {
@@ -281,7 +252,7 @@ class RegisterViewModel: ObservableObject {
 			
 			var dialPlan: DialPlan?
 			
-			dialPlansList.forEach { dial in
+			SharedMainViewModel.shared.dialPlansList.forEach { dial in
 				let countryCode = dialPlanValueSelected.components(separatedBy: "+")
 				if dial.countryCallingCode == countryCode[1] {
 					dialPlan = dial
@@ -432,7 +403,7 @@ class RegisterViewModel: ObservableObject {
 			if self.accountManagerServices != nil {
 				var dialPlan: DialPlan?
 				
-				for dial in self.dialPlansList {
+				for dial in SharedMainViewModel.shared.dialPlansList {
 					let countryCode = self.dialPlanValueSelected.components(separatedBy: "+")
 					if dial.countryCallingCode == countryCode[1] {
 						dialPlan = dial

@@ -24,6 +24,7 @@ import SwiftUI
 struct RegisterFragment: View {
 	
 	@ObservedObject var registerViewModel: RegisterViewModel
+	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Environment(\.dismiss) var dismiss
 	
@@ -154,8 +155,8 @@ struct RegisterFragment: View {
 				HStack {
 					Menu {
 						Picker("", selection: $registerViewModel.dialPlanValueSelected) {
-							ForEach(Array(registerViewModel.dialPlansLabelList.enumerated()), id: \.offset) { index, dialPlan in
-								Text(dialPlan).tag(registerViewModel.dialPlansShortLabelList[index])
+							ForEach(Array(sharedMainViewModel.dialPlansLabelList.enumerated()), id: \.offset) { index, dialPlan in
+								Text(dialPlan).tag(sharedMainViewModel.dialPlansShortLabelList[index])
 							}
 						}
 					} label: {
