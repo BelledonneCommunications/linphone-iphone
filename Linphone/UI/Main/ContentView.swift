@@ -1343,25 +1343,17 @@ struct ContentView: View {
 							}
 					}
 					*/
-					/*
+					
 					if telecomManager.callDisplayed && ((telecomManager.callInProgress && telecomManager.outgoingCallStarted) || telecomManager.callConnected) && !telecomManager.meetingWaitingRoomDisplayed {
 						CallView(
-							callViewModel: callViewModel,
-							conversationViewModel: conversationViewModel,
-							conversationsListViewModel: conversationsListViewModel,
-							conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-							contactsListViewModel: contactsListViewModel,
-							editContactViewModel: editContactViewModel,
-							meetingViewModel: meetingViewModel,
-							accountProfileViewModel: accountProfileViewModel,
 							fullscreenVideo: $fullscreenVideo,
 							isShowStartCallFragment: $isShowStartCallFragment,
 							isShowConversationFragment: $isShowConversationFragment,
 							isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 							isShowEditContactFragment: $isShowEditContactFragment,
-							indexPage: $index,
 							isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 						)
+						.environmentObject(callViewModel)
 						.zIndex(5)
 						.transition(.scale.combined(with: .move(edge: .top)))
 						.onAppear {
@@ -1377,7 +1369,7 @@ struct ContentView: View {
 							UIApplication.shared.isIdleTimerDisabled = false
 						}
 					}
-					*/
+					
 					ToastView()
 						.zIndex(6)
 				}

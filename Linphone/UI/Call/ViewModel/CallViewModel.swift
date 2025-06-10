@@ -103,6 +103,7 @@ class CallViewModel: ObservableObject {
 	func resetCallView() {
 		DispatchQueue.main.async {
 			self.displayName = ""
+			self.avatarModel = nil
 		}
 		
 		coreContext.doOnCoreQueue { core in
@@ -220,7 +221,6 @@ class CallViewModel: ObservableObject {
 					self.isRemoteDeviceTrusted = isRemoteDeviceTrustedTmp
 					self.activeSpeakerParticipant = nil
 					
-					self.avatarModel = nil
 					self.isRemoteRecording = false
 					self.zrtpPopupDisplayed = false
 					self.upperCaseAuthTokenToRead = ""

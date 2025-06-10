@@ -33,14 +33,7 @@ struct CallView: View {
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	@ObservedObject private var contactsManager = ContactsManager.shared
 	
-	@ObservedObject var callViewModel: CallViewModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var meetingViewModel: MeetingViewModel
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+	@EnvironmentObject var callViewModel: CallViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
 	
@@ -76,7 +69,6 @@ struct CallView: View {
 	@State var buttonSize = 60.0
 	
 	@Binding var isShowEditContactFragment: Bool
-	@Binding var indexPage: Int
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
 	
@@ -202,32 +194,6 @@ struct CallView: View {
 						.onAppear {
 							addParticipantsViewModel = AddParticipantsViewModel()
 						}
-				}
-				
-				if isShowConversationFragment && SharedMainViewModel.shared.displayedConversation != nil {
-					ConversationFragment(
-						conversationViewModel: conversationViewModel,
-						conversationsListViewModel: conversationsListViewModel,
-						conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-						contactsListViewModel: contactsListViewModel,
-						editContactViewModel: editContactViewModel,
-						meetingViewModel: meetingViewModel,
-						accountProfileViewModel: accountProfileViewModel,
-						isShowConversationFragment: $isShowConversationFragment,
-						isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
-						isShowEditContactFragment: $isShowEditContactFragment,
-						indexPage: $indexPage,
-						isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
-					)
-					.frame(maxWidth: .infinity)
-					.background(Color.gray100)
-					.ignoresSafeArea(.keyboard)
-					.zIndex(4)
-					.transition(.move(edge: .bottom))
-					.onDisappear {
-						SharedMainViewModel.shared.displayedConversation = nil
-						isShowConversationFragment = false
-					}
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
@@ -501,8 +467,8 @@ struct CallView: View {
 								.frame(width: 206, height: 206)
 						}
 						
-						if callViewModel.avatarModel != nil {
-							Avatar(contactAvatarModel: callViewModel.avatarModel!, avatarSize: 200, hidePresence: true)
+						if let avatar = callViewModel.avatarModel {
+							Avatar(contactAvatarModel: avatar, avatarSize: 200, hidePresence: true)
 						}
 						
 						if callViewModel.isRemoteDeviceTrusted {
@@ -2278,8 +2244,8 @@ struct CallView: View {
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
 												if SharedMainViewModel.shared.displayedConversation != nil {
-													indexPage = 2
-													self.conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+													SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+													//self.conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
 													SharedMainViewModel.shared.displayedConversation = nil
 													withAnimation {
 														telecomManager.callDisplayed = false
@@ -2649,7 +2615,7 @@ struct CallView: View {
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
 												if SharedMainViewModel.shared.displayedConversation != nil {
-													conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+													//conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
 												}
 											}
 									}
@@ -2860,20 +2826,11 @@ struct PressedButtonStyle: ButtonStyle {
 
 #Preview {
 	CallView(
-		callViewModel: CallViewModel(),
-		conversationViewModel: ConversationViewModel(),
-		conversationsListViewModel: ConversationsListViewModel(),
-		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
-		contactsListViewModel: ContactsListViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		meetingViewModel: MeetingViewModel(),
-		accountProfileViewModel: AccountProfileViewModel(),
 		fullscreenVideo: .constant(false),
 		isShowStartCallFragment: .constant(false),
 		isShowConversationFragment: .constant(false),
 		isShowStartCallGroupPopup: .constant(false),
 		isShowEditContactFragment: .constant(false),
-		indexPage: .constant(0),
 		isShowScheduleMeetingFragment: .constant(false)
 	)
 }

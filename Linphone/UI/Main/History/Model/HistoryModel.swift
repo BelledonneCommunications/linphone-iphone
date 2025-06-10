@@ -77,7 +77,7 @@ class HistoryModel: ObservableObject, Identifiable {
 			
 			let addressNameTmp = confInfoTmp != nil && confInfoTmp!.subject != nil
 			? confInfoTmp!.subject!
-			: (addressLinphoneTmp.username != nil ? addressLinphoneTmp.username ?? "" : addressLinphoneTmp.displayName ?? "")
+			: (addressLinphoneTmp.displayName != nil ? addressLinphoneTmp.displayName ?? "" : addressLinphoneTmp.username ?? "")
 			
 			let addressTmp = addressLinphoneTmp.asStringUriOnly()
 			

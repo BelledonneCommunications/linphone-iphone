@@ -172,8 +172,6 @@ struct LinphoneApp: App {
 									// Notify the app to navigate to the chat room
 									navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
 								}
-								
-								//accountProfileViewModel!.setAvatarModel()
 							}
 					}
 					
