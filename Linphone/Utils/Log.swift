@@ -93,9 +93,7 @@ class Log: LoggingServiceDelegate {
 		}
 #if USE_CRASHLYTICS
 		if FirebaseApp.app() != nil {
-			DispatchQueue.global(qos: .background).async {
-				Crashlytics.crashlytics().log(log)
-			}
+			Crashlytics.crashlytics().log(log)
 		}
 #endif
 	}

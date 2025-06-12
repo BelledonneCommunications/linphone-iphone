@@ -143,7 +143,9 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	
 	func removeFriendDelegate() {
 		if let delegate = friendDelegate {
-			presenceStatus = .Offline
+			DispatchQueue.main.async {
+				self.presenceStatus = .Offline
+			}
 			if let friendTmp = friend {
 				friendTmp.removeDelegate(delegate: delegate)
 			}
