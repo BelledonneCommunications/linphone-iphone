@@ -117,8 +117,25 @@ class ConversationsListViewModel: ObservableObject {
 										conversationModel.subject = contactAvatarModel.name
 									}
 								}
-							}
-						}
+                            }
+                        } else if !conversationModel.isGroup {
+                            if let address = conversationModel.participantsAddress.first {
+                                let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
+                                    guard let friend = $0.friend else { return false }
+                                    return friend.name == conversationModel.subject &&
+                                    friend.address?.asStringUriOnly() == address
+                                }) ?? ContactAvatarModel(
+                                    friend: nil,
+                                    name: conversationModel.subject,
+                                    address: address,
+                                    withPresence: false
+                                )
+                                
+                                DispatchQueue.main.async {
+                                    conversationModel.avatarModel = avatarModelTmp
+                                }
+                            }
+                        }
 					}
 				}
 			}
@@ -460,11 +477,22 @@ class ConversationsListViewModel: ObservableObject {
 			let nilParams: ConferenceParams? = nil
 			if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: conversationModel.chatRoom.peerAddress, participants: nil) {
 				if LinphoneUtils.getChatRoomId(room: newChatRoom) == conversationModel.id {
-					DispatchQueue.main.async {
-						withAnimation {
-							self.sharedMainViewModel.displayedConversation = conversationModel
-						}
-					}
+                    if self.sharedMainViewModel.displayedConversation == nil {
+                        DispatchQueue.main.async {
+                            withAnimation {
+                                self.sharedMainViewModel.displayedConversation = conversationModel
+                            }
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.sharedMainViewModel.displayedConversation = nil
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation {
+                                    self.sharedMainViewModel.displayedConversation = conversationModel
+                                }
+                            }
+                        }
+                    }
 				}
 			}
 		}

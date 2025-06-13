@@ -120,14 +120,10 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	init() {
-		// TODO a check si utile
-		/*
-		self.selectedMessage = nil
-		self.resetMessage()
-		self.removeConversationDelegate()
-		self.addConversationDelegate(chatRoom: newChatRoom)
-		self.getMessages()
-		 */
+        if let chatroom = self.sharedMainViewModel.displayedConversation?.chatRoom {
+            self.addConversationDelegate(chatRoom: chatroom)
+            self.getMessages()
+        }
 	}
 	
 	func addConversationDelegate() {
@@ -180,7 +176,7 @@ class ConversationViewModel: ObservableObject {
 		}, onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
 			self.getNewMessages(eventLogs: eventLogs)
 		}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
-			if self.conversationMessagesSection[0].rows.isEmpty {
+			if self.conversationMessagesSection.isEmpty || self.conversationMessagesSection[0].rows.isEmpty {
 				self.sendFirstMessage(eventLog: eventLog)
 			} else {
 				self.getNewMessages(eventLogs: [eventLog])

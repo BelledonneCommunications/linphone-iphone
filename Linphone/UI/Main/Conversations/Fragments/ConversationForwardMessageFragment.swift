@@ -25,9 +25,10 @@ struct ConversationForwardMessageFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
+	
+	@StateObject private var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
 	@Binding var isShowConversationForwardMessageFragment: Bool
 	
@@ -35,6 +36,11 @@ struct ConversationForwardMessageFragment: View {
 	@State private var delayedColor = Color.white
 	
 	@FocusState var isMessageTextFocused: Bool
+	
+	init(conversationsList: [ConversationModel], selectedMessage: EventLogMessage?, isShowConversationForwardMessageFragment: Binding<Bool>) {
+		_conversationForwardMessageViewModel = StateObject(wrappedValue: ConversationForwardMessageViewModel(conversationsList: conversationsList, selectedMessage: selectedMessage))
+		self._isShowConversationForwardMessageFragment = isShowConversationForwardMessageFragment
+	}
 	
     var body: some View {
 		NavigationView {
@@ -337,11 +343,10 @@ struct ConversationForwardMessageFragment: View {
 	}
 }
 
+/*
 #Preview {
 	ConversationForwardMessageFragment(
-		conversationViewModel: ConversationViewModel(),
-		conversationsListViewModel: ConversationsListViewModel(),
-		conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
 		isShowConversationForwardMessageFragment: .constant(true)
 	)
 }
+*/

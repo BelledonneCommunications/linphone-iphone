@@ -263,7 +263,7 @@ struct HistoryContactFragment: View {
 									Spacer()
 									
 									Button(action: {
-										//contactsListViewModel.createOneToOneChatRoomWith(remote: historyModel.addressLinphone)
+										historyListViewModel.createOneToOneChatRoomWith(remote: historyModel.addressLinphone)
 									}, label: {
 										VStack {
 											HStack(alignment: .center) {

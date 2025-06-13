@@ -94,18 +94,22 @@ struct ContactRow: View {
 		.listRowSeparator(.hidden)
 		.background(.white)
 		.onTapGesture {
-			withAnimation {
-				SharedMainViewModel.shared.displayedFriend = contactAvatarModel
-			}
-			
+            if SharedMainViewModel.shared.indexView == 0 {
+                withAnimation {
+                    SharedMainViewModel.shared.displayedFriend = contactAvatarModel
+                }
+            }
+            
 			if contactAvatarModel.friend != nil
 				&& contactAvatarModel.friend!.address != nil {
 				startCallFunc(contactAvatarModel.friend!.address!)
 			}
 		}
 		.onLongPressGesture(minimumDuration: 0.2) {
-			contactsListViewModel.selectedFriend = contactAvatarModel
-			showingSheet.toggle()
+            if SharedMainViewModel.shared.indexView == 0 {
+                contactsListViewModel.selectedFriend = contactAvatarModel
+                showingSheet.toggle()
+            }
 		}
 	}
 }

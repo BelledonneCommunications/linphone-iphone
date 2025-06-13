@@ -31,14 +31,11 @@ struct ConversationFragment: View {
 	@EnvironmentObject var navigationManager: NavigationManager
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
-	
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-	@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var meetingViewModel: MeetingViewModel
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+    
+    @EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
+	@EnvironmentObject var accountProfileViewModel: AccountProfileViewModel
+    
+    @StateObject private var conversationViewModel = ConversationViewModel()
 	
 	@State var isMenuOpen = false
 	@State private var isMuted: Bool = false
@@ -48,9 +45,6 @@ struct ConversationFragment: View {
 	@State var offset: CGPoint = .zero
 	
 	private let ids: [String] = []
-	
-	@StateObject private var viewModel = ChatViewModel()
-	@StateObject private var paginationState = PaginationState()
 	
 	@State private var displayFloatingButton = false
 	
@@ -73,9 +67,11 @@ struct ConversationFragment: View {
 	@State private var selectedCategoryIndex = 0
 	
 	@Binding var isShowEditContactFragment: Bool
-	@Binding var indexPage: Int
+	@Binding var isShowEditContactFragmentAddress: String
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
+    
+    @State private var cachedConversation: ConversationModel?
 	
 	var body: some View {
 		NavigationView {
@@ -97,7 +93,8 @@ struct ConversationFragment: View {
 						.sheet(isPresented: $conversationViewModel.isShowSelectedMessageToDisplayDetails, onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}, content: {
-							ImdnOrReactionsSheet(conversationViewModel: conversationViewModel, selectedCategoryIndex: $selectedCategoryIndex)
+							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex)
+								.environmentObject(conversationViewModel)
 								.presentationDetents([.medium])
 				 				.presentationDragIndicator(.visible)
 						})
@@ -137,7 +134,8 @@ struct ConversationFragment: View {
 							.edgesIgnoringSafeArea(.all)
 						})
 						.fullScreenCover(isPresented: $isShowCamera) {
-							ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$conversationViewModel.mediasToSend)
+							ImagePicker(selectedMedia: self.$conversationViewModel.mediasToSend)
+								.environmentObject(conversationViewModel)
 								.edgesIgnoringSafeArea(.all)
 						}
 						.background(Color.gray100.ignoresSafeArea(.keyboard))
@@ -156,7 +154,8 @@ struct ConversationFragment: View {
 							conversationViewModel.removeConversationDelegate()
 						}
 						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetails) {
-							ImdnOrReactionsSheet(conversationViewModel: conversationViewModel, selectedCategoryIndex: $selectedCategoryIndex)
+							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex)
+								.environmentObject(conversationViewModel)
 						} onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}
@@ -179,7 +178,8 @@ struct ConversationFragment: View {
 							.edgesIgnoringSafeArea(.all)
 						})
 						.fullScreenCover(isPresented: $isShowCamera) {
-							ImagePicker(conversationViewModel: conversationViewModel, selectedMedia: self.$conversationViewModel.mediasToSend)
+							ImagePicker(selectedMedia: self.$conversationViewModel.mediasToSend)
+								.environmentObject(conversationViewModel)
 						}
 						.background(Color.gray100.ignoresSafeArea(.keyboard))
 				}
@@ -193,6 +193,11 @@ struct ConversationFragment: View {
 			}
 		}
 		.navigationViewStyle(.stack)
+        .onAppear {
+            if let conv = SharedMainViewModel.shared.displayedConversation {
+                cachedConversation = conv
+            }
+        }
 	}
 	
 	// swiftlint:disable cyclomatic_complexity
@@ -201,7 +206,7 @@ struct ConversationFragment: View {
 	func innerView(geometry: GeometryProxy) -> some View {
 		ZStack {
 			VStack(spacing: 1) {
-				if SharedMainViewModel.shared.displayedConversation != nil {
+				if SharedMainViewModel.shared.displayedConversation != nil || cachedConversation != nil {
 					Rectangle()
 						.foregroundColor(Color.orangeMain500)
 						.edgesIgnoringSafeArea(.top)
@@ -228,11 +233,11 @@ struct ConversationFragment: View {
 								}
 						}
 						
-						Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation!.avatarModel, avatarSize: 50)
+                        Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation?.avatarModel ?? cachedConversation!.avatarModel, avatarSize: 50)
 							.padding(.top, 4)
 						
 						VStack(spacing: 1) {
-							Text(SharedMainViewModel.shared.displayedConversation!.subject)
+                            Text(SharedMainViewModel.shared.displayedConversation?.subject ?? cachedConversation!.subject)
 								.default_text_style(styleSize: 16)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.padding(.top, 4)
@@ -276,7 +281,7 @@ struct ConversationFragment: View {
 						
 						Spacer()
 						
-						if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
+                        if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
 							Button {
 								if SharedMainViewModel.shared.displayedConversation!.isGroup {
 									isShowStartCallGroupPopup.toggle()
@@ -313,7 +318,7 @@ struct ConversationFragment: View {
 								}
 							}
 							
-							if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
+                            if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
 								Button {
 									isMenuOpen = false
 									SharedMainViewModel.shared.displayedConversation!.toggleMute()
@@ -375,13 +380,11 @@ struct ConversationFragment: View {
 					if #available(iOS 16.0, *) {
 						ZStack(alignment: .bottomTrailing) {
 							UIList(
-								viewModel: viewModel,
-								paginationState: paginationState,
-								conversationViewModel: conversationViewModel,
-								conversationsListViewModel: conversationsListViewModel,
 								geometryProxy: geometry,
 								sections: conversationViewModel.conversationMessagesSection
 							)
+							.environmentObject(conversationViewModel)
+							.environmentObject(conversationsListViewModel)
 						}
 						/*
 						.onAppear {
@@ -398,7 +401,8 @@ struct ConversationFragment: View {
 									if conversationViewModel.conversationMessagesSection.first != nil {
 										let counter = conversationViewModel.conversationMessagesSection.first!.rows.count
 										ForEach(0..<counter, id: \.self) { index in
-											ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
+											ChatBubbleView(eventLogMessage: conversationViewModel.conversationMessagesSection.first!.rows[index], geometryProxy: geometry)
+												.environmentObject(conversationViewModel)
 												.id(conversationViewModel.conversationMessagesSection.first!.rows[index].message.id)
 												.listRowInsets(EdgeInsets(top: 2, leading: 10, bottom: 2, trailing: 10))
 												.listRowSeparator(.hidden)
@@ -502,7 +506,7 @@ struct ConversationFragment: View {
 						.transition(.move(edge: .bottom))
 					}
 					
-					if SharedMainViewModel.shared.displayedConversation != nil && !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
+                    if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
 						if conversationViewModel.messageToReply != nil {
 							ZStack(alignment: .top) {
 								HStack {
@@ -830,7 +834,8 @@ struct ConversationFragment: View {
 								)
 								.padding(.horizontal, 4)
 							} else {
-								VoiceRecorderPlayer(conversationViewModel: conversationViewModel, voiceRecordingInProgress: $voiceRecordingInProgress)
+								VoiceRecorderPlayer(voiceRecordingInProgress: $voiceRecordingInProgress)
+									.environmentObject(conversationViewModel)
 									.frame(maxHeight: 60)
 							}
 						}
@@ -934,7 +939,8 @@ struct ConversationFragment: View {
 							.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
 							.shadow(color: .black.opacity(0.1), radius: 10)
 							
-							ChatBubbleView(conversationViewModel: conversationViewModel, eventLogMessage: conversationViewModel.selectedMessage!, geometryProxy: geometry)
+							ChatBubbleView(eventLogMessage: conversationViewModel.selectedMessage!, geometryProxy: geometry)
+								.environmentObject(conversationViewModel)
 								.padding(.horizontal, 10)
 								.padding(.vertical, 1)
 								.shadow(color: .black.opacity(0.1), radius: 10)
@@ -992,9 +998,6 @@ struct ConversationFragment: View {
 									}
 									
 									Button {
-										conversationForwardMessageViewModel.initConversationsLists(convsList: conversationsListViewModel.conversationsList)
-										conversationForwardMessageViewModel.selectedMessage = conversationViewModel.selectedMessage
-										conversationViewModel.selectedMessage = nil
 										withAnimation {
 											isShowConversationForwardMessageFragment = true
 										}
@@ -1068,40 +1071,39 @@ struct ConversationFragment: View {
 			
 			if isShowConversationForwardMessageFragment {
 				ConversationForwardMessageFragment(
-					conversationViewModel: conversationViewModel,
-					conversationsListViewModel: conversationsListViewModel,
-					conversationForwardMessageViewModel: conversationForwardMessageViewModel,
+					conversationsList: conversationsListViewModel.conversationsList,
+					selectedMessage: conversationViewModel.selectedMessage,
 					isShowConversationForwardMessageFragment: $isShowConversationForwardMessageFragment
 				)
+				.environmentObject(conversationViewModel)
+				.environmentObject(conversationsListViewModel)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
+				.onAppear {
+					conversationViewModel.selectedMessage = nil
+				}
 			}
 			
 			if isShowInfoConversationFragment {
 				ConversationInfoFragment(
-					conversationViewModel: conversationViewModel,
-					conversationsListViewModel: conversationsListViewModel,
-					contactsListViewModel: contactsListViewModel,
-					editContactViewModel: editContactViewModel,
-					meetingViewModel: meetingViewModel,
-					accountProfileViewModel: accountProfileViewModel,
 					isMuted: $isMuted,
 					isShowEphemeralFragment: $isShowEphemeralFragment,
 					isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 					isShowInfoConversationFragment: $isShowInfoConversationFragment,
 					isShowEditContactFragment: $isShowEditContactFragment,
-					indexPage: $indexPage,
+					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
 					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 				)
+				.environmentObject(conversationViewModel)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
 			}
-			
+            
 			if isShowEphemeralFragment {
 				EphemeralFragment(
-					conversationViewModel: conversationViewModel,
 					isShowEphemeralFragment: $isShowEphemeralFragment
 				)
+				.environmentObject(conversationViewModel)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
 			}
@@ -1112,7 +1114,7 @@ struct ConversationFragment: View {
 }
 
 struct ImdnOrReactionsSheet: View {
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	@Binding var selectedCategoryIndex: Int
 	
@@ -1181,7 +1183,7 @@ struct ImdnOrReactionsSheet: View {
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	@Binding var selectedMedia: [Attachment]
 	@Environment(\.presentationMode) private var presentationMode
  
@@ -1263,7 +1265,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 }
 
 struct VoiceRecorderPlayer: View {
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	@Binding var voiceRecordingInProgress: Bool
 	
@@ -1445,7 +1447,7 @@ struct VoiceRecorderPlayer: View {
 }
 /*
 #Preview {
-	ConversationFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel(), sections: [MessagesSection], ids: [""])
+	ConversationFragment(sections: [MessagesSection], ids: [""])
 }
 */
 

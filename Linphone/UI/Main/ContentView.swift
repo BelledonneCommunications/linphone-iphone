@@ -40,16 +40,12 @@ struct ContentView: View {
 	@State private var contactsListViewModel: ContactsListViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var conversationsListViewModel: ConversationsListViewModel?
-	//@ObservedObject var conversationViewModel: ConversationViewModel
 	
-	//@ObservedObject var startConversationViewModel: StartConversationViewModel
 	//@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
 	
 	
 	//@ObservedObject var meetingsListViewModel: MeetingsListViewModel
 	//@ObservedObject var meetingViewModel: MeetingViewModel
-	
-	//@ObservedObject var conversationForwardMessageViewModel: ConversationForwardMessageViewModel
 	
 	
 	//@Binding var index: Int
@@ -969,37 +965,30 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
-							} else if let historyListVM = historyListViewModel, let displayedFriend = sharedMainViewModel.displayedFriend, sharedMainViewModel.indexView == 1 {
+							} else if let historyListVM = historyListViewModel, let displayedCall = sharedMainViewModel.displayedCall, sharedMainViewModel.indexView == 1 {
 								HistoryContactFragment(
 									isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
 									isShowEditContactFragment: $isShowEditContactFragment,
 									isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 								)
 								.environmentObject(historyListVM)
-								.environmentObject(displayedFriend)
+								.environmentObject(displayedCall)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
-							} else if sharedMainViewModel.indexView == 2 {
-								/*
+							} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
 								ConversationFragment(
-									conversationViewModel: conversationViewModel,
-									conversationsListViewModel: conversationsListViewModel,
-									conversationForwardMessageViewModel: conversationForwardMessageViewModel,
-									contactsListViewModel: contactsListViewModel,
-									editContactViewModel: editContactViewModel,
-									meetingViewModel: meetingViewModel,
-									accountProfileViewModel: accountProfileViewModel,
 									isShowConversationFragment: $isShowConversationFragment,
 									isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 									isShowEditContactFragment: $isShowEditContactFragment,
-									indexPage: $index,
+									isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
 									isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 								)
+                                .environmentObject(conversationsListVM)
+								.environmentObject(accountProfileViewModel)
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
-								 */
 							} else if sharedMainViewModel.indexView == 3 {
 								/*
 								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
@@ -1090,17 +1079,14 @@ struct ContentView: View {
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
 					}
 					
-					/*
-					if isShowStartConversationFragment {
+					if let conversationsListVM = conversationsListViewModel, isShowStartConversationFragment {
 						StartConversationFragment(
-							startConversationViewModel: startConversationViewModel,
-							conversationViewModel: conversationViewModel,
 							isShowStartConversationFragment: $isShowStartConversationFragment
 						)
+						.environmentObject(conversationsListVM)
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
 					}
-					*/
 					
 					if let contactsListVM = contactsListViewModel, isShowDeleteContactPopup {
 						PopupView(
@@ -1196,26 +1182,60 @@ struct ContentView: View {
 						}
 					}
 					
-					/*
-					if contactsListViewModel.operationInProgress {
+					if sharedMainViewModel.operationInProgress {
 						PopupLoadingView()
 							.background(.black.opacity(0.65))
 							.zIndex(3)
 							.onDisappear {
-								if contactsListViewModel.displayedConversation != nil {
+								if let contactsListVM = contactsListViewModel, let displayedConversation = contactsListVM.displayedConversation {
 									sharedMainViewModel.displayedFriend = nil
 									sharedMainViewModel.displayedCall = nil
 									sharedMainViewModel.changeIndexView(indexViewInt: 2)
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-										withAnimation {
-											self.conversationViewModel.changeDisplayedChatRoom(conversationModel: contactsListViewModel.displayedConversation!)
+									
+									if let conversationsListVM = self.conversationsListViewModel {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+											withAnimation {
+												conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+											}
+											contactsListVM.displayedConversation = nil
 										}
-										contactsListViewModel.displayedConversation = nil
+									} else {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+											if let conversationsListVM = self.conversationsListViewModel {
+												withAnimation {
+													conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+												}
+											}
+											contactsListVM.displayedConversation = nil
+										}
+									}
+								} else if let historyListVM = historyListViewModel, let displayedConversation = historyListVM.displayedConversation {
+									sharedMainViewModel.displayedFriend = nil
+									sharedMainViewModel.displayedCall = nil
+									sharedMainViewModel.changeIndexView(indexViewInt: 2)
+									
+									if let conversationsListVM = self.conversationsListViewModel {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+											withAnimation {
+												conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+											}
+											historyListVM.displayedConversation = nil
+										}
+									} else {
+										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+											if let conversationsListVM = self.conversationsListViewModel {
+												withAnimation {
+													conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+												}
+											}
+											historyListVM.displayedConversation = nil
+										}
 									}
 								}
 							}
 					}
 					
+					/*
 					if isShowScheduleMeetingFragment {
 						ScheduleMeetingFragment(
 							meetingViewModel: meetingViewModel,
@@ -1282,6 +1302,7 @@ struct ContentView: View {
 							self.isShowSendCancelMeetingNotificationPopup.toggle()
 						}
 					}
+					*/
 					
 					if isShowStartCallGroupPopup {
 						PopupView(
@@ -1307,30 +1328,7 @@ struct ContentView: View {
 						}
 					}
 					
-					if isShowStartCallGroupPopup {
-						PopupView(
-							isShowPopup: $isShowStartCallGroupPopup,
-							title: Text("conversation_info_confirm_start_group_call_dialog_title"),
-							content: Text("conversation_info_confirm_start_group_call_dialog_message"),
-							titleFirstButton: Text("dialog_cancel"),
-							actionFirstButton: {
-								self.isShowStartCallGroupPopup.toggle()
-							},
-							titleSecondButton: Text("dialog_ok"),
-							actionSecondButton: {
-								if sharedMainViewModel.displayedConversation != nil {
-									sharedMainViewModel.displayedConversation!.createGroupCall()
-								}
-								self.isShowStartCallGroupPopup.toggle()
-							}
-						)
-						.background(.black.opacity(0.65))
-						.zIndex(3)
-						.onTapGesture {
-							self.isShowStartCallGroupPopup.toggle()
-						}
-					}
-					
+					/*
 					if conversationViewModel.isShowConversationInfoPopup {
 						PopupViewWithTextField(conversationViewModel: conversationViewModel)
 							.background(.black.opacity(0.65))
@@ -1453,8 +1451,6 @@ class NavigationManager: ObservableObject {
 #Preview {
 	ContentView(
 		//meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel(),
-		//conversationsListViewModel: ConversationsListViewModel(),
-		//conversationViewModel: ConversationViewModel(),
 		//meetingsListViewModel: MeetingsListViewModel(),
 		//meetingViewModel: MeetingViewModel(),
 		//conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),

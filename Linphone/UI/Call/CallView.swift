@@ -2245,7 +2245,7 @@ struct CallView: View {
 											.onDisappear {
 												if SharedMainViewModel.shared.displayedConversation != nil {
 													SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
-													//self.conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+													callViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
 													SharedMainViewModel.shared.displayedConversation = nil
 													withAnimation {
 														telecomManager.callDisplayed = false
@@ -2615,7 +2615,12 @@ struct CallView: View {
 											.frame(width: 32, height: 32, alignment: .center)
 											.onDisappear {
 												if SharedMainViewModel.shared.displayedConversation != nil {
-													//conversationViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+													SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+													callViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+													SharedMainViewModel.shared.displayedConversation = nil
+													withAnimation {
+														telecomManager.callDisplayed = false
+													}
 												}
 											}
 									}

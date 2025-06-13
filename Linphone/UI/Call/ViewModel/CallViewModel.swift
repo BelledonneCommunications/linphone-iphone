@@ -32,6 +32,7 @@ class CallViewModel: ObservableObject {
 	
 	var coreContext = CoreContext.shared
 	var telecomManager = TelecomManager.shared
+	var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@Published var displayName: String = ""
 	@Published var direction: Call.Dir = .Outgoing
@@ -1393,6 +1394,32 @@ class CallViewModel: ObservableObject {
 			}
 		})
 		chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
+	}
+	
+	func changeDisplayedChatRoom(conversationModel: ConversationModel) {
+		CoreContext.shared.doOnCoreQueue { core in
+			let nilParams: ConferenceParams? = nil
+			if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: conversationModel.chatRoom.peerAddress, participants: nil) {
+				if LinphoneUtils.getChatRoomId(room: newChatRoom) == conversationModel.id {
+					if self.sharedMainViewModel.displayedConversation == nil {
+						DispatchQueue.main.async {
+							withAnimation {
+								self.sharedMainViewModel.displayedConversation = conversationModel
+							}
+						}
+					} else {
+						DispatchQueue.main.async {
+							self.sharedMainViewModel.displayedConversation = nil
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								withAnimation {
+									self.sharedMainViewModel.displayedConversation = conversationModel
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 // swiftlint:enable type_body_length

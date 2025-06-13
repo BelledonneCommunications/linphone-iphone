@@ -40,6 +40,9 @@ class SharedMainViewModel: ObservableObject {
 	@Published var dialPlansLabelList: [String] = []
 	@Published var dialPlansShortLabelList: [String] = []
 	
+	
+	@Published var operationInProgress = false
+	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
 	let displayProfileModeKey = "display_profile_mode"

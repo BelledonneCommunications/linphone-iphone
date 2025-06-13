@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PopupViewWithTextField: View {
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	@FocusState var isMessageTextFocused: Bool
 	
@@ -81,5 +81,5 @@ struct PopupViewWithTextField: View {
 }
 
 #Preview {
-	PopupViewWithTextField(conversationViewModel: ConversationViewModel())
+	PopupViewWithTextField()
 }

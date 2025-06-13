@@ -26,8 +26,9 @@ struct StartConversationFragment: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	
-	@ObservedObject var startConversationViewModel: StartConversationViewModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@StateObject private var startConversationViewModel = StartConversationViewModel()
+	
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var isShowStartConversationFragment: Bool
 	
@@ -136,7 +137,8 @@ struct StartConversationFragment: View {
 						.padding(.horizontal)
 						
 						NavigationLink(destination: {
-							StartGroupConversationFragment(startConversationViewModel: startConversationViewModel)
+							StartGroupConversationFragment()
+								.environmentObject(startConversationViewModel)
 						}, label: {
 							HStack {
 								HStack(alignment: .center) {
@@ -233,9 +235,8 @@ struct StartConversationFragment: View {
 							
 							isShowStartConversationFragment = false
 							
-							if startConversationViewModel.displayedConversation != nil {
-								self.conversationViewModel.changeDisplayedChatRoom(conversationModel: startConversationViewModel.displayedConversation!)
-								
+							if let displayedConversation = startConversationViewModel.displayedConversation {
+								self.conversationsListViewModel.changeDisplayedChatRoom(conversationModel: displayedConversation)
 								startConversationViewModel.displayedConversation = nil
 							}
 						}
@@ -397,8 +398,6 @@ struct StartConversationFragment: View {
 
 #Preview {
     StartConversationFragment(
-		startConversationViewModel: StartConversationViewModel(),
-		conversationViewModel: ConversationViewModel(),
 		isShowStartConversationFragment: .constant(true)
 	)
 }

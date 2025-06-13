@@ -193,7 +193,7 @@ class StartConversationViewModel: ObservableObject {
 						"\(StartConversationViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remote.asStringUriOnly())"
 					)
 					
-					DispatchQueue.main.async {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 						self.operationInProgress = false
 						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 						ToastViewModel.shared.displayToast = true
@@ -218,7 +218,7 @@ class StartConversationViewModel: ObservableObject {
 								Log.info("\(StartConversationViewModel.TAG) 1-1 conversation \(chatRoomId) has been created")
 								
 								let model = ConversationModel(chatRoom: chatRoom)
-								DispatchQueue.main.async {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 									self.displayedConversation = model
 									self.operationInProgress = false
 								}
@@ -231,7 +231,7 @@ class StartConversationViewModel: ObservableObject {
 							Log.info("\(StartConversationViewModel.TAG) Conversation successfully created \(chatRoomId)")
 							
 							let model = ConversationModel(chatRoom: chatRoom)
-							DispatchQueue.main.async {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 								self.displayedConversation = model
 								self.operationInProgress = false
 							}
@@ -239,7 +239,7 @@ class StartConversationViewModel: ObservableObject {
 					} catch {
 						Log.error("\(StartConversationViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())")
 						
-						DispatchQueue.main.async {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 							self.operationInProgress = false
 							ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 							ToastViewModel.shared.displayToast = true
@@ -250,7 +250,7 @@ class StartConversationViewModel: ObservableObject {
 						"\(StartConversationViewModel.TAG) A 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) for given parameters already exists!"
 					)
 					let model = ConversationModel(chatRoom: existingChatRoom!)
-					DispatchQueue.main.async {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 						self.displayedConversation = model
 						self.operationInProgress = false
 					}

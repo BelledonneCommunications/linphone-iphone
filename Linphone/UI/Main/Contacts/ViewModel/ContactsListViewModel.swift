@@ -31,7 +31,6 @@ class ContactsListViewModel: ObservableObject {
     var selectedFriendToShare: ContactAvatarModel?
 	var selectedFriendToDelete: ContactAvatarModel?
 	
-	@Published var operationInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
 	
 	private var contactChatRoomDelegate: ChatRoomDelegate?
@@ -49,7 +48,7 @@ class ContactsListViewModel: ObservableObject {
 			}
 			
 			DispatchQueue.main.async {
-				self.operationInProgress = true
+				SharedMainViewModel.shared.operationInProgress = true
 			}
 			
 			do {
@@ -87,7 +86,7 @@ class ContactsListViewModel: ObservableObject {
 					)
 					
 					DispatchQueue.main.async {
-						self.operationInProgress = false
+						SharedMainViewModel.shared.operationInProgress = false
 						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 						ToastViewModel.shared.displayToast = true
 					}
@@ -113,7 +112,7 @@ class ContactsListViewModel: ObservableObject {
 								let model = ConversationModel(chatRoom: chatRoom)
 								DispatchQueue.main.async {
 									self.displayedConversation = model
-									self.operationInProgress = false
+									SharedMainViewModel.shared.operationInProgress = false
 								}
 							} else {
 								Log.info("\(ConversationForwardMessageViewModel.TAG) Conversation isn't in Created state yet (state is \(state)), wait for it")
@@ -126,14 +125,14 @@ class ContactsListViewModel: ObservableObject {
 							let model = ConversationModel(chatRoom: chatRoom)
 							DispatchQueue.main.async {
 								self.displayedConversation = model
-								self.operationInProgress = false
+								SharedMainViewModel.shared.operationInProgress = false
 							}
 						}
 					} catch {
 						Log.error("\(ConversationForwardMessageViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())")
 						
 						DispatchQueue.main.async {
-							self.operationInProgress = false
+							SharedMainViewModel.shared.operationInProgress = false
 							ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 							ToastViewModel.shared.displayToast = true
 						}
@@ -145,7 +144,7 @@ class ContactsListViewModel: ObservableObject {
 					let model = ConversationModel(chatRoom: existingChatRoom!)
 					DispatchQueue.main.async {
 						self.displayedConversation = model
-						self.operationInProgress = false
+						SharedMainViewModel.shared.operationInProgress = false
 					}
 				}
 			} catch {
@@ -164,7 +163,7 @@ class ContactsListViewModel: ObservableObject {
 					self.contactChatRoomDelegate = nil
 				}
 				DispatchQueue.main.async {
-					self.operationInProgress = false
+					SharedMainViewModel.shared.operationInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 					ToastViewModel.shared.displayToast = true
 				}
@@ -180,18 +179,18 @@ class ContactsListViewModel: ObservableObject {
 					self.contactChatRoomDelegate = nil
 				}
 				let model = ConversationModel(chatRoom: chatRoom)
-				if 	self.operationInProgress == false {
+				if 	SharedMainViewModel.shared.operationInProgress == false {
 					DispatchQueue.main.async {
-						self.operationInProgress = true
+						SharedMainViewModel.shared.operationInProgress = true
 					}
 					
 					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.operationInProgress = false
+						SharedMainViewModel.shared.operationInProgress = false
 						self.displayedConversation = model
 					}
 				} else {
 					DispatchQueue.main.async {
-						self.operationInProgress = false
+						SharedMainViewModel.shared.operationInProgress = false
 						self.displayedConversation = model
 					}
 				}
@@ -203,7 +202,7 @@ class ContactsListViewModel: ObservableObject {
 					self.contactChatRoomDelegate = nil
 				}
 				DispatchQueue.main.async {
-					self.operationInProgress = false
+					SharedMainViewModel.shared.operationInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 					ToastViewModel.shared.displayToast = true
 				}

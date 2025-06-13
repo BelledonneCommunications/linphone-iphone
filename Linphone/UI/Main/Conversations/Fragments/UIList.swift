@@ -102,10 +102,11 @@ struct UIList: UIViewRepresentable {
 	
 	private static var sharedCoordinator: Coordinator?
 	
-	@ObservedObject var viewModel: ChatViewModel
-	@ObservedObject var paginationState: PaginationState
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@StateObject private var viewModel = ChatViewModel()
+	@StateObject private var paginationState = PaginationState()
+	
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
 	
 	let geometryProxy: GeometryProxy
 	let sections: [MessagesSection]
@@ -445,7 +446,8 @@ struct UIList: UIViewRepresentable {
 			let row = sections[indexPath.section].rows[indexPath.row]
 			if #available(iOS 16.0, *) {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
-					ChatBubbleView(conversationViewModel: parent.conversationViewModel, eventLogMessage: row, geometryProxy: geometryProxy)
+					ChatBubbleView(eventLogMessage: row, geometryProxy: geometryProxy)
+						.environmentObject(parent.conversationViewModel)
 						.padding(.vertical, 2)
 						.padding(.horizontal, 10)
 						.onTapGesture { }

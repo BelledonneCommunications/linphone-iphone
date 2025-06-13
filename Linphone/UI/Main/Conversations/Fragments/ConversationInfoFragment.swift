@@ -25,12 +25,9 @@ struct ConversationInfoFragment: View {
 	
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
-	@ObservedObject var contactsListViewModel: ContactsListViewModel
-	@ObservedObject var editContactViewModel: EditContactViewModel
-	@ObservedObject var meetingViewModel: MeetingViewModel
-	@ObservedObject var accountProfileViewModel: AccountProfileViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
+	@EnvironmentObject var accountProfileViewModel: AccountProfileViewModel
 	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	
@@ -39,7 +36,7 @@ struct ConversationInfoFragment: View {
 	@Binding var isShowStartCallGroupPopup: Bool
 	@Binding var isShowInfoConversationFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
-	@Binding var indexPage: Int
+	@Binding var isShowEditContactFragmentAddress: String
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
 	
@@ -222,10 +219,12 @@ struct ConversationInfoFragment: View {
 											
 											Button(action: {
 												if SharedMainViewModel.shared.displayedConversation != nil {
+													/*
 													meetingViewModel.subject = SharedMainViewModel.shared.displayedConversation!.subject
 													meetingViewModel.participants = conversationViewModel.participants
+													 */
 													SharedMainViewModel.shared.displayedConversation = nil
-													indexPage = 3
+													SharedMainViewModel.shared.changeIndexView(indexViewInt: 3)
 													withAnimation {
 														isShowScheduleMeetingFragment = true
 													}
@@ -351,21 +350,18 @@ struct ConversationInfoFragment: View {
 																		
 																		let friendIndex = contactsManager.avatarListModel.first(
 																			where: {$0.addresses.contains(where: {$0 == addressConv})})
+																		
+																		SharedMainViewModel.shared.displayedCall = nil
+																		SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+																		
 																		if friendIndex != nil {
 																			withAnimation {
-																				SharedMainViewModel.shared.displayedConversation = nil
-																				indexPage = 0
 																				SharedMainViewModel.shared.displayedFriend = friendIndex
 																			}
 																		} else {
 																			withAnimation {
-																				SharedMainViewModel.shared.displayedConversation = nil
-																				indexPage = 0
-																				
 																				isShowEditContactFragment.toggle()
-																				editContactViewModel.sipAddresses.removeAll()
-																				editContactViewModel.sipAddresses.append(String(participantConversationModel.address.dropFirst(4) ?? ""))
-																				editContactViewModel.sipAddresses.append("")
+																				isShowEditContactFragmentAddress = String(participantConversationModel.address.dropFirst(4))
 																			}
 																		}
 																	},
@@ -526,26 +522,24 @@ struct ConversationInfoFragment: View {
 												Button(
 													action: {
 														if SharedMainViewModel.shared.displayedConversation != nil {
-															
-															let addressConv = conversationViewModel.participantConversationModel.first?.address ?? ""
-															
-															let friendIndex = contactsManager.avatarListModel.first(
-																where: {$0.addresses.contains(where: {$0 == addressConv})})
-															if friendIndex != nil {
-																withAnimation {
-																	SharedMainViewModel.shared.displayedConversation = nil
-																	indexPage = 0
-																	SharedMainViewModel.shared.displayedFriend = friendIndex
-																}
-															} else {
-																withAnimation {
-																	SharedMainViewModel.shared.displayedConversation = nil
-																	indexPage = 0
-																	
-																	isShowEditContactFragment.toggle()
-																	editContactViewModel.sipAddresses.removeAll()
-																	editContactViewModel.sipAddresses.append(String(conversationViewModel.participantConversationModel.first?.address.dropFirst(4) ?? ""))
-																	editContactViewModel.sipAddresses.append("")
+															if let participantConversationModel = conversationViewModel.participantConversationModel.first {
+																let addressConv = participantConversationModel.address
+																
+																let friendIndex = contactsManager.avatarListModel.first(
+																	where: {$0.addresses.contains(where: {$0 == addressConv})})
+																
+																SharedMainViewModel.shared.displayedCall = nil
+																SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+																
+																if friendIndex != nil {
+																	withAnimation {
+																		SharedMainViewModel.shared.displayedFriend = friendIndex
+																	}
+																} else {
+																	withAnimation {
+																		isShowEditContactFragment.toggle()
+																		isShowEditContactFragmentAddress = String(participantConversationModel.address.dropFirst(4))
+																	}
 																}
 															}
 														}
@@ -696,19 +690,12 @@ struct ConversationInfoFragment: View {
 
 #Preview {
 	ConversationInfoFragment(
-		conversationViewModel: ConversationViewModel(),
-		conversationsListViewModel: ConversationsListViewModel(),
-		contactsListViewModel: ContactsListViewModel(),
-		editContactViewModel: EditContactViewModel(),
-		meetingViewModel: MeetingViewModel(),
-		accountProfileViewModel: AccountProfileViewModel(),
-		addParticipantsViewModel: AddParticipantsViewModel(),
 		isMuted: .constant(false),
 		isShowEphemeralFragment: .constant(false),
 		isShowStartCallGroupPopup: .constant(false),
 		isShowInfoConversationFragment: .constant(true),
 		isShowEditContactFragment: .constant(false),
-		indexPage: .constant(0),
+		isShowEditContactFragmentAddress: .constant(""),
 		isShowScheduleMeetingFragment: .constant(false)
 	)
 }

@@ -20,7 +20,10 @@
 import SwiftUI
 
 struct StartGroupConversationFragment: View {
-	@ObservedObject var startConversationViewModel: StartConversationViewModel
+	
+	@EnvironmentObject var startConversationViewModel: StartConversationViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
+	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	
 	var body: some View {
@@ -32,5 +35,5 @@ struct StartGroupConversationFragment: View {
 }
 
 #Preview {
-	StartGroupConversationFragment(startConversationViewModel: StartConversationViewModel())
+	StartGroupConversationFragment()
 }

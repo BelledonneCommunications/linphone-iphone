@@ -27,7 +27,7 @@ struct ChatBubbleView: View {
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	let eventLogMessage: EventLogMessage
 	
@@ -603,9 +603,9 @@ struct ChatBubbleView: View {
 				.clipped()
 			} else if eventLogMessage.message.attachments.first!.type == .voiceRecording {
 				CustomSlider(
-					conversationViewModel: conversationViewModel,
 					eventLogMessage: eventLogMessage
 				)
+				.environmentObject(conversationViewModel)
 				.frame(width: geometryProxy.size.width - 160, height: 50)
 			} else {
 				HStack {
@@ -990,7 +990,7 @@ extension View {
 }
 
 struct CustomSlider: View {
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	let eventLogMessage: EventLogMessage
 	
@@ -1183,7 +1183,7 @@ struct CachedAsyncImage<Placeholder: View>: View {
 
 /*
  #Preview {
- ChatBubbleView(conversationViewModel: ConversationViewModel(), index: 0)
+ ChatBubbleView(index: 0)
  }
  */
 

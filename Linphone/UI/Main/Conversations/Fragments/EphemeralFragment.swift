@@ -21,7 +21,7 @@ import SwiftUI
 import linphonesw
 
 struct EphemeralFragment: View {
-	@ObservedObject var conversationViewModel: ConversationViewModel
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	@State private var selectedOption = NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "")
 	let options = [
@@ -151,7 +151,6 @@ struct EphemeralFragment: View {
 
 #Preview {
 	EphemeralFragment(
-		conversationViewModel: ConversationViewModel(),
 		isShowEphemeralFragment: .constant(true)
 	)
 }
