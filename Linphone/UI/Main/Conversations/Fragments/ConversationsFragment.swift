@@ -21,8 +21,7 @@ import SwiftUI
 
 struct ConversationsFragment: View {
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
@@ -32,11 +31,9 @@ struct ConversationsFragment: View {
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
-				ConversationsListFragment(conversationViewModel: conversationViewModel,
-										  conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet, text: $text)
+				ConversationsListFragment(showingSheet: $showingSheet, text: $text)
 					.sheet(isPresented: $showingSheet) {
 						ConversationsListBottomSheet(
-							conversationsListViewModel: conversationsListViewModel,
 							showingSheet: $showingSheet
 						)
 						.presentationDetents(
@@ -46,11 +43,9 @@ struct ConversationsFragment: View {
 						)
 					}
 			} else {
-				ConversationsListFragment(conversationViewModel: conversationViewModel,
-										  conversationsListViewModel: conversationsListViewModel, showingSheet: $showingSheet, text: $text)
+				ConversationsListFragment(showingSheet: $showingSheet, text: $text)
 					.halfSheet(showSheet: $showingSheet) {
 						ConversationsListBottomSheet(
-							conversationsListViewModel: conversationsListViewModel,
 							showingSheet: $showingSheet
 						)
 					} onDismiss: {}
@@ -60,5 +55,5 @@ struct ConversationsFragment: View {
 }
 
 #Preview {
-	ConversationsFragment(conversationViewModel: ConversationViewModel(), conversationsListViewModel: ConversationsListViewModel(), text: .constant(""))
+	ConversationsFragment(text: .constant(""))
 }

@@ -27,8 +27,8 @@ struct ConversationsListBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@State private var orientation = UIDevice.current.orientation
-	
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+    
+    @EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
 	
@@ -54,12 +54,10 @@ struct ConversationsListBottomSheet: View {
 			
 			Spacer()
 			
-			if conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly {
+			if let selectedConversation = conversationsListViewModel.selectedConversation, !selectedConversation.isReadOnly {
 				Button {
-					if conversationsListViewModel.selectedConversation != nil {
-						conversationsListViewModel.markAsReadSelectedConversation()
-						conversationsListViewModel.updateUnreadMessagesCount()
-					}
+                    conversationsListViewModel.markAsReadSelectedConversation()
+                    conversationsListViewModel.updateUnreadMessagesCount()
 					
 					if #available(iOS 16.0, *) {
 						if idiom != .pad {
@@ -95,9 +93,7 @@ struct ConversationsListBottomSheet: View {
 				.frame(maxWidth: .infinity)
 				
 				Button {
-					if conversationsListViewModel.selectedConversation != nil {
-						conversationsListViewModel.selectedConversation!.toggleMute()
-					}
+                    selectedConversation.toggleMute()
 					
 					if #available(iOS 16.0, *) {
 						if idiom != .pad {
@@ -112,13 +108,13 @@ struct ConversationsListBottomSheet: View {
 					}
 				} label: {
 					HStack {
-						Image(conversationsListViewModel.selectedConversation!.isMuted ? "bell" : "bell-slash")
+						Image(selectedConversation.isMuted ? "bell" : "bell-slash")
 							.renderingMode(.template)
 							.resizable()
 							.foregroundStyle(Color.grayMain2c500)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
-						Text(conversationsListViewModel.selectedConversation!.isMuted ? "conversation_action_unmute" : "conversation_action_mute")
+						Text(selectedConversation.isMuted ? "conversation_action_unmute" : "conversation_action_mute")
 							.default_text_style(styleSize: 16)
 						Spacer()
 					}
@@ -132,11 +128,10 @@ struct ConversationsListBottomSheet: View {
 				}
 				.frame(maxWidth: .infinity)
 				
-				if conversationsListViewModel.selectedConversation != nil
-					&& !conversationsListViewModel.selectedConversation!.isGroup {
+				if !selectedConversation.isGroup {
 					Button {
-						if !conversationsListViewModel.selectedConversation!.isGroup {
-							conversationsListViewModel.selectedConversation!.call()
+						if !selectedConversation.isGroup {
+                            selectedConversation.call()
 						}
 						
 						if #available(iOS 16.0, *) {
@@ -173,79 +168,77 @@ struct ConversationsListBottomSheet: View {
 					}
 					.frame(maxWidth: .infinity)
 				}
-			}
-			
-			Button {
-				conversationsListViewModel.selectedConversation!.deleteChatRoom()
-				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
-					} else {
-						showingSheet.toggle()
-						dismiss()
-					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
-				}
-			} label: {
-				HStack {
-					Image("trash-simple")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.redDanger500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text("conversation_action_delete")
-						.foregroundStyle(Color.redDanger500)
-						.default_text_style(styleSize: 16)
-					Spacer()
-				}
-				.frame(maxHeight: .infinity)
-			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
-			if conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly {
-				VStack {
-					Divider()
-				}
-				.frame(maxWidth: .infinity)
-				
-				Button {
-					if conversationsListViewModel.selectedConversation != nil {
-						conversationsListViewModel.selectedConversation!.leave()
-						conversationsListViewModel.selectedConversation!.isReadOnly = true
-					}
-					
-					if #available(iOS 16.0, *) {
-						if idiom != .pad {
-							showingSheet.toggle()
-						} else {
-							showingSheet.toggle()
-							dismiss()
-						}
-					} else {
-						showingSheet.toggle()
-						dismiss()
-					}
-				} label: {
-					HStack {
-						Image("sign-out")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.padding(.all, 10)
-						Text("conversation_action_leave_group")
-							.default_text_style(styleSize: 16)
-						Spacer()
-					}
-					.frame(maxHeight: .infinity)
-				}
-				.padding(.horizontal, 30)
-				.background(Color.gray100)
+                
+                Button {
+                    selectedConversation.deleteChatRoom()
+                    
+                    if #available(iOS 16.0, *) {
+                        if idiom != .pad {
+                            showingSheet.toggle()
+                        } else {
+                            showingSheet.toggle()
+                            dismiss()
+                        }
+                    } else {
+                        showingSheet.toggle()
+                        dismiss()
+                    }
+                } label: {
+                    HStack {
+                        Image("trash-simple")
+                            .renderingMode(.template)
+                            .resizable()
+                            .foregroundStyle(Color.redDanger500)
+                            .frame(width: 25, height: 25, alignment: .leading)
+                            .padding(.all, 10)
+                        Text("conversation_action_delete")
+                            .foregroundStyle(Color.redDanger500)
+                            .default_text_style(styleSize: 16)
+                        Spacer()
+                    }
+                    .frame(maxHeight: .infinity)
+                }
+                .padding(.horizontal, 30)
+                .background(Color.gray100)
+                
+                if !selectedConversation.isReadOnly {
+                    VStack {
+                        Divider()
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Button {
+                        selectedConversation.leave()
+                        selectedConversation.isReadOnly = true
+                        
+                        if #available(iOS 16.0, *) {
+                            if idiom != .pad {
+                                showingSheet.toggle()
+                            } else {
+                                showingSheet.toggle()
+                                dismiss()
+                            }
+                        } else {
+                            showingSheet.toggle()
+                            dismiss()
+                        }
+                    } label: {
+                        HStack {
+                            Image("sign-out")
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundStyle(Color.grayMain2c500)
+                                .frame(width: 25, height: 25, alignment: .leading)
+                                .padding(.all, 10)
+                            Text("conversation_action_leave_group")
+                                .default_text_style(styleSize: 16)
+                            Spacer()
+                        }
+                        .frame(maxHeight: .infinity)
+                    }
+                    .padding(.horizontal, 30)
+                    .background(Color.gray100)
+                }
 			}
 		}
 		.background(Color.gray100)
@@ -257,5 +250,5 @@ struct ConversationsListBottomSheet: View {
 }
 
 #Preview {
-	ConversationsListBottomSheet(conversationsListViewModel: ConversationsListViewModel(), showingSheet: .constant(true))
+	ConversationsListBottomSheet(showingSheet: .constant(true))
 }

@@ -29,6 +29,7 @@ class ConversationsListViewModel: ObservableObject {
 	
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
+	private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	private var coreConversationDelegate: CoreDelegate?
 	
@@ -402,7 +403,9 @@ class ConversationsListViewModel: ObservableObject {
 			
 			if unreadMessagesCount > 0 {
 				self.selectedConversation!.chatRoom.markAsRead()
-				self.selectedConversation!.unreadMessagesCount = 0
+                DispatchQueue.main.async {
+                    self.selectedConversation!.unreadMessagesCount = 0
+                }
 			}
 		}
 	}
@@ -427,6 +430,44 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func resetFilterConversations() {
 		filterConversations(filter: "")
+	}
+	
+	func getChatRoomWithStringAddress(stringAddr: String) {
+		CoreContext.shared.doOnCoreQueue { _ in
+			do {
+				let stringAddrCleaned = stringAddr.components(separatedBy: ";gr=")
+				let address = try Factory.Instance.createAddress(addr: stringAddrCleaned[0])
+				if let dispChatRoom = self.conversationsList.first(where: {$0.chatRoom.peerAddress != nil && $0.chatRoom.peerAddress!.equal(address2: address)}) {
+					if self.sharedMainViewModel.displayedConversation != nil {
+						if dispChatRoom.id != self.sharedMainViewModel.displayedConversation!.id {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
+							}
+						}
+					} else {
+						DispatchQueue.main.async {
+							self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
+						}
+					}
+				}
+			} catch {
+			}
+		}
+	}
+	
+	func changeDisplayedChatRoom(conversationModel: ConversationModel) {
+		CoreContext.shared.doOnCoreQueue { core in
+			let nilParams: ConferenceParams? = nil
+			if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: conversationModel.chatRoom.peerAddress, participants: nil) {
+				if LinphoneUtils.getChatRoomId(room: newChatRoom) == conversationModel.id {
+					DispatchQueue.main.async {
+						withAnimation {
+							self.sharedMainViewModel.displayedConversation = conversationModel
+						}
+					}
+				}
+			}
+		}
 	}
 }
 // swiftlint:enable line_length

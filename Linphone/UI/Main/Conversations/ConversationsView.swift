@@ -21,8 +21,8 @@ import SwiftUI
 
 struct ConversationsView: View {
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
+	
 	@Binding var text: String
 	
 	@Binding var isShowStartConversationFragment: Bool
@@ -30,7 +30,7 @@ struct ConversationsView: View {
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ConversationsFragment(conversationViewModel: conversationViewModel, conversationsListViewModel: conversationsListViewModel, text: $text)
+				ConversationsFragment(text: $text)
 				
 				Button {
 					withAnimation {
@@ -59,8 +59,6 @@ struct ConversationsView: View {
 
 #Preview {
 	ConversationsListFragment(
-		conversationViewModel: ConversationViewModel(),
-		conversationsListViewModel: ConversationsListViewModel(),
 	  	showingSheet: .constant(false),
 		text: .constant("")
 	)

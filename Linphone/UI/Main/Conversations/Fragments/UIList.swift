@@ -376,7 +376,7 @@ struct UIList: UIViewRepresentable {
 					guard !self.sections.isEmpty,
 						  let firstSection = self.sections.first,
 						  let firstConversationSection = parent.conversationViewModel.conversationMessagesSection.first,
-						  let displayedConversation = parent.conversationViewModel.displayedConversation,
+						  let displayedConversation = SharedMainViewModel.shared.displayedConversation,
 						  let tableView = self.tableView,
 						  firstSection.chatRoomID == displayedConversation.id,
 						  firstSection.rows.count == firstConversationSection.rows.count else {
@@ -391,8 +391,8 @@ struct UIList: UIViewRepresentable {
 					if !self.sections.isEmpty {
 						if self.sections.first != nil
 							&& parent.conversationViewModel.conversationMessagesSection.first != nil
-							&& parent.conversationViewModel.displayedConversation != nil
-							&& self.sections.first!.chatRoomID == parent.conversationViewModel.displayedConversation!.id
+							&& SharedMainViewModel.shared.displayedConversation != nil
+							&& self.sections.first!.chatRoomID == SharedMainViewModel.shared.displayedConversation!.id
 							&& self.sections.first!.rows.count == parent.conversationViewModel.conversationMessagesSection.first!.rows.count {
 							if let dict = notification.userInfo as NSDictionary? {
 								if let index = dict["index"] as? Int {

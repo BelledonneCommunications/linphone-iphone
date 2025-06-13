@@ -32,8 +32,8 @@ class ConversationViewModel: ObservableObject {
 	static let TAG = "[ConversationViewModel]"
 	
 	private var coreContext = CoreContext.shared
+	private var sharedMainViewModel = SharedMainViewModel.shared
 	
-	@Published var displayedConversation: ConversationModel?
 	@Published var displayedConversationHistorySize: Int = 0
 	@Published var displayedConversationUnreadMessagesCount: Int = 0
 	
@@ -119,11 +119,20 @@ class ConversationViewModel: ObservableObject {
 		var isMe: Bool = false
 	}
 	
-	init() {}
+	init() {
+		// TODO a check si utile
+		/*
+		self.selectedMessage = nil
+		self.resetMessage()
+		self.removeConversationDelegate()
+		self.addConversationDelegate(chatRoom: newChatRoom)
+		self.getMessages()
+		 */
+	}
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { _ in
-			if let chatroom = self.displayedConversation?.chatRoom {
+			if let chatroom = self.sharedMainViewModel.displayedConversation?.chatRoom {
 				let chatRoomDelegate = ChatRoomDelegateStub( onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
 					self.computeComposingLabel()
 				}, onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
@@ -143,16 +152,16 @@ class ConversationViewModel: ObservableObject {
 					self.getNewMessages(eventLogs: [eventLogs])
 				}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
-					if self.displayedConversation != nil {
+					if self.sharedMainViewModel.displayedConversation != nil {
 						DispatchQueue.main.async {
-							self.displayedConversation!.isReadOnly = false
+							self.sharedMainViewModel.displayedConversation!.isReadOnly = false
 						}
 					}
 				}, onConferenceLeft: {(_: ChatRoom, eventLog: EventLog) in
 					self.getNewMessages(eventLogs: [eventLog])
-					if self.displayedConversation != nil {
+					if self.sharedMainViewModel.displayedConversation != nil {
 						DispatchQueue.main.async {
-							self.displayedConversation!.isReadOnly = true
+							self.sharedMainViewModel.displayedConversation!.isReadOnly = true
 						}
 					}
 				}, onEphemeralEvent: {(_: ChatRoom, eventLogs: EventLog) in
@@ -189,16 +198,16 @@ class ConversationViewModel: ObservableObject {
 			self.getEventMessage(eventLog: eventLog)
 		}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
 			self.getEventMessage(eventLog: eventLog)
-			if self.displayedConversation != nil {
+			if self.sharedMainViewModel.displayedConversation != nil {
 				DispatchQueue.main.async {
-					self.displayedConversation!.isReadOnly = false
+					self.sharedMainViewModel.displayedConversation!.isReadOnly = false
 				}
 			}
 		}, onConferenceLeft: {(_: ChatRoom, eventLog: EventLog) in
 			self.getEventMessage(eventLog: eventLog)
-			if self.displayedConversation != nil {
+			if self.sharedMainViewModel.displayedConversation != nil {
 				DispatchQueue.main.async {
-					self.displayedConversation!.isReadOnly = true
+					self.sharedMainViewModel.displayedConversation!.isReadOnly = true
 				}
 			}
 		}, onEphemeralEvent: {(_: ChatRoom, eventLog: EventLog) in
@@ -210,7 +219,7 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func addChatMessageDelegate(message: ChatMessage) {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			var statusTmp: Message.Status? = .sending
 			switch message.state {
 			case .InProgress:
@@ -452,8 +461,8 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getHistorySize() {
-		if self.displayedConversation != nil {
-			let historySize = self.displayedConversation!.chatRoom.historyEventsSize
+		if self.sharedMainViewModel.displayedConversation != nil {
+			let historySize = self.sharedMainViewModel.displayedConversation!.chatRoom.historyEventsSize
 			DispatchQueue.main.async {
 				self.displayedConversationHistorySize = historySize
 			}
@@ -461,8 +470,8 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getUnreadMessagesCount() {
-		if self.displayedConversation != nil {
-			let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+		if self.sharedMainViewModel.displayedConversation != nil {
+			let unreadMessagesCount = self.sharedMainViewModel.displayedConversation!.chatRoom.unreadMessagesCount
 			DispatchQueue.main.async {
 				self.displayedConversationUnreadMessagesCount = unreadMessagesCount
 			}
@@ -471,11 +480,11 @@ class ConversationViewModel: ObservableObject {
 	
 	func markAsRead() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				let unreadMessagesCount = self.displayedConversation!.chatRoom.unreadMessagesCount
+			if self.sharedMainViewModel.displayedConversation != nil {
+				let unreadMessagesCount = self.sharedMainViewModel.displayedConversation!.chatRoom.unreadMessagesCount
 				
 				if unreadMessagesCount > 0 {
-					self.displayedConversation!.chatRoom.markAsRead()
+					self.sharedMainViewModel.displayedConversation!.chatRoom.markAsRead()
 					
 					DispatchQueue.main.async {
 						self.displayedConversationUnreadMessagesCount = 0
@@ -486,13 +495,13 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getParticipantConversationModel() {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			DispatchQueue.main.async {
 				self.isUserAdmin = false
 				self.participantConversationModelAdmin.removeAll()
 				self.participantConversationModel.removeAll()
 			}
-			self.displayedConversation!.chatRoom.participants.forEach { participant in
+			self.sharedMainViewModel.displayedConversation!.chatRoom.participants.forEach { participant in
 				if participant.address != nil {
 					ContactAvatarModel.getAvatarModelFromAddress(address: participant.address!) { avatarResult in
 						let avatarModelTmp = avatarResult
@@ -510,8 +519,8 @@ class ConversationViewModel: ObservableObject {
 				}
 			}
 			
-			if !self.displayedConversation!.isReadOnly {
-				if let currentUser = self.displayedConversation?.chatRoom.me,
+			if !self.sharedMainViewModel.displayedConversation!.isReadOnly {
+				if let currentUser = self.sharedMainViewModel.displayedConversation?.chatRoom.me,
 				   let address = currentUser.address {
 					ContactAvatarModel.getAvatarModelFromAddress(address: address) { avatarResult in
 						let avatarModelTmp = avatarResult
@@ -546,7 +555,7 @@ class ConversationViewModel: ObservableObject {
 		self.mediasToSend.removeAll()
 		self.messageToReply = nil
 		
-		self.conversationInfoPopupText = displayedConversation?.subject ?? ""
+		self.conversationInfoPopupText = self.sharedMainViewModel.displayedConversation?.subject ?? ""
 		
 		self.attachments.removeAll()
 		
@@ -557,8 +566,8 @@ class ConversationViewModel: ObservableObject {
 			self.computeComposingLabel()
 		 	self.getEphemeralTime()
 			
-			if self.displayedConversation != nil {
-				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
+			if self.sharedMainViewModel.displayedConversation != nil {
+				let historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
 				
 				var conversationMessage: [EventLogMessage] = []
 				historyEvents.enumerated().forEach { index, eventLog in
@@ -789,9 +798,9 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				DispatchQueue.main.async {
-					if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
+					if self.conversationMessagesSection.isEmpty && self.sharedMainViewModel.displayedConversation != nil {
 						Log.info("[ConversationViewModel] Get Messages \(self.conversationMessagesSection.count)")
-						self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: conversationMessage.reversed()))
+						self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.sharedMainViewModel.displayedConversation!.id, rows: conversationMessage.reversed()))
 					}
 				}
 			}
@@ -800,10 +809,10 @@ class ConversationViewModel: ObservableObject {
 	
 	func getOldMessages() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil && !self.conversationMessagesSection.isEmpty
+			if self.sharedMainViewModel.displayedConversation != nil && !self.conversationMessagesSection.isEmpty
 				&& self.displayedConversationHistorySize > self.conversationMessagesSection[0].rows.count && !self.oldMessageReceived {
 				self.oldMessageReceived = true
-				let historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
+				let historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: self.conversationMessagesSection[0].rows.count, end: self.conversationMessagesSection[0].rows.count + 30)
 				var conversationMessagesTmp: [EventLogMessage] = []
 				
 				historyEvents.enumerated().reversed().forEach { index, eventLog in
@@ -1058,7 +1067,7 @@ class ConversationViewModel: ObservableObject {
 		
 		var conversationMessagesTmp: [EventLogMessage] = []
 		
-		let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
+		let unreadMessagesCount = self.sharedMainViewModel.displayedConversation != nil ? self.sharedMainViewModel.displayedConversation!.chatRoom.unreadMessagesCount : 0
 		
 		if let firstEventLogId = self.conversationMessagesSection[0].rows.first?.eventModel.eventLogId,
 		   let lastMessageId = eventLogs.last?.chatMessage?.messageId,
@@ -1317,8 +1326,8 @@ class ConversationViewModel: ObservableObject {
 							self.conversationMessagesSection[0].rows[0].message.isFirstMessage = false
 						}
 						
-						if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
-							self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: conversationMessagesTmp))
+						if self.conversationMessagesSection.isEmpty && self.sharedMainViewModel.displayedConversation != nil {
+							self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.sharedMainViewModel.displayedConversation!.id, rows: conversationMessagesTmp))
 						} else {
 							self.conversationMessagesSection[0].rows.insert(contentsOf: conversationMessagesTmp, at: 0)
 						}
@@ -1337,7 +1346,7 @@ class ConversationViewModel: ObservableObject {
 	func sendFirstMessage(eventLog: EventLog) {
 		var conversationMessagesTmp: [EventLogMessage] = []
 		
-		let unreadMessagesCount = self.displayedConversation != nil ? self.displayedConversation!.chatRoom.unreadMessagesCount : 0
+		let unreadMessagesCount = self.sharedMainViewModel.displayedConversation != nil ? self.sharedMainViewModel.displayedConversation!.chatRoom.unreadMessagesCount : 0
 		var attachmentNameList: String = ""
 		var attachmentList: [Attachment] = []
 		var contentText = ""
@@ -1539,8 +1548,8 @@ class ConversationViewModel: ObservableObject {
 		if let eventLogMessage = conversationMessagesTmp.last {
 			DispatchQueue.main.async {
 				   Log.info("[ConversationViewModel] Send first message")
-				   if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
-					   self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: conversationMessagesTmp))
+				   if self.conversationMessagesSection.isEmpty && self.sharedMainViewModel.displayedConversation != nil {
+					   self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.sharedMainViewModel.displayedConversation!.id, rows: conversationMessagesTmp))
 				   } else {
 					   self.conversationMessagesSection[0].rows.append(eventLogMessage)
 				   }
@@ -1569,8 +1578,8 @@ class ConversationViewModel: ObservableObject {
 		
 		DispatchQueue.main.async {
 			Log.info("[ConversationViewModel] Get event message")
-			if self.conversationMessagesSection.isEmpty && self.displayedConversation != nil {
-				self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.displayedConversation!.id, rows: [eventLogMessage]))
+			if self.conversationMessagesSection.isEmpty && self.sharedMainViewModel.displayedConversation != nil {
+				self.conversationMessagesSection.append(MessagesSection(date: Date(), chatRoomID: self.sharedMainViewModel.displayedConversation!.id, rows: [eventLogMessage]))
 			} else {
 				self.conversationMessagesSection[0].rows.insert(eventLogMessage, at: 0)
 			}
@@ -1601,19 +1610,19 @@ class ConversationViewModel: ObservableObject {
 					NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": indexMessage, "animated": true])
 				} else {
 					if self.conversationMessagesSection[0].rows.last != nil {
-						let firstEventLog = self.displayedConversation?.chatRoom.getHistoryRangeEvents(
+						let firstEventLog = self.sharedMainViewModel.displayedConversation?.chatRoom.getHistoryRangeEvents(
 							begin: self.conversationMessagesSection[0].rows.count - 1,
 							end: self.conversationMessagesSection[0].rows.count
 						)
-						let lastEventLog = self.displayedConversation!.chatRoom.findEventLog(messageId: message.replyMessage!.id)
+						let lastEventLog = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: message.replyMessage!.id)
 						
-						var historyEvents = self.displayedConversation!.chatRoom.getHistoryRangeBetween(
+						var historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeBetween(
 							firstEvent: firstEventLog!.first,
 							lastEvent: lastEventLog,
 							filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
 						)
 						
-						let historyEventsAfter = self.displayedConversation!.chatRoom.getHistoryRangeEvents(
+						let historyEventsAfter = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(
 							begin: self.conversationMessagesSection[0].rows.count + historyEvents.count + 1,
 							end: self.conversationMessagesSection[0].rows.count + historyEvents.count + 30
 						)
@@ -1884,17 +1893,17 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func sendMessage(audioRecorder: AudioRecorder? = nil) {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			coreContext.doOnCoreQueue { _ in
 				do {
 					var message: ChatMessage?
 					if self.messageToReply != nil {
-						let chatMessageToReply = self.displayedConversation!.chatRoom.findEventLog(messageId: self.messageToReply!.eventModel.eventLogId)?.chatMessage
+						let chatMessageToReply = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: self.messageToReply!.eventModel.eventLogId)?.chatMessage
 						if chatMessageToReply != nil {
-							message = try self.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
+							message = try self.sharedMainViewModel.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
 						}
 					} else {
-						message = try self.displayedConversation!.chatRoom.createEmptyMessage()
+						message = try self.sharedMainViewModel.displayedConversation!.chatRoom.createEmptyMessage()
 					}
 					
 					let toSend = self.messageText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -2015,7 +2024,7 @@ class ConversationViewModel: ObservableObject {
 					self.addConversationDelegate(chatRoom: newChatRoom)
 					DispatchQueue.main.async {
 						withAnimation {
-							self.displayedConversation = conversationModel
+							self.sharedMainViewModel.displayedConversation = conversationModel
 						}
 						self.getMessages()
 					}
@@ -2026,7 +2035,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func resetDisplayedChatRoom() {
 		if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
-			if let displayedConversation = self.displayedConversation {
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
 				CoreContext.shared.doOnCoreQueue { core in
 					let nilParams: ConferenceParams? = nil
 					if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: displayedConversation.chatRoom.peerAddress, participants: nil) {
@@ -2034,7 +2043,7 @@ class ConversationViewModel: ObservableObject {
 							self.addConversationDelegate(chatRoom: newChatRoom)
 							let conversation = ConversationModel(chatRoom: newChatRoom)
 							DispatchQueue.main.async {
-								self.displayedConversation = conversation
+								self.sharedMainViewModel.displayedConversation = conversation
 							}
 							self.computeComposingLabel()
 							let historyEventsSizeTmp = newChatRoom.historyEventsSize
@@ -2054,7 +2063,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func downloadContent(chatMessage: ChatMessage, content: Content) {
 		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			if let contentName = content.name {
 				var file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
 				var fileExists = FileUtil.sharedContainerUrl()
@@ -2076,7 +2085,7 @@ class ConversationViewModel: ObservableObject {
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
 				)
-				self.displayedConversation!.downloadContent(chatMessage: chatMessage, content: content)
+				self.sharedMainViewModel.displayedConversation!.downloadContent(chatMessage: chatMessage, content: content)
 			} else {
 				Log.error("[ConversationViewModel] Content name is null, can't download it!")
 			}
@@ -2158,11 +2167,11 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeReaction() {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			coreContext.doOnCoreQueue { _ in
 				if self.selectedMessageToDisplayDetails != nil {
 					Log.info("[ConversationViewModel] Remove reaction to message with ID \(self.selectedMessageToDisplayDetails!.message.id)")
-					let messageToSendReaction = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
+					let messageToSendReaction = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
 					if messageToSendReaction != nil {
 						do {
 							let reaction = try messageToSendReaction!.createReaction(utf8Reaction: "")
@@ -2190,7 +2199,7 @@ class ConversationViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { _ in
 			if self.selectedMessage != nil {
 				Log.info("[ConversationViewModel] Sending reaction \(emoji) to message with ID \(self.selectedMessage!.message.id)")
-				let messageToSendReaction = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
+				let messageToSendReaction = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
 				if messageToSendReaction != nil {
 					do {
 						let reaction = try messageToSendReaction!.createReaction(utf8Reaction: messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji)
@@ -2214,7 +2223,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func resend() {
 		coreContext.doOnCoreQueue { _ in
-			let chatMessageToResend = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
+			let chatMessageToResend = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessage!.eventModel.eventLogId)?.chatMessage
 			if self.selectedMessage != nil && chatMessageToResend != nil {
 				Log.info("[ConversationViewModel] Re-sending message with ID \(chatMessageToResend!)")
 				chatMessageToResend!.send()
@@ -2225,7 +2234,7 @@ class ConversationViewModel: ObservableObject {
 	func prepareBottomSheetForDeliveryStatus() {
 		self.sheetCategories.removeAll()
 		coreContext.doOnCoreQueue { _ in
-			let chatMessageToDisplay = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
+			let chatMessageToDisplay = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
 			if self.selectedMessageToDisplayDetails != nil && chatMessageToDisplay != nil {
 				
 				let participantsImdnDisplayed = chatMessageToDisplay!.getParticipantsByImdnState(state: .Displayed)
@@ -2287,7 +2296,7 @@ class ConversationViewModel: ObservableObject {
 	func prepareBottomSheetForReactions() {
 		self.sheetCategories.removeAll()
 		coreContext.doOnCoreQueue { core in
-			let chatMessageToDisplay = self.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
+			let chatMessageToDisplay = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: self.selectedMessageToDisplayDetails!.eventModel.eventLogId)?.chatMessage
 			if self.selectedMessageToDisplayDetails != nil && chatMessageToDisplay != nil {
 				let dispatchGroup = DispatchGroup()
 				
@@ -2388,15 +2397,15 @@ class ConversationViewModel: ObservableObject {
 	
 	func compose() {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
-				self.displayedConversation!.chatRoom.compose()
+			if self.sharedMainViewModel.displayedConversation != nil {
+				self.sharedMainViewModel.displayedConversation!.chatRoom.compose()
 			}
 		}
 	}
 	
 	func computeComposingLabel() {
-		if self.displayedConversation != nil {
-			let composing = self.displayedConversation!.chatRoom.isRemoteComposing
+		if self.sharedMainViewModel.displayedConversation != nil {
+			let composing = self.sharedMainViewModel.displayedConversation!.chatRoom.isRemoteComposing
 			
 			if !composing {
 				DispatchQueue.main.async {
@@ -2410,7 +2419,7 @@ class ConversationViewModel: ObservableObject {
 			var composingFriends: [String] = []
 			var label = ""
 			
-			for address in self.displayedConversation!.chatRoom.composingAddresses {
+			for address in self.sharedMainViewModel.displayedConversation!.chatRoom.composingAddresses {
 				if let addressCleaned = address.clone() {
 					addressCleaned.clean()
 					
@@ -2440,29 +2449,6 @@ class ConversationViewModel: ObservableObject {
 						self.composingLabel = ""
 					}
 				}
-			}
-		}
-	}
-	
-	func getChatRoomWithStringAddress(conversationsList: [ConversationModel], stringAddr: String) {
-		CoreContext.shared.doOnCoreQueue { _ in
-			do {
-				let stringAddrCleaned = stringAddr.components(separatedBy: ";gr=")
-				let address = try Factory.Instance.createAddress(addr: stringAddrCleaned[0])
-				if let dispChatRoom = conversationsList.first(where: {$0.chatRoom.peerAddress != nil && $0.chatRoom.peerAddress!.equal(address2: address)}) {
-					if self.displayedConversation != nil {
-						if dispChatRoom.id != self.displayedConversation!.id {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-								self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
-							}
-						}
-					} else {
-						DispatchQueue.main.async {
-							self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
-						}
-					}
-				}
-			} catch {
 			}
 		}
 	}
@@ -2549,7 +2535,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func setEphemeralTime(lifetimeString: String) {
 		coreContext.doOnCoreQueue { _ in
-			if self.displayedConversation != nil {
+			if self.sharedMainViewModel.displayedConversation != nil {
 				var lifetime: Int = 0
 				
 				switch lifetimeString {
@@ -2568,11 +2554,11 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				if lifetime == 0 {
-					self.displayedConversation!.chatRoom.ephemeralEnabled = false
-					self.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
+					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralEnabled = false
+					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
 				} else {
-					self.displayedConversation!.chatRoom.ephemeralEnabled = true
-					self.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
+					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralEnabled = true
+					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
 				}
 				
 				self.getEphemeralTime()
@@ -2581,9 +2567,9 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getEphemeralTime() {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			
-			let lifetime = self.displayedConversation!.chatRoom.ephemeralLifetime
+			let lifetime = self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralLifetime
 			DispatchQueue.main.async {
 				switch lifetime {
 				case 60:
@@ -2610,17 +2596,17 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func setNewChatRoomSubject() {
-		if self.displayedConversation != nil && self.conversationInfoPopupText != self.displayedConversation!.subject {
+		if self.sharedMainViewModel.displayedConversation != nil && self.conversationInfoPopupText != self.sharedMainViewModel.displayedConversation!.subject {
 			
 			coreContext.doOnCoreQueue { _ in
-				self.displayedConversation!.chatRoom.subject = self.conversationInfoPopupText
+				self.sharedMainViewModel.displayedConversation!.chatRoom.subject = self.conversationInfoPopupText
 			}
 			
-			self.displayedConversation!.subject = self.conversationInfoPopupText
-			self.displayedConversation!.avatarModel = ContactAvatarModel(
-				friend: self.displayedConversation!.avatarModel.friend,
+			self.sharedMainViewModel.displayedConversation!.subject = self.conversationInfoPopupText
+			self.sharedMainViewModel.displayedConversation!.avatarModel = ContactAvatarModel(
+				friend: self.sharedMainViewModel.displayedConversation!.avatarModel.friend,
 				name: self.conversationInfoPopupText,
-				address: self.displayedConversation!.avatarModel.address,
+				address: self.sharedMainViewModel.displayedConversation!.avatarModel.address,
 				withPresence: false
 			)
 			self.isShowConversationInfoPopup = false
@@ -2638,7 +2624,7 @@ class ConversationViewModel: ObservableObject {
 					continue
 				}
 				
-				if self.displayedConversation!.chatRoom.me != nil && self.displayedConversation!.chatRoom.me!.address != nil && !self.displayedConversation!.chatRoom.me!.address!.weakEqual(address2: addr!) {
+				if self.sharedMainViewModel.displayedConversation!.chatRoom.me != nil && self.sharedMainViewModel.displayedConversation!.chatRoom.me!.address != nil && !self.sharedMainViewModel.displayedConversation!.chatRoom.me!.address!.weakEqual(address2: addr!) {
 					list.append(SelectedAddressModel(addr: addr!, avModel: participant))
 					Log.info("\(ConversationViewModel.TAG) Added participant \(addr!.asStringUriOnly())")
 				}
@@ -2662,7 +2648,7 @@ class ConversationViewModel: ObservableObject {
 			Log.info("\(ConversationViewModel.TAG) Added participant \(selectedAddr.address.asStringUriOnly())")
 		}
 		
-		let participantsAddress = self.displayedConversation!.chatRoom.participants.map { $0.address?.asStringUriOnly() }
+		let participantsAddress = self.sharedMainViewModel.displayedConversation!.chatRoom.participants.map { $0.address?.asStringUriOnly() }
 		let listAddress = list.map { $0.address.asStringUriOnly() }
 		
 		let differences = participantsAddress.difference(from: listAddress)
@@ -2675,17 +2661,17 @@ class ConversationViewModel: ObservableObject {
 				}
 			}
 			
-			let filteredParticipants = self.displayedConversation!.chatRoom.participants.filter { participant in
+			let filteredParticipants = self.sharedMainViewModel.displayedConversation!.chatRoom.participants.filter { participant in
 				differenceAddresses.contains(participant.address!.asStringUriOnly())
 			}
 			
 			coreContext.doOnCoreQueue { _ in
-				_ = self.displayedConversation!.chatRoom.addParticipants(addresses: list.map { $0.address })
-				self.displayedConversation!.chatRoom.removeParticipants(participants: filteredParticipants)
+				_ = self.sharedMainViewModel.displayedConversation!.chatRoom.addParticipants(addresses: list.map { $0.address })
+				self.sharedMainViewModel.displayedConversation!.chatRoom.removeParticipants(participants: filteredParticipants)
 			}
 		} else {
 			coreContext.doOnCoreQueue { _ in
-				_ = self.displayedConversation!.chatRoom.addParticipants(addresses: list.map { $0.address })
+				_ = self.sharedMainViewModel.displayedConversation!.chatRoom.addParticipants(addresses: list.map { $0.address })
 			}
 		}
 		
@@ -2693,10 +2679,10 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func toggleAdminRights(address: String) {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			coreContext.doOnCoreQueue { _ in
-				if let participant = self.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
-					self.displayedConversation!.chatRoom.setParticipantAdminStatus(participant: participant, isAdmin: !participant.isAdmin)
+				if let participant = self.sharedMainViewModel.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
+					self.sharedMainViewModel.displayedConversation!.chatRoom.setParticipantAdminStatus(participant: participant, isAdmin: !participant.isAdmin)
 				}
 				
 			}
@@ -2704,10 +2690,10 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func removeParticipant(address: String) {
-		if self.displayedConversation != nil {
+		if self.sharedMainViewModel.displayedConversation != nil {
 			coreContext.doOnCoreQueue { _ in
-				if let participant = self.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
-					self.displayedConversation!.chatRoom.removeParticipant(participant: participant)
+				if let participant = self.sharedMainViewModel.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
+					self.sharedMainViewModel.displayedConversation!.chatRoom.removeParticipant(participant: participant)
 				}
 				
 			}
@@ -2720,7 +2706,7 @@ class ConversationViewModel: ObservableObject {
 	
 	func deleteMessage() {
 		coreContext.doOnCoreQueue { _ in
-			if let displayedConversation = self.displayedConversation,
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation,
 			   let selectedMessage = self.selectedMessage,
 			   let chatMessage = selectedMessage.eventModel.eventLog.chatMessage {
 				displayedConversation.chatRoom.deleteMessage(message: chatMessage)

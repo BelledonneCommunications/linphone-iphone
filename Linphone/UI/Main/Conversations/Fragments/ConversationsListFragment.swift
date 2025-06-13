@@ -26,8 +26,7 @@ struct ConversationsListFragment: View {
 	
 	@EnvironmentObject var navigationManager: NavigationManager
 	
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
 	@Binding var text: String
@@ -39,8 +38,6 @@ struct ConversationsListFragment: View {
 					ConversationRow(
 						navigationManager: _navigationManager,
 						conversation: conversation,
-						conversationViewModel: conversationViewModel,
-						conversationsListViewModel: conversationsListViewModel,
 						showingSheet: $showingSheet,
 						text: $text
 					)
@@ -74,7 +71,7 @@ struct ConversationsListFragment: View {
 		.onChange(of: scenePhase) { newPhase in
 			if newPhase == .active {
 				if navigationManager.peerAddr != nil {
-					conversationViewModel.getChatRoomWithStringAddress(conversationsList: conversationsListViewModel.conversationsList, stringAddr: navigationManager.peerAddr!)
+					conversationsListViewModel.getChatRoomWithStringAddress(stringAddr: navigationManager.peerAddr!)
 					navigationManager.peerAddr = nil
 				}
 			}
@@ -85,9 +82,9 @@ struct ConversationsListFragment: View {
 struct ConversationRow: View {
 	@EnvironmentObject var navigationManager: NavigationManager
 	
+	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
+	
 	@ObservedObject var conversation: ConversationModel
-	@ObservedObject var conversationViewModel: ConversationViewModel
-	@ObservedObject var conversationsListViewModel: ConversationsListViewModel
 	
 	@Binding var showingSheet: Bool
 	@Binding var text: String
@@ -196,7 +193,7 @@ struct ConversationRow: View {
 		.listRowSeparator(.hidden)
 		.background(.white)
 		.onTapGesture {
-			conversationViewModel.changeDisplayedChatRoom(conversationModel: conversation)
+			conversationsListViewModel.changeDisplayedChatRoom(conversationModel: conversation)
 		}
 		.onLongPressGesture(minimumDuration: 0.2) {
 			conversationsListViewModel.selectedConversation = conversation
@@ -207,8 +204,6 @@ struct ConversationRow: View {
 
 #Preview {
 	ConversationsListFragment(
-		conversationViewModel: ConversationViewModel(),
-		conversationsListViewModel: ConversationsListViewModel(),
 		showingSheet: .constant(false),
 		text: .constant("")
 	)
