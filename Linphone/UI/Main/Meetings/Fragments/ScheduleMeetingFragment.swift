@@ -27,8 +27,9 @@ struct ScheduleMeetingFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject var meetingViewModel: MeetingViewModel
-	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
+	@EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
+	
+	@StateObject private var meetingViewModel = MeetingViewModel()
 	
 	@State private var delayedColor = Color.white
 	@State private var showDatePicker = false
@@ -75,10 +76,6 @@ struct ScheduleMeetingFragment: View {
 							.padding(.leading, -10)
 							.onTapGesture {
 								withAnimation {
-									if let meeting = SharedMainViewModel.shared.displayedMeeting {
-										// reload meeting to cancel change from edit
-										meetingViewModel.loadExistingMeeting(meeting: meeting)
-									}
 									isShowScheduleMeetingFragment.toggle()
 								}
 							}
@@ -506,9 +503,7 @@ struct ScheduleMeetingFragment: View {
 }
 
 #Preview {
-	ScheduleMeetingFragment(meetingViewModel: MeetingViewModel()
-							, meetingsListViewModel: MeetingsListViewModel()
-							, isShowScheduleMeetingFragment: .constant(true))
+	ScheduleMeetingFragment(isShowScheduleMeetingFragment: .constant(true))
 }
 
 // swiftlint:enable type_body_length

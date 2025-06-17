@@ -189,9 +189,10 @@ struct AddParticipantsFragment: View {
 										.padding(.trailing, 5)
 								}
 								
-								if index < contactsManager.avatarListModel.count
-									&& contactsManager.avatarListModel[index].friend!.photo != nil
-									&& !contactsManager.avatarListModel[index].friend!.photo!.isEmpty {
+								if index < contactsManager.avatarListModel.count,
+								   let friend = contactsManager.avatarListModel[index].friend,
+								   let photo = friend.photo,
+								   !photo.isEmpty {
 									Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
 								} else {
 									Image("profil-picture-default")
@@ -199,7 +200,8 @@ struct AddParticipantsFragment: View {
 										.frame(width: 50, height: 50)
 										.clipShape(Circle())
 								}
-								Text((contactsManager.lastSearch[index].friend?.name)!)
+								
+								Text((contactsManager.lastSearch[index].friend?.name ?? "")!)
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.foregroundStyle(Color.orangeMain500)

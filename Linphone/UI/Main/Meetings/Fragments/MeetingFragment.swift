@@ -28,8 +28,9 @@ struct MeetingFragment: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject var meetingViewModel: MeetingViewModel
-	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
+	@EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
+	
+	@StateObject private var meetingViewModel = MeetingViewModel()
 	
 	@State private var showDatePicker = false
 	@State private var showTimePicker = false
@@ -63,21 +64,15 @@ struct MeetingFragment: View {
 	}
 	
 	var body: some View {
+		let displayedMeetingUpdated = NotificationCenter.default
+			.publisher(for: NSNotification.Name("DisplayedMeetingUpdated"))
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
 				VStack(spacing: 0) {
-					if #available(iOS 16.0, *) {
-						Rectangle()
-							.foregroundColor(Color.orangeMain500)
-							.edgesIgnoringSafeArea(.top)
-							.frame(height: 0)
-					} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
-												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-						Rectangle()
-							.foregroundColor(Color.orangeMain500)
-							.edgesIgnoringSafeArea(.top)
-							.frame(height: 1)
-					}
+					Rectangle()
+						.foregroundColor(Color.orangeMain500)
+						.edgesIgnoringSafeArea(.top)
+						.frame(height: 1)
 					
 					HStack {
 						Image("caret-left")
@@ -316,16 +311,10 @@ struct MeetingFragment: View {
 			})
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
+		.onReceive(displayedMeetingUpdated) { _ in
+			if let displayedMeeting = SharedMainViewModel.shared.displayedMeeting {
+				meetingViewModel.loadExistingMeeting(meeting: displayedMeeting)
+			}
+		}
 	}
-}
-
-#Preview {
-	let model = MeetingViewModel()
-	model.subject = "Meeting subject"
-	model.conferenceUri = "linphone.com/lalalal.fr"
-	model.description = ""
-	return MeetingFragment(meetingViewModel: model
-						   , meetingsListViewModel: MeetingsListViewModel()
-						   , isShowScheduleMeetingFragment: .constant(true)
-						   , isShowSendCancelMeetingNotificationPopup: .constant(false))
 }

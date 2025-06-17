@@ -21,9 +21,8 @@ import SwiftUI
 
 struct MeetingsView: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
-	
-	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
-	@ObservedObject var meetingViewModel: MeetingViewModel
+    
+    @EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
@@ -36,29 +35,28 @@ struct MeetingsView: View {
 			ZStack(alignment: .bottomTrailing) {
 				
 				if #available(iOS 16.0, *), idiom != .pad {
-					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet, text: $text)
+					MeetingsFragment(showingSheet: $showingSheet, text: $text)
 						.sheet(isPresented: $showingSheet) {
 							MeetingsListBottomSheet(
-								meetingsListViewModel: meetingsListViewModel,
 								showingSheet: $showingSheet,
 								isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
 							)
+							.environmentObject(meetingsListViewModel)
 							.presentationDetents([.fraction(0.1)])
 						}
 				} else {
-					MeetingsFragment(meetingsListViewModel: meetingsListViewModel, meetingViewModel: meetingViewModel, showingSheet: $showingSheet, text: $text)
+					MeetingsFragment(showingSheet: $showingSheet, text: $text)
 						.halfSheet(showSheet: $showingSheet) {
 							MeetingsListBottomSheet(
-								meetingsListViewModel: meetingsListViewModel,
 								showingSheet: $showingSheet,
 								isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
 							)
+							.environmentObject(meetingsListViewModel)
 						} onDismiss: {}
 				}
 				
 				Button {
 					withAnimation {
-						meetingViewModel.resetViewModelData()
 						isShowScheduleMeetingFragment.toggle()
 					}
 				} label: {
@@ -80,8 +78,6 @@ struct MeetingsView: View {
 
 #Preview {
 	MeetingsView(
-		meetingsListViewModel: MeetingsListViewModel(),
-		meetingViewModel: MeetingViewModel(),
 		isShowScheduleMeetingFragment: .constant(false),
 		isShowSendCancelMeetingNotificationPopup: .constant(false),
 		text: .constant("")

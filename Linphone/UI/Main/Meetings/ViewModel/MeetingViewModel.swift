@@ -47,7 +47,6 @@ class MeetingViewModel: ObservableObject {
 	
 	var conferenceScheduler: ConferenceScheduler?
 	private var mSchedulerDelegate: ConferenceSchedulerDelegate?
-	var conferenceInfoToEdit: ConferenceInfo?
 	@Published var myself: SelectedAddressModel?
 	@Published var fromDate: Date
 	@Published var toDate: Date
@@ -71,6 +70,10 @@ class MeetingViewModel: ObservableObject {
 		selectedTimezoneIdx = knownTimezones.firstIndex(where: {$0 == selectedTimezone.identifier}) ?? 0
 		computeDateLabels()
 		computeTimeLabels()
+		
+		if let displayedMeeting = SharedMainViewModel.shared.displayedMeeting {
+			self.loadExistingMeeting(meeting: displayedMeeting)
+		}
 	}
 	
 	func resetViewModelData() {
@@ -185,17 +188,18 @@ class MeetingViewModel: ObservableObject {
 				}
 			} else if state == ConferenceScheduler.State.Ready {
 				let conferenceAddress = self.conferenceScheduler?.info?.uri
-				if let confInfoToEdit = self.conferenceInfoToEdit {
-					Log.info("\(MeetingViewModel.TAG) Conference info \(confInfoToEdit.uri?.asStringUriOnly() ?? "'nil'") has been updated")
+				Log.info("\(MeetingViewModel.TAG) Conference info created, address will be \(conferenceAddress?.asStringUriOnly() ?? "'nil'")")
+				DispatchQueue.main.async {
+					ToastViewModel.shared.toastMessage = "Success_meeting_info_created_toast"
+					ToastViewModel.shared.displayToast = true
+				}
+				
+				if SharedMainViewModel.shared.displayedMeeting != nil {
 					DispatchQueue.main.async {
-						ToastViewModel.shared.toastMessage = "Success_meeting_info_updated_toast"
-						ToastViewModel.shared.displayToast = true
-					}
-				} else {
-					Log.info("\(MeetingViewModel.TAG) Conference info created, address will be \(conferenceAddress?.asStringUriOnly() ?? "'nil'")")
-					DispatchQueue.main.async {
-						ToastViewModel.shared.toastMessage = "Success_meeting_info_created_toast"
-						ToastViewModel.shared.displayToast = true
+						NotificationCenter.default.post(
+							name: NSNotification.Name("DisplayedMeetingUpdated"),
+							object: nil
+						)
 					}
 				}
 				
@@ -210,9 +214,6 @@ class MeetingViewModel: ObservableObject {
 					}
 				}
 			} else if state == ConferenceScheduler.State.Updating {
-				DispatchQueue.main.async {
-					ToastViewModel.shared.displayToast = true
-				}
 				self.sendIcsInvitation(core: core)
 			}
 		}, onInvitationsSent: { (_: ConferenceScheduler, failedInvitations: [Address]) in
@@ -295,73 +296,54 @@ class MeetingViewModel: ObservableObject {
 		}
 	}
 	
-	func update() {
-		self.operationInProgress = true
-		CoreContext.shared.doOnCoreQueue { core in
-			Log.info("\(MeetingViewModel.TAG) Updating \(self.isBroadcastSelected ? "broadcast" : "meeting")")
-			
-			if let conferenceInfo = self.conferenceInfoToEdit {
-				self.fillConferenceInfo(confInfo: conferenceInfo)
-				self.resetConferenceSchedulerAndListeners(core: core)
-				
-				// Will trigger the conference update automatically
-				self.conferenceScheduler?.info = conferenceInfo
-			} else {
-				Log.error("No conference info to edit found!")
-				return
-			}
-		}
-	}
-	
 	// Warning: must be called from core queue. Removed the dispatchQueue.main.async in order to have the animation properly trigger.
 	func loadExistingMeeting(meeting: MeetingModel) {
-			self.resetViewModelData()
-			self.subject = meeting.confInfo.subject ?? ""
-			self.description = meeting.confInfo.description ?? ""
-			self.fromDate = meeting.meetingDate
-			self.toDate = meeting.endDate
-			self.participants = []
-						
-			CoreContext.shared.doOnCoreQueue { core in
-				let organizer = meeting.confInfo.organizer
-				var organizerFound = false
-				
-				if let myAddr = core.defaultAccount?.contactAddress {
-					let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
+		self.resetViewModelData()
+		self.subject = meeting.confInfo.subject ?? ""
+		self.description = meeting.confInfo.description ?? ""
+		self.fromDate = meeting.meetingDate
+		self.toDate = meeting.endDate
+		self.participants = []
+		
+		CoreContext.shared.doOnCoreQueue { core in
+			let organizer = meeting.confInfo.organizer
+			var organizerFound = false
+			
+			if let myAddr = core.defaultAccount?.contactAddress {
+				let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
+				organizerFound = organizerFound || isOrganizer
+				ContactAvatarModel.getAvatarModelFromAddress(address: myAddr) { avatarResult in
+					DispatchQueue.main.async {
+						self.myself = SelectedAddressModel(addr: myAddr, avModel: avatarResult, isOrg: isOrganizer)
+					}
+				}
+			}
+			
+			for pInfo in meeting.confInfo.participantInfos {
+				if let addr = pInfo.address {
+					let isOrganizer = (organizer != nil) ? addr.weakEqual(address2: organizer!) : false
 					organizerFound = organizerFound || isOrganizer
-					ContactAvatarModel.getAvatarModelFromAddress(address: myAddr) { avatarResult in
+					ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
 						DispatchQueue.main.async {
-							self.myself = SelectedAddressModel(addr: myAddr, avModel: avatarResult, isOrg: isOrganizer)
-						}
-					}
-				}
-				
-				for pInfo in meeting.confInfo.participantInfos {
-					if let addr = pInfo.address {
-						let isOrganizer = (organizer != nil) ? addr.weakEqual(address2: organizer!) : false
-						organizerFound = organizerFound || isOrganizer
-						ContactAvatarModel.getAvatarModelFromAddress(address: addr) { avatarResult in
-							DispatchQueue.main.async {
-								self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg: isOrganizer))
-							}
-						}
-					}
-				}
-				
-				// if didn't find organizer, add him
-				if !organizerFound, let org = organizer {
-					ContactAvatarModel.getAvatarModelFromAddress(address: org) { avatarResult in
-						DispatchQueue.main.async {
-							self.participants.append(SelectedAddressModel(addr: org, avModel: avatarResult, isOrg: true))
+							self.participants.append(SelectedAddressModel(addr: addr, avModel: avatarResult, isOrg: isOrganizer))
 						}
 					}
 				}
 			}
 			
-			self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
-			self.computeDateLabels()
-			self.computeTimeLabels()
-			SharedMainViewModel.shared.displayedMeeting = meeting
+			// if didn't find organizer, add him
+			if !organizerFound, let org = organizer {
+				ContactAvatarModel.getAvatarModelFromAddress(address: org) { avatarResult in
+					DispatchQueue.main.async {
+						self.participants.append(SelectedAddressModel(addr: org, avModel: avatarResult, isOrg: true))
+					}
+				}
+			}
+		}
+		
+		self.conferenceUri = meeting.confInfo.uri?.asStringUriOnly() ?? ""
+		self.computeDateLabels()
+		self.computeTimeLabels()
 	}
 	
 	func cancelMeetingWithNotifications(meeting: MeetingModel) {

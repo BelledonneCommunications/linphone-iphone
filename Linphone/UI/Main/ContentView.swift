@@ -40,12 +40,9 @@ struct ContentView: View {
 	@State private var contactsListViewModel: ContactsListViewModel?
 	@State private var historyListViewModel: HistoryListViewModel?
 	@State private var conversationsListViewModel: ConversationsListViewModel?
+    @State private var meetingsListViewModel: MeetingsListViewModel?
 	
 	//@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
-	
-	
-	//@ObservedObject var meetingsListViewModel: MeetingsListViewModel
-	//@ObservedObject var meetingViewModel: MeetingViewModel
 	
 	
 	//@Binding var index: Int
@@ -513,9 +510,9 @@ struct ContentView: View {
 														historyListVM.resetFilterCallLogs()
 													} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
 														conversationsListVM.resetFilterConversations()
-													} else if sharedMainViewModel.indexView == 3 {
-														//meetingsListViewModel.currentFilter = ""
-														//meetingsListViewModel.computeMeetingsList()
+													} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+                                                        meetingsListVM.currentFilter = ""
+                                                        meetingsListVM.computeMeetingsList()
 													}
 												} label: {
 													Image("caret-left")
@@ -567,9 +564,9 @@ struct ContentView: View {
 															} else {
 																conversationsListVM.filterConversations(filter: text)
 															}
-														} else if sharedMainViewModel.indexView == 3 {
-															//meetingsListViewModel.currentFilter = text
-															//meetingsListViewModel.computeMeetingsList()
+														} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+                                                            meetingsListVM.currentFilter = text
+                                                            meetingsListVM.computeMeetingsList()
 														}
 													}
 												} else {
@@ -602,9 +599,9 @@ struct ContentView: View {
 															historyListVM.filterCallLogs(filter: text)
 														} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
 															conversationsListVM.filterConversations(filter: text)
-														} else if sharedMainViewModel.indexView == 3 {
-															//meetingsListViewModel.currentFilter = text
-															//meetingsListViewModel.computeMeetingsList()
+														} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+                                                            meetingsListVM.currentFilter = text
+                                                            meetingsListVM.computeMeetingsList()
 														}
 													}
 												}
@@ -726,31 +723,38 @@ struct ContentView: View {
 												}
 											}
 										} else if sharedMainViewModel.indexView == 3 {
-											//TODO a changer
-											NavigationView {
-												ZStack(alignment: .bottomTrailing) {
-												}
-											}
-											.navigationViewStyle(.stack)
-											/*
-											MeetingsView(
-												meetingsListViewModel: meetingsListViewModel,
-												meetingViewModel: meetingViewModel,
-												isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
-												isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
-												text: $text
-											)
-											.roundedCorner(25, corners: [.topRight, .topLeft])
-											.shadow(
-												color: (orientation == .landscapeLeft
-														|| orientation == .landscapeRight
-														|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-												? .white.opacity(0.0)
-												: .black.opacity(0.2),
-												radius: 25
-											)
-											*/
-										}
+                                            if let meetingsListVM = meetingsListViewModel {
+                                                MeetingsView(
+                                                    isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+                                                    isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
+                                                    text: $text
+                                                )
+                                                .environmentObject(meetingsListVM)
+                                                .roundedCorner(25, corners: [.topRight, .topLeft])
+                                                .shadow(
+                                                    color: (orientation == .landscapeLeft
+                                                            || orientation == .landscapeRight
+                                                            || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+                                                    ? .white.opacity(0.0)
+                                                    : .black.opacity(0.2),
+                                                    radius: 25
+                                                )
+                                            } else {
+                                                NavigationView {
+                                                    VStack {
+                                                        Spacer()
+                                                        
+                                                        ProgressView()
+                                                            .controlSize(.large)
+                                                        
+                                                        Spacer()
+                                                    }
+                                                    .onAppear {
+                                                        meetingsListViewModel = MeetingsListViewModel()
+                                                    }
+                                                }
+                                            }
+                                        }
 									}
 								}
 							}
@@ -976,7 +980,7 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
-							} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+							} else if let conversationsListVM = conversationsListViewModel, let displayedConversation = sharedMainViewModel.displayedConversation, sharedMainViewModel.indexView == 2 {
 								ConversationFragment(
 									isShowConversationFragment: $isShowConversationFragment,
 									isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
@@ -989,13 +993,12 @@ struct ContentView: View {
 								.frame(maxWidth: .infinity)
 								.background(Color.gray100)
 								.ignoresSafeArea(.keyboard)
-							} else if sharedMainViewModel.indexView == 3 {
-								/*
-								MeetingFragment(meetingViewModel: meetingViewModel, meetingsListViewModel: meetingsListViewModel, isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
+							} else if let meetingsListVM = meetingsListViewModel, let displayedMeeting = sharedMainViewModel.displayedMeeting, sharedMainViewModel.indexView == 3 {
+								MeetingFragment(isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
+                                    .environmentObject(meetingsListVM)
 									.frame(maxWidth: .infinity)
 									.background(Color.gray100)
 									.ignoresSafeArea(.keyboard)
-								 */
 							}
 							
 						}
@@ -1235,19 +1238,14 @@ struct ContentView: View {
 							}
 					}
 					
-					/*
-					if isShowScheduleMeetingFragment {
+					if let meetingsListVM = meetingsListViewModel, isShowScheduleMeetingFragment {
 						ScheduleMeetingFragment(
-							meetingViewModel: meetingViewModel,
-							meetingsListViewModel: meetingsListViewModel,
 							isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
 						)
+						.environmentObject(meetingsListVM)
 						.zIndex(3)
 						.transition(.move(edge: .bottom))
-						.onAppear {
-						}
 					}
-					*/
 					
 					if isShowAccountProfileFragment {
 						AccountProfileFragment(
@@ -1276,25 +1274,23 @@ struct ContentView: View {
 						.zIndex(3)
 						.transition(.move(edge: .trailing))
 					}
+					*/
 					
-					if isShowSendCancelMeetingNotificationPopup {
+					if  let meetingsListVM = meetingsListViewModel, isShowSendCancelMeetingNotificationPopup {
 						PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
 								  title: Text("meeting_schedule_cancel_dialog_title"),
 								  content: Text("meeting_schedule_cancel_dialog_message"),
 								  titleFirstButton: Text("dialog_cancel"),
 								  actionFirstButton: {
 							sharedMainViewModel.displayedMeeting = nil
-							meetingsListViewModel.deleteSelectedMeeting()
+							meetingsListVM.deleteSelectedMeeting()
 							self.isShowSendCancelMeetingNotificationPopup.toggle(
 							) },
 								  titleSecondButton: Text("dialog_ok"),
 								  actionSecondButton: {
 							sharedMainViewModel.displayedMeeting = nil
-							if let meetingToDelete = self.meetingsListViewModel.selectedMeetingToDelete {
-								self.meetingViewModel.cancelMeetingWithNotifications(meeting: meetingToDelete)
-								meetingsListViewModel.deleteSelectedMeeting()
-								self.isShowSendCancelMeetingNotificationPopup.toggle()
-							}
+							meetingsListVM.cancelMeetingWithNotifications()
+							self.isShowSendCancelMeetingNotificationPopup.toggle()
 						})
 						.background(.black.opacity(0.65))
 						.zIndex(3)
@@ -1302,7 +1298,6 @@ struct ContentView: View {
 							self.isShowSendCancelMeetingNotificationPopup.toggle()
 						}
 					}
-					*/
 					
 					if isShowStartCallGroupPopup {
 						PopupView(
@@ -1455,7 +1450,6 @@ class NavigationManager: ObservableObject {
 		//meetingViewModel: MeetingViewModel(),
 		//conversationForwardMessageViewModel: ConversationForwardMessageViewModel(),
 		//accountProfileViewModel: AccountProfileViewModel(),
-		//index: .constant(0)
 	)
 }
 // swiftlint:enable type_body_length

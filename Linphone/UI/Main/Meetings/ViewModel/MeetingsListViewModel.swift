@@ -141,8 +141,61 @@ class MeetingsListViewModel: ObservableObject {
 				// Only remaining meeting is the fake TodayMeeting, remove it too
 				meetingsList.removeAll()
 			}
-			ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
-			ToastViewModel.shared.displayToast = true
+			
+			DispatchQueue.main.async {
+				ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
+				ToastViewModel.shared.displayToast = true
+			}
+		}
+	}
+	
+	func cancelMeetingWithNotifications() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if let meeting = self.selectedMeetingToDelete {
+				let conferenceScheduler = try? core.createConferenceScheduler()
+				
+				//self.mSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (_: ConferenceScheduler, state: ConferenceScheduler.State) in
+				let mSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (_: ConferenceScheduler, state: ConferenceScheduler.State) in
+					Log.info("\(MeetingViewModel.TAG) Conference state changed \(state)")
+					if state == ConferenceScheduler.State.Ready {
+						self.sendIcsInvitation(core: core, conferenceScheduler: conferenceScheduler)
+						self.deleteSelectedMeeting()
+					}
+				}, onInvitationsSent: { (_: ConferenceScheduler, failedInvitations: [Address]) in
+					
+					if failedInvitations.isEmpty {
+						Log.info("\(MeetingViewModel.TAG) All invitations have been sent")
+					} else {
+						var failInvList = ""
+						for failInv in failedInvitations {
+							if !failInvList.isEmpty {
+								failInvList += ", "
+							}
+							failInvList.append(failInv.asStringUriOnly())
+						}
+						Log.warn("\(MeetingViewModel.TAG) \(failedInvitations.count) invitations couldn't have been sent to: \(failInvList)")
+						DispatchQueue.main.async {
+							ToastViewModel.shared.toastMessage = "meeting_failed_to_send_part_of_invites_toast"
+							ToastViewModel.shared.displayToast = true
+						}
+					}
+				})
+				
+				conferenceScheduler?.addDelegate(delegate: mSchedulerDelegate)
+				conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
+			}
+		}
+	}
+	
+	private func sendIcsInvitation(core: Core, conferenceScheduler: ConferenceScheduler?) {
+		if let chatRoomParams = try? core.createDefaultChatRoomParams() {
+			chatRoomParams.groupEnabled = false
+			chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
+			chatRoomParams.encryptionEnabled = true
+			chatRoomParams.subject = "Meeting ics"
+			conferenceScheduler?.sendInvitations(chatRoomParams: chatRoomParams)
+		} else {
+			Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
 		}
 	}
 }

@@ -28,7 +28,8 @@ struct MeetingsListBottomSheet: View {
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
 	
-	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
+	@EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
+	
 	@Binding var showingSheet: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	

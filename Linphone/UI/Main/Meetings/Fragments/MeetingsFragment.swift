@@ -21,9 +21,8 @@ import SwiftUI
 import linphonesw
 
 struct MeetingsFragment: View {
-	
-	@ObservedObject var meetingsListViewModel: MeetingsListViewModel
-	@ObservedObject var meetingViewModel: MeetingViewModel
+    
+    @EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
@@ -86,7 +85,7 @@ struct MeetingsFragment: View {
 		.onTapGesture {
 			withAnimation {
 				if let meetingModel = model.model, meetingModel.confInfo.state != ConferenceInfo.State.Cancelled {
-					meetingViewModel.loadExistingMeeting(meeting: meetingModel)
+					SharedMainViewModel.shared.displayedMeeting = meetingModel
 				}
 			}
 		}
@@ -191,7 +190,5 @@ struct MeetingsFragment: View {
 }
 
 #Preview {
-	MeetingsFragment(meetingsListViewModel: MeetingsListViewModel(),
-					 meetingViewModel: MeetingViewModel(),
-					 showingSheet: .constant(false), text: .constant(""))
+	MeetingsFragment(showingSheet: .constant(false), text: .constant(""))
 }
