@@ -29,7 +29,7 @@ struct MeetingWaitingRoomFragment: View {
 	@ObservedObject private var coreContext = CoreContext.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
 	
-	@ObservedObject var meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel
+	@StateObject private var meetingWaitingRoomViewModel = MeetingWaitingRoomViewModel()
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
@@ -572,7 +572,7 @@ struct MeetingWaitingRoomFragment: View {
 }
 
 #Preview {
-	MeetingWaitingRoomFragment(meetingWaitingRoomViewModel: MeetingWaitingRoomViewModel())
+	MeetingWaitingRoomFragment()
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable cyclomatic_complexity

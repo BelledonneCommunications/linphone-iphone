@@ -73,6 +73,12 @@ struct ConversationFragment: View {
     
     @State private var cachedConversation: ConversationModel?
 	
+	@Binding var isShowScheduleMeetingFragmentSubject: String
+	@Binding var isShowScheduleMeetingFragmentParticipants: [SelectedAddressModel]
+	
+	@Binding var isShowConversationInfoPopup: Bool
+	@Binding var conversationInfoPopupText: String
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -1092,7 +1098,11 @@ struct ConversationFragment: View {
 					isShowInfoConversationFragment: $isShowInfoConversationFragment,
 					isShowEditContactFragment: $isShowEditContactFragment,
 					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
-					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment
+					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+					isShowScheduleMeetingFragmentSubject: $isShowScheduleMeetingFragmentSubject,
+					isShowScheduleMeetingFragmentParticipants: $isShowScheduleMeetingFragmentParticipants,
+					isShowConversationInfoPopup: $isShowConversationInfoPopup,
+					conversationInfoPopupText: $conversationInfoPopupText
 				)
 				.environmentObject(conversationViewModel)
 				.zIndex(5)

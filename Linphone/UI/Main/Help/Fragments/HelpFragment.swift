@@ -21,7 +21,7 @@ import SwiftUI
 
 struct HelpFragment: View {
 	
-	@ObservedObject var helpViewModel: HelpViewModel
+	@StateObject private var helpViewModel = HelpViewModel()
 	
 	@Binding var isShowHelpFragment: Bool
 	

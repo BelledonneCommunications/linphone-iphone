@@ -52,7 +52,10 @@ class MeetingViewModel: ObservableObject {
 	@Published var toDate: Date
 	@Published var errorMsg: String = ""
 	
-	init() {
+	init(isShowScheduleMeetingFragmentSubject: String? = nil, isShowScheduleMeetingFragmentParticipants: [SelectedAddressModel]? = nil) {
+		self.subject = isShowScheduleMeetingFragmentSubject ?? ""
+		self.participants = isShowScheduleMeetingFragmentParticipants ?? []
+		
 		fromDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date.now)!
 		toDate = Calendar.current.date(byAdding: .hour, value: 2, to: Date.now)!
 		

@@ -22,7 +22,8 @@ import SwiftUI
 struct LoginFragment: View {
 	
 	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject var accountLoginViewModel: AccountLoginViewModel
+	
+	@StateObject private var accountLoginViewModel = AccountLoginViewModel()
 	
 	@State private var isSecured: Bool = true
 	
@@ -365,5 +366,5 @@ struct LoginFragment: View {
 }
 
 #Preview {
-	LoginFragment(accountLoginViewModel: AccountLoginViewModel())
+	LoginFragment()
 }

@@ -29,7 +29,7 @@ struct ScheduleMeetingFragment: View {
 	
 	@EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
-	@StateObject private var meetingViewModel = MeetingViewModel()
+	@StateObject private var meetingViewModel: MeetingViewModel
 	
 	@State private var delayedColor = Color.white
 	@State private var showDatePicker = false
@@ -46,6 +46,11 @@ struct ScheduleMeetingFragment: View {
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	@FocusState var isDescriptionTextFocused: Bool
 	@FocusState var isSubjectTextFocused: Bool
+	
+	init(isShowScheduleMeetingFragmentSubject: String? = nil, isShowScheduleMeetingFragmentParticipants: [SelectedAddressModel]? = nil, isShowScheduleMeetingFragment: Binding<Bool>) {
+		_meetingViewModel = StateObject(wrappedValue: MeetingViewModel(isShowScheduleMeetingFragmentSubject: isShowScheduleMeetingFragmentSubject, isShowScheduleMeetingFragmentParticipants: isShowScheduleMeetingFragmentParticipants))
+		self._isShowScheduleMeetingFragment = isShowScheduleMeetingFragment
+	}
 	
 	var body: some View {
 		NavigationView {
@@ -504,6 +509,7 @@ struct ScheduleMeetingFragment: View {
 
 #Preview {
 	ScheduleMeetingFragment(isShowScheduleMeetingFragment: .constant(true))
+		
 }
 
 // swiftlint:enable type_body_length

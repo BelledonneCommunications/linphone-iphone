@@ -21,7 +21,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SettingsFragment: View {
-	@ObservedObject var settingsViewModel: SettingsViewModel
+	
+	@StateObject private var settingsViewModel = SettingsViewModel()
 	
 	@Binding var isShowSettingsFragment: Bool
 	

@@ -40,7 +40,13 @@ struct ConversationInfoFragment: View {
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
 	
+	@Binding var isShowScheduleMeetingFragmentSubject: String
+	@Binding var isShowScheduleMeetingFragmentParticipants: [SelectedAddressModel]
+	
 	@State private var participantListIsOpen = true
+	
+	@Binding var isShowConversationInfoPopup: Bool
+	@Binding var conversationInfoPopupText: String
 	
 	var body: some View {
 		let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0]
@@ -136,7 +142,7 @@ struct ConversationInfoFragment: View {
 												if conversationViewModel.isUserAdmin {
 													Button(
 														action: {
-															conversationViewModel.isShowConversationInfoPopup = true
+															isShowConversationInfoPopup = true
 														},
 														label: {
 															Image("pencil-simple")
@@ -218,11 +224,12 @@ struct ConversationInfoFragment: View {
 											Spacer()
 											
 											Button(action: {
-												if SharedMainViewModel.shared.displayedConversation != nil {
-													/*
-													meetingViewModel.subject = SharedMainViewModel.shared.displayedConversation!.subject
-													meetingViewModel.participants = conversationViewModel.participants
-													 */
+												if let displayedConversation = SharedMainViewModel.shared.displayedConversation {
+													if displayedConversation.isGroup {
+														isShowScheduleMeetingFragmentSubject = displayedConversation.subject
+													}
+													isShowScheduleMeetingFragmentParticipants = conversationViewModel.participants
+													
 													SharedMainViewModel.shared.displayedConversation = nil
 													SharedMainViewModel.shared.changeIndexView(indexViewInt: 3)
 													withAnimation {
@@ -696,7 +703,11 @@ struct ConversationInfoFragment: View {
 		isShowInfoConversationFragment: .constant(true),
 		isShowEditContactFragment: .constant(false),
 		isShowEditContactFragmentAddress: .constant(""),
-		isShowScheduleMeetingFragment: .constant(false)
+		isShowScheduleMeetingFragment: .constant(false),
+		isShowScheduleMeetingFragmentSubject: .constant(""),
+		isShowScheduleMeetingFragmentParticipants: .constant([]),
+		isShowConversationInfoPopup: .constant(false),
+		conversationInfoPopupText: .constant("")
 	)
 }
 // swiftlint:enable type_body_length

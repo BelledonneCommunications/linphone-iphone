@@ -295,7 +295,7 @@ struct ChatBubbleView: View {
 														.frame(maxWidth: .infinity)
 														.background(.white)
 													}
-													.frame(width: geometryProxy.size.width - 110)
+													.frame(width: geometryProxy.size.width >= 110 ? geometryProxy.size.width - 110 : geometryProxy.size.width)
 													.background(.white)
 													.cornerRadius(10)
 												}

@@ -9,7 +9,10 @@ import SwiftUI
 
 struct PopupViewWithTextField: View {
 	
-	@EnvironmentObject var conversationViewModel: ConversationViewModel
+	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
+	
+	@Binding var isShowConversationInfoPopup: Bool
+	@Binding var conversationInfoPopupText: String
 	
 	@FocusState var isMessageTextFocused: Bool
 	
@@ -21,7 +24,7 @@ struct PopupViewWithTextField: View {
 					.frame(alignment: .leading)
 					.padding(.bottom, 2)
 				
-				TextField("conversation_dialog_subject_hint", text: $conversationViewModel.conversationInfoPopupText)
+				TextField("conversation_dialog_subject_hint", text: $conversationInfoPopupText)
 					.default_text_style(styleSize: 15)
 					.frame(height: 25)
 					.padding(.horizontal, 20)
@@ -36,7 +39,7 @@ struct PopupViewWithTextField: View {
 					.focused($isMessageTextFocused)
 				
 				Button(action: {
-					conversationViewModel.isShowConversationInfoPopup = false
+					isShowConversationInfoPopup = false
 				}, label: {
 					Text("dialog_cancel")
 						.default_text_style_orange_600(styleSize: 20)
@@ -54,7 +57,8 @@ struct PopupViewWithTextField: View {
 				.padding(.bottom, 10)
 				
 				Button(action: {
-					conversationViewModel.setNewChatRoomSubject()
+					setNewChatRoomSubject()
+					isShowConversationInfoPopup = false
 				}, label: {
 					Text("dialog_ok")
 						.default_text_style_white_600(styleSize: 20)
@@ -63,9 +67,9 @@ struct PopupViewWithTextField: View {
 				})
 				.padding(.horizontal, 20)
 				.padding(.vertical, 10)
-				.background(conversationViewModel.conversationInfoPopupText.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
+				.background(conversationInfoPopupText.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
 				.cornerRadius(60)
-				.disabled(conversationViewModel.conversationInfoPopupText.isEmpty)
+				.disabled(conversationInfoPopupText.isEmpty)
 			}
 			.padding(.horizontal, 20)
 			.padding(.vertical, 20)
@@ -77,9 +81,29 @@ struct PopupViewWithTextField: View {
 			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
+		.onAppear {
+			self.conversationInfoPopupText = self.sharedMainViewModel.displayedConversation?.subject ?? ""
+		}
     }
+	
+	func setNewChatRoomSubject() {
+		if let displayedConversation = self.sharedMainViewModel.displayedConversation, self.conversationInfoPopupText != displayedConversation.subject {
+			
+			CoreContext.shared.doOnCoreQueue { _ in
+				displayedConversation.chatRoom.subject = self.conversationInfoPopupText
+			}
+			
+			displayedConversation.subject = self.conversationInfoPopupText
+			displayedConversation.avatarModel = ContactAvatarModel(
+				friend: displayedConversation.avatarModel.friend,
+				name: self.conversationInfoPopupText,
+				address: displayedConversation.avatarModel.address,
+				withPresence: false
+			)
+		}
+	}
 }
 
 #Preview {
-	PopupViewWithTextField()
+	PopupViewWithTextField(isShowConversationInfoPopup: .constant(true), conversationInfoPopupText: .constant(""))
 }
