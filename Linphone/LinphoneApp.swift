@@ -129,85 +129,125 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
 @main
 struct LinphoneApp: App {
-	
 	@Environment(\.scenePhase) var scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-	
-    @StateObject private var coreContext = CoreContext.shared
+
+	@StateObject private var coreContext = CoreContext.shared
 	@StateObject private var navigationManager = NavigationManager()
-	
-	@ObservedObject private var telecomManager = TelecomManager.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
-	
-	@State private var pendingURL: URL?
-	
+	@StateObject private var telecomManager = TelecomManager.shared
+	@StateObject private var sharedMainViewModel = SharedMainViewModel.shared
+
 	var body: some Scene {
 		WindowGroup {
+			RootView(
+				coreContext: coreContext,
+				telecomManager: telecomManager,
+				sharedMainViewModel: sharedMainViewModel,
+				navigationManager: navigationManager,
+				appDelegate: delegate
+			)
+			.environmentObject(coreContext)
+			.environmentObject(navigationManager)
+			.environmentObject(telecomManager)
+			.environmentObject(sharedMainViewModel)
+		}
+		.onChange(of: scenePhase) { newPhase in
+			if !telecomManager.callInProgress {
+				switch newPhase {
+				case .active:
+					Log.info("Entering foreground")
+					coreContext.onEnterForeground()
+				case .background:
+					Log.info("Entering background")
+					coreContext.onEnterBackground()
+				default:
+					break
+				}
+			}
+		}
+	}
+}
+
+struct RootView: View {
+	@ObservedObject var coreContext: CoreContext
+	@ObservedObject var telecomManager: TelecomManager
+	@ObservedObject var sharedMainViewModel: SharedMainViewModel
+	@ObservedObject var navigationManager: NavigationManager
+	@State private var pendingURL: URL?
+	let appDelegate: AppDelegate
+
+	var body: some View {
+		Group {
 			if coreContext.coreHasStartedOnce {
-				ZStack {
-					if !sharedMainViewModel.welcomeViewDisplayed {
-						ZStack {
-							WelcomeView()
-							
-							ToastView()
-								.zIndex(3)
-						}
-					} else if (coreContext.coreIsStarted && coreContext.accounts.isEmpty) || sharedMainViewModel.displayProfileMode {
-						ZStack {
-							AssistantView()
-							
-							ToastView()
-								.zIndex(3)
-						}
-					} else {
-						ContentView()
-							.environmentObject(navigationManager)
-							.onAppear {
-								// Link the navigation manager to the AppDelegate
-								delegate.coreContext = coreContext
-								delegate.navigationManager = navigationManager
-								
-								// Check if the app was launched with a notification payload
-								if let callId = delegate.launchNotificationCallId, let peerAddr = delegate.launchNotificationPeerAddr, let localAddr = delegate.launchNotificationLocalAddr {
-									// Notify the app to navigate to the chat room
-									navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
-								}
-							}
-					}
-					
-					if coreContext.coreIsStarted {
-						VStack {
-							
-						}
-						.onAppear {
-							if let url = pendingURL {
-								URIHandler.handleURL(url: url)
-								pendingURL = nil
-							}
-						}
-					}
-				}
-				.onOpenURL { url in
-					if coreContext.coreIsStarted {
-						URIHandler.handleURL(url: url)
-					} else {
-						pendingURL = url
-					}
-				}
+				MainViewSwitcher(
+					coreContext: coreContext,
+					navigationManager: navigationManager,
+					sharedMainViewModel: sharedMainViewModel,
+					pendingURL: $pendingURL,
+					appDelegate: appDelegate
+				)
 			} else {
 				SplashScreen()
 			}
-		}.onChange(of: scenePhase) { newPhase in
-			if !telecomManager.callInProgress {
-				if newPhase == .active {
-					Log.info("Entering foreground")
-					coreContext.onEnterForeground()
-				} else if newPhase == .inactive {
-				} else if newPhase == .background {
-					Log.info("Entering background")
-					coreContext.onEnterBackground()
-				}
+		}
+		.onOpenURL { url in
+			if coreContext.coreIsStarted {
+				URIHandler.handleURL(url: url)
+			} else {
+				pendingURL = url
 			}
+		}
+	}
+}
+
+struct MainViewSwitcher: View {
+	let coreContext: CoreContext
+	let navigationManager: NavigationManager
+	let sharedMainViewModel: SharedMainViewModel
+	@Binding var pendingURL: URL?
+	let appDelegate: AppDelegate
+
+	var body: some View {
+		ZStack {
+			selectedMainView()
+			
+			if coreContext.coreIsStarted {
+				VStack {} // Force trigger .onAppear
+					.onAppear {
+						if let url = pendingURL {
+							URIHandler.handleURL(url: url)
+							pendingURL = nil
+						}
+					}
+			}
+		}
+	}
+	
+	@ViewBuilder
+	func selectedMainView() -> some View {
+		if !sharedMainViewModel.welcomeViewDisplayed {
+			ZStack {
+				WelcomeView()
+				ToastView().zIndex(3)
+			}
+		} else if (coreContext.coreIsStarted && coreContext.accounts.isEmpty)
+					|| sharedMainViewModel.displayProfileMode {
+			ZStack {
+				AssistantView()
+				ToastView().zIndex(3)
+			}
+		} else {
+			ContentView()
+				.onAppear {
+					appDelegate.coreContext = coreContext
+					appDelegate.navigationManager = navigationManager
+					
+					if let callId = appDelegate.launchNotificationCallId,
+					   let peerAddr = appDelegate.launchNotificationPeerAddr,
+					   let localAddr = appDelegate.launchNotificationLocalAddr {
+						navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
+					}
+				}
 		}
 	}
 }

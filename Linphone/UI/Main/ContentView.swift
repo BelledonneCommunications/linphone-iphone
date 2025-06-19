@@ -27,12 +27,12 @@ struct ContentView: View {
 	@Environment(\.scenePhase) var scenePhase
 	
 	@EnvironmentObject var navigationManager: NavigationManager
+	@EnvironmentObject var coreContext: CoreContext
+	@EnvironmentObject var telecomManager: TelecomManager
+	@EnvironmentObject var sharedMainViewModel: SharedMainViewModel
 	
-	@ObservedObject private var coreContext = CoreContext.shared
-	@ObservedObject private var telecomManager = TelecomManager.shared
 	@ObservedObject private var contactsManager = ContactsManager.shared
 	@ObservedObject private var magicSearch = MagicSearchSingleton.shared
-	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@StateObject private var callViewModel = CallViewModel()
 	@StateObject private var accountProfileViewModel = AccountProfileViewModel()
@@ -83,15 +83,6 @@ struct ContentView: View {
 	@State var conversationInfoPopupText: String = ""
 	
 	var body: some View {
-		let contactLoaded = NotificationCenter.default
-			.publisher(for: NSNotification.Name("ContactLoaded"))
-		let contactAdded = NotificationCenter.default
-				.publisher(for: NSNotification.Name("ContactAdded"))
-				.compactMap { $0.userInfo?["address"] as? String }
-		let imageChanged = NotificationCenter.default
-			.publisher(for: NSNotification.Name("ImageChanged"))
-		let coreStarted = NotificationCenter.default
-			.publisher(for: NSNotification.Name("CoreStarted"))
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
 				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
@@ -342,9 +333,6 @@ struct ContentView: View {
 																	.resizable()
 																	.frame(width: avatarSize, height: avatarSize)
 																	.clipShape(Circle())
-																	.onAppear {
-																		accountProfileViewModel.saveImage(image: tmpImage, name: coreContext.accounts[accountModelIndex].avatarModel!.name, prefix: "-default")
-																	}
 															} else if let cachedImage = imageTmp {
 																cachedImage
 																	.resizable()
@@ -377,13 +365,22 @@ struct ContentView: View {
 															}
 														}
 													}
-													.onReceive(imageChanged) { _ in
+													.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ImageChanged"))) { _ in
 														if !coreContext.accounts[accountModelIndex].usernaneAvatar.isEmpty {
 															let imagePathTmp = coreContext.accounts[accountModelIndex].getImagePath()
 															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
 															imagePath = imagePathTmp
 														}
 													}
+												} else if let cachedImage = imageTmp {
+													cachedImage
+														.resizable()
+														.aspectRatio(contentMode: .fill)
+														.frame(width: avatarSize, height: avatarSize)
+														.clipShape(Circle())
+												} else {
+													ProgressView()
+														.frame(width: avatarSize, height: avatarSize)
 												}
 												
 												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
@@ -629,133 +626,37 @@ struct ContentView: View {
 										}
 										
 										if sharedMainViewModel.indexView == 0 {
-											if let contactsListVM = contactsListViewModel {
-												ContactsView(
-													isShowEditContactFragment: $isShowEditContactFragment,
-													isShowDeletePopup: $isShowDeleteContactPopup,
-													text: $text
-												)
-												.environmentObject(contactsListVM)
-												.roundedCorner(25, corners: [.topRight, .topLeft])
-												.shadow(
-													color: (orientation == .landscapeLeft
-															|| orientation == .landscapeRight
-															|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-													? .white.opacity(0.0)
-													: .black.opacity(0.2),
-													radius: 25
-												)
-											} else {
-												NavigationView {
-													VStack {
-														Spacer()
-														
-														ProgressView()
-															.controlSize(.large)
-														
-														Spacer()
-													}
-													.onAppear {
-														contactsListViewModel = ContactsListViewModel()
-													}
-												}
-											}
+											ContactsContainer(
+												contactsListViewModel: $contactsListViewModel,
+												isShowEditContactFragment: $isShowEditContactFragment,
+												isShowDeleteContactPopup: $isShowDeleteContactPopup,
+												text: $text,
+												orientation: orientation
+											)
 										} else if sharedMainViewModel.indexView == 1 {
-											if let historyListVM = historyListViewModel {
-												HistoryView(
-													isShowStartCallFragment: $isShowStartCallFragment,
-													isShowEditContactFragment: $isShowEditContactFragment,
-													text: $text,
-													isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
-												)
-												.environmentObject(historyListVM)
-												.roundedCorner(25, corners: [.topRight, .topLeft])
-												.shadow(
-													color: (orientation == .landscapeLeft
-															|| orientation == .landscapeRight
-															|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-													? .white.opacity(0.0)
-													: .black.opacity(0.2),
-													radius: 25
-												)
-											} else {
-												NavigationView {
-													VStack {
-														Spacer()
-														
-														ProgressView()
-															.controlSize(.large)
-														
-														Spacer()
-													}
-													.onAppear {
-														historyListViewModel = HistoryListViewModel()
-													}
-												}
-											}
+											HistoryContainer(
+												historyListViewModel: $historyListViewModel,
+												isShowStartCallFragment: $isShowStartCallFragment,
+												isShowEditContactFragment: $isShowEditContactFragment,
+												text: $text,
+												isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
+												orientation: orientation
+											)
 										} else if sharedMainViewModel.indexView == 2 {
-											if let conversationsListVM = conversationsListViewModel {
-												ConversationsView(
-													text: $text,
-													isShowStartConversationFragment: $isShowStartConversationFragment
-												)
-												.environmentObject(conversationsListVM)
-												.roundedCorner(25, corners: [.topRight, .topLeft])
-												.shadow(
-													color: (orientation == .landscapeLeft
-															|| orientation == .landscapeRight
-															|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-													? .white.opacity(0.0)
-													: .black.opacity(0.2),
-													radius: 25
-												)
-											} else {
-												NavigationView {
-													VStack {
-														Spacer()
-														
-														ProgressView()
-															.controlSize(.large)
-														
-														Spacer()
-													}
-													.onAppear {
-														conversationsListViewModel = ConversationsListViewModel()
-													}
-												}
-											}
+											ConversationsContainer(
+												conversationsListViewModel: $conversationsListViewModel,
+												isShowStartConversationFragment: $isShowStartConversationFragment,
+												text: $text,
+												orientation: orientation
+											)
 										} else if sharedMainViewModel.indexView == 3 {
-											if let meetingsListVM = meetingsListViewModel {
-												MeetingsView(
-													isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
-													isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
-													text: $text
-												)
-												.environmentObject(meetingsListVM)
-												.roundedCorner(25, corners: [.topRight, .topLeft])
-												.shadow(
-													color: (orientation == .landscapeLeft
-															|| orientation == .landscapeRight
-															|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-													? .white.opacity(0.0)
-													: .black.opacity(0.2),
-													radius: 25
-												)
-											} else {
-												NavigationView {
-													VStack {
-														Spacer()
-														
-														ProgressView()
-															.controlSize(.large)
-														
-														Spacer()
-													}
-													.onAppear {
-														meetingsListViewModel = MeetingsListViewModel()
-													}
-												}
-											}
+											MeetingsContainer(
+												meetingsListViewModel: $meetingsListViewModel,
+												isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+												isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
+												text: $text,
+												orientation: orientation
+											)
 										}
 									}
 								}
@@ -1381,7 +1282,7 @@ struct ContentView: View {
 					sharedMainViewModel.changeIndexView(indexViewInt: 2)
 				}
 			}
-			.onReceive(contactLoaded) { _ in
+			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ContactLoaded"))) { _ in
 				if let conversationsListVM = conversationsListViewModel {
 					conversationsListVM.updateChatRoomsList()
 				}
@@ -1390,12 +1291,12 @@ struct ContentView: View {
 					historyListVM.refreshHistoryAvatarModel()
 				}
 			}
-			.onReceive(contactAdded) { address in
+			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ContactAdded")).compactMap { $0.userInfo?["address"] as? String }) { address in
 				if let conversationsListVM = conversationsListViewModel {
 					conversationsListVM.updateChatRoom(address: address)
 				}
 			}
-			.onReceive(coreStarted) { _ in
+			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CoreStarted"))) { _ in
 				accountProfileViewModel.setAvatarModel()
 			}
 		}
@@ -1433,6 +1334,191 @@ struct ContentView: View {
 		}
 	}
 }
+
+struct ContactsContainer: View {
+	@Binding var contactsListViewModel: ContactsListViewModel?
+	@Binding var isShowEditContactFragment: Bool
+	@Binding var isShowDeleteContactPopup: Bool
+	@Binding var text: String
+	var orientation: UIDeviceOrientation
+
+	var body: some View {
+		Group {
+			if let contactsListVM = contactsListViewModel {
+				ContactsView(
+					isShowEditContactFragment: $isShowEditContactFragment,
+					isShowDeletePopup: $isShowDeleteContactPopup,
+					text: $text
+				)
+				.environmentObject(contactsListVM)
+				.roundedCorner(25, corners: [.topRight, .topLeft])
+				.shadow(
+					color: (orientation == .landscapeLeft
+							|| orientation == .landscapeRight
+							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+					? .white.opacity(0.0)
+					: .black.opacity(0.2),
+					radius: 25
+				)
+			} else {
+				NavigationView {
+					VStack {
+						Spacer()
+						
+						ProgressView()
+							.controlSize(.large)
+						
+						Spacer()
+					}
+					.onAppear {
+						if contactsListViewModel == nil {
+							contactsListViewModel = ContactsListViewModel()
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+struct HistoryContainer: View {
+	@Binding var historyListViewModel: HistoryListViewModel?
+	@Binding var isShowStartCallFragment: Bool
+	@Binding var isShowEditContactFragment: Bool
+	@Binding var text: String
+	@Binding var isShowEditContactFragmentAddress: String
+	var orientation: UIDeviceOrientation
+
+	var body: some View {
+		Group {
+			if let historyListVM = historyListViewModel {
+				HistoryView(
+					isShowStartCallFragment: $isShowStartCallFragment,
+					isShowEditContactFragment: $isShowEditContactFragment,
+					text: $text,
+					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
+				)
+				.environmentObject(historyListVM)
+				.roundedCorner(25, corners: [.topRight, .topLeft])
+				.shadow(
+					color: (orientation == .landscapeLeft
+							|| orientation == .landscapeRight
+							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+					? .white.opacity(0.0)
+					: .black.opacity(0.2),
+					radius: 25
+				)
+			} else {
+				NavigationView {
+					VStack {
+						Spacer()
+						
+						ProgressView()
+							.controlSize(.large)
+						
+						Spacer()
+					}
+					.onAppear {
+						if historyListViewModel == nil {
+							historyListViewModel = HistoryListViewModel()
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+struct ConversationsContainer: View {
+	@Binding var conversationsListViewModel: ConversationsListViewModel?
+	@Binding var isShowStartConversationFragment: Bool
+	@Binding var text: String
+	var orientation: UIDeviceOrientation
+
+	var body: some View {
+		Group {
+			if let conversationsListVM = conversationsListViewModel {
+				ConversationsView(
+					text: $text,
+					isShowStartConversationFragment: $isShowStartConversationFragment
+				)
+				.environmentObject(conversationsListVM)
+				.roundedCorner(25, corners: [.topRight, .topLeft])
+				.shadow(
+					color: (orientation == .landscapeLeft
+							|| orientation == .landscapeRight
+							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+					? .white.opacity(0.0)
+					: .black.opacity(0.2),
+					radius: 25
+				)
+			} else {
+				NavigationView {
+					VStack {
+						Spacer()
+						
+						ProgressView()
+							.controlSize(.large)
+						
+						Spacer()
+					}
+					.onAppear {
+						if conversationsListViewModel == nil {
+							conversationsListViewModel = ConversationsListViewModel()
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+struct MeetingsContainer: View {
+	@Binding var meetingsListViewModel: MeetingsListViewModel?
+	@Binding var isShowScheduleMeetingFragment: Bool
+	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
+	@Binding var text: String
+	var orientation: UIDeviceOrientation
+
+	var body: some View {
+		Group {
+			if let meetingsListVM = meetingsListViewModel {
+				MeetingsView(
+					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+					isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
+					text: $text
+				)
+				.environmentObject(meetingsListVM)
+				.roundedCorner(25, corners: [.topRight, .topLeft])
+				.shadow(
+					color: (orientation == .landscapeLeft
+							|| orientation == .landscapeRight
+							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+					? .white.opacity(0.0)
+					: .black.opacity(0.2),
+					radius: 25
+				)
+			} else {
+				NavigationView {
+					VStack {
+						Spacer()
+						
+						ProgressView()
+							.controlSize(.large)
+						
+						Spacer()
+					}
+					.onAppear {
+						if meetingsListViewModel == nil {
+							meetingsListViewModel = MeetingsListViewModel()
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 class NavigationManager: ObservableObject {
 	@Published var selectedCallId: String?
