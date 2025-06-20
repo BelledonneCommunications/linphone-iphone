@@ -243,6 +243,8 @@ class ConversationModel: ObservableObject, Identifiable {
 			+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
 			
 			let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false
+            
+            let lastUpdateTimeTmp = lastMessage?.time ?? chatRoom.lastUpdateTime
 			
 			let lastMessageStateTmp = lastMessage?.state.rawValue ?? 0
 			
@@ -250,6 +252,8 @@ class ConversationModel: ObservableObject, Identifiable {
 			self.lastMessageText = lastMessageTextTmp
 			
 			self.lastMessageIsOutgoing = lastMessageIsOutgoingTmp
+            
+            self.lastUpdateTime = lastUpdateTimeTmp
 			
 			self.lastMessageState = lastMessageStateTmp
 			// }
