@@ -45,7 +45,8 @@ class LinphoneUtils: NSObject {
 	}
 	
 	public class func getChatRoomId(room: ChatRoom) -> String {
-		return getChatRoomId(localAddress: room.localAddress!, remoteAddress: room.peerAddress!)
+		return room.identifier ?? ""
+		//return getChatRoomId(localAddress: room.localAddress!, remoteAddress: room.peerAddress!)
 	}
 	
 	public class func getChatRoomId(localAddress: Address, remoteAddress: Address) -> String {

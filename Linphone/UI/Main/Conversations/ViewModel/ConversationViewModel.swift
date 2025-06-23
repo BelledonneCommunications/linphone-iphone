@@ -123,50 +123,6 @@ class ConversationViewModel: ObservableObject {
         }
 	}
 	
-	func addConversationDelegate() {
-		coreContext.doOnCoreQueue { _ in
-			if let chatroom = self.sharedMainViewModel.displayedConversation?.chatRoom {
-				let chatRoomDelegate = ChatRoomDelegateStub( onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
-					self.computeComposingLabel()
-				}, onChatMessagesReceived: { (_: ChatRoom, eventLogs: [EventLog]) in
-					self.getNewMessages(eventLogs: eventLogs)
-				}, onChatMessageSending: { (_: ChatRoom, eventLog: EventLog) in
-					self.getNewMessages(eventLogs: [eventLog])
-				}, onParticipantAdded: { (_: ChatRoom, eventLogs: EventLog) in
-					self.getNewMessages(eventLogs: [eventLogs])
-					self.getParticipantConversationModel()
-				}, onParticipantRemoved: { (_: ChatRoom, eventLogs: EventLog) in
-					self.getNewMessages(eventLogs: [eventLogs])
-					self.getParticipantConversationModel()
-				}, onParticipantAdminStatusChanged: { (_: ChatRoom, eventLogs: EventLog) in
-					self.getNewMessages(eventLogs: [eventLogs])
-					self.getParticipantConversationModel()
-				}, onSubjectChanged: { (_: ChatRoom, eventLogs: EventLog) in
-					self.getNewMessages(eventLogs: [eventLogs])
-				}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
-					self.getNewMessages(eventLogs: [eventLog])
-					if self.sharedMainViewModel.displayedConversation != nil {
-						DispatchQueue.main.async {
-							self.sharedMainViewModel.displayedConversation!.isReadOnly = false
-						}
-					}
-				}, onConferenceLeft: {(_: ChatRoom, eventLog: EventLog) in
-					self.getNewMessages(eventLogs: [eventLog])
-					if self.sharedMainViewModel.displayedConversation != nil {
-						DispatchQueue.main.async {
-							self.sharedMainViewModel.displayedConversation!.isReadOnly = true
-						}
-					}
-				}, onEphemeralEvent: {(_: ChatRoom, eventLogs: EventLog) in
-					self.getNewMessages(eventLogs: [eventLogs])
-				}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
-					self.removeMessage(eventLog)
-				})
-				self.chatRoomDelegateHolder = ChatRoomDelegateHolder(chatroom: chatroom, delegate: chatRoomDelegate)
-			}
-		}
-	}
-	
 	func addConversationDelegate(chatRoom: ChatRoom) {
 		let chatRoomDelegate = ChatRoomDelegateStub( onIsComposingReceived: { (_: ChatRoom, _: Address, _: Bool) in
 			self.computeComposingLabel()
@@ -189,18 +145,24 @@ class ConversationViewModel: ObservableObject {
 			self.getParticipantConversationModel()
 		}, onSubjectChanged: { (_: ChatRoom, eventLog: EventLog) in
 			self.getEventMessage(eventLog: eventLog)
-		}, onConferenceJoined: {(_: ChatRoom, eventLog: EventLog) in
-			self.getEventMessage(eventLog: eventLog)
-			if self.sharedMainViewModel.displayedConversation != nil {
+		}, onConferenceJoined: {(chatRoom: ChatRoom, eventLog: EventLog) in
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				if displayedConversation.isGroup {
+					self.getEventMessage(eventLog: eventLog)
+				}
+				let isReadOnly = chatRoom.isReadOnly
 				DispatchQueue.main.async {
-					self.sharedMainViewModel.displayedConversation!.isReadOnly = false
+					displayedConversation.isReadOnly = isReadOnly
 				}
 			}
-		}, onConferenceLeft: {(_: ChatRoom, eventLog: EventLog) in
-			self.getEventMessage(eventLog: eventLog)
-			if self.sharedMainViewModel.displayedConversation != nil {
+		}, onConferenceLeft: {(chatRoom: ChatRoom, eventLog: EventLog) in
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				if displayedConversation.isGroup {
+					self.getEventMessage(eventLog: eventLog)
+				}
+				let isReadOnly = chatRoom.isReadOnly
 				DispatchQueue.main.async {
-					self.sharedMainViewModel.displayedConversation!.isReadOnly = true
+					displayedConversation.isReadOnly = isReadOnly
 				}
 			}
 		}, onEphemeralEvent: {(_: ChatRoom, eventLog: EventLog) in
