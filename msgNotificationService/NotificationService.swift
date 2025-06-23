@@ -97,7 +97,6 @@ class NotificationService: UNNotificationServiceExtension {
 		*/
 		if let bestAttemptContent = bestAttemptContent {
 			createCore()
-			
 			// if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
 				Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 				
@@ -117,12 +116,10 @@ class NotificationService: UNNotificationServiceExtension {
 				}
 				*/
 				if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
-					Log.info("fetch chat room for invite, addr: \(chatRoomInviteAddr)")
-					let chatRoom = lc!.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
-					
-					if let chatRoom = chatRoom {
-						stopCore()
-						Log.info("chat room invite received")
+					Log.info("fetch chat room for invite, addr: \(chatRoomInviteAddr), ignore it")
+					if let chatRoom = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr) {
+						Log.info("chat room invite received from: \(chatRoom.subject ?? "unknown")")
+						/*
 						bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 						if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
 							if chatRoom.peerAddress != nil {
@@ -141,7 +138,12 @@ class NotificationService: UNNotificationServiceExtension {
 						}
 						contentHandler(bestAttemptContent)
 						return
+						*/
 					}
+					stopCore()
+					contentHandler(UNNotificationContent())
+					return
+					
 				} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
 					Log.info("fetch msg for callid ["+callId+"]")
 					let message = lc!.getNewMessageFromCallid(callId: callId)
@@ -193,27 +195,34 @@ class NotificationService: UNNotificationServiceExtension {
 			// }
 			serviceExtensionTimeWillExpire()
 		}
-		
 	}
 	
 	override func serviceExtensionTimeWillExpire() {
 		// Called just before the extension will be terminated by the system.
 		// Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
 		Log.warn("serviceExtensionTimeWillExpire")
-		stopCore()
 		if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
 			NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
 			bestAttemptContent.categoryIdentifier = "app_active"
-			
 			if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
+				/*
 				bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
 				bestAttemptContent.body = ""
-				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf")) 
-			} else {
+				bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf"))
+				*/
+				let _ = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
+				stopCore()
+				contentHandler(UNNotificationContent())
+			} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
+				stopCore()
 				bestAttemptContent.title = String(localized: "notification_chat_message_received_title")
 				bestAttemptContent.body = NSLocalizedString("IM_MSG", comment: "")
+				
+				contentHandler(bestAttemptContent)
+			} else {
+				stopCore()
+				contentHandler(UNNotificationContent())
 			}
-			contentHandler(bestAttemptContent)
 		}
 	}
 	
