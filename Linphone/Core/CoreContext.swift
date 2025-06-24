@@ -22,7 +22,6 @@
 // swiftlint:disable identifier_name
 
 import linphonesw
-import linphone // needed for unwrapped function linphone_core_set_push_and_app_delegate_dispatch_queue
 import Combine
 import UniformTypeIdentifiers
 import Network
@@ -142,9 +141,8 @@ class CoreContext: ObservableObject {
 				}
 			}
 			
-			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: nil, appGroupId: Config.appGroupName, mainCore: true)
+			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: Config.appGroupName, mainCore: true)
 			
-			linphone_core_set_push_and_app_delegate_dispatch_queue(self.mCore.getCobject, Unmanaged.passUnretained(coreQueue).toOpaque())
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
 			
