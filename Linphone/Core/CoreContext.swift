@@ -328,13 +328,6 @@ class CoreContext: ObservableObject {
 						let clonedParams = params?.clone()
 						clonedParams?.registerEnabled = false
 						account.params = clonedParams
-						
-						if let authInfo = account.findAuthInfo() {
-							core.removeAuthInfo(info: authInfo)
-						}
-						
-						Log.warn("Registration failed for account \(account.displayName()), deleting it from core")
-						core.removeAccount(account: account)
 					}
 				default:
 					break

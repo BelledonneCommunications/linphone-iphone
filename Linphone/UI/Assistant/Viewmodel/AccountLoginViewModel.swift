@@ -30,6 +30,8 @@ class AccountLoginViewModel: ObservableObject {
 	@Published var displayName: String = ""
 	@Published var transportType: String = "TLS"
 	
+	private var mCoreDelegate: CoreDelegate!
+	
 	init() {}
 	
 	func login() {
@@ -117,6 +119,26 @@ class AccountLoginViewModel: ObservableObject {
 				accountParams.internationalPrefix = "33"
 				accountParams.internationalPrefixIsoCountryCode = "FRA"
 				accountParams.useInternationalPrefixForCallsAndChats = true
+				
+				self.mCoreDelegate = CoreDelegateStub(onAccountRegistrationStateChanged: { (core: Core, account: Account, state: RegistrationState, message: String) in
+					
+					Log.info("New registration state is \(state) for user id " +
+							 "\( String(describing: account.params?.identityAddress?.asString())) = \(message)\n")
+					
+					switch state {
+					case .Failed:  // If registration failed, remove account from core
+						if let authInfo = account.findAuthInfo() {
+							core.removeAuthInfo(info: authInfo)
+						}
+						
+						Log.warn("Registration failed for account \(account.displayName()), deleting it from core")
+						core.removeAccount(account: account)
+					default:
+						break
+					}
+				})
+				
+				self.coreContext.mCore.addDelegate(delegate: self.mCoreDelegate)
 				
 				// Now that our AccountParams is configured, we can create the Account object
 				let account = try core.createAccount(params: accountParams)

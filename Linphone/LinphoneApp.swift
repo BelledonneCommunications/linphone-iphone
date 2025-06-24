@@ -179,13 +179,25 @@ struct RootView: View {
 	var body: some View {
 		Group {
 			if coreContext.coreHasStartedOnce {
-				MainViewSwitcher(
-					coreContext: coreContext,
-					navigationManager: navigationManager,
-					sharedMainViewModel: sharedMainViewModel,
-					pendingURL: $pendingURL,
-					appDelegate: appDelegate
-				)
+				if showWelcome {
+					ZStack {
+						WelcomeView()
+						ToastView().zIndex(3)
+					}
+				} else if showAssistant {
+					ZStack {
+						AssistantView()
+						ToastView().zIndex(3)
+					}
+				} else {
+					MainViewSwitcher(
+						coreContext: coreContext,
+						navigationManager: navigationManager,
+						sharedMainViewModel: sharedMainViewModel,
+						pendingURL: $pendingURL,
+						appDelegate: appDelegate
+					)
+				}
 			} else {
 				SplashScreen()
 			}
@@ -198,6 +210,16 @@ struct RootView: View {
 			}
 		}
 	}
+	
+	
+	var showWelcome: Bool {
+		!sharedMainViewModel.welcomeViewDisplayed
+	}
+
+	var showAssistant: Bool {
+		(coreContext.coreIsStarted && coreContext.accounts.isEmpty)
+		|| sharedMainViewModel.displayProfileMode
+	}
 }
 
 struct MainViewSwitcher: View {
@@ -209,9 +231,9 @@ struct MainViewSwitcher: View {
 
 	var body: some View {
 		ZStack {
-			selectedMainView()
-			
 			if coreContext.coreIsStarted {
+				selectedMainView()
+				
 				VStack {} // Force trigger .onAppear
 					.onAppear {
 						if let url = pendingURL {
@@ -225,29 +247,16 @@ struct MainViewSwitcher: View {
 	
 	@ViewBuilder
 	func selectedMainView() -> some View {
-		if !sharedMainViewModel.welcomeViewDisplayed {
-			ZStack {
-				WelcomeView()
-				ToastView().zIndex(3)
-			}
-		} else if (coreContext.coreIsStarted && coreContext.accounts.isEmpty)
-					|| sharedMainViewModel.displayProfileMode {
-			ZStack {
-				AssistantView()
-				ToastView().zIndex(3)
-			}
-		} else {
-			ContentView()
-				.onAppear {
-					appDelegate.coreContext = coreContext
-					appDelegate.navigationManager = navigationManager
-					
-					if let callId = appDelegate.launchNotificationCallId,
-					   let peerAddr = appDelegate.launchNotificationPeerAddr,
-					   let localAddr = appDelegate.launchNotificationLocalAddr {
-						navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
-					}
+		ContentView()
+			.onAppear {
+				appDelegate.coreContext = coreContext
+				appDelegate.navigationManager = navigationManager
+				
+				if let callId = appDelegate.launchNotificationCallId,
+				   let peerAddr = appDelegate.launchNotificationPeerAddr,
+				   let localAddr = appDelegate.launchNotificationLocalAddr {
+					navigationManager.openChatRoom(callId: callId, peerAddr: peerAddr, localAddr: localAddr)
 				}
-		}
+			}
 	}
 }
