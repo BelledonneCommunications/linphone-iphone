@@ -270,6 +270,8 @@
 		D70A26ED2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListBottomSheet.swift; sourceTree = "<group>"; };
 		D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
 		D70A26F12B7F5D95006CC8FC /* ConversationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationFragment.swift; sourceTree = "<group>"; };
+		D70C3B5D2E0ABAB600F3F938 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = Localizable/cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D70C3B5E2E0ABAB900F3F938 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = Localizable/uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D70C82A42C85EDC90087F43F /* ConversationForwardMessageFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationForwardMessageFragment.swift; sourceTree = "<group>"; };
 		D70C82A62C85F5910087F43F /* ConversationForwardMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationForwardMessageViewModel.swift; sourceTree = "<group>"; };
 		D714035A2BE11E00004BD8CA /* CallMediaEncryptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMediaEncryptionModel.swift; sourceTree = "<group>"; };
@@ -317,8 +319,8 @@
 		D7343FEE2D3FE16B0059D784 /* HelpViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewModel.swift; sourceTree = "<group>"; };
 		D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomFragment.swift; sourceTree = "<group>"; };
 		D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetingWaitingRoomViewModel.swift; sourceTree = "<group>"; };
-		D737AEEE2DA011F2005C1280 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D737AEF02DA01203005C1280 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D737AEEE2DA011F2005C1280 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable/en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D737AEF02DA01203005C1280 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizable/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
 		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
 		D74C9CF72ACACECE0021626A /* WelcomePage1Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomePage1Fragment.swift; sourceTree = "<group>"; };
@@ -1068,6 +1070,8 @@
 				en,
 				Base,
 				fr,
+				cs,
+				uk,
 			);
 			mainGroup = D719ABAA2ABC67BF00B41C10;
 			packageReferences = (
@@ -1332,6 +1336,8 @@
 			children = (
 				D737AEEE2DA011F2005C1280 /* en */,
 				D737AEF02DA01203005C1280 /* fr */,
+				D70C3B5D2E0ABAB600F3F938 /* cs */,
+				D70C3B5E2E0ABAB900F3F938 /* uk */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
