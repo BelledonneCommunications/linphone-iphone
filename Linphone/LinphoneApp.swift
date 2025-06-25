@@ -190,19 +190,34 @@ struct RootView: View {
 						ToastView().zIndex(3)
 					}
 				} else {
-					MainViewSwitcher(
-						coreContext: coreContext,
-						navigationManager: navigationManager,
-						sharedMainViewModel: sharedMainViewModel,
-						pendingURL: $pendingURL,
-						appDelegate: appDelegate
-					)
+					ZStack {
+						MainViewSwitcher(
+							coreContext: coreContext,
+							navigationManager: navigationManager,
+							sharedMainViewModel: sharedMainViewModel,
+							pendingURL: $pendingURL,
+							appDelegate: appDelegate
+						)
+						
+						if coreContext.coreIsStarted {
+							VStack {} // Force trigger .onAppear
+								.onAppear {
+									if let url = pendingURL {
+										URIHandler.handleURL(url: url)
+										pendingURL = nil
+									}
+								}
+						}
+					}
 				}
 			} else {
 				SplashScreen()
 			}
 		}
 		.onOpenURL { url in
+			if SharedMainViewModel.shared.displayedConversation != nil && url.absoluteString.contains("linphone-message://") {
+				SharedMainViewModel.shared.displayedConversation = nil
+			}
 			if coreContext.coreIsStarted {
 				URIHandler.handleURL(url: url)
 			} else {
@@ -230,19 +245,7 @@ struct MainViewSwitcher: View {
 	let appDelegate: AppDelegate
 
 	var body: some View {
-		ZStack {
-			if coreContext.coreIsStarted {
-				selectedMainView()
-				
-				VStack {} // Force trigger .onAppear
-					.onAppear {
-						if let url = pendingURL {
-							URIHandler.handleURL(url: url)
-							pendingURL = nil
-						}
-					}
-			}
-		}
+		selectedMainView()
 	}
 	
 	@ViewBuilder

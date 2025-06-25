@@ -218,6 +218,8 @@
 "conversation_event_participant_removed" = "%@ has left";
 "conversation_event_subject_changed" = "New subject: %@";
 "conversation_failed_to_create_toast" = "Failed to create conversation!";
+"conversations_files_waiting_to_be_shared_single" = "1 file waiting to be shared";
+"conversations_files_waiting_to_be_shared_multiple" = "%@ files waiting to be shared";
 "conversation_forward_message_title" = "Forward message to…";
 "conversation_info_add_participants_label" = "Add participants";
 "conversation_info_admin_menu_remove_participant" = "Remove from the group";

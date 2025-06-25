@@ -218,6 +218,8 @@
 "conversation_event_participant_removed" = "%@ a quitté la conversation";
 "conversation_event_subject_changed" = "La conversation a été renommée : %@";
 "conversation_failed_to_create_toast" = "Échec de création de la conversation !";
+"conversations_files_waiting_to_be_shared_single" = "1 fichier en attente de partage";
+"conversations_files_waiting_to_be_shared_multiple" = "%@ fichiers en attente de partage";
 "conversation_forward_message_title" = "Transférer à…";
 "conversation_info_add_participants_label" = "Ajouter des participants";
 "conversation_info_admin_menu_remove_participant" = "Retirer participant";

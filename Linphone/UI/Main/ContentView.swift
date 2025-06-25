@@ -85,6 +85,47 @@ struct ContentView: View {
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
+				if !sharedMainViewModel.fileUrlsToShare.isEmpty && !telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed) {
+					HStack {
+						Image("share-network")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 26, height: 26)
+							.padding(.leading, 10)
+						
+						if sharedMainViewModel.fileUrlsToShare.count > 1 {
+							Text(String(format: String(localized: "conversations_files_waiting_to_be_shared_multiple"), sharedMainViewModel.fileUrlsToShare.count.description))
+								.default_text_style_white(styleSize: 16)
+						} else {
+							Text(String(localized: "conversations_files_waiting_to_be_shared_single"))
+								.default_text_style_white(styleSize: 16)
+						}
+						
+						Spacer()
+						
+						Button(
+							action: {
+								withAnimation {
+									sharedMainViewModel.fileUrlsToShare = []
+								}
+							}, label: {
+								Image("x")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 26, height: 26)
+									.padding(.trailing, 10)
+							}
+						)
+						
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 40)
+					.padding(.horizontal, 10)
+					.background(Color.gray)
+				}
+				
 				if (telecomManager.callInProgress && !fullscreenVideo && ((!telecomManager.callDisplayed && callViewModel.callsCounter == 1) || callViewModel.callsCounter > 1)) || isShowConversationFragment {
 					HStack {
 						Image("phone")
@@ -111,7 +152,8 @@ struct ContentView: View {
 						}
 					}
 					.frame(maxWidth: .infinity)
-					.frame(height: 30)
+					.frame(height: 40)
+					.padding(.horizontal, 10)
 					.background(Color.greenSuccess500)
 					.onTapGesture {
 						withAnimation {

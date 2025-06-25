@@ -27,6 +27,7 @@ class URIHandler {
 	private static let callSchemes = ["sip", "sip-linphone", "linphone-sip", "tel", "callto"]
 	private static let secureCallSchemes = ["sips", "sips-linphone", "linphone-sips"]
 	private static let configurationSchemes = ["linphone-config"]
+	private static let sharedExtensionSchemes = ["linphone-message"]
 
 	private static var uriHandlerCoreDelegate: CoreDelegateStub?
 	
@@ -63,6 +64,8 @@ class URIHandler {
 				initiateCall(url: url, withScheme: "sip")
 			} else if configurationSchemes.contains(scheme) {
 				initiateConfiguration(url: url)
+			} else if sharedExtensionSchemes.contains(scheme) {
+				processReceivedFiles(url: url)
 			} else if scheme == SingleSignOnManager.shared.ssoRedirectUri.scheme {
 				continueSSO(url: url)
 			} else {
@@ -111,6 +114,21 @@ class URIHandler {
 		} else {
 			Log.warn("[URIHandler] received configuration request, but automatic provisioning is disabled.")
 		}
+	}
+	
+	private static func processReceivedFiles(url: URL) {
+		Log.info("[URIHandler] processing received files from URL: \(url.path)")
+		
+		var urlString = url.path
+		if urlString.starts(with: "//") {
+			urlString = String(urlString.dropFirst(2))
+		}
+		
+		for urlFile in urlString.components(separatedBy: ",") {
+			SharedMainViewModel.shared.fileUrlsToShare.append(urlFile)
+		}
+		
+		SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
 	}
 	
 	private static func continueSSO(url: URL) {

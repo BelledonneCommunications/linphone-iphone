@@ -199,11 +199,30 @@ struct ConversationFragment: View {
 			}
 		}
 		.navigationViewStyle(.stack)
-        .onAppear {
-            if let conv = SharedMainViewModel.shared.displayedConversation {
-                cachedConversation = conv
-            }
-        }
+		.onAppear {
+			if let conv = SharedMainViewModel.shared.displayedConversation {
+				cachedConversation = conv
+			}
+			
+			if !SharedMainViewModel.shared.fileUrlsToShare.isEmpty {
+				var urlList: [URL] = []
+				SharedMainViewModel.shared.fileUrlsToShare.forEach { urlFile in
+					urlList.append(URL(fileURLWithPath: urlFile))
+				}
+				
+				FilePicker.convertToAttachmentArray(fromResults: urlList) { mediasOrNil, errorOrNil in
+					if let error = errorOrNil {
+						print(error)
+					}
+					
+					if let medias = mediasOrNil {
+						conversationViewModel.mediasToSend.append(contentsOf: medias)
+					}
+				}
+				
+				SharedMainViewModel.shared.fileUrlsToShare.removeAll()
+			}
+		}
 	}
 	
 	// swiftlint:disable cyclomatic_complexity

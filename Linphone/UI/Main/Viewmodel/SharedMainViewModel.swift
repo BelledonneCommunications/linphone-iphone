@@ -39,6 +39,8 @@ class SharedMainViewModel: ObservableObject {
 	@Published var dialPlansLabelList: [String] = []
 	@Published var dialPlansShortLabelList: [String] = []
 	
+	@Published var fileUrlsToShare: [String] = []
+	
 	@Published var operationInProgress = false
 	
 	let welcomeViewKey = "welcome_view"

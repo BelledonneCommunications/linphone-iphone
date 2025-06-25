@@ -394,118 +394,122 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func addFriendListDelegate() {
-		CoreContext.shared.mCore.friendListSubscriptionEnabled = true
-		
-		CoreContext.shared.mCore.friendsLists.forEach { friendList in
-			friendList.updateSubscriptions()
-		}
-		
-		let friendListDelegateTmp = FriendListDelegateStub(
-			onContactCreated: { (friendList: FriendList, linphoneFriend: Friend) in
-				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactCreated")
-			},
-			onContactDeleted: { (friendList: FriendList, linphoneFriend: Friend) in
-				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactDeleted")
-			},
-			onContactUpdated: { (friendList: FriendList, newFriend: Friend, oldFriend: Friend) in
-				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactUpdated")
-			},
-			onSyncStatusChanged: { (friendList: FriendList, status: FriendList.SyncStatus?, message: String?) in
-				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onSyncStatusChanged")
-				if status == .Successful {
-					friendList.friends.forEach { friend in
-						let addressTmp = friend.address?.clone()?.asStringUriOnly() ?? ""
-						
-						let newContact = Contact(
-							identifier: UUID().uuidString,
-							firstName: friend.name ?? addressTmp,
-							lastName: "",
-							organizationName: "",
-							jobTitle: "",
-							displayName: friend.address?.displayName ?? "",
-							sipAddresses: friend.addresses.map { $0.asStringUriOnly() },
-							phoneNumbers: [],
-							imageData: ""
-						)
-						
-						self.textToImageInMainThread(firstName: friend.name ?? addressTmp, lastName: "") { image in
-							self.saveImage(
-								image: image,
-								name: friend.name ?? addressTmp,
-								prefix: "-default",
-								contact: newContact, linphoneFriend: false, existingFriend: friend) {
-									
-								}
-						}
-					}
-				}
-				
-				MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-			},
-			onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
-				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")
-			},
-			onNewSipAddressDiscovered: { (friendList: FriendList, linphoneFriend: Friend, sipUri: String) in
-				Log.info("\(ContactsManager.TAG) FriendListDelegateStub onNewSipAddressDiscovered \(linphoneFriend.name ?? "")")
-				var addedAvatarListModel: [ContactAvatarModel] = []
-				if !self.avatarListModel.contains(where: {$0.friend?.name == linphoneFriend.name}) {
-					if let address = try? Factory.Instance.createAddress(addr: sipUri) {
-						linphoneFriend.edit()
-						linphoneFriend.addAddress(address: address)
-						linphoneFriend.done()
-						
-						let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
-						addedAvatarListModel.append(
-							ContactAvatarModel(
-								friend: linphoneFriend,
-								name: linphoneFriend.name ?? "",
-								address: addressTmp,
-								withPresence: true
-							)
-						)
-						
-						addedAvatarListModel += self.avatarListModel
-						addedAvatarListModel = addedAvatarListModel.sorted { $0.name < $1.name }
-						
-						DispatchQueue.main.async {
-							self.avatarListModel = addedAvatarListModel
-							
-							NotificationCenter.default.post(
-								name: NSNotification.Name("ContactAdded"),
-								object: nil,
-								userInfo: ["address": addressTmp]
-							)
-						}
-					}
-				}
+		self.coreContext.doOnCoreQueue { _ in
+			CoreContext.shared.mCore.friendListSubscriptionEnabled = true
+			
+			CoreContext.shared.mCore.friendsLists.forEach { friendList in
+				friendList.updateSubscriptions()
 			}
-		)
-		
-		CoreContext.shared.mCore.friendsLists.forEach { friendList in
-			friendList.addDelegate(delegate: friendListDelegateTmp)
+			
+			let friendListDelegateTmp = FriendListDelegateStub(
+				onContactCreated: { (friendList: FriendList, linphoneFriend: Friend) in
+					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactCreated")
+				},
+				onContactDeleted: { (friendList: FriendList, linphoneFriend: Friend) in
+					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactDeleted")
+				},
+				onContactUpdated: { (friendList: FriendList, newFriend: Friend, oldFriend: Friend) in
+					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onContactUpdated")
+				},
+				onSyncStatusChanged: { (friendList: FriendList, status: FriendList.SyncStatus?, message: String?) in
+					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onSyncStatusChanged")
+					if status == .Successful {
+						friendList.friends.forEach { friend in
+							let addressTmp = friend.address?.clone()?.asStringUriOnly() ?? ""
+							
+							let newContact = Contact(
+								identifier: UUID().uuidString,
+								firstName: friend.name ?? addressTmp,
+								lastName: "",
+								organizationName: "",
+								jobTitle: "",
+								displayName: friend.address?.displayName ?? "",
+								sipAddresses: friend.addresses.map { $0.asStringUriOnly() },
+								phoneNumbers: [],
+								imageData: ""
+							)
+							
+							self.textToImageInMainThread(firstName: friend.name ?? addressTmp, lastName: "") { image in
+								self.saveImage(
+									image: image,
+									name: friend.name ?? addressTmp,
+									prefix: "-default",
+									contact: newContact, linphoneFriend: false, existingFriend: friend) {
+										
+									}
+							}
+						}
+					}
+					
+					MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+				},
+				onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
+					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")
+				},
+				onNewSipAddressDiscovered: { (friendList: FriendList, linphoneFriend: Friend, sipUri: String) in
+					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onNewSipAddressDiscovered \(linphoneFriend.name ?? "")")
+					var addedAvatarListModel: [ContactAvatarModel] = []
+					if !self.avatarListModel.contains(where: {$0.friend?.name == linphoneFriend.name}) {
+						if let address = try? Factory.Instance.createAddress(addr: sipUri) {
+							linphoneFriend.edit()
+							linphoneFriend.addAddress(address: address)
+							linphoneFriend.done()
+							
+							let addressTmp = linphoneFriend.address?.clone()?.asStringUriOnly() ?? ""
+							addedAvatarListModel.append(
+								ContactAvatarModel(
+									friend: linphoneFriend,
+									name: linphoneFriend.name ?? "",
+									address: addressTmp,
+									withPresence: true
+								)
+							)
+							
+							addedAvatarListModel += self.avatarListModel
+							addedAvatarListModel = addedAvatarListModel.sorted { $0.name < $1.name }
+							
+							DispatchQueue.main.async {
+								self.avatarListModel = addedAvatarListModel
+								
+								NotificationCenter.default.post(
+									name: NSNotification.Name("ContactAdded"),
+									object: nil,
+									userInfo: ["address": addressTmp]
+								)
+							}
+						}
+					}
+				}
+			)
+			
+			CoreContext.shared.mCore.friendsLists.forEach { friendList in
+				friendList.addDelegate(delegate: friendListDelegateTmp)
+			}
 		}
 	}
 	
 	func addCoreDelegate(core: Core) {
-		self.coreDelegate = CoreDelegateStub(
-			onFriendListCreated: { (_: Core, friendList: FriendList) in
-				Log.info("\(ContactsManager.TAG) Friend list \(friendList.displayName) created")
-				if self.friendListDelegate != nil {
-					friendList.addDelegate(delegate: self.friendListDelegate!)
+		self.coreContext.doOnCoreQueue { _ in
+			self.coreDelegate = CoreDelegateStub(
+				onFriendListCreated: { (_: Core, friendList: FriendList) in
+					Log.info("\(ContactsManager.TAG) Friend list \(friendList.displayName) created")
+					if self.friendListDelegate != nil {
+						friendList.addDelegate(delegate: self.friendListDelegate!)
+					}
+				}, onFriendListRemoved: { (_: Core, friendList: FriendList) in
+					Log.info("\(ContactsManager.TAG) Friend list \(friendList.displayName) removed")
+					if self.friendListDelegate != nil {
+						friendList.removeDelegate(delegate: self.friendListDelegate!)
+					}
+				}, onDefaultAccountChanged: { (_: Core, _: Account?) in
+					Log.info("\(ContactsManager.TAG) Default account changed, update all contacts' model showTrust value")
+					//updateContactsModelDependingOnDefaultAccountMode()
 				}
-			}, onFriendListRemoved: { (_: Core, friendList: FriendList) in
-				Log.info("\(ContactsManager.TAG) Friend list \(friendList.displayName) removed")
-				if self.friendListDelegate != nil {
-					friendList.removeDelegate(delegate: self.friendListDelegate!)
-				}
-			}, onDefaultAccountChanged: { (_: Core, _: Account?) in
-				Log.info("\(ContactsManager.TAG) Default account changed, update all contacts' model showTrust value")
-				//updateContactsModelDependingOnDefaultAccountMode()
+			)
+			
+			if self.coreDelegate != nil {
+				core.addDelegate(delegate: self.coreDelegate!)
 			}
-		)
-		
-		if self.coreDelegate != nil {
-			core.addDelegate(delegate: self.coreDelegate!)
 		}
 	}
 	
