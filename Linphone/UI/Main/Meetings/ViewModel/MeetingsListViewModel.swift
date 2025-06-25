@@ -118,6 +118,10 @@ class MeetingsListViewModel: ObservableObject {
 				self.todayIdx = todayIdx
 				self.meetingsList = meetingsListTmp
 			}
+			
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				NotificationCenter.default.post(name: MeetingsListViewModel.ScrollToTodayNotification, object: nil)
+			}
 		}
 	}
 

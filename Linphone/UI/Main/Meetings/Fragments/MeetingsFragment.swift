@@ -153,11 +153,11 @@ struct MeetingsFragment: View {
 					.listRowSeparator(.hidden)
 				}
 				.onAppear {
-					proxyReader.scrollTo(meetingsListViewModel.todayIdx)
+					proxyReader.scrollTo(meetingsListViewModel.todayIdx, anchor: .top)
 				}
 				.onReceive(NotificationCenter.default.publisher(for: MeetingsListViewModel.ScrollToTodayNotification)) { _ in
 					withAnimation {
-						proxyReader.scrollTo(meetingsListViewModel.todayIdx)
+						proxyReader.scrollTo(meetingsListViewModel.todayIdx, anchor: .top)
 					}
 				}
 				.safeAreaInset(edge: .top, content: {
