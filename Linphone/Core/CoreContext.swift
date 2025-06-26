@@ -306,6 +306,14 @@ class CoreContext: ObservableObject {
 						NotificationCenter.default.post(name: NSNotification.Name("CoreStarted"), object: nil)
 					}
 					ContactsManager.shared.fetchContacts()
+					
+					if let defaultAccountParams = self.mCore.defaultAccount?.params, defaultAccountParams.publishEnabled == false {
+						let params = defaultAccountParams
+						let clonedParams = params.clone()
+						clonedParams?.publishEnabled = true
+						self.mCore.defaultAccount?.params = clonedParams
+					}
+					
 					if self.mCore.consolidatedPresence !=  ConsolidatedPresence.Online {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}

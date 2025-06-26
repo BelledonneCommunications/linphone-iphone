@@ -99,6 +99,13 @@ class NotificationService: UNNotificationServiceExtension {
 			createCore()
 			// if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
 				Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
+			
+			if let defaultAccountParams = lc?.defaultAccount?.params, defaultAccountParams.publishEnabled == true {
+				let params = defaultAccountParams
+				let clonedParams = params.clone()
+				clonedParams?.publishEnabled = false
+				lc?.defaultAccount?.params = clonedParams
+			}
 				
 				/*
 				let defaults = UserDefaults.init(suiteName: Config.appGroupName)
