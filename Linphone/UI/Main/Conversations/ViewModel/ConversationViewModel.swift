@@ -234,7 +234,7 @@ class ConversationViewModel: ObservableObject {
 						statusTmp = .sending
 					}
 					if msgState == .FileTransferDone {
-						message.contents.enumerated().forEach { (contentIndex, content) in
+						message.contents.filter({ $0.type != "text" }).enumerated().forEach { (contentIndex, content) in
 							guard
 								let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.eventModel.eventLogId == message.messageId }),
 								contentIndex < self.conversationMessagesSection[0].rows[indexMessage].message.attachments.count

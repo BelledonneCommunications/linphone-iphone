@@ -626,10 +626,20 @@ struct ChatBubbleView: View {
 					.onTapGesture {
 						if eventLogMessage.message.attachments.first!.type == .fileTransfer && eventLogMessage.message.attachments.first!.transferProgressIndication == -1 {
 							CoreContext.shared.doOnCoreQueue { _ in
-								conversationViewModel.downloadContent(
-									chatMessage: eventLogMessage.eventModel.eventLog.chatMessage!,
-									content: eventLogMessage.eventModel.eventLog.chatMessage!.contents.first!
-								)
+								if let chatMessage = eventLogMessage.eventModel.eventLog.chatMessage {
+									if let firstContent = chatMessage.contents.first, firstContent.type != "text" {
+										conversationViewModel.downloadContent(
+											chatMessage: chatMessage,
+											content: firstContent
+										)
+									} else if chatMessage.contents.count >= 2 {
+										let secondContent = chatMessage.contents[1]
+										conversationViewModel.downloadContent(
+											chatMessage: chatMessage,
+											content: secondContent
+										)
+									}
+								}
 							}
 						} else {
 							selectedURLAttachment = eventLogMessage.message.attachments.first!.full
