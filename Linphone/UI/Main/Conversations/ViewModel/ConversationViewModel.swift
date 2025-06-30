@@ -1845,7 +1845,7 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func sendMessage(audioRecorder: AudioRecorder? = nil) {
+	func sendMessage(messageText: String, audioRecorder: AudioRecorder? = nil) {
 		if self.sharedMainViewModel.displayedConversation != nil {
 			coreContext.doOnCoreQueue { _ in
 				do {
@@ -1859,7 +1859,7 @@ class ConversationViewModel: ObservableObject {
 						message = try self.sharedMainViewModel.displayedConversation!.chatRoom.createEmptyMessage()
 					}
 					
-					let toSend = self.messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+					let toSend = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
 					if !toSend.isEmpty {
 						if message != nil {
 							message!.addUtf8TextContent(text: toSend)
@@ -1939,7 +1939,6 @@ class ConversationViewModel: ObservableObject {
 						withAnimation {
 							self.mediasToSend.removeAll()
 						}
-						self.messageText = ""
 					}
 					
 					/*

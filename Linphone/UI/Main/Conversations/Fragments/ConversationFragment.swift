@@ -79,6 +79,8 @@ struct ConversationFragment: View {
 	@Binding var isShowConversationInfoPopup: Bool
 	@Binding var conversationInfoPopupText: String
 	
+	@State var messageText: String = ""
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -778,34 +780,34 @@ struct ConversationFragment: View {
 								
 								HStack {
 									if #available(iOS 16.0, *) {
-										TextField("conversation_text_field_hint", text: $conversationViewModel.messageText, axis: .vertical)
+										TextField("conversation_text_field_hint", text: $messageText, axis: .vertical)
 											.default_text_style(styleSize: 15)
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
-											.onChange(of: conversationViewModel.messageText) { text in
+											.onChange(of: messageText) { text in
 												if !text.isEmpty {
 													conversationViewModel.compose()
 												}
 											}
 									} else {
 										ZStack(alignment: .leading) {
-											TextEditor(text: $conversationViewModel.messageText)
+											TextEditor(text: $messageText)
 												.multilineTextAlignment(.leading)
 												.frame(maxHeight: 160)
 												.fixedSize(horizontal: false, vertical: true)
 												.default_text_style(styleSize: 15)
 												.focused($isMessageTextFocused)
-												.onChange(of: conversationViewModel.messageText) { text in
+												.onChange(of: messageText) { text in
 													if !text.isEmpty {
 														conversationViewModel.compose()
 													}
 												}
 											
-											if conversationViewModel.messageText.isEmpty {
+											if messageText.isEmpty {
 												Text("conversation_text_field_hint")
 													.padding(.leading, 4)
 													.lineLimit(1)
-													.opacity(conversationViewModel.messageText.isEmpty ? 1 : 0)
+													.opacity(messageText.isEmpty ? 1 : 0)
 													.foregroundStyle(Color.gray300)
 													.default_text_style(styleSize: 15)
 											}
@@ -815,7 +817,7 @@ struct ConversationFragment: View {
 										}
 									}
 									
-									if conversationViewModel.messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
+									if messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
 										Button {
 											voiceRecordingInProgress = true
 										} label: {
@@ -832,7 +834,15 @@ struct ConversationFragment: View {
 											if conversationViewModel.displayedConversationHistorySize > 1 {
 												NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
 											}
-											conversationViewModel.sendMessage()
+											
+											let messageTextTmp = self.messageText
+                                            messageText = " "
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                                                messageText = ""
+                                                isMessageTextFocused = true
+                                                
+                                                conversationViewModel.sendMessage(messageText: messageTextTmp)
+                                            }
 										} label: {
 											Image("paper-plane-tilt")
 												.renderingMode(.template)
@@ -1403,7 +1413,7 @@ struct VoiceRecorderPlayer: View {
 					if conversationViewModel.displayedConversationHistorySize > 0 {
 						NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
 					}
-					conversationViewModel.sendMessage(audioRecorder: self.audioRecorder)
+					conversationViewModel.sendMessage(messageText: "", audioRecorder: self.audioRecorder)
 					voiceRecordingInProgress = false
 				} label: {
 					Image("paper-plane-tilt")
