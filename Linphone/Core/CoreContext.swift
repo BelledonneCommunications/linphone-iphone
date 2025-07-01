@@ -318,23 +318,9 @@ class CoreContext: ObservableObject {
 						self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Online)
 					}
 				case .Cleared:
-					Log.info("[onAccountRegistrationStateChanged] Account \(account.displayName()) registration was cleared. Looking for auth info")
-					// Moved removeAuthInfo to "failed" state to prevent removing auth info when deactivating an account
-					/*
-					 if let authInfo = account.findAuthInfo() {
-					 Log.info("[onAccountRegistrationStateChanged] Found auth info for account, removing it")
-					 core.removeAuthInfo(info: authInfo)
-					 } else {
-					 Log.warn("[onAccountRegistrationStateChanged] Failed to find matching auth info for account")
-					 }
-					 */
-				case .Failed:  // If registration failed, remove account from core
-					if self.networkStatusIsConnected {
-						let params = account.params
-						let clonedParams = params?.clone()
-						clonedParams?.registerEnabled = false
-						account.params = clonedParams
-					}
+					Log.info("[CoreContext][onAccountRegistrationStateChanged] Account \(account.displayName()) registration was cleared.")
+				case .Failed:
+					Log.error("[CoreContext][onAccountRegistrationStateChanged] Account \(account.displayName()) registration failed.")
 				default:
 					break
 				}
