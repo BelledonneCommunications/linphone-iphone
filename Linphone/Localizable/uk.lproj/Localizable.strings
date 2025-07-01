@@ -100,6 +100,8 @@
 "generic_address_picker_suggestions_list_title" = "Пропозиції";
 "help_about_advanced_title" = "Розширений";
 "help_about_check_for_update" = "Перевірити оновлення";
+"help_about_user_guide_title" = "Linphone посібник користувача";
+"help_about_user_guide_subtitle" = "Дізнайтеся, як опанувати всі функції програми крок за кроком.";
 "help_about_version_title" = "Версія";
 "help_dialog_update_available_title" = "Доступне оновлення";
 "help_error_checking_version_toast_message" = "Під час перевірки оновлень сталася помилка";
@@ -403,6 +405,7 @@
 "settings_calls_calibrate_echo_canceller_done" = "%@ мс";
 "welcome_page_1_message" = "**Захищений**, **з відкритим вихідним кодом** та **французький** застосунок для спілкування.";
 "help_dialog_update_available_message" = "Доступна нова версія %@. Бажаєте оновити?";
+"website_user_guide_url" = "https://linphone.org/en/docs/";
 "website_privacy_policy_url" = "https://linphone.org/en/privacy-policy";
 "welcome_page_3_message" = "**Безкоштовний** застосунок з відкритим кодом з **2001 року**.";
 "welcome_page_subtitle" = "в %@";

@@ -186,6 +186,8 @@
 "help_about_advanced_title" = "Pokročilé";
 "help_about_check_for_update" = "Kontrola aktualizací";
 "help_about_privacy_policy_title" = "Zásady ochrany soukromí";
+"help_about_user_guide_title" = "Průvodce Linphone";
+"help_about_user_guide_subtitle" = "Naučte se krok za krokem ovládat všechny funkce aplikace.";
 "help_about_version_title" = "Verze";
 "help_dialog_update_available_title" = "Je dostupná nová aktualizace";
 "help_quit_title" = "Ukončit aplikaci";
@@ -500,6 +502,7 @@
 "ZRTP" = "ZRTP";
 "website_download_url" = "https://linphone.org/linphone-softphone";
 "website_open_source_licences_usage_url" = "https://wiki.linphone.org/xwiki/wiki/public/view/Linphone/Third%20party%20components%20/";
+"website_user_guide_url" = "https://linphone.org/en/docs/";
 "website_privacy_policy_url" = "https://linphone.org/en/privacy-policy";
 "website_terms_and_conditions_url" = "https://www.linphone.org/en/terms-of-use";
 "website_translate_weblate_url" = "https://weblate.linphone.org/";

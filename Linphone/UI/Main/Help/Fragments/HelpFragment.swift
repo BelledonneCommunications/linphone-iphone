@@ -76,6 +76,39 @@ struct HelpFragment: View {
 									.padding(.bottom, 5)
 								
 								Button {
+									if let url = URL(string: NSLocalizedString("website_user_guide_url", comment: "")) {
+										UIApplication.shared.open(url)
+									}
+								} label: {
+									HStack {
+										Image("book-open-text")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 30, height: 30)
+										
+										VStack {
+											Text("help_about_user_guide_title")
+												.default_text_style_700(styleSize: 14)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												.multilineTextAlignment(.leading)
+											
+											Text("help_about_user_guide_subtitle")
+												.default_text_style(styleSize: 14)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												.multilineTextAlignment(.leading)
+										}
+										.padding(.horizontal, 5)
+										
+										Image("arrow-square-out")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.grayMain2c600)
+											.frame(width: 25, height: 25)
+									}
+								}
+								
+								Button {
 									if let url = URL(string: NSLocalizedString("website_privacy_policy_url", comment: "")) {
 										UIApplication.shared.open(url)
 									}
