@@ -45,7 +45,6 @@ class TelecomManager: ObservableObject {
 	@Published var callInProgress: Bool = false
 	@Published var callDisplayed: Bool = true
 	@Published var callStarted: Bool = false
-	@Published var isNotVerifiedCounter: Int = 0
 	@Published var outgoingCallStarted: Bool = false
 	@Published var remoteConfVideo: Bool = false
 	@Published var isRecordingByRemote: Bool = false
@@ -276,7 +275,6 @@ class TelecomManager: ObservableObject {
 			DispatchQueue.main.async {
 				self.outgoingCallStarted = true
 				self.callStarted = true
-				self.isNotVerifiedCounter = 0
 				if self.callInProgress == false {
 					withAnimation {
 						self.callInProgress = true
@@ -324,7 +322,6 @@ class TelecomManager: ObservableObject {
 			
 			DispatchQueue.main.async {
 				self.callStarted = true
-				self.isNotVerifiedCounter = 0
 				if self.callDisplayed {
 					self.callDisplayed = core.calls.count <= 1
 				}

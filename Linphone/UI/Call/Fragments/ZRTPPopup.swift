@@ -334,27 +334,6 @@ struct ZRTPPopup: View {
 					}
 					.padding(.bottom, 5)
 					
-					if telecomManager.isNotVerifiedCounter <= 1 {
-						Button(action: {
-							callViewModel.isNotVerified = false
-						}, label: {
-							Text("call_dialog_zrtp_security_alert_try_again")
-								.foregroundStyle(Color.redDanger500)
-								.default_text_style_orange_600(styleSize: 20 / resizeView)
-								.frame(height: 35 / resizeView)
-								.frame(maxWidth: .infinity)
-						})
-						.padding(.horizontal, 20 / resizeView)
-						.padding(.vertical, 10 / resizeView)
-						.cornerRadius(60)
-						.overlay(
-							RoundedRectangle(cornerRadius: 60)
-								.inset(by: 0.5)
-								.stroke(Color.redDanger500, lineWidth: 1)
-						)
-						.padding(.bottom)
-					}
-					
 					Button(action: {
 						callViewModel.terminateCall()
 					}, label: {

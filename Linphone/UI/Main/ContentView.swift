@@ -85,7 +85,7 @@ struct ContentView: View {
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
-				if !sharedMainViewModel.fileUrlsToShare.isEmpty && !telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed) {
+				if !sharedMainViewModel.fileUrlsToShare.isEmpty && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
 					HStack {
 						Image("share-network")
 							.renderingMode(.template)

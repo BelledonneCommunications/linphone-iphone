@@ -254,31 +254,26 @@ class CallViewModel: ObservableObject {
 				}
 				
 				self.callDelegate = CallDelegateStub(onEncryptionChanged: { (_: Call, _: Bool, _: String)in
-					self.updateEncryption(withToast: false)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.updateEncryption(withToast: false)
+                    }
 					if self.currentCall != nil {
 						self.callMediaEncryptionModel.update(call: self.currentCall!)
 					}
 				}, onAuthenticationTokenVerified: { (_, verified: Bool) in
 					Log.warn("[CallViewModel][ZRTPPopup] Notified that authentication token is \(verified ? "verified" : "not verified!")")
 					if verified {
-						self.updateEncryption(withToast: true)
-						if self.currentCall != nil {
-							self.callMediaEncryptionModel.update(call: self.currentCall!)
-						}
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            self.updateEncryption(withToast: true)
+                            if self.currentCall != nil {
+                                self.callMediaEncryptionModel.update(call: self.currentCall!)
+                            }
+                        }
 					} else {
-						if self.telecomManager.isNotVerifiedCounter == 0 {
-							DispatchQueue.main.async {
-								self.isNotVerified = true
-								self.telecomManager.isNotVerifiedCounter += 1
-							}
-							self.showZrtpSasDialogIfPossible()
-						} else {
-							DispatchQueue.main.async {
-								self.isNotVerified = true
-								self.telecomManager.isNotVerifiedCounter += 1
-								self.zrtpPopupDisplayed = true
-							}
-						}
+                        DispatchQueue.main.async {
+                            self.isNotVerified = true
+                            self.zrtpPopupDisplayed = true
+                        }
 					}
 				}, onStatsUpdated: { (_: Call, stats: CallStats) in
 					DispatchQueue.main.async {
@@ -666,7 +661,6 @@ class CallViewModel: ObservableObject {
 			telecomManager.callInProgress = true
 			telecomManager.callDisplayed = true
 			telecomManager.callStarted = true
-			telecomManager.isNotVerifiedCounter = 0
 		}
 		
 		coreContext.doOnCoreQueue { core in
