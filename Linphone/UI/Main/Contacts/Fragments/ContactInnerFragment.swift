@@ -171,40 +171,42 @@ struct ContactInnerFragment: View {
 										}
 									})
 									.disabled(contactAvatarModel.address.isEmpty)
-									
-									Spacer()
-									
-									Button(action: {
-										if contactAvatarModel.addresses.count <= 1 {
-											do {
-												let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
-												contactsListViewModel.createOneToOneChatRoomWith(remote: address)
-											} catch {
-												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
-											}
-										} else {
-											isShowSipAddressesPopupType = 1
-											isShowSipAddressesPopup = true
-										}
-									}, label: {
-										VStack {
-											HStack(alignment: .center) {
-												Image("chat-teardrop-text")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
-													.frame(width: 25, height: 25)
-											}
-											.padding(16)
-											.background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
-											.cornerRadius(40)
-											
-											Text("contact_message_action")
-												.default_text_style(styleSize: 14)
-										}
-									})
-									.disabled(contactAvatarModel.address.isEmpty)
-									
+                                    
+                                    if !CorePreferences.disableChatFeature {
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            if contactAvatarModel.addresses.count <= 1 {
+                                                do {
+                                                    let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+                                                    contactsListViewModel.createOneToOneChatRoomWith(remote: address)
+                                                } catch {
+                                                    Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+                                                }
+                                            } else {
+                                                isShowSipAddressesPopupType = 1
+                                                isShowSipAddressesPopup = true
+                                            }
+                                        }, label: {
+                                            VStack {
+                                                HStack(alignment: .center) {
+                                                    Image("chat-teardrop-text")
+                                                        .renderingMode(.template)
+                                                        .resizable()
+                                                        .foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
+                                                        .frame(width: 25, height: 25)
+                                                }
+                                                .padding(16)
+                                                .background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
+                                                .cornerRadius(40)
+                                                
+                                                Text("contact_message_action")
+                                                    .default_text_style(styleSize: 14)
+                                            }
+                                        })
+                                        .disabled(contactAvatarModel.address.isEmpty)
+                                    }
+                                    
 									Spacer()
 									
 									Button(action: {

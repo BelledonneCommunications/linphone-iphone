@@ -288,20 +288,24 @@ struct ScheduleMeetingFragment: View {
 								}.frame(maxHeight: .infinity)
 							}
 						}
-						Rectangle()
-							.foregroundStyle(.clear)
-							.frame(height: 1)
-							.background(Color.gray200)
-						
-						HStack(spacing: 10) {
-							Toggle("", isOn: $meetingViewModel.sendInvitations)
-								.padding(.leading, 16)
-								.labelsHidden()
-								.tint(Color.orangeMain300)
-							Text("meeting_schedule_send_invitations_title")
-								.default_text_style_500(styleSize: 14)
-							Spacer()
-						}
+                        
+                        if !CorePreferences.disableChatFeature {
+                            Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(height: 1)
+                                .background(Color.gray200)
+                            
+                            HStack(spacing: 10) {
+                                Toggle("", isOn: $meetingViewModel.sendInvitations)
+                                    .padding(.leading, 16)
+                                    .labelsHidden()
+                                    .tint(Color.orangeMain300)
+                                Text("meeting_schedule_send_invitations_title")
+                                    .default_text_style_500(styleSize: 14)
+                                Spacer()
+                            }
+                        }
+                        
 						Spacer()
 					}
 					.background(.white)

@@ -250,6 +250,15 @@ class CorePreferences {
 			Config.get().setString(section: "app", key: "default_domain", value: newValue)
 		}
 	}
+    
+    static var disableChatFeature: Bool {
+        get {
+            return Config.get().getBool(section: "app", key: "disable_chat_feature", defaultValue: false)
+        }
+        set {
+            Config.get().setBool(section: "app", key: "disable_chat_feature", value: newValue)
+        }
+    }
 	
 	private func copy(from: String, to: String, overrideIfExists: Bool = false) {
 		let fileManager = FileManager.default

@@ -245,53 +245,55 @@ struct ContentView: View {
 										}
 										.frame(height: geometry.size.height/4)
 										
-										ZStack {
-											if let contactsListVM = conversationsListViewModel, contactsListVM.unreadMessages > 0 {
-												VStack {
-													HStack {
-														Text(
-															contactsListVM.unreadMessages < 99
-															? String(contactsListVM.unreadMessages)
-															: "99+"
-														)
-														.foregroundStyle(.white)
-														.default_text_style(styleSize: 10)
-														.lineLimit(1)
-													}
-													.frame(width: 18, height: 18)
-													.background(Color.redDanger500)
-													.cornerRadius(50)
-												}
-												.padding(.bottom, 30)
-												.padding(.leading, 30)
-											}
-											
-											Button(action: {
-												sharedMainViewModel.changeIndexView(indexViewInt: 2)
-												sharedMainViewModel.displayedFriend = nil
-												sharedMainViewModel.displayedCall = nil
-												sharedMainViewModel.displayedMeeting = nil
-											}, label: {
-												VStack {
-													Image("chat-teardrop-text")
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
-														.frame(width: 25, height: 25)
-													
-													if sharedMainViewModel.indexView == 2 {
-														Text("bottom_navigation_conversations_label")
-															.default_text_style_700(styleSize: 10)
-													} else {
-														Text("bottom_navigation_conversations_label")
-															.default_text_style(styleSize: 10)
-													}
-												}
-											})
-											.padding(.top)
-										}
-										.frame(height: geometry.size.height/4)
-										
+                                        if !CorePreferences.disableChatFeature {
+                                            ZStack {
+                                                if let contactsListVM = conversationsListViewModel, contactsListVM.unreadMessages > 0 {
+                                                    VStack {
+                                                        HStack {
+                                                            Text(
+                                                                contactsListVM.unreadMessages < 99
+                                                                ? String(contactsListVM.unreadMessages)
+                                                                : "99+"
+                                                            )
+                                                            .foregroundStyle(.white)
+                                                            .default_text_style(styleSize: 10)
+                                                            .lineLimit(1)
+                                                        }
+                                                        .frame(width: 18, height: 18)
+                                                        .background(Color.redDanger500)
+                                                        .cornerRadius(50)
+                                                    }
+                                                    .padding(.bottom, 30)
+                                                    .padding(.leading, 30)
+                                                }
+                                                
+                                                Button(action: {
+                                                    sharedMainViewModel.changeIndexView(indexViewInt: 2)
+                                                    sharedMainViewModel.displayedFriend = nil
+                                                    sharedMainViewModel.displayedCall = nil
+                                                    sharedMainViewModel.displayedMeeting = nil
+                                                }, label: {
+                                                    VStack {
+                                                        Image("chat-teardrop-text")
+                                                            .renderingMode(.template)
+                                                            .resizable()
+                                                            .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
+                                                            .frame(width: 25, height: 25)
+                                                        
+                                                        if sharedMainViewModel.indexView == 2 {
+                                                            Text("bottom_navigation_conversations_label")
+                                                                .default_text_style_700(styleSize: 10)
+                                                        } else {
+                                                            Text("bottom_navigation_conversations_label")
+                                                                .default_text_style(styleSize: 10)
+                                                        }
+                                                    }
+                                                })
+                                                .padding(.top)
+                                            }
+                                            .frame(height: geometry.size.height/4)
+                                        }
+                                        
 										Button(action: {
 											sharedMainViewModel.changeIndexView(indexViewInt: 3)
 											sharedMainViewModel.displayedFriend = nil
@@ -803,56 +805,58 @@ struct ContentView: View {
 										.padding(.top)
 										.frame(width: 66)
 									}
-									
-									Spacer()
-									
-									ZStack {
-										if let conversationsListVM = conversationsListViewModel, conversationsListVM.unreadMessages > 0 {
-											VStack {
-												HStack {
-													Text(
-														conversationsListVM.unreadMessages < 99
-														? String(conversationsListVM.unreadMessages)
-														: "99+"
-													)
-													.foregroundStyle(.white)
-													.default_text_style(styleSize: 10)
-													.lineLimit(1)
-												}
-												.frame(width: 18, height: 18)
-												.background(Color.redDanger500)
-												.cornerRadius(50)
-											}
-											.padding(.bottom, 30)
-											.padding(.leading, 30)
-										}
-										
-										Button(action: {
-											sharedMainViewModel.changeIndexView(indexViewInt: 2)
-											sharedMainViewModel.displayedFriend = nil
-											sharedMainViewModel.displayedCall = nil
-											sharedMainViewModel.displayedMeeting = nil
-										}, label: {
-											VStack {
-												Image("chat-teardrop-text")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
-													.frame(width: 25, height: 25)
-												
-												if sharedMainViewModel.indexView == 2 {
-													Text("bottom_navigation_conversations_label")
-														.default_text_style_700(styleSize: 9)
-												} else {
-													Text("bottom_navigation_conversations_label")
-														.default_text_style(styleSize: 9)
-												}
-											}
-										})
-										.padding(.top)
-										.frame(width: 66)
-									}
-									
+                                    
+                                    if !CorePreferences.disableChatFeature {
+                                        Spacer()
+                                    
+                                        ZStack {
+                                            if let conversationsListVM = conversationsListViewModel, conversationsListVM.unreadMessages > 0 {
+                                                VStack {
+                                                    HStack {
+                                                        Text(
+                                                            conversationsListVM.unreadMessages < 99
+                                                            ? String(conversationsListVM.unreadMessages)
+                                                            : "99+"
+                                                        )
+                                                        .foregroundStyle(.white)
+                                                        .default_text_style(styleSize: 10)
+                                                        .lineLimit(1)
+                                                    }
+                                                    .frame(width: 18, height: 18)
+                                                    .background(Color.redDanger500)
+                                                    .cornerRadius(50)
+                                                }
+                                                .padding(.bottom, 30)
+                                                .padding(.leading, 30)
+                                            }
+                                            
+                                            Button(action: {
+                                                sharedMainViewModel.changeIndexView(indexViewInt: 2)
+                                                sharedMainViewModel.displayedFriend = nil
+                                                sharedMainViewModel.displayedCall = nil
+                                                sharedMainViewModel.displayedMeeting = nil
+                                            }, label: {
+                                                VStack {
+                                                    Image("chat-teardrop-text")
+                                                        .renderingMode(.template)
+                                                        .resizable()
+                                                        .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
+                                                        .frame(width: 25, height: 25)
+                                                    
+                                                    if sharedMainViewModel.indexView == 2 {
+                                                        Text("bottom_navigation_conversations_label")
+                                                            .default_text_style_700(styleSize: 9)
+                                                    } else {
+                                                        Text("bottom_navigation_conversations_label")
+                                                            .default_text_style(styleSize: 9)
+                                                    }
+                                                }
+                                            })
+                                            .padding(.top)
+                                            .frame(width: 66)
+                                        }
+                                    }
+                                    
 									Spacer()
 									Button(action: {
 										sharedMainViewModel.changeIndexView(indexViewInt: 3)
@@ -1137,49 +1141,55 @@ struct ContentView: View {
 							.zIndex(3)
 							.onDisappear {
 								if let contactsListVM = contactsListViewModel, let displayedConversation = contactsListVM.displayedConversation {
-									sharedMainViewModel.displayedFriend = nil
-									sharedMainViewModel.displayedCall = nil
-									sharedMainViewModel.changeIndexView(indexViewInt: 2)
-									
-									if let conversationsListVM = self.conversationsListViewModel {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-											withAnimation {
-												conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
-											}
-											contactsListVM.displayedConversation = nil
-										}
-									} else {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-											if let conversationsListVM = self.conversationsListViewModel {
-												withAnimation {
-													conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
-												}
-											}
-											contactsListVM.displayedConversation = nil
-										}
-									}
+                                    
+                                    if !CorePreferences.disableChatFeature {
+                                        sharedMainViewModel.displayedFriend = nil
+                                        sharedMainViewModel.displayedCall = nil
+                                        sharedMainViewModel.changeIndexView(indexViewInt: 2)
+                                        
+                                        if let conversationsListVM = self.conversationsListViewModel {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                withAnimation {
+                                                    conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+                                                }
+                                                contactsListVM.displayedConversation = nil
+                                            }
+                                        } else {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                if let conversationsListVM = self.conversationsListViewModel {
+                                                    withAnimation {
+                                                        conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+                                                    }
+                                                }
+                                                contactsListVM.displayedConversation = nil
+                                            }
+                                        }
+                                    }
 								} else if let historyListVM = historyListViewModel, let displayedConversation = historyListVM.displayedConversation {
-									sharedMainViewModel.displayedFriend = nil
-									sharedMainViewModel.displayedCall = nil
-									sharedMainViewModel.changeIndexView(indexViewInt: 2)
-									
-									if let conversationsListVM = self.conversationsListViewModel {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-											withAnimation {
-												conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
-											}
-											historyListVM.displayedConversation = nil
-										}
-									} else {
-										DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-											if let conversationsListVM = self.conversationsListViewModel {
-												withAnimation {
-													conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
-												}
-											}
-											historyListVM.displayedConversation = nil
-										}
-									}
+                                    
+                                    if !CorePreferences.disableChatFeature {
+                                        sharedMainViewModel.displayedFriend = nil
+                                        sharedMainViewModel.displayedCall = nil
+                                        sharedMainViewModel.changeIndexView(indexViewInt: 2)
+                                        
+                                        if let conversationsListVM = self.conversationsListViewModel {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                withAnimation {
+                                                    conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+                                                }
+                                                historyListVM.displayedConversation = nil
+                                            }
+                                        } else {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                if let conversationsListVM = self.conversationsListViewModel {
+                                                    withAnimation {
+                                                        conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+                                                    }
+                                                }
+                                                historyListVM.displayedConversation = nil
+                                            }
+                                        }
+                                    }
 								}
 							}
 					}
@@ -1227,7 +1237,7 @@ struct ContentView: View {
 					if  let meetingsListVM = meetingsListViewModel, isShowSendCancelMeetingNotificationPopup {
 						PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
 								  title: Text("meeting_schedule_cancel_dialog_title"),
-								  content: Text("meeting_schedule_cancel_dialog_message"),
+                                  content: !CorePreferences.disableChatFeature ? Text("meeting_schedule_cancel_dialog_message") : Text(""),
 								  titleFirstButton: Text("dialog_cancel"),
 								  actionFirstButton: {
 							sharedMainViewModel.displayedMeeting = nil
@@ -1321,7 +1331,9 @@ struct ContentView: View {
 			}
 			.onChange(of: navigationManager.selectedCallId) { newCallId in
 				if newCallId != nil {
-					sharedMainViewModel.changeIndexView(indexViewInt: 2)
+                    if !CorePreferences.disableChatFeature {
+                        sharedMainViewModel.changeIndexView(indexViewInt: 2)
+                    }
 				}
 			}
 			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ContactLoaded"))) { _ in

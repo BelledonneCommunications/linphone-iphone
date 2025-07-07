@@ -259,30 +259,32 @@ struct HistoryContactFragment: View {
 												.frame(minWidth: 80)
 										}
 									})
-									
-									Spacer()
-									
-									Button(action: {
-										historyListViewModel.createOneToOneChatRoomWith(remote: historyModel.addressLinphone)
-									}, label: {
-										VStack {
-											HStack(alignment: .center) {
-												Image("chat-teardrop-text")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
-													.frame(width: 25, height: 25)
-											}
-											.padding(16)
-											.background(Color.grayMain2c200)
-											.cornerRadius(40)
-											
-											Text("contact_message_action")
-												.default_text_style(styleSize: 14)
-												.frame(minWidth: 80)
-										}
-									})
-									
+                                    
+                                    if !CorePreferences.disableChatFeature {
+                                        Spacer()
+                                        
+                                        Button(action: {
+                                            historyListViewModel.createOneToOneChatRoomWith(remote: historyModel.addressLinphone)
+                                        }, label: {
+                                            VStack {
+                                                HStack(alignment: .center) {
+                                                    Image("chat-teardrop-text")
+                                                        .renderingMode(.template)
+                                                        .resizable()
+                                                        .foregroundStyle(Color.grayMain2c600)
+                                                        .frame(width: 25, height: 25)
+                                                }
+                                                .padding(16)
+                                                .background(Color.grayMain2c200)
+                                                .cornerRadius(40)
+                                                
+                                                Text("contact_message_action")
+                                                    .default_text_style(styleSize: 14)
+                                                    .frame(minWidth: 80)
+                                            }
+                                        })
+                                    }
+                                    
 									Spacer()
 									
 									Button(action: {

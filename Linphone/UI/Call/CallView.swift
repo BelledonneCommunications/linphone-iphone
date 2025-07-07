@@ -2191,45 +2191,47 @@ struct CallView: View {
                 .frame(height: geo.size.height * 0.15)
                 
                 HStack(spacing: 0) {
-                    VStack {
-                        Button {
-                            callViewModel.createConversation()
-                        } label: {
-                            HStack {
-                                if !callViewModel.operationInProgress {
-                                    Image("chat-teardrop-text")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundStyle(.white)
-                                        .frame(width: 32, height: 32)
-                                } else {
-                                    ProgressView()
-                                        .controlSize(.mini)
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .frame(width: 32, height: 32, alignment: .center)
-                                        .onDisappear {
-                                            if SharedMainViewModel.shared.displayedConversation != nil {
-                                                SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
-                                                callViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
-                                                SharedMainViewModel.shared.displayedConversation = nil
-                                                withAnimation {
-                                                    telecomManager.callDisplayed = false
+                    if !CorePreferences.disableChatFeature {
+                        VStack {
+                            Button {
+                                callViewModel.createConversation()
+                            } label: {
+                                HStack {
+                                    if !callViewModel.operationInProgress {
+                                        Image("chat-teardrop-text")
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .foregroundStyle(.white)
+                                            .frame(width: 32, height: 32)
+                                    } else {
+                                        ProgressView()
+                                            .controlSize(.mini)
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            .frame(width: 32, height: 32, alignment: .center)
+                                            .onDisappear {
+                                                if SharedMainViewModel.shared.displayedConversation != nil {
+                                                    SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+                                                    callViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+                                                    SharedMainViewModel.shared.displayedConversation = nil
+                                                    withAnimation {
+                                                        telecomManager.callDisplayed = false
+                                                    }
                                                 }
                                             }
-                                        }
+                                    }
                                 }
                             }
+                            .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+                            .frame(width: buttonSize, height: buttonSize)
+                            .background(Color.gray500)
+                            .cornerRadius(40)
+                            
+                            Text("call_action_show_messages")
+                                .foregroundStyle(.white)
+                                .default_text_style(styleSize: 15)
                         }
-                        .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
-                        .frame(width: buttonSize, height: buttonSize)
-                        .background(Color.gray500)
-                        .cornerRadius(40)
-                        
-                        Text("call_action_show_messages")
-                            .foregroundStyle(.white)
-                            .default_text_style(styleSize: 15)
+                        .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     }
-                    .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     
                     VStack {
                         Button {
@@ -2326,6 +2328,31 @@ struct CallView: View {
                     }
                     .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     .hidden()
+                    
+                    if CorePreferences.disableChatFeature {
+                        VStack {
+                            Button {
+                            } label: {
+                                HStack {
+                                    Image("video-camera")
+                                        .renderingMode(.template)
+                                        .resizable()
+                                        .foregroundStyle(.white)
+                                        .frame(width: 32, height: 32)
+                                }
+                            }
+                            .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+                            .frame(width: buttonSize, height: buttonSize)
+                            .background(Color.gray500)
+                            .cornerRadius(40)
+                            
+                            Text("call_action_change_layout")
+                                .foregroundStyle(.white)
+                                .default_text_style(styleSize: 15)
+                        }
+                        .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
+                        .hidden()
+                    }
                 }
                 .frame(height: geo.size.height * 0.15)
             } else {
@@ -2562,45 +2589,47 @@ struct CallView: View {
                         .frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
                     }
                     
-                    VStack {
-                        Button {
-                            callViewModel.createConversation()
-                        } label: {
-                            HStack {
-                                if !callViewModel.operationInProgress {
-                                    Image("chat-teardrop-text")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundStyle(.white)
-                                        .frame(width: 32, height: 32)
-                                } else {
-                                    ProgressView()
-                                        .controlSize(.mini)
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .frame(width: 32, height: 32, alignment: .center)
-                                        .onDisappear {
-                                            if SharedMainViewModel.shared.displayedConversation != nil {
-                                                SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
-                                                callViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
-                                                SharedMainViewModel.shared.displayedConversation = nil
-                                                withAnimation {
-                                                    telecomManager.callDisplayed = false
+                    if !CorePreferences.disableChatFeature {
+                        VStack {
+                            Button {
+                                callViewModel.createConversation()
+                            } label: {
+                                HStack {
+                                    if !callViewModel.operationInProgress {
+                                        Image("chat-teardrop-text")
+                                            .renderingMode(.template)
+                                            .resizable()
+                                            .foregroundStyle(.white)
+                                            .frame(width: 32, height: 32)
+                                    } else {
+                                        ProgressView()
+                                            .controlSize(.mini)
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            .frame(width: 32, height: 32, alignment: .center)
+                                            .onDisappear {
+                                                if SharedMainViewModel.shared.displayedConversation != nil {
+                                                    SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+                                                    callViewModel.changeDisplayedChatRoom(conversationModel: SharedMainViewModel.shared.displayedConversation!)
+                                                    SharedMainViewModel.shared.displayedConversation = nil
+                                                    withAnimation {
+                                                        telecomManager.callDisplayed = false
+                                                    }
                                                 }
                                             }
-                                        }
+                                    }
                                 }
                             }
+                            .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+                            .frame(width: buttonSize, height: buttonSize)
+                            .background(Color.gray500)
+                            .cornerRadius(40)
+                            
+                            Text("call_action_show_messages")
+                                .foregroundStyle(.white)
+                                .default_text_style(styleSize: 15)
                         }
-                        .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
-                        .frame(width: buttonSize, height: buttonSize)
-                        .background(Color.gray500)
-                        .cornerRadius(40)
-                        
-                        Text("call_action_show_messages")
-                            .foregroundStyle(.white)
-                            .default_text_style(styleSize: 15)
+                        .frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
                     }
-                    .frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
                     
                     VStack {
                         Button {

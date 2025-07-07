@@ -97,7 +97,7 @@ class NotificationService: UNNotificationServiceExtension {
 		*/
 		if let bestAttemptContent = bestAttemptContent {
 			createCore()
-			// if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
+			if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
 				Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
 			
 			if let defaultAccountParams = lc?.defaultAccount?.params, defaultAccountParams.publishEnabled == true {
@@ -199,7 +199,10 @@ class NotificationService: UNNotificationServiceExtension {
 						Log.info("Message not found for callid ["+callId+"]")
 					}
 				}
-			// }
+            } else {
+                contentHandler(UNNotificationContent())
+                return
+            }
 			serviceExtensionTimeWillExpire()
 		}
 	}

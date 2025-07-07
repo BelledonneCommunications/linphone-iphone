@@ -145,11 +145,9 @@ class MeetingsListViewModel: ObservableObject {
 				// Only remaining meeting is the fake TodayMeeting, remove it too
 				meetingsList.removeAll()
 			}
-			
-			DispatchQueue.main.async {
-				ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
-				ToastViewModel.shared.displayToast = true
-			}
+            
+            ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
+            ToastViewModel.shared.displayToast = true
 		}
 	}
 	
@@ -162,8 +160,13 @@ class MeetingsListViewModel: ObservableObject {
 				let mSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (_: ConferenceScheduler, state: ConferenceScheduler.State) in
 					Log.info("\(MeetingViewModel.TAG) Conference state changed \(state)")
 					if state == ConferenceScheduler.State.Ready {
-						self.sendIcsInvitation(core: core, conferenceScheduler: conferenceScheduler)
-						self.deleteSelectedMeeting()
+                        if !CorePreferences.disableChatFeature {
+                            self.sendIcsInvitation(core: core, conferenceScheduler: conferenceScheduler)
+                        }
+                        
+                        DispatchQueue.main.async {
+                            self.deleteSelectedMeeting()
+                        }
 					}
 				}, onInvitationsSent: { (_: ConferenceScheduler, failedInvitations: [Address]) in
 					
