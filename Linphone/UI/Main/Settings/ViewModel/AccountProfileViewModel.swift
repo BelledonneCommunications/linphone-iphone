@@ -106,6 +106,8 @@ class AccountProfileViewModel: ObservableObject {
                         withPresence: false
                     )
                     
+                    self.defaultAccountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
+                    
                     self.dialPlanValueSelected = dialPlanValueSelectedTmp
                 }
             }
