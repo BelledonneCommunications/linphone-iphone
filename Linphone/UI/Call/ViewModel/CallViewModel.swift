@@ -699,17 +699,21 @@ class CallViewModel: ObservableObject {
 				do {
 					let params = try core.createCallParams(call: self.currentCall)
 					
-					params.videoEnabled = true
-					
-					if params.videoEnabled {
-						if params.videoDirection == .SendRecv {
-							params.videoDirection = .RecvOnly
-						} else if params.videoDirection == .RecvOnly {
-							params.videoDirection = .SendRecv
-						} else if params.videoDirection == .SendOnly {
-							params.videoDirection = .Inactive
-						} else if params.videoDirection == .Inactive {
-							params.videoDirection = .SendRecv
+					if (params.videoEnabled == false) {
+						Log.info("\(CallViewModel.TAG) Conference found and video disabled in params, enabling it")
+						params.videoEnabled = true
+						params.videoDirection = MediaDirection.SendRecv
+					} else {
+						if (params.videoDirection == MediaDirection.SendRecv || params.videoDirection == MediaDirection.SendOnly) {
+							Log.info(
+								"\(CallViewModel.TAG) Conference found with video already enabled, changing video media direction to receive only"
+							)
+							params.videoDirection = MediaDirection.RecvOnly
+						} else {
+							Log.info(
+								"\(CallViewModel.TAG) Conference found with video already enabled, changing video media direction to send & receive"
+							)
+							params.videoDirection = MediaDirection.SendRecv
 						}
 					}
 					

@@ -254,8 +254,12 @@ class TelecomManager: ObservableObject {
 				 lcallParams.videoEnabled = false
 				 }*/
 			} else {
-				lcallParams.videoEnabled = true
-				lcallParams.videoDirection = isVideo ? MediaDirection.SendRecv : MediaDirection.Inactive
+				if isVideo {
+					lcallParams.videoEnabled = true
+					lcallParams.videoDirection = MediaDirection.SendRecv
+				} else {
+					lcallParams.videoEnabled = false
+				}
 			}
 			
 			if let call = core.inviteAddressWithParams(addr: addr, params: lcallParams) {
