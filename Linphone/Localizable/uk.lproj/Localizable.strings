@@ -298,6 +298,9 @@
 "account_settings_bundle_mode_title" = "Режим об'єднання";
 "account_settings_ccmp_server_url_title" = "URL-адреса сервера CCMP";
 "account_settings_conference_factory_uri_title" = "URI ресурсу конференцій";
+"account_settings_dialog_invalid_password_title" = "Потрібна автентифікація";
+"account_settings_dialog_invalid_password_message" = "З’єднання не вдалося, оскільки автентифікація відсутня або недійсна для облікового запису\n%@.\n\nВи можете ввести пароль ще раз або перевірити конфігурацію облікового запису в налаштуваннях.";
+"account_settings_dialog_invalid_password_hint" = "Новий пароль";
 "account_settings_enable_ice_title" = "Увімкнути ICE";
 "account_settings_enable_turn_title" = "Увімкнути TURN";
 "account_settings_expire_title" = "Спливає (в секундах)";

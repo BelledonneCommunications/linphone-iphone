@@ -82,6 +82,9 @@ struct ContentView: View {
 	@State var isShowConversationInfoPopup: Bool = false
 	@State var conversationInfoPopupText: String = ""
 	
+	@State var isShowUpdatePasswordPopup: Bool = false
+	@State var passwordUpdateAddress: String = ""
+	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
@@ -1293,6 +1296,18 @@ struct ContentView: View {
 						}
 					}
 					
+					if isShowUpdatePasswordPopup {
+						PopupUpdatePassword(
+							isShowUpdatePasswordPopup: $isShowUpdatePasswordPopup,
+							passwordUpdateAddress: $passwordUpdateAddress
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowUpdatePasswordPopup.toggle()
+						}
+					}
+					
 					if telecomManager.meetingWaitingRoomDisplayed {
 						MeetingWaitingRoomFragment()
 							.zIndex(3)
@@ -1352,6 +1367,10 @@ struct ContentView: View {
 			}
 			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CoreStarted"))) { _ in
 				accountProfileViewModel.setAvatarModel()
+			}
+			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("PasswordUpdate")).compactMap { $0.userInfo?["address"] as? String }) { address in
+				passwordUpdateAddress = address
+				isShowUpdatePasswordPopup = true
 			}
 		}
 		.overlay {

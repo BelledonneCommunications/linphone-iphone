@@ -22,6 +22,9 @@
 "account_settings_avpf_title" = "AVPF";
 "account_settings_conference_factory_uri_title" = "URI konfiguračního serveru konference";
 "account_settings_cpim_in_basic_conversations_title" = "Použít CPIM v \"základních\" konverzacích";
+"account_settings_dialog_invalid_password_title" = "Vyžadováno ověření";
+"account_settings_dialog_invalid_password_message" = "Připojení se nezdařilo, protože chybí nebo je neplatné ověření účtu\n%@.\n\nMůžete znovu zadat heslo nebo zkontrolovat nastavení účtu v konfiguraci.";
+"account_settings_dialog_invalid_password_hint" = "Nové heslo";
 "account_settings_enable_ice_title" = "Povolit ICE";
 "account_settings_enable_turn_title" = "Povolit TURN";
 "account_settings_expire_title" = "Platnost (v sekundách)";

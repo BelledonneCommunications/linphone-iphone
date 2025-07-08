@@ -251,15 +251,39 @@ class CoreContext: ObservableObject {
 						}
 					}
 				}
-			}, onAuthenticationRequested: { (_: Core, authInfo: AuthInfo, method: AuthMethod) in
-				guard let username = authInfo.username, let server = authInfo.authorizationServer, !server.isEmpty else {
+			}, onAuthenticationRequested: { (core: Core, authInfo: AuthInfo, method: AuthMethod) in
+				guard let username = authInfo.username, let domain = authInfo.domain, let realm = authInfo.realm else {
 					Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
 					return
 				}
+				
 				if method == .Bearer {
-					Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(username)")
-					self.bearerAuthInfoPendingPasswordUpdate = authInfo
-					SingleSignOnManager.shared.setUp(ssoUrl: server, user: username)
+					if let server = authInfo.authorizationServer, !server.isEmpty {
+						Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(username)")
+						self.bearerAuthInfoPendingPasswordUpdate = authInfo
+						SingleSignOnManager.shared.setUp(ssoUrl: server, user: username)
+					}
+				}
+				
+				if method == .HttpDigest {
+					guard let accountFound = core.accountList.first(where: {
+						$0.params?.identityAddress?.username == authInfo.username &&
+						$0.params?.identityAddress?.domain == authInfo.domain
+					}) else {
+						Log.info("[CoreContext] Failed to find account matching auth info, aborting auth dialog")
+						return
+					}
+
+					let identity = "\(authInfo.username ?? "username")@\(authInfo.domain ?? "domain")"
+					Log.info("[CoreContext] Authentication requested method is HttpDigest, showing dialog asking user for password for identity [\(identity)]")
+					
+					DispatchQueue.main.async {
+						NotificationCenter.default.post(
+							name: NSNotification.Name("PasswordUpdate"),
+							object: nil,
+							userInfo: ["address": "sip:" + identity]
+						)
+					}
 				}
 			}, onTransferStateChanged: { (_: Core, transferred: Call, callState: Call.State) in
 				Log.info("[CoreContext] Transferred call \(transferred.remoteAddress!.asStringUriOnly()) state changed \(callState)")

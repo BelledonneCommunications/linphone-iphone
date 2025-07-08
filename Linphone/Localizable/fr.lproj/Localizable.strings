@@ -38,6 +38,9 @@
 "account_settings_ccmp_server_url_title" = "URL du serveur CCMP";
 "account_settings_conference_factory_uri_title" = "URI du serveur de conversations";
 "account_settings_cpim_in_basic_conversations_title" = "Utiliser CPIM dans les conversations \"basiques\"";
+"account_settings_dialog_invalid_password_title" = "Autentification requise";
+"account_settings_dialog_invalid_password_message" = "La connexion a échoué pour le compte \n%@.\n\nVous pouvez renseigner votre mot de passe à nouveau ou bien vérifier les options de configuration de votre compte.";
+"account_settings_dialog_invalid_password_hint" = "Mot de passe";
 "account_settings_enable_ice_title" = "Activer ICE";
 "account_settings_enable_turn_title" = "Activer TURN";
 "account_settings_expire_title" = "Expiration (en secondes)";
