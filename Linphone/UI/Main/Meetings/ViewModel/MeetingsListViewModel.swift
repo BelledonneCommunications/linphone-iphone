@@ -54,9 +54,6 @@ class MeetingsListViewModel: ObservableObject {
 			if let account = core.defaultAccount {
 				confInfoList = account.conferenceInformationList
 			}
-			if confInfoList.isEmpty {
-				confInfoList = core.conferenceInformationList
-			}
 			
 			var meetingsListTmp: [MeetingsListItemModel] = []
 			var meetingForTodayFound = false

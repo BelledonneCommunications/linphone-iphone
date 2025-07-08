@@ -371,6 +371,19 @@ class CoreContext: ObservableObject {
 						
 					}
 				}
+			}, onDefaultAccountChanged: { (_: Core, account: Account?) in
+				Log.info("[CoreContext][onDefaultAccountChanged] Default account set to: \(account?.displayName() ?? "none")")
+                if let account = account {
+                    DispatchQueue.main.async {
+                        for accountModel in self.accounts {
+                            accountModel.isDefaultAccount = accountModel.account == account
+                        }
+                    }
+                }
+				DispatchQueue.main.async {
+					NotificationCenter.default.post(name: NSNotification.Name("DefaultAccountChanged"), object: nil)
+				}
+				ContactsManager.shared.fetchContacts()
 			}, onAccountAdded: { (_: Core, acc: Account) in
 				self.forceRemotePushToMatchVoipPushSettings(account: acc)
 				
@@ -390,6 +403,7 @@ class CoreContext: ObservableObject {
 					self.accounts = accountModels
 				}
 			})
+			
 			self.mCore.addDelegate(delegate: self.mCoreDelegate)
 			
 			self.mCore.autoIterateEnabled = true

@@ -88,7 +88,6 @@ struct ThirdPartySipAccountLoginFragment: View {
 					.default_text_style(styleSize: 15)
 					.disableAutocorrection(true)
 					.autocapitalization(.none)
-					.disabled(coreContext.loggedIn)
 					.frame(height: 25)
 					.padding(.horizontal, 20)
 					.padding(.vertical, 15)
@@ -131,7 +130,6 @@ struct ThirdPartySipAccountLoginFragment: View {
 							.frame(width: 20, height: 20)
 					})
 				}
-				.disabled(coreContext.loggedIn)
 				.padding(.horizontal, 20)
 				.padding(.vertical, 15)
 				.cornerRadius(60)
@@ -150,7 +148,6 @@ struct ThirdPartySipAccountLoginFragment: View {
 					.default_text_style(styleSize: 15)
 					.disableAutocorrection(true)
 					.autocapitalization(.none)
-					.disabled(coreContext.loggedIn)
 					.frame(height: 25)
 					.padding(.horizontal, 20)
 					.padding(.vertical, 15)
@@ -171,7 +168,6 @@ struct ThirdPartySipAccountLoginFragment: View {
 					.default_text_style(styleSize: 15)
 					.disableAutocorrection(true)
 					.autocapitalization(.none)
-					.disabled(coreContext.loggedIn)
 					.frame(height: 25)
 					.padding(.horizontal, 20)
 					.padding(.vertical, 15)
@@ -221,7 +217,7 @@ struct ThirdPartySipAccountLoginFragment: View {
 			Button(action: {
 				self.accountLoginViewModel.login()
 			}, label: {
-				Text(coreContext.loggedIn ? "manage_account_delete" : "assistant_account_login")
+				Text("assistant_account_login")
 					.default_text_style_white_600(styleSize: 20)
 					.frame(height: 35)
 					.frame(maxWidth: .infinity)

@@ -50,6 +50,8 @@ class AccountModel: ObservableObject {
 	
 	init(account: Account, core: Core) {
 		self.account = account
+        
+        self.computeNotificationsCount()
 		
 		accountDelegate = AccountDelegateStub(onRegistrationStateChanged: { (_: Account, _: RegistrationState, _: String) in
 			self.update()
@@ -277,6 +279,27 @@ class AccountModel: ObservableObject {
 				NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
 			}
 		}
+	}
+	
+	func setAsDefault() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if core.defaultAccount?.displayName() != self.account.displayName() {
+				core.defaultAccount = self.account
+				
+				for friendList in core.friendsLists {
+					if (friendList.subscriptionsEnabled) {
+						Log.info(
+							"\(AccountModel.TAG) Default account has changed, refreshing friend list \(friendList.displayName ?? "") subscriptions"
+						)
+						// friendList.updateSubscriptions() won't trigger a refresh unless a friend has changed
+						friendList.subscriptionsEnabled = false
+						friendList.subscriptionsEnabled = true
+					}
+				}
+			}
+		}
+		
+		self.isDefaultAccount = true
 	}
 }
 

@@ -73,7 +73,7 @@ struct SideMenu: View {
 						ForEach(0..<CoreContext.shared.accounts.count, id: \.self) { index in
 							SideMenuAccountRow(model: CoreContext.shared.accounts[index], isOpen: $isOpen, isShowAccountProfileFragment: $isShowAccountProfileFragment)
 							.background()
-							.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+							.listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
 							.listRowSeparator(.hidden)
 						}
 					}

@@ -355,8 +355,8 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
-												if let accountModelIndex = accountProfileViewModel.accountModelIndex,
-												   accountModelIndex < coreContext.accounts.count {
+												if let defaultAccountModelIndex = accountProfileViewModel.defaultAccountModelIndex,
+                                                   defaultAccountModelIndex < coreContext.accounts.count {
 													AsyncImage(url: imagePath) { image in
 														switch image {
 														case .empty:
@@ -372,9 +372,9 @@ struct ContentView: View {
 																	imageTmp = image
 																}
 														case .failure:
-															if coreContext.accounts[accountModelIndex].avatarModel != nil {
+															if coreContext.accounts[defaultAccountModelIndex].avatarModel != nil {
 																let tmpImage = contactsManager.textToImage(
-																	firstName: coreContext.accounts[accountModelIndex].avatarModel!.name,
+																	firstName: coreContext.accounts[defaultAccountModelIndex].avatarModel!.name,
 																	lastName: "")
 																Image(uiImage: tmpImage)
 																	.resizable()
@@ -398,14 +398,14 @@ struct ContentView: View {
 														openMenu()
 													}
 													.onAppear {
-														let imagePathTmp = coreContext.accounts[accountModelIndex].getImagePath()
+														let imagePathTmp = coreContext.accounts[defaultAccountModelIndex].getImagePath()
 														if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
 															imagePath = imagePathTmp
 														}
 													}
-													.onChange(of: coreContext.accounts[accountModelIndex].usernaneAvatar) { username in
+													.onChange(of: coreContext.accounts[defaultAccountModelIndex].usernaneAvatar) { username in
 														if !username.isEmpty {
-															let imagePathTmp = coreContext.accounts[accountModelIndex].getImagePath()
+															let imagePathTmp = coreContext.accounts[defaultAccountModelIndex].getImagePath()
 															if !(imagePathTmp.lastPathComponent.isEmpty || imagePathTmp.lastPathComponent == "Error" || imagePathTmp.lastPathComponent == "ImageError.png") {
 																sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
 																imagePath = imagePathTmp
@@ -413,8 +413,8 @@ struct ContentView: View {
 														}
 													}
 													.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ImageChanged"))) { _ in
-														if !coreContext.accounts[accountModelIndex].usernaneAvatar.isEmpty {
-															let imagePathTmp = coreContext.accounts[accountModelIndex].getImagePath()
+														if !coreContext.accounts[defaultAccountModelIndex].usernaneAvatar.isEmpty {
+															let imagePathTmp = coreContext.accounts[defaultAccountModelIndex].getImagePath()
 															sharedMainViewModel.changeDefaultAvatar(defaultAvatarURL: imagePathTmp)
 															imagePath = imagePathTmp
 														}
@@ -1367,6 +1367,31 @@ struct ContentView: View {
 			}
 			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CoreStarted"))) { _ in
 				accountProfileViewModel.setAvatarModel()
+			}
+			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DefaultAccountChanged"))) { _ in
+                accountProfileViewModel.defaultAccountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
+                
+                withAnimation {
+                    if self.sideMenuIsOpen {
+                        self.sideMenuIsOpen = false
+                    }
+                }
+                
+                if self.isShowLoginFragment {
+                    self.isShowLoginFragment = false
+                }
+                
+                if conversationsListViewModel != nil {
+                    conversationsListViewModel = ConversationsListViewModel()
+                }
+                
+				if historyListViewModel != nil {
+                    historyListViewModel = HistoryListViewModel()
+				}
+				
+				if meetingsListViewModel != nil {
+                    meetingsListViewModel = MeetingsListViewModel()
+				}
 			}
 			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("PasswordUpdate")).compactMap { $0.userInfo?["address"] as? String }) { address in
 				passwordUpdateAddress = address

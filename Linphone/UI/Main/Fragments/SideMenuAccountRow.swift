@@ -97,10 +97,11 @@ struct SideMenuAccountRow: View {
 				
 				Menu {
 					Button {
-						withAnimation {
-							isOpen = false
-							isShowAccountProfileFragment = true
-						}
+                        accountProfileViewModel.accountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.displayName == model.displayName})
+                        withAnimation {
+                            isOpen = false
+                            isShowAccountProfileFragment = true
+                        }
 					} label: {
 						Label("drawer_menu_manage_account", systemImage: "arrow.right.circle")
 					}
@@ -118,6 +119,10 @@ struct SideMenuAccountRow: View {
 			.padding(.bottom, 12)
 		}
 		.frame(height: 61)
-		.background(model.isDefaultAccount ? Color.grayMain2c100 : .clear)
+		.padding(.horizontal, 16)
+		.background(model.isDefaultAccount ? Color.grayMain2c100 : .white)
+		.onTapGesture {
+			model.setAsDefault()
+		}
 	}
 }
