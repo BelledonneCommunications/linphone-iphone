@@ -92,8 +92,8 @@ class AccountModel: ObservableObject {
 		
 		self.requestDevicesList()
 		
-		let displayNameTmp = account.params?.identityAddress?.displayName ?? ""
-		let usernaneAvatarTmp = account.contactAddress?.username ?? ""
+		let displayNameTmp = account.params?.identityAddress?.displayName ?? displayName
+		let usernaneAvatarTmp = account.contactAddress?.username ?? displayName
 		var photoAvatarModelTmp = ""
 		
 		let preferences = UserDefaults.standard
