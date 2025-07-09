@@ -88,6 +88,56 @@ struct ContentView: View {
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
+				if accountProfileViewModel.accountError && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
+					HStack {
+						if let index = accountProfileViewModel.defaultAccountModelIndex,
+						   index < coreContext.accounts.count, coreContext.accounts[index].isDefaultAccount, coreContext.accounts[index].registrationStateAssociatedUIColor == .orangeWarning600 {
+							Image("warning-circle")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(.white)
+								.frame(width: 26, height: 26)
+								.padding(.leading, 10)
+							
+							
+							Text(String(localized: "default_account_disabled"))
+								.default_text_style_white(styleSize: 16)
+						} else {
+							Image("bell-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(.white)
+								.frame(width: 26, height: 26)
+								.padding(.leading, 10)
+							
+							
+							Text(String(localized: "connection_error_for_non_default_account"))
+								.default_text_style_white(styleSize: 16)
+						}
+						Spacer()
+						
+						Button(
+							action: {
+								withAnimation {
+									accountProfileViewModel.accountError = false
+								}
+							}, label: {
+								Image("x")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 26, height: 26)
+									.padding(.trailing, 10)
+							}
+						)
+						
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 40)
+					.padding(.horizontal, 10)
+					.background(Color.redDanger500)
+				}
+				
 				if !sharedMainViewModel.fileUrlsToShare.isEmpty && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
 					HStack {
 						Image("share-network")
@@ -1358,7 +1408,12 @@ struct ContentView: View {
 			}
 			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DefaultAccountChanged"))) { _ in
                 accountProfileViewModel.defaultAccountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
-                
+								
+				accountProfileViewModel.accountError = CoreContext.shared.accounts.contains {
+					($0.registrationState == .Cleared && $0.isDefaultAccount) ||
+					$0.registrationState == .Failed
+				}
+				
                 withAnimation {
                     if self.sideMenuIsOpen {
                         self.sideMenuIsOpen = false

@@ -26,6 +26,7 @@ class AccountModel: ObservableObject {
 	static let TAG = "[AccountModel]"
 	
 	let account: Account
+	@Published var registrationState: RegistrationState = .None
 	@Published var humanReadableRegistrationState: String = ""
 	@Published var summary: String = ""
 	@Published var registrationStateAssociatedUIColor: Color = .clear
@@ -138,6 +139,8 @@ class AccountModel: ObservableObject {
 					summary = "manage_account_status_progress_summary".localized()
 					registrationStateAssociatedUIColor = .grayMain2c500
 				}
+				
+				registrationState = state
 				
 				isRegistrered = state == .Ok
 				isDefaultAccount = isDefault

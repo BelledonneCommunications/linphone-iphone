@@ -109,6 +109,7 @@
 "conference_layout_active_speaker" = "Mluvčí";
 "conference_layout_audio_only" = "Pouze zvuk";
 "conference_layout_grid" = "Mozaika";
+"connection_error_for_non_default_account" = "Chyba při připojení účtu(ů)";
 "contact_details_actions_title" = "Další akce";
 "contact_details_add_to_favourites" = "Přidat do oblíbených";
 "contact_details_delete" = "Smazat";
@@ -172,6 +173,7 @@
 "conversation_message_meeting_updated_label" = "Schůzka byla aktualizována";
 "conversation_text_field_hint" = "Napište něco…";
 "conversations_list_empty" = "Momentálně žádné konverzace…";
+"default_account_disabled" = "Zvolený účet je momentálně zákázán";
 "dialog_call" = "Volat";
 "dialog_cancel" = "Zrušit";
 "dialog_continue" = "Pokračovat";

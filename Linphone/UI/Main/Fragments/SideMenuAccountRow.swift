@@ -69,6 +69,12 @@ struct SideMenuAccountRow: View {
 					Text(model.humanReadableRegistrationState)
 						.default_text_style_uncolored(styleSize: 12)
 						.foregroundStyle(model.registrationStateAssociatedUIColor)
+						.onChange(of: model.registrationStateAssociatedUIColor) { _ in
+							accountProfileViewModel.accountError = CoreContext.shared.accounts.contains {
+								($0.registrationState == .Cleared && $0.isDefaultAccount) ||
+								$0.registrationState == .Failed
+							}
+						}
 				}
 				.padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
 				.background(Color.grayMain2c200)

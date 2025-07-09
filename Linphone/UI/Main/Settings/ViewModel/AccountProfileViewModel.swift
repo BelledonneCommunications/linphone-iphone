@@ -30,6 +30,7 @@ class AccountProfileViewModel: ObservableObject {
 	
     @Published var accountModelIndex: Int? = 0
     @Published var defaultAccountModelIndex: Int? = 0
+	@Published var accountError: Bool = false
 	
 	init() {
 		SharedMainViewModel.shared.getDialPlansList()
@@ -97,7 +98,9 @@ class AccountProfileViewModel: ObservableObject {
                 }
                 
                 let accountDisplayName = accountTmp.account.displayName()
-                
+				
+				let defaultAccountModelIndexTmp = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
+				
                 DispatchQueue.main.async {
                     accountTmp.avatarModel = ContactAvatarModel(
                         friend: nil,
@@ -106,8 +109,8 @@ class AccountProfileViewModel: ObservableObject {
                         withPresence: false
                     )
                     
-                    self.defaultAccountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
-                    
+                    self.defaultAccountModelIndex = defaultAccountModelIndexTmp
+					
                     self.dialPlanValueSelected = dialPlanValueSelectedTmp
                 }
             }

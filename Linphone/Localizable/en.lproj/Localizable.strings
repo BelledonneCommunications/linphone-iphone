@@ -160,6 +160,7 @@
 "conference_participant_joining_text" = "Joining…";
 "conference_participant_paused_text" = "Paused";
 "conference_share_link_title" = "Share invitation";
+"connection_error_for_non_default_account" = "Account(s) connection error";
 "contact_call_action" = "Call";
 "contact_details_actions_title" = "Other actions";
 "contact_details_add_to_favourites" = "Add to favourites";
@@ -252,6 +253,7 @@
 "conversation_file_cant_be_opened_error_toast" = "File can't be opened!";
 "debug_logs_copied_to_clipboard_toast" = "Debug logs copied to clipboard";
 "Default" = "Default";
+"default_account_disabled" = "Selected account is currently disabled";
 "Default mode" = "Default mode";
 "dialog_accept" = "Accept";
 "dialog_call" = "Call";

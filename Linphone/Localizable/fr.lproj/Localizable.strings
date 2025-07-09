@@ -160,6 +160,7 @@
 "conference_participant_joining_text" = "En train de rejoindre…";
 "conference_participant_paused_text" = "En pause";
 "conference_share_link_title" = "Partager le lien";
+"connection_error_for_non_default_account" = "Compte(s) non connecté(s)";
 "contact_call_action" = "Appel";
 "contact_details_actions_title" = "Autres actions";
 "contact_details_add_to_favourites" = "Ajouter aux favoris";
@@ -252,6 +253,7 @@
 "conversation_file_cant_be_opened_error_toast" = "Impossible d'ouvrir le fichier!";
 "debug_logs_copied_to_clipboard_toast" = "Les journaux ont été ajoutés au presse-papier";
 "Default" = "Default";
+"default_account_disabled" = "Le compte selectionné est désactivé";
 "Default mode" = "Default mode";
 "dialog_accept" = "Accepter";
 "dialog_call" = "Appeler";

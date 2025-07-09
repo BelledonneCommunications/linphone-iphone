@@ -24,6 +24,7 @@
 "conference_participant_joining_text" = "Приєднання…";
 "conference_participant_paused_text" = "Призупинено";
 "conference_share_link_title" = "Поділитися запрошенням";
+"connection_error_for_non_default_account" = "Помилка підключення облікового запису(ів)";
 "contact_call_action" = "Дзвінок";
 "contact_details_actions_title" = "Інші дії";
 "contact_details_add_to_favourites" = "Додати в обрані";
@@ -82,6 +83,7 @@
 "conversation_message_meeting_updated_label" = "Нараду оновлено";
 "conversation_text_field_hint" = "Скажіть щось…";
 "conversations_list_empty" = "Наразі жодної розмови…";
+"default_account_disabled" = "Обраний обліковий запис наразі вимкнено";
 "dialog_call" = "Дзвінок";
 "dialog_cancel" = "Скасувати";
 "dialog_continue" = "Продовжити";
