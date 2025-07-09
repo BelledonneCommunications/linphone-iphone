@@ -372,18 +372,18 @@ class CoreContext: ObservableObject {
 					}
 				}
 			}, onDefaultAccountChanged: { (_: Core, account: Account?) in
-				Log.info("[CoreContext][onDefaultAccountChanged] Default account set to: \(account?.displayName() ?? "none")")
-                if let account = account {
-                    DispatchQueue.main.async {
-                        for accountModel in self.accounts {
-                            accountModel.isDefaultAccount = accountModel.account == account
-                        }
-                    }
-                }
-				DispatchQueue.main.async {
-					NotificationCenter.default.post(name: NSNotification.Name("DefaultAccountChanged"), object: nil)
+				if let account = account, self.mCore.globalState == GlobalState.On {
+					Log.info("[CoreContext][onDefaultAccountChanged] Default account set to: \(account.displayName())")
+					DispatchQueue.main.async {
+						for accountModel in self.accounts {
+							accountModel.isDefaultAccount = accountModel.account == account
+						}
+						
+						NotificationCenter.default.post(name: NSNotification.Name("DefaultAccountChanged"), object: nil)
+					}
+					
+					ContactsManager.shared.fetchContacts()
 				}
-				ContactsManager.shared.fetchContacts()
 			}, onAccountAdded: { (_: Core, acc: Account) in
 				self.forceRemotePushToMatchVoipPushSettings(account: acc)
 				
