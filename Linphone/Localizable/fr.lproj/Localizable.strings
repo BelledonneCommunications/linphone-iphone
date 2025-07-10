@@ -81,10 +81,10 @@
 "assistant_permissions_access_camera_title" = "**Caméra :** Pour capturer votre vidéo lors des appels et des conférences.";
 "assistant_permissions_grant_all_of_them" = "OK";
 "assistant_permissions_post_notifications_title" = "**Notifications :** Pour vous informer quand vous recevez un message ou un appel.";
-"assistant_permissions_read_contacts_title" = "**Contacts :** Pour vous afficher vos contacts et retrouver qui utilise %@.";
+"assistant_permissions_read_contacts_title" = "**Contacts :** Pour afficher vos contacts et retrouver qui utilise %@.";
 "assistant_permissions_record_audio_title" = "**Microphone :** Pour permettre à vos correspondants de vous entendre.";
 "assistant_permissions_skip_permissions" = "Plus tard";
-"assistant_permissions_subtitle" = "Pour vous permettre de vous profitez pleinement de %@, nous avons besoin des autorisations suivantes :";
+"assistant_permissions_subtitle" = "Pour vous permettre de profiter pleinement de %@, nous avons besoin des autorisations suivantes :";
 "assistant_permissions_title" = "Donner les permissions";
 "assistant_qr_code_invalid_toast" = "Ce QR code est invalide !";
 "assistant_scan_qr_code" = "Scanner un QR code";
