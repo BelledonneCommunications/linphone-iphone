@@ -79,6 +79,9 @@ struct PopupUpdatePassword: View {
 						.stroke(isPasswordFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 				)
 				.padding(.bottom)
+				.onTapGesture {
+					isPasswordFocused = true
+				}
 				
 				Button(action: {
 					isShowUpdatePasswordPopup = false
@@ -99,7 +102,7 @@ struct PopupUpdatePassword: View {
 				.padding(.bottom, 10)
 				
 				Button(action: {
-					setNewPassword()
+					updateAuthInfo()
 					isShowUpdatePasswordPopup = false
 				}, label: {
 					Text("dialog_ok")
@@ -122,9 +125,11 @@ struct PopupUpdatePassword: View {
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
 			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+			.onTapGesture {}
 		}
 	}
 	
+	/*
 	func setNewPassword() {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("[SetNewPassword] ---- \(core.defaultAccount?.params?.identityAddress?.asStringUriOnly() ?? "No account found") \(passwordUpdateAddress)")
@@ -137,6 +142,30 @@ struct PopupUpdatePassword: View {
 					)
 					authInfo!.password = passwordPopupText
 					core.addAuthInfo(info: authInfo!)
+					core.refreshRegisters()
+				} else {
+					Log.warn(
+						"[SetNewPassword] Failed to find auth info for account \(account.params?.identityAddress?.asStringUriOnly())"
+					)
+				}
+			}
+		}
+	}
+	*/
+	
+	func updateAuthInfo() {
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("[SetNewPassword] ---- \(core.defaultAccount?.params?.identityAddress?.asStringUriOnly() ?? "No account found") \(passwordUpdateAddress)")
+			
+			if let account = core.accountList.first { $0.params?.identityAddress?.asStringUriOnly() == passwordUpdateAddress } {
+				let authInfo = CoreContext.shared.digestAuthInfoPendingPasswordUpdate
+				if (authInfo != nil) {
+					Log.info(
+						"[SetNewPassword] Updating password for username \(authInfo!.username) using auth info \(authInfo!)"
+					)
+					authInfo!.password = passwordPopupText
+					core.addAuthInfo(info: authInfo!)
+					CoreContext.shared.digestAuthInfoPendingPasswordUpdate = nil
 					core.refreshRegisters()
 				} else {
 					Log.warn(

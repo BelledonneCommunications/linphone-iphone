@@ -57,6 +57,8 @@ class CoreContext: ObservableObject {
 	private var callStateCallBacks: [((Call.State) -> Void)] = []
 	private var configuringStateCallBacks: [((ConfiguringState) -> Void)] = []
 	
+	var digestAuthInfoPendingPasswordUpdate: AuthInfo?
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -284,6 +286,8 @@ class CoreContext: ObservableObject {
 							userInfo: ["address": "sip:" + identity]
 						)
 					}
+					
+					self.digestAuthInfoPendingPasswordUpdate = authInfo
 				}
 			}, onTransferStateChanged: { (_: Core, transferred: Call, callState: Call.State) in
 				Log.info("[CoreContext] Transferred call \(transferred.remoteAddress!.asStringUriOnly()) state changed \(callState)")
