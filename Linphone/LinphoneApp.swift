@@ -189,6 +189,16 @@ struct RootView: View {
 						AssistantView()
 						ToastView().zIndex(3)
 					}
+					
+					if coreContext.coreIsStarted {
+						   VStack {} // Force trigger .onAppear
+							   .onAppear {
+								   if let url = pendingURL {
+									   URIHandler.handleURL(url: url)
+									   pendingURL = nil
+								   }
+							   }
+					   }
 				} else {
 					ZStack {
 						MainViewSwitcher(
