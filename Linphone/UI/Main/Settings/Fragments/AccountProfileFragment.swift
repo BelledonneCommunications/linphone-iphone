@@ -641,6 +641,12 @@ struct AccountProfileFragment: View {
 						actionSecondButton: {
 							if accountProfileViewModel.accountModelIndex != nil {
 								CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex!].logout()
+								isShowAccountProfileFragment = false
+								if let firstAccount = CoreContext.shared.accounts.first?.account {
+									CoreContext.shared.doOnCoreQueue { core in
+										core.defaultAccount = firstAccount
+									}
+								}
 							}
 						}
 					)

@@ -460,8 +460,11 @@ struct ContentView: View {
                                                     cachedImage
                                                         .resizable()
                                                         .aspectRatio(contentMode: .fill)
-                                                        .frame(width: avatarSize, height: avatarSize)
-                                                        .clipShape(Circle())
+														.frame(width: avatarSize, height: avatarSize)
+														.clipShape(Circle())
+														.onTapGesture {
+															openMenu()
+														}
                                                 } else {
                                                     ProgressView()
                                                         .frame(width: avatarSize, height: avatarSize)
