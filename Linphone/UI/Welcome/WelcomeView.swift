@@ -149,6 +149,9 @@ struct WelcomeView: View {
 				.clipped()
 		}
 		.frame(minHeight: geometry.size.height)
+		.onAppear {
+			PermissionManager.shared.havePermissionsAlreadyBeenRequested()
+		}
 	}
 	
 	func setupAppearance() {

@@ -126,4 +126,33 @@ class PermissionManager: ObservableObject {
 			self.allPermissionsHaveBeenDisplayed = true
 		}
 	}
+	
+	func havePermissionsAlreadyBeenRequested() {
+		let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+		let micStatus = AVAudioSession.sharedInstance().recordPermission
+		let photoStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+		let contactsStatus = CNContactStore.authorizationStatus(for: .contacts)
+		
+		let notifGroup = DispatchGroup()
+		var notifStatus: UNAuthorizationStatus = .notDetermined
+		
+		notifGroup.enter()
+		UNUserNotificationCenter.current().getNotificationSettings { settings in
+			notifStatus = settings.authorizationStatus
+			notifGroup.leave()
+		}
+		
+		notifGroup.notify(queue: .main) {
+			let allAlreadyRequested = cameraStatus != .notDetermined &&
+									  micStatus != .undetermined &&
+									  photoStatus != .notDetermined &&
+									  contactsStatus != .notDetermined &&
+									  notifStatus != .notDetermined
+			
+			if allAlreadyRequested {
+				self.allPermissionsHaveBeenDisplayed = true
+			}
+		}
+	}
+
 }
