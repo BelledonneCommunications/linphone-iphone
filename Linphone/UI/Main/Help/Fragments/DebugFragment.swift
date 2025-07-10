@@ -19,6 +19,8 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import QuickLook
+import linphonesw
 
 struct DebugFragment: View {
 	@ObservedObject var helpViewModel: HelpViewModel
@@ -26,6 +28,7 @@ struct DebugFragment: View {
 	@Environment(\.dismiss) var dismiss
 	
 	@State private var showShareSheet: Bool = false
+	@State private var selectedURLAttachment: URL?
 	
 	var body: some View {
 		ZStack {
@@ -65,11 +68,6 @@ struct DebugFragment: View {
 				ScrollView {
 					VStack(spacing: 0) {
 						VStack(spacing: 20) {
-							/*
-							Toggle("help_troubleshooting_print_logs_in_logcat", isOn: $helpViewModel.logcat)
-								.default_text_style_700(styleSize: 15)
-							*/
-							
 							HStack {
 								Spacer()
 								
@@ -141,6 +139,7 @@ struct DebugFragment: View {
 										.frame(width: 25, height: 25)
 								}
 							}
+							
 							Button {
 								UIPasteboard.general.setValue(
 									helpViewModel.sdkVersion,
@@ -176,6 +175,7 @@ struct DebugFragment: View {
 										.frame(width: 25, height: 25)
 								}
 							}
+							
 							Button {
 							} label: {
 								HStack {
@@ -199,10 +199,29 @@ struct DebugFragment: View {
 									.padding(.horizontal, 5)
 								}
 							}
+							
+							HStack {
+								Button(
+									action: {
+										showConfigFile()
+									}, label: {
+										Text("help_troubleshooting_show_config_file")
+											.default_text_style_orange_500(styleSize: 14)
+											.lineLimit(1)
+									}
+								)
+								.padding(.horizontal, 15)
+								.padding(.vertical, 10)
+								.background(Color.orangeMain100)
+								.cornerRadius(60)
+								
+								Spacer()
+							}
 						}
 						.padding(.vertical, 20)
 						.padding(.horizontal, 20)
 						.background(Color.gray100)
+						.frame(maxWidth: .infinity, alignment: .leading)
 					}
 				}
 				.background(Color.gray100)
@@ -222,6 +241,31 @@ struct DebugFragment: View {
 		.sheet(isPresented: $showShareSheet) {
 			ShareAnySheet(items: [helpViewModel.logText])
 				.edgesIgnoringSafeArea(.bottom)
+		}
+		.quickLookPreview($selectedURLAttachment)
+	}
+	
+	func showConfigFile() {
+		Log.info("[DebugFragment][showConfigFile] Dumping & displaying Core's config")
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)?
+			.appendingPathComponent("Library/Preferences/linphone") {
+			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+			if FileManager.default.fileExists(atPath: rcFileUrl.path) {
+				let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+				if directory != nil {
+					do {
+						if FileManager.default.fileExists(atPath: directory!.appendingPathComponent("linphonerc.txt").path) {
+							try FileManager.default.removeItem(at: directory!.appendingPathComponent("linphonerc.txt"))
+						}
+						try FileManager.default.copyItem(at: rcFileUrl, to: directory!.appendingPathComponent("linphonerc.txt"))
+						DispatchQueue.main.async {
+							selectedURLAttachment = directory!.appendingPathComponent("linphonerc.txt")
+						}
+					} catch {
+						print("Error: ", error)
+					}
+				}
+			}
 		}
 	}
 }
