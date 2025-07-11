@@ -182,6 +182,8 @@
 		D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */; };
 		D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */; };
 		D7DC09712CFDBF9A00A6D47C /* AccountProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */; };
+		D7DF8BE72E2104DC003A3BC7 /* ElegantEmojiPicker in Frameworks */ = {isa = PBXBuildFile; productRef = D7DF8BE62E2104DC003A3BC7 /* ElegantEmojiPicker */; };
+		D7DF8BE92E2104EC003A3BC7 /* EmojiPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DF8BE82E2104E5003A3BC7 /* EmojiPickerView.swift */; };
 		D7E2E69F2CE356C90080DA0D /* PopupViewWithTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E2E69E2CE356C90080DA0D /* PopupViewWithTextField.swift */; };
 		D7E394C52DAC6561005FA0DD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D737AEED2DA011F2005C1280 /* Localizable.strings */; };
 		D7E6ADF32B9875C20009A2BC /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E6ADF22B9875C20009A2BC /* Message.swift */; };
@@ -400,6 +402,7 @@
 		D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModeFragment.swift; sourceTree = "<group>"; };
 		D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountProfileFragment.swift; sourceTree = "<group>"; };
 		D7DC09702CFDBF8300A6D47C /* AccountProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountProfileViewModel.swift; sourceTree = "<group>"; };
+		D7DF8BE82E2104E5003A3BC7 /* EmojiPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerView.swift; sourceTree = "<group>"; };
 		D7E2E69E2CE356C90080DA0D /* PopupViewWithTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupViewWithTextField.swift; sourceTree = "<group>"; };
 		D7E6ADF22B9875C20009A2BC /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		D7E6ADF42B9876ED0009A2BC /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
@@ -445,6 +448,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7D5AD7F2DD34F0E00016721 /* AppAuth in Frameworks */,
+				D7DF8BE72E2104DC003A3BC7 /* ElegantEmojiPicker in Frameworks */,
 				C618BF562D75CA03005A00E0 /* linphonesw in Frameworks */,
 				D7D5AD832DD34F2300016721 /* FirebaseCrashlytics in Frameworks */,
 				D7D5AD812DD34F1A00016721 /* FirebaseAnalytics in Frameworks */,
@@ -575,6 +579,7 @@
 		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D7DF8BE82E2104E5003A3BC7 /* EmojiPickerView.swift */,
 				D703F7072DC8C5FF005B8F75 /* FilePicker.swift */,
 				D717A10D2CEB770D00849D92 /* ShareSheetController.swift */,
 				66C491F72B24D25A00CEA16D /* Extensions */,
@@ -602,6 +607,7 @@
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				660AAF7C2B839272004C0FA6 /* msgNotificationService */,
 				D7458F302E0BDCF4000C957A /* linphoneExtension */,
+				D7DF8BE52E2104DC003A3BC7 /* Frameworks */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -1039,6 +1045,13 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		D7DF8BE52E2104DC003A3BC7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1140,6 +1153,7 @@
 				D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D7BEB1152E1FF670004B25A3 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -1244,6 +1258,7 @@
 				D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */,
 				D71A0E192B485ADF0002C6CD /* ViewExtension.swift in Sources */,
 				D759CB642C3FBD4200AC35E8 /* StartConversationFragment.swift in Sources */,
+				D7DF8BE92E2104EC003A3BC7 /* EmojiPickerView.swift in Sources */,
 				66FDB7812C7C689A00561566 /* EventEditViewController.swift in Sources */,
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
@@ -1889,6 +1904,14 @@
 				minimumVersion = 11.12.0;
 			};
 		};
+		D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Finalet/Elegant-Emoji-Picker";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1926,6 +1949,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
+		};
+		D7DF8BE62E2104DC003A3BC7 /* ElegantEmojiPicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */;
+			productName = ElegantEmojiPicker;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

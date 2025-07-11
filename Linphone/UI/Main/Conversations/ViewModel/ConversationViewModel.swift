@@ -2261,8 +2261,15 @@ class ConversationViewModel: ObservableObject {
 					if chatMessageReaction.fromAddress != nil {
 						dispatchGroup.enter()
 						ContactAvatarModel.getAvatarModelFromAddress(address: chatMessageReaction.fromAddress!) { avatarResult in
-							if core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil && core.defaultAccount!.contactAddress!.asStringUriOnly().contains(avatarResult.address) {
-								let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: chatMessageReaction.body, isMe: true)
+							if let account = core.defaultAccount,
+							   let contactAddress = account.contactAddress,
+							   contactAddress.asStringUriOnly().contains(avatarResult.address) {
+								
+								let innerSheetCat = InnerSheetCategory(
+									contact: avatarResult,
+									detail: chatMessageReaction.body,
+									isMe: true
+								)
 								participantList[0].append(innerSheetCat)
 							} else {
 								let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: chatMessageReaction.body)

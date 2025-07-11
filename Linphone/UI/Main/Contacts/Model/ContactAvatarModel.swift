@@ -47,6 +47,8 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	private var friendDelegate: FriendDelegate?
 	
 	init(friend: Friend?, name: String, address: String, withPresence: Bool?) {
+		self.name = name
+	 	self.address = address
 		self.resetContactAvatarModel(friend: friend, name: name, address: address, withPresence: withPresence)
 	}
 	

@@ -19,6 +19,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import ElegantEmojiPicker
 
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length
@@ -81,6 +82,10 @@ struct ConversationFragment: View {
 	
 	@State var messageText: String = ""
 	
+	@State private var chosen: String?
+ 	@State private var showPicker = false
+	@State private var isSheetVisible = false
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -141,6 +146,17 @@ struct ConversationFragment: View {
 							})
 							.edgesIgnoringSafeArea(.all)
 						})
+						.sheet(isPresented: $showPicker) {
+							EmojiPickerView(selected: $chosen, isSheetVisible: $isSheetVisible)
+								.presentationDetents([.medium])
+								.edgesIgnoringSafeArea(.all)
+						}
+						.onChange(of: chosen ?? "") { newValue in
+							if !newValue.isEmpty {
+								conversationViewModel.sendReaction(emoji: newValue)
+								chosen = nil
+							}
+						}
 						.fullScreenCover(isPresented: $isShowCamera) {
 							ImagePicker(selectedMedia: self.$conversationViewModel.mediasToSend)
 								.environmentObject(conversationViewModel)
@@ -185,6 +201,16 @@ struct ConversationFragment: View {
 							}
 							.edgesIgnoringSafeArea(.all)
 						})
+						.sheet(isPresented: $showPicker) {
+							EmojiPickerView(selected: $chosen, isSheetVisible: $isSheetVisible)
+								.edgesIgnoringSafeArea(.all)
+						}
+						.onChange(of: chosen ?? "") { newValue in
+							if !newValue.isEmpty {
+								conversationViewModel.sendReaction(emoji: newValue)
+								chosen = nil
+							}
+						}
 						.fullScreenCover(isPresented: $isShowCamera) {
 							ImagePicker(selectedMedia: self.$conversationViewModel.mediasToSend)
 								.environmentObject(conversationViewModel)
@@ -892,136 +918,117 @@ struct ConversationFragment: View {
 						Spacer()
 						
 						VStack {
-							HStack {
-								if conversationViewModel.selectedMessage!.message.isOutgoing {
-									Spacer()
-								}
-								
+							if !isSheetVisible {
 								HStack {
-									Button {
-										conversationViewModel.sendReaction(emoji: "👍")
-									} label: {
-										Text("👍")
-											.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+									if conversationViewModel.selectedMessage!.message.isOutgoing {
+										Spacer()
 									}
-									.padding(.horizontal, 8)
-									.background(conversationViewModel.selectedMessage?.message.ownReaction == "👍" ? Color.gray200 : .white)
-									.cornerRadius(10)
 									
-									Button {
-										conversationViewModel.sendReaction(emoji: "❤️")
-									} label: {
-										Text("❤️")
-											.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+									HStack {
+										Button {
+											conversationViewModel.sendReaction(emoji: "👍")
+										} label: {
+											Text("👍")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "👍" ? Color.gray200 : .white)
+										.cornerRadius(10)
+										
+										Button {
+											conversationViewModel.sendReaction(emoji: "❤️")
+										} label: {
+											Text("❤️")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "❤️" ? Color.gray200 : .white)
+										.cornerRadius(10)
+										
+										Button {
+											conversationViewModel.sendReaction(emoji: "😂")
+										} label: {
+											Text("😂")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😂" ? Color.gray200 : .white)
+										.cornerRadius(10)
+										
+										Button {
+											conversationViewModel.sendReaction(emoji: "😮")
+										} label: {
+											Text("😮")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😮" ? Color.gray200 : .white)
+										.cornerRadius(10)
+										
+										Button {
+											conversationViewModel.sendReaction(emoji: "😢")
+										} label: {
+											Text("😢")
+												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+										}
+										.padding(.horizontal, 8)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😢" ? Color.gray200 : .white)
+										.cornerRadius(10)
+										
+										Button {
+											showPicker = true
+											isSheetVisible = true
+										} label: {
+											Image("plus-circle")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: iconSize > 50 ? 55 : iconSize + 5, height: iconSize > 50 ? 55 : iconSize + 5, alignment: .leading)
+										}
+										.padding(.top, 3)
+										.padding(.leading, 2)
+										.padding(.trailing, 6)
+										.cornerRadius(10)
 									}
-									.padding(.horizontal, 8)
-									.background(conversationViewModel.selectedMessage?.message.ownReaction == "❤️" ? Color.gray200 : .white)
-									.cornerRadius(10)
+									.padding(.vertical, 5)
+									.padding(.horizontal, 10)
+									.background(.white)
+									.cornerRadius(20)
 									
-									Button {
-										conversationViewModel.sendReaction(emoji: "😂")
-									} label: {
-										Text("😂")
-											.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
+									if !conversationViewModel.selectedMessage!.message.isOutgoing {
+										Spacer()
 									}
-									.padding(.horizontal, 8)
-									.background(conversationViewModel.selectedMessage?.message.ownReaction == "😂" ? Color.gray200 : .white)
-									.cornerRadius(10)
-									
-									Button {
-										conversationViewModel.sendReaction(emoji: "😮")
-									} label: {
-										Text("😮")
-											.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
-									}
-									.padding(.horizontal, 8)
-									.background(conversationViewModel.selectedMessage?.message.ownReaction == "😮" ? Color.gray200 : .white)
-									.cornerRadius(10)
-									
-									Button {
-										conversationViewModel.sendReaction(emoji: "😢")
-									} label: {
-										Text("😢")
-											.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
-									}
-									.padding(.horizontal, 8)
-									.background(conversationViewModel.selectedMessage?.message.ownReaction == "😢" ? Color.gray200 : .white)
-									.cornerRadius(10)
-									
-									/*
-									 Button {
-									 } label: {
-									 Image("plus-circle")
-									 .renderingMode(.template)
-									 .resizable()
-									 .foregroundStyle(Color.grayMain2c500)
-									 .frame(width: iconSize > 50 ? 50 : iconSize, height: iconSize > 50 ? 50 : iconSize, alignment: .leading)
-									 }
-									 .padding(.trailing, 5)
-									 */
 								}
-								.padding(.vertical, 5)
+								.frame(maxWidth: .infinity)
 								.padding(.horizontal, 10)
-								.background(.white)
-								.cornerRadius(20)
-								
-								if !conversationViewModel.selectedMessage!.message.isOutgoing {
-									Spacer()
-								}
+								.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
+								.shadow(color: .black.opacity(0.1), radius: 10)
 							}
-							.frame(maxWidth: .infinity)
-							.padding(.horizontal, 10)
-							.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
-							.shadow(color: .black.opacity(0.1), radius: 10)
 							
 							ChatBubbleView(eventLogMessage: conversationViewModel.selectedMessage!, geometryProxy: geometry)
 								.environmentObject(conversationViewModel)
 								.padding(.horizontal, 10)
 								.padding(.vertical, 1)
 								.shadow(color: .black.opacity(0.1), radius: 10)
+								.offset(y: isSheetVisible ? -(UIScreen.main.bounds.height * 0.5) - 10 : 0)
 							
-							HStack {
-								if conversationViewModel.selectedMessage!.message.isOutgoing {
-									Spacer()
-								}
-								
-								VStack {
-									Button {
-										let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
-										conversationViewModel.selectedMessage = nil
-										conversationViewModel.replyToMessage(index: indexMessage ?? 0)
-									} label: {
-										HStack {
-											Text("menu_reply_to_chat_message")
-												.default_text_style(styleSize: 15)
-											Spacer()
-											Image("reply")
-												.resizable()
-												.frame(width: 20, height: 20, alignment: .leading)
-										}
-										.padding(.vertical, 5)
-										.padding(.horizontal, 20)
+							if !isSheetVisible {
+								HStack {
+									if conversationViewModel.selectedMessage!.message.isOutgoing {
+										Spacer()
 									}
 									
-									Divider()
-									
-									if !conversationViewModel.selectedMessage!.message.text.isEmpty {
+									VStack {
 										Button {
-											UIPasteboard.general.setValue(
-												conversationViewModel.selectedMessage?.message.text ?? "Error_message_not_available",
-												forPasteboardType: UTType.plainText.identifier
-											)
-											
-											ToastViewModel.shared.toastMessage = "Success_message_copied_into_clipboard"
-											ToastViewModel.shared.displayToast = true
-											
+											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
 											conversationViewModel.selectedMessage = nil
+											conversationViewModel.replyToMessage(index: indexMessage ?? 0)
 										} label: {
 											HStack {
-												Text("menu_copy_chat_message")
+												Text("menu_reply_to_chat_message")
 													.default_text_style(styleSize: 15)
 												Spacer()
-												Image("copy")
+												Image("reply")
 													.resizable()
 													.frame(width: 20, height: 20, alignment: .leading)
 											}
@@ -1030,59 +1037,86 @@ struct ConversationFragment: View {
 										}
 										
 										Divider()
+										
+										if !conversationViewModel.selectedMessage!.message.text.isEmpty {
+											Button {
+												UIPasteboard.general.setValue(
+													conversationViewModel.selectedMessage?.message.text ?? "Error_message_not_available",
+													forPasteboardType: UTType.plainText.identifier
+												)
+												
+												ToastViewModel.shared.toastMessage = "Success_message_copied_into_clipboard"
+												ToastViewModel.shared.displayToast = true
+												
+												conversationViewModel.selectedMessage = nil
+											} label: {
+												HStack {
+													Text("menu_copy_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("copy")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
+											}
+											
+											Divider()
+										}
+										
+										Button {
+											withAnimation {
+												isShowConversationForwardMessageFragment = true
+											}
+										} label: {
+											HStack {
+												Text("menu_forward_chat_message")
+													.default_text_style(styleSize: 15)
+												Spacer()
+												Image("forward")
+													.resizable()
+													.frame(width: 20, height: 20, alignment: .leading)
+											}
+											.padding(.vertical, 5)
+											.padding(.horizontal, 20)
+										}
+										
+										Divider()
+										
+										Button {
+											conversationViewModel.deleteMessage()
+										} label: {
+											HStack {
+												Text("menu_delete_selected_item")
+													.foregroundStyle(.red)
+													.default_text_style(styleSize: 15)
+												Spacer()
+												Image("trash-simple-red")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(.red)
+													.frame(width: 20, height: 20, alignment: .leading)
+											}
+											.padding(.vertical, 5)
+											.padding(.horizontal, 20)
+										}
 									}
+									.frame(maxWidth: geometry.size.width / 1.5)
+									.padding(.vertical, 8)
+									.background(.white)
+									.cornerRadius(20)
 									
-									Button {
-										withAnimation {
-											isShowConversationForwardMessageFragment = true
-										}
-									} label: {
-										HStack {
-											Text("menu_forward_chat_message")
-												.default_text_style(styleSize: 15)
-											Spacer()
-											Image("forward")
-												.resizable()
-												.frame(width: 20, height: 20, alignment: .leading)
-										}
-										.padding(.vertical, 5)
-										.padding(.horizontal, 20)
-									}
-									
-									Divider()
-									
-									Button {
-										conversationViewModel.deleteMessage()
-									} label: {
-										HStack {
-											Text("menu_delete_selected_item")
-												.foregroundStyle(.red)
-												.default_text_style(styleSize: 15)
-											Spacer()
-											Image("trash-simple-red")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(.red)
-												.frame(width: 20, height: 20, alignment: .leading)
-										}
-										.padding(.vertical, 5)
-										.padding(.horizontal, 20)
+									if !conversationViewModel.selectedMessage!.message.isOutgoing {
+										Spacer()
 									}
 								}
-								.frame(maxWidth: geometry.size.width / 1.5)
-								.padding(.vertical, 8)
-								.background(.white)
-								.cornerRadius(20)
-								
-								if !conversationViewModel.selectedMessage!.message.isOutgoing {
-									Spacer()
-								}
+								.frame(maxWidth: .infinity)
+								.padding(.horizontal, 10)
+								.padding(.bottom, 20)
+								.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
+								.shadow(color: .black.opacity(0.1), radius: 10)
 							}
-							.frame(maxWidth: .infinity)
-							.padding(.horizontal, 10)
-							.padding(.bottom, 20)
-							.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
-							.shadow(color: .black.opacity(0.1), radius: 10)
 						}
 					}
 					.frame(maxWidth: .infinity)
