@@ -390,6 +390,7 @@
 "menu_reply_to_chat_message" = "Reply";
 "menu_resend_chat_message" = "Re-send";
 "menu_see_existing_contact" = "See contact";
+"menu_show_imdn" = "Delivery status";
 "message_copied_to_clipboard_toast" = "Message copied into clipboard";
 "message_delivery_info_error_title" = "Error";
 "message_delivery_info_read_title" = "Read";

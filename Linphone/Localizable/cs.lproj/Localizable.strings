@@ -244,6 +244,7 @@
 "meeting_waiting_room_joining_title" = "Probíhá připojování";
 "meetings_list_no_meeting_for_today" = "Dnes není naplánována žádná schůzka";
 "menu_see_existing_contact" = "Zobrazit kontakt";
+"menu_show_imdn" = "Stav doručení";
 "message_delivery_info_error_title" = "Chyba";
 "message_forwarded_label" = "Přeposláno";
 "message_reaction_click_to_remove_label" = "Klepnutím odstranit";

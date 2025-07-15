@@ -189,6 +189,7 @@
 "menu_reply_to_chat_message" = "Відповісти";
 "menu_resend_chat_message" = "Надіслати повторно";
 "menu_see_existing_contact" = "Переглянути контакт";
+"menu_show_imdn" = "Статус доставки";
 "message_delivery_info_error_title" = "Помилка";
 "message_forwarded_label" = "Перенаправлено";
 "message_reaction_click_to_remove_label" = "Натисніть, щоб видалити";

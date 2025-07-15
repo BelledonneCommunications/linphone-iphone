@@ -86,6 +86,8 @@ struct ConversationFragment: View {
  	@State private var showPicker = false
 	@State private var isSheetVisible = false
 	
+	@State private var isImdnOrReactionsSheetVisible = false
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -106,7 +108,7 @@ struct ConversationFragment: View {
 						.sheet(isPresented: $conversationViewModel.isShowSelectedMessageToDisplayDetails, onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}, content: {
-							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex)
+							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex, isImdnOrReactionsSheetVisible: $isImdnOrReactionsSheetVisible)
 								.environmentObject(conversationViewModel)
 								.presentationDetents([.medium])
 				 				.presentationDragIndicator(.visible)
@@ -178,7 +180,7 @@ struct ConversationFragment: View {
 							conversationViewModel.removeConversationDelegate()
 						}
 						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetails) {
-							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex)
+							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex, isImdnOrReactionsSheetVisible: $isImdnOrReactionsSheetVisible)
 								.environmentObject(conversationViewModel)
 						} onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
@@ -918,7 +920,7 @@ struct ConversationFragment: View {
 						Spacer()
 						
 						VStack {
-							if !isSheetVisible {
+							if !isSheetVisible && !isImdnOrReactionsSheetVisible {
 								HStack {
 									if conversationViewModel.selectedMessage!.message.isOutgoing {
 										Spacer()
@@ -1010,15 +1012,35 @@ struct ConversationFragment: View {
 								.padding(.horizontal, 10)
 								.padding(.vertical, 1)
 								.shadow(color: .black.opacity(0.1), radius: 10)
-								.offset(y: isSheetVisible ? -(UIScreen.main.bounds.height * 0.5) - 10 : 0)
+								.offset(y: isSheetVisible || isImdnOrReactionsSheetVisible ? -(UIScreen.main.bounds.height * 0.5) - 10 : 0)
 							
-							if !isSheetVisible {
+							if !isSheetVisible && !isImdnOrReactionsSheetVisible {
 								HStack {
 									if conversationViewModel.selectedMessage!.message.isOutgoing {
 										Spacer()
 									}
 									
 									VStack {
+										if !(CoreContext.shared.imdnToEverybodyThreshold && !conversationViewModel.selectedMessage!.message.isOutgoing) {
+											Button {
+												conversationViewModel.selectedMessageToDisplayDetails = conversationViewModel.selectedMessage
+												conversationViewModel.prepareBottomSheetForDeliveryStatus()
+											} label: {
+												HStack {
+													Text("menu_show_imdn")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("info")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
+											}
+											
+											Divider()
+										}
+									
 										Button {
 											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
 											conversationViewModel.selectedMessage = nil
@@ -1190,6 +1212,7 @@ struct ImdnOrReactionsSheet: View {
 	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	@Binding var selectedCategoryIndex: Int
+	@Binding var isImdnOrReactionsSheetVisible: Bool
 	
 	var body: some View {
 		VStack {
@@ -1246,9 +1269,15 @@ struct ImdnOrReactionsSheet: View {
 				}
 			}
 			.listStyle(.plain)
+			
+			WillDisappearNotifierView {
+				isImdnOrReactionsSheetVisible = false
+			}
+			.frame(width: 0, height: 0)
 		}
 		.onAppear {
 			selectedCategoryIndex = 0
+			isImdnOrReactionsSheetVisible = true
 		}
 		.padding(.top)
 		.background(.white)
@@ -1518,11 +1547,34 @@ struct VoiceRecorderPlayer: View {
 		timer = nil
 	}
 }
-/*
-#Preview {
-	ConversationFragment(sections: [MessagesSection], ids: [""])
+
+struct WillDisappearNotifierView: UIViewControllerRepresentable {
+	let onWillDisappear: () -> Void
+	
+	func makeUIViewController(context: Context) -> UIViewController {
+		Controller(onWillDisappear: onWillDisappear)
+	}
+	
+	func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+	
+	class Controller: UIViewController {
+		let onWillDisappearCallback: () -> Void
+		
+		init(onWillDisappear: @escaping () -> Void) {
+			self.onWillDisappearCallback = onWillDisappear
+			super.init(nibName: nil, bundle: nil)
+		}
+		
+		required init?(coder: NSCoder) {
+			fatalError("init(coder:) has not been implemented")
+		}
+		
+		override func viewWillDisappear(_ animated: Bool) {
+			super.viewWillDisappear(animated)
+			onWillDisappearCallback()
+		}
+	}
 }
-*/
 
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
