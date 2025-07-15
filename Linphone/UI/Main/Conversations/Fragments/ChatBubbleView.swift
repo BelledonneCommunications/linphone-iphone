@@ -35,6 +35,7 @@ struct ChatBubbleView: View {
 	
 	@State private var ticker = Ticker()
 	@State private var isPressed: Bool = false
+	@State private var didLongPress = false
 	@State private var timePassed: TimeInterval?
 	
 	@State private var timer: Timer?
@@ -440,30 +441,37 @@ struct ChatBubbleView: View {
 					}
 				}
 				.onTapGesture {}
-				.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
+				.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { value in
 					if !self.conversationViewModel.isSwiping {
 						self.isPressed = value
-						if value == true {
+						if !value {
+							if !didLongPress {
+								self.isPressed = false
+							}
+						} else {
 							self.timePassed = 0
 							self.ticker.start(interval: 0.2)
+							self.didLongPress = false
 						}
 					} else {
 						self.ticker.stop()
 						return
 					}
 				}, perform: {})
-				.onReceive(ticker.objectWillChange) { (_) in
-					// Stop timer and reset the start date if the button in not pressed
-					guard self.isPressed else {
-						self.ticker.stop()
+				.onReceive(ticker.objectWillChange) { _ in
+					guard isPressed else {
+						ticker.stop()
 						return
 					}
-					
-					self.timePassed = self.ticker.timeIntervalSinceStarted
-					
-					if !self.conversationViewModel.isSwiping {
-						withAnimation {
-							conversationViewModel.selectedMessage = eventLogMessage
+
+					timePassed = ticker.timeIntervalSinceStarted
+
+					if let timePassed = timePassed, timePassed >= 0.2 {
+						didLongPress = true
+						if !conversationViewModel.isSwiping {
+							withAnimation {
+								conversationViewModel.selectedMessage = eventLogMessage
+							}
 						}
 					}
 				}
@@ -547,7 +555,9 @@ struct ChatBubbleView: View {
 								url: eventLogMessage.message.attachments.first!.thumbnail,
 								placeholder: ProgressView(),
 								onImageTapped: {
-									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									if !isPressed && !didLongPress {
+										selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									}
 								})
 							.overlay(
 								Group {
@@ -567,7 +577,9 @@ struct ChatBubbleView: View {
 								url: eventLogMessage.message.attachments.first!.thumbnail,
 								placeholder: ProgressView(),
 								onImageTapped: {
-									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									if !isPressed && !didLongPress {
+										selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									}
 								})
 							
 							.overlay(
@@ -592,7 +604,9 @@ struct ChatBubbleView: View {
 								.clipShape(RoundedRectangle(cornerRadius: 4))
 								.contentShape(Rectangle())
 								.onTapGesture {
-									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									if !isPressed && !didLongPress {
+										selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									}
 							 	}
 						} else {
 							GifImageView(eventLogMessage.message.attachments.first!.thumbnail)
@@ -601,7 +615,9 @@ struct ChatBubbleView: View {
 								.clipShape(RoundedRectangle(cornerRadius: 4))
 								.contentShape(Rectangle())
 								.onTapGesture {
-									selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									if !isPressed && !didLongPress {
+										selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+									}
 								}
 						}
 					}
@@ -649,7 +665,9 @@ struct ChatBubbleView: View {
 								}
 							}
 						} else {
-							selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+							if !isPressed && !didLongPress {
+								selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+							}
 						}
 					}
 					
@@ -686,7 +704,9 @@ struct ChatBubbleView: View {
 				.background(.white)
 				.clipShape(RoundedRectangle(cornerRadius: 10))
 				.onTapGesture {
-					selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+					if !isPressed && !didLongPress {
+						selectedURLAttachment = eventLogMessage.message.attachments.first!.full
+					}
 				}
 			}
 		} else if eventLogMessage.message.attachments.count > 1 {
@@ -707,7 +727,9 @@ struct ChatBubbleView: View {
 										url: attachment.thumbnail,
 										placeholder: ProgressView(),
 										onImageTapped: {
-											selectedURLAttachment = attachment.full
+											if !isPressed && !didLongPress {
+												selectedURLAttachment = attachment.full
+											}
 										})
 									
 									.overlay(
@@ -727,7 +749,9 @@ struct ChatBubbleView: View {
 										url: attachment.thumbnail,
 										placeholder: ProgressView(),
 										onImageTapped: {
-											selectedURLAttachment = attachment.full
+											if !isPressed && !didLongPress {
+												selectedURLAttachment = attachment.full
+											}
 										})
 									
 									.overlay(
@@ -779,7 +803,9 @@ struct ChatBubbleView: View {
 										}
 									}
 								} else {
-									selectedURLAttachment = attachment.full
+									if !isPressed && !didLongPress {
+										selectedURLAttachment = attachment.full
+									}
 								}
 							}
 						}
@@ -817,7 +843,9 @@ struct ChatBubbleView: View {
 					.background(.white)
 					.clipShape(RoundedRectangle(cornerRadius: 10))
 					.onTapGesture {
-						selectedURLAttachment = attachment.full
+						if !isPressed && !didLongPress {
+							selectedURLAttachment = attachment.full
+						}
 					}
 				}
 			}
