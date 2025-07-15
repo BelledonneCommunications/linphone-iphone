@@ -1021,6 +1021,28 @@ struct ConversationFragment: View {
 									}
 									
 									VStack {
+										if conversationViewModel.selectedMessage!.message.status == .error {
+											Button {
+												conversationViewModel.resendMessage(chatMessage: conversationViewModel.selectedMessage!)
+												conversationViewModel.selectedMessage = nil
+											} label: {
+												HStack {
+													Text("menu_resend_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													
+													Image("paper-plane-tilt")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+														.rotationEffect(.degrees(45))
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
+											}
+											
+											Divider()
+										}
+										
 										if !(CoreContext.shared.imdnToEverybodyThreshold && !conversationViewModel.selectedMessage!.message.isOutgoing) {
 											Button {
 												conversationViewModel.selectedMessageToDisplayDetails = conversationViewModel.selectedMessage

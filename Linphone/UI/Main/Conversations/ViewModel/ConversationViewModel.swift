@@ -1558,6 +1558,16 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
+	func resendMessage(chatMessage: EventLogMessage) {
+		coreContext.doOnCoreQueue { _ in
+			if let message = chatMessage.eventModel.eventLog.chatMessage {
+				if message.state == .NotDelivered {
+					message.send()
+				}
+			}
+		}
+	}
+	
 	func scrollToMessage(message: Message) {
 		coreContext.doOnCoreQueue { _ in
 			if message.replyMessage != nil {
