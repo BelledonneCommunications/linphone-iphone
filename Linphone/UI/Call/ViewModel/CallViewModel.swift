@@ -37,6 +37,7 @@ class CallViewModel: ObservableObject {
 	@Published var displayName: String = ""
 	@Published var direction: Call.Dir = .Outgoing
 	@Published var remoteAddressString: String = ""
+	@Published var remoteAddressCleanedString: String = ""
 	@Published var remoteAddress: Address?
 	@Published var avatarModel: ContactAvatarModel?
 	@Published var micMutted: Bool = false
@@ -160,9 +161,12 @@ class CallViewModel: ObservableObject {
 				let directionTmp = self.currentCall!.dir
 				
 				let remoteAddressTmp = self.currentCall!.remoteAddress!.clone()
-				remoteAddressTmp!.clean()
 				
 				let remoteAddressStringTmp = remoteAddressTmp != nil ? String(remoteAddressTmp!.asStringUriOnly().dropFirst(4)) : ""
+				
+				remoteAddressTmp!.clean()
+				
+				let remoteAddressCleanedStringTmp = remoteAddressTmp != nil ? String(remoteAddressTmp!.asStringUriOnly().dropFirst(4)) : ""
 				
 				if self.currentCall?.conference != nil {
 					displayNameTmp = self.currentCall?.conference?.subject ?? ""
@@ -211,6 +215,7 @@ class CallViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					self.direction = directionTmp
 					self.remoteAddressString = remoteAddressStringTmp
+					self.remoteAddressCleanedString = remoteAddressCleanedStringTmp
 					self.remoteAddress = remoteAddressTmp
 					self.displayName = displayNameTmp
 					
