@@ -117,16 +117,20 @@ struct ConversationFragment: View {
 							isShowPhotoLibrary = false
 						}, content: {
 							PhotoPicker(filter: nil, limit: conversationViewModel.maxMediaCount - conversationViewModel.mediasToSend.count) { results in
-								PhotoPicker.convertToAttachmentArray(fromResults: results) { mediasOrNil, errorOrNil in
-									if let error = errorOrNil {
-										print(error)
-									}
-									
-									if let medias = mediasOrNil {
-										conversationViewModel.mediasToSend.append(contentsOf: medias)
-									}
-									
+								if results.isEmpty && conversationViewModel.mediasToSend.isEmpty {
 									self.mediasIsLoading = false
+								} else {
+									PhotoPicker.convertToAttachmentArray(fromResults: results) { mediasOrNil, errorOrNil in
+										if let error = errorOrNil {
+											print(error)
+										}
+										
+										if let medias = mediasOrNil {
+											conversationViewModel.mediasToSend.append(contentsOf: medias)
+										}
+										
+										self.mediasIsLoading = false
+									}
 								}
 							}
 							.edgesIgnoringSafeArea(.all)
@@ -135,15 +139,19 @@ struct ConversationFragment: View {
 							isShowFilePicker = false
 						}, content: {
 							FilePicker(onDocumentsPicked: { urlList in
-								FilePicker.convertToAttachmentArray(fromResults: urlList) { mediasOrNil, errorOrNil in
-									if let error = errorOrNil {
-										print(error)
-									}
-									
-									if let medias = mediasOrNil {
-										conversationViewModel.mediasToSend.append(contentsOf: medias)
-									}
+								if urlList.isEmpty && conversationViewModel.mediasToSend.isEmpty {
 									self.mediasIsLoading = false
+								} else {
+									FilePicker.convertToAttachmentArray(fromResults: urlList) { mediasOrNil, errorOrNil in
+										if let error = errorOrNil {
+											print(error)
+										}
+										
+										if let medias = mediasOrNil {
+											conversationViewModel.mediasToSend.append(contentsOf: medias)
+										}
+										self.mediasIsLoading = false
+									}
 								}
 							})
 							.edgesIgnoringSafeArea(.all)
