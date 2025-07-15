@@ -103,6 +103,8 @@ class ConversationViewModel: ObservableObject {
 	@Published var attachments: [Attachment] = []
 	@Published var attachmentTransferInProgress: Attachment?
 	
+	@Published var isSwiping = false
+	
 	struct SheetCategory: Identifiable {
 		let id = UUID()
 		let name: String

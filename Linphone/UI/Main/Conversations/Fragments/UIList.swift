@@ -444,6 +444,19 @@ struct UIList: UIViewRepresentable {
 			tableViewCell.backgroundColor = UIColor(.white)
 			
 			let row = sections[indexPath.section].rows[indexPath.row]
+			
+			let pan = CustomPanRecognizer()
+			pan.onBeginSwipe = { [self] in
+				self.parent.conversationViewModel.isSwiping = true
+				DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+					self.parent.conversationViewModel.isSwiping = false
+				}
+			}
+			
+			if !(tableViewCell.gestureRecognizers?.contains(where: { $0 is CustomPanRecognizer }) ?? false) {
+				tableViewCell.addGestureRecognizer(pan)
+			}
+			
 			if #available(iOS 16.0, *) {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
 					ChatBubbleView(eventLogMessage: row, geometryProxy: geometryProxy)
@@ -492,7 +505,6 @@ struct UIList: UIViewRepresentable {
 		}
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-
 			let archiveAction = UIContextualAction(style: .normal, title: "") { _, _, completionHandler in
 				self.parent.conversationViewModel.replyToMessage(index: indexPath.row)
 				completionHandler(true)
@@ -597,6 +609,25 @@ final class ChatViewModel: ObservableObject {
 		didSendMessage(message)
 	}
 }
+
+class CustomPanRecognizer: UIPanGestureRecognizer, UIGestureRecognizerDelegate {
+	var onBeginSwipe: (() -> Void)?
+
+	override init(target: Any?, action: Selector?) {
+		super.init(target: target, action: action)
+		self.delegate = self
+		self.cancelsTouchesInView = false
+	}
+
+	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+		let velocity = self.velocity(in: self.view)
+		if abs(velocity.x) > abs(velocity.y) {
+			onBeginSwipe?()
+		}
+		return false
+	}
+}
+
 // swiftlint:enable large_tuple
 // swiftlint:enable line_length
 // swiftlint:enable cyclomatic_complexity

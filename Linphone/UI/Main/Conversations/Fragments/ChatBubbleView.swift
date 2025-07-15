@@ -441,12 +441,16 @@ struct ChatBubbleView: View {
 				}
 				.onTapGesture {}
 				.onLongPressGesture(minimumDuration: .infinity, maximumDistance: .infinity, pressing: { (value) in
-					self.isPressed = value
-					if value == true {
-						self.timePassed = 0
-						self.ticker.start(interval: 0.2)
+					if !self.conversationViewModel.isSwiping {
+						self.isPressed = value
+						if value == true {
+							self.timePassed = 0
+							self.ticker.start(interval: 0.2)
+						}
+					} else {
+						self.ticker.stop()
+						return
 					}
-					
 				}, perform: {})
 				.onReceive(ticker.objectWillChange) { (_) in
 					// Stop timer and reset the start date if the button in not pressed
@@ -456,8 +460,11 @@ struct ChatBubbleView: View {
 					}
 					
 					self.timePassed = self.ticker.timeIntervalSinceStarted
-					withAnimation {
-						conversationViewModel.selectedMessage = eventLogMessage
+					
+					if !self.conversationViewModel.isSwiping {
+						withAnimation {
+							conversationViewModel.selectedMessage = eventLogMessage
+						}
 					}
 				}
 			} else if !eventLogMessage.eventModel.text.isEmpty {
