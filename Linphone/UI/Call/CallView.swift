@@ -36,6 +36,8 @@ struct CallView: View {
 	@EnvironmentObject var callViewModel: CallViewModel
 	
 	@State private var addParticipantsViewModel: AddParticipantsViewModel?
+    
+    @Environment(\.scenePhase) var scenePhase
 	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	@State private var orientation = UIDevice.current.orientation
@@ -227,6 +229,14 @@ struct CallView: View {
 					buttonSize = 45.0
 				}
 			}
+            .onChange(of: scenePhase) { newPhase in
+                switch newPhase {
+                case .active:
+                    callViewModel.resetCallView()
+                default:
+                    break
+                }
+            }
 		}
 	}
 	

@@ -109,7 +109,9 @@ class CallViewModel: ObservableObject {
 		}
 		
 		coreContext.doOnCoreQueue { core in
-			if core.currentCall != nil && core.currentCall!.remoteAddress != nil {
+            if (core.currentCall != nil && core.currentCall!.remoteAddress != nil) || (core.calls.first != nil && core.calls.first!.state == .Paused) {
+                let currentCallTmp = core.currentCall ?? core.calls.first
+                
 				if self.callDelegate != nil {
 					self.currentCall?.removeDelegate(delegate: self.callDelegate!)
 					self.callDelegate = nil
@@ -122,7 +124,7 @@ class CallViewModel: ObservableObject {
 					self.currentCall?.conference?.removeDelegate(delegate: self.waitingForConferenceDelegate!)
 					self.waitingForConferenceDelegate = nil
 				}
-				self.currentCall = core.currentCall
+				self.currentCall = currentCallTmp
 				let callsCounterTmp = core.calls.count
 				
 				var videoDisplayedTmp = false
