@@ -1,5 +1,5 @@
 {
-  "originHash" : "7ed0929d53447e6dba6aae5d5c6617250fb4460459e56cf06feaf0f1397ae64e",
+  "originHash" : "e39610a107720600a3976faa9290618a3156dcf4ee9cec23ba735a1d132c251d",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -124,7 +124,7 @@
       "location" : "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git",
       "state" : {
         "branch" : "stable",
-        "revision" : "eab42088d743c79011e8b8f8ea0482c6c2f38686"
+        "revision" : "9c65b2227cc01db8277dd640055dbaaad31c3a60"
       }
     },
     {
