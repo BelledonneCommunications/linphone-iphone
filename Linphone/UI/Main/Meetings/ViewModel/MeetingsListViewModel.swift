@@ -105,7 +105,7 @@ class MeetingsListViewModel: ObservableObject {
 				}
 			}
 			
-			if !meetingForTodayFound && !meetingsListTmp.isEmpty {
+			if !meetingForTodayFound && !isFiltering && !meetingsListTmp.isEmpty {
 				// All meetings in the list happened in the past, add "Today" fake model at the end
 				meetingsListTmp.append(MeetingsListItemModel(meetingModel: nil))
 				todayIdx = currentIdx
@@ -143,8 +143,10 @@ class MeetingsListViewModel: ObservableObject {
 				meetingsList.removeAll()
 			}
             
-            ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
-            ToastViewModel.shared.displayToast = true
+			DispatchQueue.main.async {
+				ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
+				ToastViewModel.shared.displayToast = true
+			}
 		}
 	}
 	
