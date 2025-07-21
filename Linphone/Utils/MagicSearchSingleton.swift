@@ -40,6 +40,8 @@ final class MagicSearchSingleton: ObservableObject {
 	private var domainDefaultAccount = ""
 	
 	var searchDelegate: MagicSearchDelegate?
+    
+    private var contactLoadedDebounceWorkItem: DispatchWorkItem?
 	
 	func destroyMagicSearch() {
 		magicSearch = nil
@@ -59,13 +61,17 @@ final class MagicSearchSingleton: ObservableObject {
 				var lastSearchFriend: [SearchResult] = []
 				var lastSearchSuggestions: [SearchResult] = []
 				
-				magicSearch.lastSearch.forEach { searchResult in
-					if searchResult.friend != nil {
-						lastSearchFriend.append(searchResult)
-					} else {
-						lastSearchSuggestions.append(searchResult)
-					}
-				}
+                magicSearch.lastSearch.forEach { searchResult in
+                    if let friend = searchResult.friend,
+                       let address = searchResult.address,
+                       !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
+                        
+                        lastSearchFriend.append(searchResult)
+                    } else {
+                        lastSearchSuggestions.append(searchResult)
+                    }
+                }
+                
 				lastSearchSuggestions.sort(by: {
 					$0.address!.asStringUriOnly() < $1.address!.asStringUriOnly()
 				})
@@ -99,20 +105,37 @@ final class MagicSearchSingleton: ObservableObject {
 				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
 					contactAvatarModel.removeFriendDelegate()
 				}
-				
-				DispatchQueue.main.async {
-					self.contactsManager.lastSearch = sortedLastSearch
-					self.contactsManager.lastSearchSuggestions = lastSearchSuggestions
-					
-					self.contactsManager.avatarListModel.removeAll()
-					self.contactsManager.avatarListModel += addedAvatarListModel
-					
-					NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
-				}
+                
+                self.updateContacts(sortedLastSearch: sortedLastSearch, lastSearchSuggestions: lastSearchSuggestions, addedAvatarListModel: addedAvatarListModel)
 			})
 			self.magicSearch.addDelegate(delegate: self.searchDelegate!)
 		}
 	}
+    
+    func updateContacts(
+        sortedLastSearch: [SearchResult],
+        lastSearchSuggestions: [SearchResult],
+        addedAvatarListModel: [ContactAvatarModel]
+    ) {
+        DispatchQueue.main.async {
+            self.contactsManager.lastSearch = sortedLastSearch
+            self.contactsManager.lastSearchSuggestions = lastSearchSuggestions
+            
+            self.contactsManager.avatarListModel.removeAll()
+            self.contactsManager.avatarListModel += addedAvatarListModel
+
+            // Cancel previous debounce task
+            self.contactLoadedDebounceWorkItem?.cancel()
+
+            // Schedule new debounce task
+            let workItem = DispatchWorkItem {
+                NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
+            }
+
+            self.contactLoadedDebounceWorkItem = workItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
+        }
+    }
 	
 	func searchForContacts() {
 		coreContext.doOnCoreQueue { _ in

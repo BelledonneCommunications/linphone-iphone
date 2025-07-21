@@ -410,6 +410,7 @@ struct StartCallFragment: View {
 							
 							Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
 								.default_text_style(styleSize: 16)
+                                .lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.foregroundStyle(Color.orangeMain500)
 					} else {
