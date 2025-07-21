@@ -564,7 +564,7 @@ struct EditContactFragment: View {
 								withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
 							)
 						} else {
-							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							MagicSearchSingleton.shared.searchForContacts()
 							ContactsManager.shared.updateSubscriptionsLinphoneList()
 						}
 						

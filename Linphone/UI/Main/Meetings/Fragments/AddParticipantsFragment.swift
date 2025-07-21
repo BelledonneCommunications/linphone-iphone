@@ -116,10 +116,10 @@ struct AddParticipantsFragment: View {
 						.focused($isSearchFieldFocused)
 						.padding(.horizontal, 30)
 						.onChange(of: addParticipantsViewModel.searchField) { newValue in
-							magicSearch.currentFilterSuggestions = newValue
-							magicSearch.searchForSuggestions()
+						  	magicSearch.currentFilter = newValue
+							magicSearch.searchForContacts()
 						}.onAppear {
-							magicSearch.searchForSuggestions()
+							magicSearch.searchForContacts()
 						}
 					
 					HStack {
@@ -137,8 +137,8 @@ struct AddParticipantsFragment: View {
 						if !addParticipantsViewModel.searchField.isEmpty {
 							Button(action: {
 								addParticipantsViewModel.searchField = ""
-								magicSearch.currentFilterSuggestions = ""
-								magicSearch.searchForSuggestions()
+							   	magicSearch.currentFilter = ""
+								magicSearch.searchForContacts()
 								isSearchFieldFocused = false
 							}, label: {
 								Image("x")
@@ -249,6 +249,9 @@ struct AddParticipantsFragment: View {
 				withAnimation {
 					confirmAddParticipantsFunc(addParticipantsViewModel.participantsToAdd)
 					dismiss()
+					
+					magicSearch.currentFilter = ""
+					magicSearch.searchForContacts()
 				}
 			} label: {
 				Image("check")
@@ -264,6 +267,12 @@ struct AddParticipantsFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+		.onAppear {
+			if !magicSearch.currentFilter.isEmpty {
+				magicSearch.currentFilter = ""
+				magicSearch.searchForContacts()
+			}
+		}
 	}
 	
 	var suggestionsList: some View {

@@ -455,18 +455,15 @@ struct DialerBottomSheet: View {
 								if callViewModel.isTransferInsteadCall {
 									showingDialer = false
 									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										
-										if callViewModel.isTransferInsteadCall == true {
-											callViewModel.isTransferInsteadCall = false
-										}
-										
-										callViewModel.resetCallView()
+									magicSearch.currentFilter = ""
+									
+									magicSearch.searchForContacts()
+									
+									if callViewModel.isTransferInsteadCall == true {
+										callViewModel.isTransferInsteadCall = false
 									}
 									
-									magicSearch.currentFilterSuggestions = ""
+									callViewModel.resetCallView()
 									
 									withAnimation {
 										isShowStartCallFragment.toggle()
@@ -477,18 +474,15 @@ struct DialerBottomSheet: View {
 								} else {
 									showingDialer = false
 									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-										magicSearch.searchForContacts(
-											sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-										
-										if callViewModel.isTransferInsteadCall == true {
-											callViewModel.isTransferInsteadCall = false
-										}
-										
-										callViewModel.resetCallView()
+									magicSearch.currentFilter = ""
+									
+									magicSearch.searchForContacts()
+									
+									if callViewModel.isTransferInsteadCall == true {
+										callViewModel.isTransferInsteadCall = false
 									}
 									
-									magicSearch.currentFilterSuggestions = ""
+										callViewModel.resetCallView()
 									
 									withAnimation {
 										isShowStartCallFragment.toggle()

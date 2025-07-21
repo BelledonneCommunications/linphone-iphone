@@ -510,8 +510,7 @@ struct ContentView: View {
 																sharedMainViewModel.displayedFriend = nil
 																isMenuOpen = false
 																magicSearch.allContact = true
-																magicSearch.searchForContacts(
-																	sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+																magicSearch.searchForContacts()
 															} label: {
 																HStack {
 																	Text("contacts_list_filter_popup_see_all")
@@ -529,8 +528,7 @@ struct ContentView: View {
 																sharedMainViewModel.displayedFriend = nil
 																isMenuOpen = false
 																magicSearch.allContact = false
-																magicSearch.searchForContacts(
-																	sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+																magicSearch.searchForContacts()
 															} label: {
 																HStack {
 																	Text(String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
@@ -591,8 +589,7 @@ struct ContentView: View {
 													
 													if sharedMainViewModel.indexView == 0 {
 														magicSearch.currentFilter = ""
-														magicSearch.searchForContacts(
-															sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+														magicSearch.searchForContacts()
 													} else if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
 														historyListVM.resetFilterCallLogs()
 													} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
@@ -637,8 +634,7 @@ struct ContentView: View {
 													.onChange(of: text) { newValue in
 														if sharedMainViewModel.indexView == 0 {
 															magicSearch.currentFilter = newValue
-															magicSearch.searchForContacts(
-																sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+															magicSearch.searchForContacts()
 														} else if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
 															if text.isEmpty {
 																historyListVM.resetFilterCallLogs()
@@ -680,8 +676,7 @@ struct ContentView: View {
 													.onChange(of: text) { newValue in
 														if sharedMainViewModel.indexView == 0 {
 															magicSearch.currentFilter = newValue
-															magicSearch.searchForContacts(
-																sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+															magicSearch.searchForContacts()
 														} else if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
 															historyListVM.filterCallLogs(filter: text)
 														} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {

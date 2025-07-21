@@ -93,19 +93,16 @@ struct StartCallFragment: View {
 						.padding(.top, 2)
 						.padding(.leading, -10)
 						.onTapGesture {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-								magicSearch.searchForContacts(
-									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-								
-								if callViewModel.isTransferInsteadCall == true {
-									callViewModel.isTransferInsteadCall = false
-								}
-								
-								resetCallView()
+							startCallViewModel.searchField = ""
+							magicSearch.currentFilter = ""
+							magicSearch.searchForContacts()
+							
+							if callViewModel.isTransferInsteadCall == true {
+								callViewModel.isTransferInsteadCall = false
 							}
 							
-							startCallViewModel.searchField = ""
-							magicSearch.currentFilterSuggestions = ""
+							resetCallView()
+							
 							delayColorDismiss()
 							withAnimation {
 								isShowStartCallFragment.toggle()
@@ -133,8 +130,8 @@ struct StartCallFragment: View {
 							.focused($isSearchFieldFocused)
 							.padding(.horizontal, 30)
 							.onChange(of: startCallViewModel.searchField) { newValue in
-								magicSearch.currentFilterSuggestions = newValue
-								magicSearch.searchForSuggestions()
+								magicSearch.currentFilter = newValue
+								magicSearch.searchForContacts()
 							}
 							.simultaneousGesture(TapGesture().onEnded {
 								showingDialer = false
@@ -177,8 +174,8 @@ struct StartCallFragment: View {
 							} else {
 								Button(action: {
 									startCallViewModel.searchField = ""
-									magicSearch.currentFilterSuggestions = ""
-									magicSearch.searchForSuggestions()
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
 								}, label: {
 									Image("x")
 										.renderingMode(.template)
@@ -253,19 +250,17 @@ struct StartCallFragment: View {
 							if callViewModel.isTransferInsteadCall {
 								showingDialer = false
 								
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-									magicSearch.searchForContacts(
-										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-									
-									if callViewModel.isTransferInsteadCall == true {
-										callViewModel.isTransferInsteadCall = false
-									}
-									
-									resetCallView()
+								startCallViewModel.searchField = ""
+								magicSearch.currentFilter = ""
+								
+								magicSearch.searchForContacts()
+								
+								if callViewModel.isTransferInsteadCall == true {
+									callViewModel.isTransferInsteadCall = false
 								}
 								
-								startCallViewModel.searchField = ""
-								magicSearch.currentFilterSuggestions = ""
+								resetCallView()
+								
 								delayColorDismiss()
 								
 								withAnimation {
@@ -275,19 +270,17 @@ struct StartCallFragment: View {
 							} else {
 								showingDialer = false
 								
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-									magicSearch.searchForContacts(
-										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-									
-									if callViewModel.isTransferInsteadCall == true {
-										callViewModel.isTransferInsteadCall = false
-									}
-									
-									resetCallView()
+								startCallViewModel.searchField = ""
+								magicSearch.currentFilter = ""
+								
+								magicSearch.searchForContacts()
+								
+								if callViewModel.isTransferInsteadCall == true {
+									callViewModel.isTransferInsteadCall = false
 								}
 								
-								startCallViewModel.searchField = ""
-								magicSearch.currentFilterSuggestions = ""
+								resetCallView()
+								
 								delayColorDismiss()
 								
 								withAnimation {
@@ -336,6 +329,12 @@ struct StartCallFragment: View {
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+		.onAppear {
+			if !magicSearch.currentFilter.isEmpty {
+				magicSearch.currentFilter = ""
+				magicSearch.searchForContacts()
+			}
+		}
 	}
 	
 	@Sendable private func delayColor() async {
@@ -356,19 +355,17 @@ struct StartCallFragment: View {
 				if callViewModel.isTransferInsteadCall {
 					showingDialer = false
 					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-						magicSearch.searchForContacts(
-							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-						
-						if callViewModel.isTransferInsteadCall == true {
-							callViewModel.isTransferInsteadCall = false
-						}
-						
-						resetCallView()
+					startCallViewModel.searchField = ""
+					magicSearch.currentFilter = ""
+					
+					magicSearch.searchForContacts()
+					
+					if callViewModel.isTransferInsteadCall == true {
+						callViewModel.isTransferInsteadCall = false
 					}
 					
-					startCallViewModel.searchField = ""
-					magicSearch.currentFilterSuggestions = ""
+					resetCallView()
+					
 					delayColorDismiss()
 					
 					withAnimation {
@@ -380,19 +377,17 @@ struct StartCallFragment: View {
 				} else {
 					showingDialer = false
 					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-						magicSearch.searchForContacts(
-							sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-						
-						if callViewModel.isTransferInsteadCall == true {
-							callViewModel.isTransferInsteadCall = false
-						}
-						
-						resetCallView()
+					startCallViewModel.searchField = ""
+					magicSearch.currentFilter = ""
+					
+					magicSearch.searchForContacts()
+					
+					if callViewModel.isTransferInsteadCall == true {
+						callViewModel.isTransferInsteadCall = false
 					}
 					
-					startCallViewModel.searchField = ""
-					magicSearch.currentFilterSuggestions = ""
+						resetCallView()
+					
 					delayColorDismiss()
 					
 					withAnimation {
@@ -406,31 +401,6 @@ struct StartCallFragment: View {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
 						&& contactsManager.lastSearchSuggestions[index].address != nil {
-						if contactsManager.lastSearchSuggestions[index].address!.displayName != nil {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: contactsManager.lastSearchSuggestions[index].address!.displayName!,
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(contactsManager.lastSearchSuggestions[index].address?.displayName ?? "")
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						} else if contactsManager.lastSearchSuggestions[index].address!.username != nil {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: contactsManager.lastSearchSuggestions[index].address!.username!,
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(contactsManager.lastSearchSuggestions[index].address!.username ?? "")
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						} else {
 							Image(uiImage: contactsManager.textToImage(
 								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
 								lastName: ""))
@@ -442,7 +412,6 @@ struct StartCallFragment: View {
 								.default_text_style(styleSize: 16)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.foregroundStyle(Color.orangeMain500)
-						}
 					} else {
 						Image("profil-picture-default")
 							.resizable()

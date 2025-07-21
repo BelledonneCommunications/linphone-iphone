@@ -32,9 +32,6 @@ final class MagicSearchSingleton: ObservableObject {
 	var currentFilter: String = ""
 	var previousFilter: String?
 	
-	var currentFilterSuggestions: String = ""
-	var previousFilterSuggestions: String?
-	
 	var needUpdateLastSearchContacts = false
 	
 	private var limitSearchToLinphoneAccounts = true
@@ -56,6 +53,7 @@ final class MagicSearchSingleton: ObservableObject {
 			self.magicSearch.limitedSearch = false
 			
 			self.searchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
+				print("[MagicSearchSingleton] [onSearchResultsReceived] Received search results")
 				self.needUpdateLastSearchContacts = true
 				
 				var lastSearchFriend: [SearchResult] = []
@@ -116,8 +114,8 @@ final class MagicSearchSingleton: ObservableObject {
 		}
 	}
 	
-	func searchForContactsWithoutCoreThread(sourceFlags: Int) {
-		if self.magicSearch != nil {
+	func searchForContacts() {
+		coreContext.doOnCoreQueue { _ in
 			var needResetCache = false
 			
 			if let oldFilter = self.previousFilter {
@@ -125,6 +123,7 @@ final class MagicSearchSingleton: ObservableObject {
 					needResetCache = true
 				}
 			}
+			
 			self.previousFilter = self.currentFilter
 			
 			if needResetCache {
@@ -134,54 +133,6 @@ final class MagicSearchSingleton: ObservableObject {
 			self.magicSearch.getContactsListAsync(
 				filter: self.currentFilter,
 				domain: self.allContact ? "" : self.domainDefaultAccount,
-				sourceFlags: sourceFlags,
-				aggregation: MagicSearch.Aggregation.Friend)
-		}
-	}
-	
-	func searchForContacts(sourceFlags: Int) {
-		if self.magicSearch != nil {
-			coreContext.doOnCoreQueue { _ in
-				var needResetCache = false
-				
-				if let oldFilter = self.previousFilter {
-					if oldFilter.count > self.currentFilter.count || oldFilter != self.currentFilter {
-						needResetCache = true
-					}
-				}
-				self.previousFilter = self.currentFilter
-				
-				if needResetCache {
-					self.magicSearch.resetSearchCache()
-				}
-				
-				self.magicSearch.getContactsListAsync(
-					filter: self.currentFilter,
-					domain: self.allContact ? "" : self.domainDefaultAccount,
-					sourceFlags: sourceFlags,
-					aggregation: MagicSearch.Aggregation.Friend)
-			}
-		}
-	}
-	
-	func searchForSuggestions() {
-		coreContext.doOnCoreQueue { _ in
-			var needResetCache = false
-			
-			if let oldFilter = self.previousFilterSuggestions {
-				if oldFilter.count > self.currentFilterSuggestions.count || oldFilter != self.currentFilterSuggestions {
-					needResetCache = true
-				}
-			}
-			self.previousFilterSuggestions = self.currentFilterSuggestions
-			
-			if needResetCache {
-				self.magicSearch.resetSearchCache()
-			}
-			
-			self.magicSearch.getContactsListAsync(
-				filter: self.currentFilterSuggestions,
-				domain: self.domainDefaultAccount,
 				sourceFlags: MagicSearch.Source.All.rawValue,
 				aggregation: MagicSearch.Aggregation.Friend)
 		}

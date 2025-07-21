@@ -36,10 +36,6 @@ struct ConversationsView: View {
 					withAnimation {
 						isShowStartConversationFragment = true
 					}
-					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-						MagicSearchSingleton.shared.searchForSuggestions()
-					}
 				} label: {
 					Image("conversation")
 						.renderingMode(.template)

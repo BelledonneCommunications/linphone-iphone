@@ -1975,7 +1975,6 @@ struct CallView: View {
                                 if callViewModel.callsCounter < 2 {
                                     withAnimation {
                                         callViewModel.isTransferInsteadCall = true
-                                        MagicSearchSingleton.shared.searchForSuggestions()
                                         isShowStartCallFragment.toggle()
                                     }
                                     
@@ -2011,7 +2010,6 @@ struct CallView: View {
                         VStack {
                             Button {
                                 withAnimation {
-                                    MagicSearchSingleton.shared.searchForSuggestions()
                                     isShowStartCallFragment.toggle()
                                 }
                                 
@@ -2373,7 +2371,6 @@ struct CallView: View {
                                 if callViewModel.callsCounter < 2 {
                                     withAnimation {
                                         callViewModel.isTransferInsteadCall = true
-                                        MagicSearchSingleton.shared.searchForSuggestions()
                                         isShowStartCallFragment.toggle()
                                     }
                                     
@@ -2409,7 +2406,6 @@ struct CallView: View {
                         VStack {
                             Button {
                                 withAnimation {
-                                    MagicSearchSingleton.shared.searchForSuggestions()
                                     isShowStartCallFragment.toggle()
                                 }
                                 

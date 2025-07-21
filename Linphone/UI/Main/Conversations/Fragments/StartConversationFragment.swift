@@ -60,13 +60,9 @@ struct StartConversationFragment: View {
 							.padding(.top, 2)
 							.padding(.leading, -10)
 							.onTapGesture {
-								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-									magicSearch.searchForContacts(
-										sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
-								}
-								
 								startConversationViewModel.searchField = ""
-								magicSearch.currentFilterSuggestions = ""
+								magicSearch.currentFilter = ""
+								magicSearch.searchForContacts()
 								delayColorDismiss()
 								withAnimation {
 									isShowStartConversationFragment = false
@@ -94,8 +90,8 @@ struct StartConversationFragment: View {
 								.focused($isSearchFieldFocused)
 								.padding(.horizontal, 30)
 								.onChange(of: startConversationViewModel.searchField) { newValue in
-									magicSearch.currentFilterSuggestions = newValue
-									magicSearch.searchForSuggestions()
+									magicSearch.currentFilter = newValue
+									magicSearch.searchForContacts()
 								}
 							
 							HStack {
@@ -113,8 +109,8 @@ struct StartConversationFragment: View {
 								if !startConversationViewModel.searchField.isEmpty {
 									Button(action: {
 										startConversationViewModel.searchField = ""
-										magicSearch.currentFilterSuggestions = ""
-										magicSearch.searchForSuggestions()
+										magicSearch.currentFilter = ""
+										magicSearch.searchForContacts()
 									}, label: {
 										Image("x")
 											.renderingMode(.template)
@@ -223,14 +219,9 @@ struct StartConversationFragment: View {
 					PopupLoadingView()
 						.background(.black.opacity(0.65))
 						.onDisappear {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-								magicSearch.searchForContacts(
-									sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue
-								)
-							}
-							
 							startConversationViewModel.searchField = ""
-							magicSearch.currentFilterSuggestions = ""
+							magicSearch.currentFilter = ""
+							magicSearch.searchForContacts()
 							delayColorDismiss()
 							
 							isShowStartConversationFragment = false
@@ -240,6 +231,12 @@ struct StartConversationFragment: View {
 								startConversationViewModel.displayedConversation = nil
 							}
 						}
+				}
+			}
+			.onAppear {
+				if !magicSearch.currentFilter.isEmpty {
+					magicSearch.currentFilter = ""
+					magicSearch.searchForContacts()
 				}
 			}
 			.navigationTitle("")
@@ -270,31 +267,6 @@ struct StartConversationFragment: View {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
 						&& contactsManager.lastSearchSuggestions[index].address != nil {
-						if contactsManager.lastSearchSuggestions[index].address!.displayName != nil {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: contactsManager.lastSearchSuggestions[index].address!.displayName!,
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(contactsManager.lastSearchSuggestions[index].address?.displayName ?? "")
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						} else if contactsManager.lastSearchSuggestions[index].address!.username != nil {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: contactsManager.lastSearchSuggestions[index].address!.username!,
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(contactsManager.lastSearchSuggestions[index].address!.username ?? "")
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						} else {
 							Image(uiImage: contactsManager.textToImage(
 								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
 								lastName: ""))
@@ -306,7 +278,6 @@ struct StartConversationFragment: View {
 								.default_text_style(styleSize: 16)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.foregroundStyle(Color.orangeMain500)
-						}
 					} else {
 						Image("profil-picture-default")
 							.resizable()

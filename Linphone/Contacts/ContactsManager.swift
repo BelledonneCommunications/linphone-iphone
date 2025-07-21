@@ -104,7 +104,7 @@ final class ContactsManager: ObservableObject {
 					print("\(#function) - failed to request access", error)
 					self.addFriendListDelegate()
 					self.addCoreDelegate(core: core)
-					MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+					MagicSearchSingleton.shared.searchForContacts()
 					return
 				}
 				if granted {
@@ -162,19 +162,19 @@ final class ContactsManager: ObservableObject {
 						dispatchGroup.notify(queue: .main) {
 							self.addFriendListDelegate()
 							self.addCoreDelegate(core: core)
-							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							MagicSearchSingleton.shared.searchForContacts()
 						}
 					} catch let error {
 						print("\(#function) - Failed to enumerate contact", error)
 						self.addFriendListDelegate()
 						self.addCoreDelegate(core: core)
-						MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+						MagicSearchSingleton.shared.searchForContacts()
 					}
 				} else {
 					print("\(#function) - access denied")
 					self.addFriendListDelegate()
 					self.addCoreDelegate(core: core)
-					MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+					MagicSearchSingleton.shared.searchForContacts()
 				}
 			}
 		}
@@ -441,7 +441,7 @@ final class ContactsManager: ObservableObject {
 						}
 					}
 					
-					MagicSearchSingleton.shared.searchForContactsWithoutCoreThread(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+					MagicSearchSingleton.shared.searchForContacts()
 				},
 				onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
 					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")

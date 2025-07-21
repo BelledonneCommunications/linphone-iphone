@@ -231,8 +231,7 @@ class ContactsListViewModel: ObservableObject {
 				SharedMainViewModel.shared.displayedFriend!.friend!.remove()
 			}
 			
-			MagicSearchSingleton.shared.searchForContacts(
-				sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+			MagicSearchSingleton.shared.searchForContacts()
 		}
 	}
 	

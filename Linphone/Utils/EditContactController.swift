@@ -55,7 +55,7 @@ struct EditContactView: UIViewControllerRepresentable {
 						contact: newContact,
 						linphoneFriend: false,
 						existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact)) {
-							MagicSearchSingleton.shared.searchForContacts(sourceFlags: MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue)
+							MagicSearchSingleton.shared.searchForContacts()
 						}
 				}
 			}
