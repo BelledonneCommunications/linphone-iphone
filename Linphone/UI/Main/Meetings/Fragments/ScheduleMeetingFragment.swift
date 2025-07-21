@@ -211,7 +211,7 @@ struct ScheduleMeetingFragment: View {
 								TextField("meeting_schedule_description_hint", text: $meetingViewModel.description, axis: .vertical)
 									.default_text_style(styleSize: 15)
 									.focused($isDescriptionTextFocused)
-									.padding(.vertical, 5)
+									.padding(5)
 							} else {
 								ZStack(alignment: .leading) {
 									TextEditor(text: $meetingViewModel.description)
