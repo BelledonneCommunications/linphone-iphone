@@ -55,42 +55,44 @@ struct ConversationsListBottomSheet: View {
 			Spacer()
 			
 			if let selectedConversation = conversationsListViewModel.selectedConversation, !selectedConversation.isReadOnly {
-				Button {
-                    conversationsListViewModel.markAsReadSelectedConversation()
-                    conversationsListViewModel.updateUnreadMessagesCount()
-					
-					if #available(iOS 16.0, *) {
-						if idiom != .pad {
-							showingSheet.toggle()
+				if selectedConversation.unreadMessagesCount > 0 {
+					Button {
+						conversationsListViewModel.markAsReadSelectedConversation()
+						conversationsListViewModel.updateUnreadMessagesCount()
+						
+						if #available(iOS 16.0, *) {
+							if idiom != .pad {
+								showingSheet.toggle()
+							} else {
+								showingSheet.toggle()
+								dismiss()
+							}
 						} else {
 							showingSheet.toggle()
 							dismiss()
 						}
-					} else {
-						showingSheet.toggle()
-						dismiss()
+					} label: {
+						HStack {
+							Image("envelope-simple")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.all, 10)
+							Text("conversation_action_mark_as_read")
+								.default_text_style(styleSize: 16)
+							Spacer()
+						}
+						.frame(maxHeight: .infinity)
 					}
-				} label: {
-					HStack {
-						Image("envelope-simple")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.padding(.all, 10)
-						Text("conversation_action_mark_as_read")
-							.default_text_style(styleSize: 16)
-						Spacer()
+					.padding(.horizontal, 30)
+					.background(Color.gray100)
+					
+					VStack {
+						Divider()
 					}
-					.frame(maxHeight: .infinity)
+					.frame(maxWidth: .infinity)
 				}
-				.padding(.horizontal, 30)
-				.background(Color.gray100)
-				
-				VStack {
-					Divider()
-				}
-				.frame(maxWidth: .infinity)
 				
 				Button {
                     selectedConversation.toggleMute()
