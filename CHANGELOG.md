@@ -10,6 +10,52 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [6.0.0] - 2025-03-11
+
+6.0.0 release is a complete rework of Linphone, with a fully redesigned UI, so it is impossible to list everything here.
+
+### Changed
+- Separated threads: Contrary to previous versions, our SDK is now running in it's own thread, meaning it won't freeze the UI anymore in case of heavy work, thus reducing the number of ANR and greatly increasing the fluidity of the app.
+- Asymmetrical video : you no longer need to send your own camera feed to receive the one from the remote end of the call, and vice versa.
+- Improved multi account: you'll only see history, conversations, meetings etc... related to currently selected account, and you can switch the default account in two clicks.
+- Call transfer: Blind & Attended call transfer have been merged into one: during a call, if you initiate a transfer action, either pick another call to do the attended transfer or select a contact from the list (you can input a SIP URI not already in the suggestions list) to start a blind transfer.
+- User can only send up to 12 files in a single chat message.
+- IMDNs are now only sent to the message sender, preventing huge traffic in large groups, and thus the delivery status icon for received messages is now hidden in groups (as it was in 1-1 conversations).
+- Settings: a lot of them are gone, the one that are still there have been reworked to increase user friendliness.
+- Default screen (between contacts, call history, conversations & meetings list) will change depending on where you were when the app was paused or killed, and you will return to that last visited screen on the next startup.
+- Gradle files have been migrated from Groovy to Kotlin DSL, and dependencies are now in a separated file (libs.versions.toml).
+- Account creation no longer allows you to use your phone number as username, but it is still required to provide it to receive activation code by SMS.
+- Minimum supported iOS version is now 15.
+- Some settings have changed name and/or section in linphonerc file.
+
+### Added
+- Contacts trust: contacts for which all devices have been validated through a ZRTP call with SAS exchange are now highlighted with a blue circle (and with a red one in case of mistrust). That trust is now handled at contact level (instead of conversation level in previous versions).
+- Media & documents exchanged in a conversation can be easily found through a dedicated screen.
+- A brand new chat message search feature has been added to conversations.
+- You can now react to a chat message using any emoji.
+- If next message is also a voice recording, playback will automatically start after the currently playing one ends.
+- Chat while in call: a shortcut to a conversation screen with the remote.
+- Chat while in a conference: if the conference has a text stream enabled, you can chat with the other participants of the conference while it lasts. At the end, you'll find the messages history in the call history (and not in the list of conversations).
+- Auto export of media to native gallery even when auto download is enabled (but still not if VFS is enabled nor for ephemeral messages).
+- Save / export document & media from ephemeral messages will be disabled, and secure policy that prevents screenshots will be enforced in file viewer even if the setting is disabled.
+- Notification showing upload/download of files shared through chat will let user know the progress and keep the app alive during that process.
+- Screen sharing in conference: only desktop app starting with 6.0 version is able to start it, but on mobiles you'll be able to see it.
+- Security focus: security & trust is more visible than ever, and unsecure conversations & calls are even more visible than before.
+- OpenID: when used with a SSO compliant SIP server (such as Flexisip), we support single-sign-on login.
+- MWI support: display and allow to call your voicemail when you have new messages (if supported by your VoIP provider and properly configured in your account params).
+- CCMP support: if you configure a CCMP server URL in your accounts params, it will be used when scheduling meetings & to fetch list of meetings you've organized/been invited to.
+- Devices list: check on which device your sip.linphone.org account is connected and the last connection date & time (like on subscribe.linphone.org).
+- Protobuf dependency to allow logging native crashes stack traces at next app startup.
+- Dialer & in-call numpad show letters under the digit.
+
+### Removed
+- Dialer: the previous home screen (dialer) has been removed, you'll find it as an input option in the new start call screen.
+- Peer-to-peer: a SIP account (sip.linphone.org or other) is now required.
+- Contacts: we no longer add contacts created in-app in the native addressbook (WRITE_CONTACTS permission was removed), but we still import them if you grant us the READ_CONTACTS permission.
+
+### Fixed
+- AAudio driver no longer causes delay when switching between devices (SDK fix).
+
 ## [5.2.0] - 2023-28-12
 ### Added
 - Added extra Czech and Japanese translations
