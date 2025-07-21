@@ -171,6 +171,7 @@ struct ScheduleMeetingFragment: View {
 								.default_text_style_500(styleSize: 15)
 							Text(": \(meetingViewModel.selectedTimezone.formattedString())")
 								.fontWeight(.bold)
+								.lineLimit(1)
 								.default_text_style_500(styleSize: 15)
 								.onTapGesture {
 									showTimeZonePicker.toggle()
@@ -363,15 +364,21 @@ struct ScheduleMeetingFragment: View {
 					GeometryReader { geometry in
 						ScrollViewReader { proxyReader in
 							List(0..<meetingViewModel.knownTimezones.count, id: \.self) { idx in
-								Text(TimeZone.init(identifier: meetingViewModel.knownTimezones[idx])?.formattedString() ?? "Unknown timezone")
-									.fontWeight(meetingViewModel.selectedTimezoneIdx == idx ? Font.Weight.bold : Font.Weight.regular)
-									.onTapGesture {
-										if let timeZone = TimeZone.init(identifier: meetingViewModel.knownTimezones[idx]) {
-											meetingViewModel.selectedTimezoneIdx = idx
-											meetingViewModel.updateTimezone(timeZone: timeZone)
-										}
+								HStack {
+									Text(TimeZone.init(identifier: meetingViewModel.knownTimezones[idx])?.formattedString() ?? "Unknown timezone")
+										.fontWeight(meetingViewModel.selectedTimezoneIdx == idx ? Font.Weight.bold : Font.Weight.regular)
+										.frame(maxWidth: .infinity, alignment: .leading)
+								}
+								.contentShape(Rectangle())
+								.onTapGesture {
+									if let timeZone = TimeZone.init(identifier: meetingViewModel.knownTimezones[idx]) {
+										meetingViewModel.selectedTimezoneIdx = idx
+										meetingViewModel.updateTimezone(timeZone: timeZone)
+										showTimeZonePicker = false
 									}
-									.id(idx)
+								}
+								.id(idx)
+								.background(.white)
 							}
 							.frame(width: geometry.size.width - 30, height: 300)
 							.cornerRadius(20)
