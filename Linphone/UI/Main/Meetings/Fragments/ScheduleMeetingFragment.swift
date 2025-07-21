@@ -127,6 +127,9 @@ struct ScheduleMeetingFragment: View {
 								.fontWeight(.bold)
 								.default_text_style_500(styleSize: 16)
 								.onTapGesture {
+									isDescriptionTextFocused = false
+									isSubjectTextFocused = false
+									
 									setFromDate = true
 									selectedDate = meetingViewModel.fromDate
 									showDatePicker.toggle()
@@ -141,6 +144,9 @@ struct ScheduleMeetingFragment: View {
 								.frame(height: 29, alignment: .leading)
 								.default_text_style_500(styleSize: 16)
 								.onTapGesture {
+									isDescriptionTextFocused = false
+									isSubjectTextFocused = false
+									
 									setFromDate = true
 									selectedDate = meetingViewModel.fromDate
 									showTimePicker.toggle()
@@ -151,6 +157,9 @@ struct ScheduleMeetingFragment: View {
 								.frame(height: 29, alignment: .leading)
 								.default_text_style_500(styleSize: 16)
 								.onTapGesture {
+									isDescriptionTextFocused = false
+									isSubjectTextFocused = false
+									
 									setFromDate = false
 									selectedDate = meetingViewModel.toDate
 									showTimePicker.toggle()
@@ -174,6 +183,8 @@ struct ScheduleMeetingFragment: View {
 								.lineLimit(1)
 								.default_text_style_500(styleSize: 15)
 								.onTapGesture {
+									isDescriptionTextFocused = false
+									isSubjectTextFocused = false
 									showTimeZonePicker.toggle()
 								}
 							Spacer()
