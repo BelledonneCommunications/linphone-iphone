@@ -71,6 +71,13 @@ final class MagicSearchSingleton: ObservableObject {
 				lastSearchSuggestions.sort(by: {
 					$0.address!.asStringUriOnly() < $1.address!.asStringUriOnly()
 				})
+				
+				if let defaultAccount = core.defaultAccount, let contactAddress = defaultAccount.contactAddress {
+					lastSearchSuggestions.removeAll {
+						$0.address?.weakEqual(address2: contactAddress) ?? false
+					}
+				}
+				
 				let sortedLastSearch = lastSearchFriend.sorted(by: {
 					$0.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
 					<

@@ -96,6 +96,8 @@ struct AddParticipantsFragment: View {
 									.renderingMode(.template)
 									.resizable()
 									.foregroundStyle(Color.grayMain2c500)
+									.background(.white)
+									.cornerRadius(12.5)
 									.frame(width: 25, height: 25)
 									.onTapGesture {
 										addParticipantsViewModel.participantsToAdd.remove(at: index)
@@ -103,6 +105,7 @@ struct AddParticipantsFragment: View {
 							}
 						}
 					}
+					.padding(.vertical, addParticipantsViewModel.participantsToAdd.isEmpty ? 0 : 10)
 				}
 				.padding(.leading, 16)
 				
@@ -155,7 +158,7 @@ struct AddParticipantsFragment: View {
 						.inset(by: 0.5)
 						.stroke(isSearchFieldFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 				)
-				.padding(.vertical)
+				.padding(.bottom)
 				.padding(.horizontal)
 				
 				ScrollView {
@@ -205,8 +208,19 @@ struct AddParticipantsFragment: View {
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.foregroundStyle(Color.orangeMain500)
-								Spacer()
 								
+								if let searchAddress = contactsManager.lastSearch[index].friend?.address?.asStringUriOnly() {
+									if addParticipantsViewModel.participantsToAdd.contains(where: {
+										$0.address.asStringUriOnly() == searchAddress
+									}) {
+										Image("check")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 25, height: 25)
+											.padding(.horizontal)
+									}
+								}
 							}
 						}
 						.background(.white)
@@ -262,42 +276,30 @@ struct AddParticipantsFragment: View {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
 						&& contactsManager.lastSearchSuggestions[index].address != nil {
-						if contactsManager.lastSearchSuggestions[index].address!.displayName != nil {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: contactsManager.lastSearchSuggestions[index].address!.displayName!,
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(contactsManager.lastSearchSuggestions[index].address?.displayName ?? "")
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						} else if contactsManager.lastSearchSuggestions[index].address!.username != nil {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: contactsManager.lastSearchSuggestions[index].address!.username!,
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(contactsManager.lastSearchSuggestions[index].address!.username ?? "")
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
-						} else {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
-								lastName: ""))
-							.resizable()
-							.frame(width: 45, height: 45)
-							.clipShape(Circle())
-							
-							Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+						Image(uiImage: contactsManager.textToImage(
+							   firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
+							   lastName: ""))
+						   .resizable()
+						   .frame(width: 45, height: 45)
+						   .clipShape(Circle())
+						   
+						   Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
+							   .default_text_style(styleSize: 16)
+							   .lineLimit(1)
+							   .frame(maxWidth: .infinity, alignment: .leading)
+							   .foregroundStyle(Color.orangeMain500)
+						
+						if let searchAddress = contactsManager.lastSearchSuggestions[index].address?.asStringUriOnly() {
+							if addParticipantsViewModel.participantsToAdd.contains(where: {
+								$0.address.asStringUriOnly() == searchAddress
+							}) {
+								Image("check")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.orangeMain500)
+									.frame(width: 25, height: 25)
+									.padding(.horizontal)
+							}
 						}
 					} else {
 						Image("profil-picture-default")
