@@ -252,7 +252,7 @@ struct AddParticipantsFragment: View {
 			Button {
 				withAnimation {
 					confirmAddParticipantsFunc(addParticipantsViewModel.participantsToAdd)
-					dismiss()
+					//dismiss()
 					
 					magicSearch.currentFilter = ""
 					magicSearch.searchForContacts()
@@ -272,7 +272,7 @@ struct AddParticipantsFragment: View {
 		.navigationTitle("")
 		.navigationBarHidden(true)
 		.onAppear {
-			if !magicSearch.currentFilter.isEmpty {
+			if !magicSearch.currentFilter.isEmpty || (self.contactsManager.lastSearch.isEmpty && self.contactsManager.lastSearchSuggestions.isEmpty) {
 				magicSearch.currentFilter = ""
 				magicSearch.searchForContacts()
 			}

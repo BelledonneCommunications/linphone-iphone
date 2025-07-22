@@ -20,17 +20,104 @@
 import SwiftUI
 
 struct StartGroupCallFragment: View {
-	@ObservedObject var startCallViewModel: StartCallViewModel
+	@EnvironmentObject var startCallViewModel: StartCallViewModel
+	
 	@State var addParticipantsViewModel = AddParticipantsViewModel()
 	
+	@FocusState var isMessageTextFocused: Bool
+	
+	@Binding var isShowStartCallFragment: Bool
+	
     var body: some View {
-		AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: startCallViewModel.addParticipants)
-			.onAppear {
-				addParticipantsViewModel.participantsToAdd = startCallViewModel.participants
+		ZStack {
+			AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: startCallViewModel.addParticipants)
+				.onAppear {
+					addParticipantsViewModel.participantsToAdd = startCallViewModel.participants
+				}
+			
+			if !startCallViewModel.participants.isEmpty {
+				startCallPopup
+					.background(.black.opacity(0.65))
+					.onAppear {
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+							isMessageTextFocused = true
+						}
+					}
 			}
+			
+			if startCallViewModel.operationInProgress {
+				PopupLoadingView()
+					.background(.black.opacity(0.65))
+					.onDisappear {
+						isShowStartCallFragment.toggle()
+					}
+			}
+		}
     }
-}
-
-#Preview {
-	StartGroupCallFragment(startCallViewModel: StartCallViewModel())
+	
+	var startCallPopup: some View {
+		GeometryReader { geometry in
+			VStack(alignment: .leading) {
+				Text("history_group_call_start_dialog_set_subject")
+					.default_text_style_800(styleSize: 16)
+					.frame(alignment: .leading)
+					.padding(.bottom, 2)
+				
+				TextField("history_group_call_start_dialog_subject_hint", text: $startCallViewModel.messageText)
+					.default_text_style(styleSize: 15)
+					.frame(height: 25)
+					.padding(.horizontal, 20)
+					.padding(.vertical, 15)
+					.cornerRadius(60)
+					.overlay(
+						RoundedRectangle(cornerRadius: 60)
+							.inset(by: 0.5)
+							.stroke(isMessageTextFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+					)
+					.padding(.bottom)
+					.focused($isMessageTextFocused)
+				
+				Button(action: {
+					startCallViewModel.participants.removeAll()
+				}, label: {
+					Text("dialog_cancel")
+						.default_text_style_orange_600(styleSize: 20)
+						.frame(height: 35)
+						.frame(maxWidth: .infinity)
+				})
+				.padding(.horizontal, 20)
+				.padding(.vertical, 10)
+				.cornerRadius(60)
+				.overlay(
+					RoundedRectangle(cornerRadius: 60)
+						.inset(by: 0.5)
+						.stroke(Color.orangeMain500, lineWidth: 1)
+				)
+				.padding(.bottom, 10)
+				
+				Button(action: {
+					startCallViewModel.createGroupCall()
+				}, label: {
+					Text("dialog_call")
+						.default_text_style_white_600(styleSize: 20)
+						.frame(height: 35)
+						.frame(maxWidth: .infinity)
+				})
+				.padding(.horizontal, 20)
+				.padding(.vertical, 10)
+				.background(startCallViewModel.messageText.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
+				.cornerRadius(60)
+				.disabled(startCallViewModel.messageText.isEmpty)
+			}
+			.padding(.horizontal, 20)
+			.padding(.vertical, 20)
+			.background(.white)
+			.cornerRadius(20)
+			.padding(.horizontal)
+			.frame(maxHeight: .infinity)
+			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
+			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+		}
+	}
 }

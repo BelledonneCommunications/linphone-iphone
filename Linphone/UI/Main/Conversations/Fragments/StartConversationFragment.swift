@@ -35,8 +35,6 @@ struct StartConversationFragment: View {
 	@FocusState var isSearchFieldFocused: Bool
 	@State private var delayedColor = Color.white
 	
-	@FocusState var isMessageTextFocused: Bool
-	
 	@State var operationInProgress: Bool = false
 	
 	var body: some View {
@@ -133,7 +131,7 @@ struct StartConversationFragment: View {
 						.padding(.horizontal)
 						
 						NavigationLink(destination: {
-							StartGroupConversationFragment()
+							StartGroupConversationFragment(isShowStartConversationFragment: $isShowStartConversationFragment)
 								.environmentObject(startConversationViewModel)
 						}, label: {
 							HStack {
@@ -204,37 +202,9 @@ struct StartConversationFragment: View {
 					.frame(maxWidth: .infinity)
 				}
 				.background(.white)
-				
-				if !startConversationViewModel.participants.isEmpty {
-					startConversationPopup
-						.background(.black.opacity(0.65))
-						.onAppear {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-								isMessageTextFocused = true
-							}
-						}
-				}
-				
-				if startConversationViewModel.operationInProgress {
-					PopupLoadingView()
-						.background(.black.opacity(0.65))
-						.onDisappear {
-							startConversationViewModel.searchField = ""
-							magicSearch.currentFilter = ""
-							magicSearch.searchForContacts()
-							delayColorDismiss()
-							
-							isShowStartConversationFragment = false
-							
-							if let displayedConversation = startConversationViewModel.displayedConversation {
-								self.conversationsListViewModel.changeDisplayedChatRoom(conversationModel: displayedConversation)
-								startConversationViewModel.displayedConversation = nil
-							}
-						}
-				}
 			}
 			.onAppear {
-				if !magicSearch.currentFilter.isEmpty {
+				if !magicSearch.currentFilter.isEmpty || (self.contactsManager.lastSearch.isEmpty && self.contactsManager.lastSearchSuggestions.isEmpty) {
 					magicSearch.currentFilter = ""
 					magicSearch.searchForContacts()
 				}
@@ -295,75 +265,6 @@ struct StartConversationFragment: View {
 			}
 			.buttonStyle(.borderless)
 			.listRowSeparator(.hidden)
-		}
-	}
-	
-	var startConversationPopup: some View {
-		GeometryReader { geometry in
-			VStack(alignment: .leading) {
-				Text("conversation_dialog_set_subject")
-					.default_text_style_800(styleSize: 16)
-					.frame(alignment: .leading)
-					.padding(.bottom, 2)
-				
-				TextField("conversation_dialog_subject_hint", text: $startConversationViewModel.messageText)
-					.default_text_style(styleSize: 15)
-					.frame(height: 25)
-					.padding(.horizontal, 20)
-					.padding(.vertical, 15)
-					.cornerRadius(60)
-					.overlay(
-						RoundedRectangle(cornerRadius: 60)
-							.inset(by: 0.5)
-							.stroke(isMessageTextFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
-					)
-					.padding(.bottom)
-					.focused($isMessageTextFocused)
-				
-				Button(action: {
-					startConversationViewModel.participants.removeAll()
-				}, label: {
-					Text("dialog_cancel")
-						.default_text_style_orange_600(styleSize: 20)
-						.frame(height: 35)
-						.frame(maxWidth: .infinity)
-				})
-				.padding(.horizontal, 20)
-				.padding(.vertical, 10)
-				.cornerRadius(60)
-				.overlay(
-					RoundedRectangle(cornerRadius: 60)
-						.inset(by: 0.5)
-						.stroke(Color.orangeMain500, lineWidth: 1)
-				)
-				.padding(.bottom, 10)
-				
-				Button(action: {
-					startConversationViewModel.createGroupChatRoom()
-				}, label: {
-					Text("dialog_ok")
-						.default_text_style_white_600(styleSize: 20)
-						.frame(height: 35)
-						.frame(maxWidth: .infinity)
-				})
-				.padding(.horizontal, 20)
-				.padding(.vertical, 10)
-				.background(startConversationViewModel.messageText.isEmpty ? Color.orangeMain100 : Color.orangeMain500)
-				.cornerRadius(60)
-				.disabled(startConversationViewModel.messageText.isEmpty)
-			}
-			.padding(.horizontal, 20)
-			.padding(.vertical, 20)
-			.background(.white)
-			.cornerRadius(20)
-			.padding(.horizontal)
-			.frame(maxHeight: .infinity)
-			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
-			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-			.onDisappear {
-				startConversationViewModel.messageText = ""
-			}
 		}
 	}
 }
