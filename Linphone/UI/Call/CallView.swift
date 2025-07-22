@@ -188,6 +188,7 @@ struct CallView: View {
 					CallsListFragment(callViewModel: callViewModel, isShowCallsListFragment: $isShowCallsListFragment)
 						.zIndex(4)
 						.transition(.move(edge: .bottom))
+						.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 				}
 				
 				if isShowParticipantsListFragment {
@@ -197,6 +198,7 @@ struct CallView: View {
 						.onAppear {
 							addParticipantsViewModel = AddParticipantsViewModel()
 						}
+						.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
@@ -207,9 +209,11 @@ struct CallView: View {
 						&& buttonSize != 45 {
 						ZRTPPopup(callViewModel: callViewModel, resizeView: 1.5)
 							.background(.black.opacity(0.65))
+							.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 					} else {
 						ZRTPPopup(callViewModel: callViewModel, resizeView: buttonSize == 45 ? 1.5 : 1)
 							.background(.black.opacity(0.65))
+							.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 					}
 				}
 				
