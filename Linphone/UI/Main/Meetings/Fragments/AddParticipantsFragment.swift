@@ -61,6 +61,10 @@ struct AddParticipantsFragment: View {
 						.padding(.leading, -10)
 						.onTapGesture {
 							addParticipantsViewModel.reset()
+							
+							magicSearch.currentFilter = ""
+							magicSearch.searchForContacts()
+							
 							dismiss()
 						}
 					
