@@ -61,19 +61,22 @@ final class MagicSearchSingleton: ObservableObject {
 				var lastSearchFriend: [SearchResult] = []
 				var lastSearchSuggestions: [SearchResult] = []
 				
-                magicSearch.lastSearch.forEach { searchResult in
-                    if let friend = searchResult.friend,
-                       let address = searchResult.address,
-                       !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
-                        
-                        lastSearchFriend.append(searchResult)
-                    } else {
-                        lastSearchSuggestions.append(searchResult)
-                    }
-                }
-                
+				magicSearch.lastSearch.forEach { searchResult in
+					if searchResult.friend != nil {
+						if let address = searchResult.address,
+						   !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
+							lastSearchFriend.append(searchResult)
+						} else if let phoneNumber = searchResult.phoneNumber,
+								  !lastSearchFriend.contains(where: { $0.phoneNumber == phoneNumber }) {
+							lastSearchFriend.append(searchResult)
+						}
+					} else {
+						lastSearchSuggestions.append(searchResult)
+					}
+				}
+				
 				lastSearchSuggestions.sort(by: {
-					$0.address!.asStringUriOnly() < $1.address!.asStringUriOnly()
+					($0.address?.asStringUriOnly() ?? "") < ($1.address?.asStringUriOnly() ?? "")
 				})
 				
 				if let defaultAccount = core.defaultAccount, let contactAddress = defaultAccount.contactAddress {
