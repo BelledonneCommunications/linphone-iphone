@@ -202,6 +202,24 @@ struct StartConversationFragment: View {
 					.frame(maxWidth: .infinity)
 				}
 				.background(.white)
+				
+				if startConversationViewModel.operationInProgress {
+					PopupLoadingView()
+						.background(.black.opacity(0.65))
+						.onDisappear {
+							startConversationViewModel.searchField = ""
+							MagicSearchSingleton.shared.currentFilter = ""
+							MagicSearchSingleton.shared.searchForContacts()
+							delayColorDismiss()
+							
+							isShowStartConversationFragment = false
+							
+							if let displayedConversation = startConversationViewModel.displayedConversation {
+								self.conversationsListViewModel.changeDisplayedChatRoom(conversationModel: displayedConversation)
+								startConversationViewModel.displayedConversation = nil
+							}
+						}
+				}
 			}
 			.onAppear {
 				if !magicSearch.currentFilter.isEmpty || (self.contactsManager.lastSearch.isEmpty && self.contactsManager.lastSearchSuggestions.isEmpty) {
