@@ -2282,7 +2282,7 @@ class ConversationViewModel: ObservableObject {
 									detail: chatMessageReaction.body,
 									isMe: true
 								)
-								participantList[0].append(innerSheetCat)
+								participantList[0].insert(innerSheetCat, at: 0)
 							} else {
 								let innerSheetCat = InnerSheetCategory(contact: avatarResult, detail: chatMessageReaction.body)
 								participantList[0].append(innerSheetCat)
