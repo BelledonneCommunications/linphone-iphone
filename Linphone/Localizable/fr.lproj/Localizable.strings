@@ -236,7 +236,7 @@
 "conversation_info_menu_add_to_contacts" = "Ajouter aux contacts";
 "conversation_info_menu_go_to_contact" = "Voir le contact";
 "conversation_info_participant_is_admin_label" = "Administrateur";
-"conversation_info_participants_list_title" = "Participants";
+"conversation_info_participants_list_title" = "Participants (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé.";
 "conversation_menu_configure_ephemeral_messages" = "Messages éphémères";
 "conversation_menu_go_to_info" = "Informations";

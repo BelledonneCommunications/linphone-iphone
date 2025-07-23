@@ -432,7 +432,7 @@
 "conversation_event_subject_changed" = "Нова назва: %@";
 "conversation_event_device_added" = "Новий пристрій для %@";
 "conversation_event_device_removed" = "Пристрій для %@ видалено";
-"conversation_info_participants_list_title" = "Учасники групи";
+"conversation_info_participants_list_title" = "Учасники групи (%d)";
 "conversation_message_meeting_cancelled_label" = "Нараду скасовано!";
 "conversation_one_to_one_hidden_subject" = "Фіктивний суб'єкт";
 "conversation_reply_to_message_title" = "Відповісти на: ";

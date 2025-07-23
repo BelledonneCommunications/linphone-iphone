@@ -267,7 +267,7 @@ struct ConversationInfoFragment: View {
 									
 									if SharedMainViewModel.shared.displayedConversation!.isGroup {
 										HStack(alignment: .center) {
-											Text("conversation_info_participants_list_title")
+											Text(String(format: NSLocalizedString("conversation_info_participants_list_title", comment: ""), conversationViewModel.participantConversationModel.count))
 												.default_text_style_800(styleSize: 18)
 												.frame(maxWidth: .infinity, alignment: .leading)
 											

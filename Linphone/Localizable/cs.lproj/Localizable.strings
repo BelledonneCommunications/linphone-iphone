@@ -417,7 +417,7 @@
 "conversation_event_device_added" = "Nové zařízení pro %@";
 "conversation_event_participant_added" = "%@ se připojil";
 "conversation_event_subject_changed" = "Nový předmět: %@";
-"conversation_info_participants_list_title" = "Členové skupiny";
+"conversation_info_participants_list_title" = "Členové skupiny (%d)";
 "conversation_event_admin_set" = "%@ je administrátor";
 "conversation_event_ephemeral_messages_lifetime_changed" = "Doba platnosti mizejících zpráv je nyní %@";
 "conversation_event_participant_removed" = "%@ se odpojil";
