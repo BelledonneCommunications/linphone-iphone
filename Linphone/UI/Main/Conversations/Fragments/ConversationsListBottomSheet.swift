@@ -239,8 +239,40 @@ struct ConversationsListBottomSheet: View {
                         .frame(maxHeight: .infinity)
                     }
                     .padding(.horizontal, 30)
-                    .background(Color.gray100)
-                }
+					.background(Color.gray100)
+				}
+			} else if let selectedConversation = conversationsListViewModel.selectedConversation, selectedConversation.isReadOnly {
+				Button {
+					selectedConversation.deleteChatRoom()
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
+					} else {
+						showingSheet.toggle()
+						dismiss()
+					}
+				} label: {
+					HStack {
+						Image("trash-simple")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.redDanger500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+						Text("conversation_action_delete")
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 16)
+						Spacer()
+					}
+					.frame(maxHeight: .infinity)
+				}
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
 			}
 		}
 		.background(Color.gray100)
