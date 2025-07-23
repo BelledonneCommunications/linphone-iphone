@@ -21,19 +21,27 @@ import Foundation
 
 // swiftlint:disable large_tuple
 extension Int {
-    
-    public func hmsFrom() -> (Int, Int, Int) {
-        return (self / 3600, (self % 3600) / 60, (self % 3600) % 60)
-    }
-    
-    public func convertDurationToString() -> String {
-        var duration = ""
-        let (hour, minute, second) = self.hmsFrom()
-        if hour > 0 {
-            duration = self.getHour(hour: hour)
-        }
-        return "\(duration)\(self.getMinute(minute: minute))\(self.getSecond(second: second))"
-    }
+	
+	public func hmsFrom() -> (Int, Int, Int) {
+		return (self / 3600, (self % 3600) / 60, (self % 3600) % 60)
+	}
+	
+	public func convertDurationToString() -> String {
+		let (hour, minute, second) = self.hmsFrom()
+		let day = hour / 24
+		let remainingHour = hour % 24
+
+		if day > 0 && day <= 7 {
+			return self.getDay(day: day)
+		}
+
+		if hour > 0 {
+			return "\(self.getHour(hour: remainingHour))\(self.getMinute(minute: minute))\(self.getSecond(second: second))"
+		}
+
+		return "\(self.getMinute(minute: minute))\(self.getSecond(second: second))"
+	}
+
 	
 	public func formatBytes() -> String {
 		let byteCountFormatter = ByteCountFormatter()
@@ -42,36 +50,45 @@ extension Int {
 		byteCountFormatter.isAdaptive = true // Adjusts automatically to appropriate unit
 		return byteCountFormatter.string(fromByteCount: Int64(self))
 	}
-    
-    private func getHour(hour: Int) -> String {
-        var duration = "\(hour):"
-        if hour < 10 {
-            duration = "0\(hour):"
-        }
-        return duration
-    }
-    
-    private func getMinute(minute: Int) -> String {
-        if minute == 0 {
-            return "00:"
-        }
+	
+	private func getDay(day: Int) -> String {
+		if day == 1 {
+			return NSLocalizedString("conversation_ephemeral_messages_duration_one_day", comment: "")
+		}
+		let format = NSLocalizedString("conversation_ephemeral_messages_duration_multiple_days", comment: "")
+		return String(format: format, day)
+	}
 
-        if minute < 10 {
-            return "0\(minute):"
-        }
+	private func getHour(hour: Int) -> String {
+		var duration = "\(hour):"
+		if hour < 10 {
+			duration = "0\(hour):"
+		}
+		return duration
+	}
+	
+	private func getMinute(minute: Int) -> String {
+		if minute == 0 {
+			return "00:"
+		}
 
-        return "\(minute):"
-    }
-    
-    private func getSecond(second: Int) -> String {
-        if second == 0 {
-            return "00"
-        }
+		if minute < 10 {
+			return "0\(minute):"
+		}
 
-        if second < 10 {
-            return "0\(second)"
-        }
-        return "\(second)"
-    }
+		return "\(minute):"
+	}
+	
+	private func getSecond(second: Int) -> String {
+		if second == 0 {
+			return "00"
+		}
+
+		if second < 10 {
+			return "0\(second)"
+		}
+		return "\(second)"
+	}
 }
+
 // swiftlint:enable large_tuple

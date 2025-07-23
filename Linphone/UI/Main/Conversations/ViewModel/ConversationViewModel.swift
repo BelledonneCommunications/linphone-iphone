@@ -2525,9 +2525,15 @@ class ConversationViewModel: ObservableObject {
 				}
 				
 				if lifetime == 0 {
+					DispatchQueue.main.async {
+						self.sharedMainViewModel.displayedConversation!.isEphemeral = false
+					}
 					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralEnabled = false
 					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
 				} else {
+					DispatchQueue.main.async {
+						self.sharedMainViewModel.displayedConversation!.isEphemeral = true
+					}
 					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralEnabled = true
 					self.sharedMainViewModel.displayedConversation!.chatRoom.ephemeralLifetime = lifetime
 				}

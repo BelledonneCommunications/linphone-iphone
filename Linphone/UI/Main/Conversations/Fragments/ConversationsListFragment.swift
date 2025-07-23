@@ -148,11 +148,19 @@ struct ConversationRow: View {
 							.frame(width: 18, height: 18, alignment: .trailing)
 					}
 					
+					if conversation.isEphemeral {
+						Image("clock-countdown")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c400)
+							.frame(width: 18, height: 18, alignment: .trailing)
+					}
+					
 					if conversation.isMuted {
 						Image("bell-slash")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.grayMain2c400)
 							.frame(width: 18, height: 18, alignment: .trailing)
 					}
 					

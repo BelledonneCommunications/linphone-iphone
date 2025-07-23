@@ -202,6 +202,7 @@
 "conversation_dialog_subject_hint" = "Nom de la conversation";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_ephemeral_messages_duration_disabled" = "Désactiver";
+"conversation_ephemeral_messages_duration_multiple_days" = "%d jours";
 "conversation_ephemeral_messages_duration_one_day" = "1 jour";
 "conversation_ephemeral_messages_duration_one_hour" = "1 heure";
 "conversation_ephemeral_messages_duration_one_minute" = "1 minute";
