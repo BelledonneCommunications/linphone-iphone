@@ -100,8 +100,6 @@ class FloatingButton: UIButton {
 
 struct UIList: UIViewRepresentable {
 	
-	private static var sharedCoordinator: Coordinator?
-	
 	@StateObject private var viewModel = ChatViewModel()
 	@StateObject private var paginationState = PaginationState()
 	
@@ -346,14 +344,11 @@ struct UIList: UIViewRepresentable {
 	// MARK: - Coordinator
 	
 	func makeCoordinator() -> Coordinator {
-		if UIList.sharedCoordinator == nil {
-			UIList.sharedCoordinator = Coordinator(
-				parent: self,
-				geometryProxy: geometryProxy,
-				sections: sections
-			)
-		}
-		return UIList.sharedCoordinator!
+		Coordinator(
+			parent: self,
+			geometryProxy: geometryProxy,
+			sections: sections
+		)
 	}
 	
 	class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
