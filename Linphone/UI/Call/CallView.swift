@@ -562,7 +562,8 @@ struct CallView: View {
 						if callViewModel.videoDisplayed {
 							if !callViewModel.isPaused && TelecomManager.shared.callInProgress
 								&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
-								coreContext.pipViewModel.pipController?.startPictureInPicture()
+								// TODO: Enable PIP in 6.1
+								//coreContext.pipViewModel.pipController?.startPictureInPicture()
 							}
 							callViewModel.videoDisplayed = false
 							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -879,7 +880,8 @@ struct CallView: View {
 								.onDisappear {
 									if !callViewModel.isPaused && TelecomManager.shared.callInProgress
 										&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
-										coreContext.pipViewModel.pipController?.startPictureInPicture()
+										// TODO: Enable PIP in 6.1
+										//coreContext.pipViewModel.pipController?.startPictureInPicture()
 									}
 								}
 							}
