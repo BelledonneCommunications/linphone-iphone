@@ -80,7 +80,8 @@ class LinphoneUtils: NSObject {
 			conferenceParams.subject = subject
 			
 			// Enable end-to-end encryption if client supports it
-			if isEndToEndEncryptedChatAvailable(core: core) {
+			//if isEndToEndEncryptedChatAvailable(core: core) {
+			if false {
 				Log.info("\(#function) Requesting EndToEnd security level for conference")
 				conferenceParams.securityLevel = .EndToEnd
 			} else {
