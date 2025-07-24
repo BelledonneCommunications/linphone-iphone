@@ -642,38 +642,59 @@ struct ConversationFragment: View {
 														.frame(width: 100, height: 100)
 													
 													VStack {
-														if attachment.type == .image || attachment.type == .gif || attachment.type == .video {
-															AsyncImage(url: attachment.thumbnail) { image in
-																ZStack {
-																	image
-																		.resizable()
-																		.interpolation(.medium)
-																		.aspectRatio(contentMode: .fill)
-																	
-																	if attachment.type == .video {
-																		Image("play-fill")
-																			.renderingMode(.template)
+														ZStack {
+															if attachment.type == .image || attachment.type == .gif || attachment.type == .video {
+																AsyncImage(url: attachment.thumbnail) { image in
+																	ZStack {
+																		image
 																			.resizable()
-																			.foregroundStyle(.white)
-																			.frame(width: 40, height: 40, alignment: .leading)
+																			.interpolation(.medium)
+																			.aspectRatio(contentMode: .fill)
+																		
+																		if attachment.type == .video {
+																			Image("play-fill")
+																				.renderingMode(.template)
+																				.resizable()
+																				.foregroundStyle(.white)
+																				.frame(width: 40, height: 40, alignment: .leading)
+																		}
 																	}
+																} placeholder: {
+																	ProgressView()
 																}
-															} placeholder: {
-																ProgressView()
+															} else {
+																VStack {
+																	Spacer()
+																	Text(attachment.name)
+																		.foregroundStyle(Color.grayMain2c700)
+																		.default_text_style_800(styleSize: 14)
+																		.truncationMode(.middle)
+																		.frame(maxWidth: .infinity, alignment: .center)
+																		.multilineTextAlignment(.center)
+																		.lineLimit(2)
+																	Spacer()
+																}
+																.background(Color.grayMain2c200)
 															}
-														} else {
+															
 															VStack {
-																Spacer()
-																Text(attachment.name)
-																	.foregroundStyle(Color.grayMain2c700)
-																	.default_text_style_800(styleSize: 14)
-																	.truncationMode(.middle)
-																	.frame(maxWidth: .infinity, alignment: .center)
-																	.multilineTextAlignment(.center)
-																	.lineLimit(2)
+																HStack {
+																	Spacer()
+																	
+																	Image("x")
+																		.renderingMode(.template)
+																		.resizable()
+																		.foregroundStyle(Color.orangeMain500)
+																		.padding(4)
+																		.background(.white)
+																		.cornerRadius(12.5)
+																		.frame(width: 20, height: 20)
+																		.padding(4)
+																}
+																
 																Spacer()
 															}
-															.background(Color.grayMain2c200)
+															.frame(width: 100, height: 100)
 														}
 													}
 													.layoutPriority(-1)
