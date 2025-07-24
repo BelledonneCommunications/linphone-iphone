@@ -36,7 +36,8 @@ class StartConversationViewModel: ObservableObject {
 	
 	@Published var participants: [SelectedAddressModel] = []
 	
-	@Published var operationInProgress: Bool = false
+	@Published var operationOneToOneInProgress: Bool = false
+	@Published var operationGroupInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
 	
 	private var chatRoomDelegate: ChatRoomDelegate?
@@ -74,7 +75,7 @@ class StartConversationViewModel: ObservableObject {
 			}
 			
 			DispatchQueue.main.async {
-				self.operationInProgress = true
+				self.operationGroupInProgress = true
 			}
 			
 			let groupChatRoomSubject = self.messageText
@@ -113,7 +114,7 @@ class StartConversationViewModel: ObservableObject {
 							let model = ConversationModel(chatRoom: chatRoom)
 							DispatchQueue.main.async {
 								self.displayedConversation = model
-								self.operationInProgress = false
+								self.operationGroupInProgress = false
 							}
 						} else {
 							Log.info(
@@ -128,7 +129,7 @@ class StartConversationViewModel: ObservableObject {
 						let model = ConversationModel(chatRoom: chatRoom)
 						DispatchQueue.main.async {
 							self.displayedConversation = model
-							self.operationInProgress = false
+							self.operationGroupInProgress = false
 						}
 					}
 				}
@@ -137,7 +138,7 @@ class StartConversationViewModel: ObservableObject {
 				Log.error("\(StartConversationViewModel.TAG) \(error)")
 				
 				DispatchQueue.main.async {
-					self.operationInProgress = false
+					self.operationGroupInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 					ToastViewModel.shared.displayToast = true
 				}
@@ -156,7 +157,7 @@ class StartConversationViewModel: ObservableObject {
 			}
 			
 			DispatchQueue.main.async {
-				self.operationInProgress = true
+				self.operationOneToOneInProgress = true
 			}
 			
 			do {
@@ -194,7 +195,7 @@ class StartConversationViewModel: ObservableObject {
 					)
 					
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.operationInProgress = false
+						self.operationOneToOneInProgress = false
 						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 						ToastViewModel.shared.displayToast = true
 					}
@@ -220,7 +221,7 @@ class StartConversationViewModel: ObservableObject {
 								let model = ConversationModel(chatRoom: chatRoom)
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 									self.displayedConversation = model
-									self.operationInProgress = false
+									self.operationOneToOneInProgress = false
 								}
 							} else {
 								Log.info("\(StartConversationViewModel.TAG) Conversation isn't in Created state yet (state is \(state)), wait for it")
@@ -233,14 +234,14 @@ class StartConversationViewModel: ObservableObject {
 							let model = ConversationModel(chatRoom: chatRoom)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 								self.displayedConversation = model
-								self.operationInProgress = false
+								self.operationOneToOneInProgress = false
 							}
 						}
 					} catch {
 						Log.error("\(StartConversationViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())")
 						
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-							self.operationInProgress = false
+							self.operationOneToOneInProgress = false
 							ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 							ToastViewModel.shared.displayToast = true
 						}
@@ -252,7 +253,7 @@ class StartConversationViewModel: ObservableObject {
 					let model = ConversationModel(chatRoom: existingChatRoom!)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 						self.displayedConversation = model
-						self.operationInProgress = false
+						self.operationOneToOneInProgress = false
 					}
 				}
 			} catch {
@@ -271,7 +272,8 @@ class StartConversationViewModel: ObservableObject {
 				}
 				self.chatRoomDelegate = nil
 				DispatchQueue.main.async {
-					self.operationInProgress = false
+					self.operationOneToOneInProgress = false
+					self.operationGroupInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 					ToastViewModel.shared.displayToast = true
 				}
@@ -290,7 +292,8 @@ class StartConversationViewModel: ObservableObject {
 				let model = ConversationModel(chatRoom: chatRoom)
 				DispatchQueue.main.async {
 					self.displayedConversation = model
-					self.operationInProgress = false
+					self.operationOneToOneInProgress = false
+					self.operationGroupInProgress = false
 				}
 			} else if state == ChatRoom.State.CreationFailed {
 				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
@@ -299,7 +302,8 @@ class StartConversationViewModel: ObservableObject {
 				}
 				self.chatRoomDelegate = nil
 				DispatchQueue.main.async {
-					self.operationInProgress = false
+					self.operationOneToOneInProgress = false
+					self.operationGroupInProgress = false
 					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
 					ToastViewModel.shared.displayToast = true
 				}

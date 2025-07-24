@@ -91,13 +91,14 @@ class StartCallViewModel: ObservableObject {
 				)
 				
 				if let conference = LinphoneUtils.createGroupCall(core: core, account: account, subject: self.messageText) {
-					self.conferenceAddDelegate(core: core, conference: conference)
 					let callParams = try? core.createCallParams(call: nil)
 					if let callParams = callParams {
 						callParams.videoEnabled = true
 						callParams.videoDirection = .RecvOnly
 						
 						Log.info("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
+						
+						self.conferenceAddDelegate(core: core, conference: conference)
 						
 						try conference.inviteParticipants(addresses: participantsList, params: callParams)
 						

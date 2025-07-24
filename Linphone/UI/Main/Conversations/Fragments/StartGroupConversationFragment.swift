@@ -48,7 +48,7 @@ struct StartGroupConversationFragment: View {
 					}
 			}
 			
-			if startConversationViewModel.operationInProgress {
+			if startConversationViewModel.operationGroupInProgress {
 				PopupLoadingView()
 					.background(.black.opacity(0.65))
 					.onDisappear {
