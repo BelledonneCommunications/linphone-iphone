@@ -252,7 +252,10 @@ struct AddParticipantsFragment: View {
 			Button {
 				withAnimation {
 					confirmAddParticipantsFunc(addParticipantsViewModel.participantsToAdd)
-					//dismiss()
+					
+					if SharedMainViewModel.shared.indexView == 3 {
+						dismiss()
+					}
 					
 					magicSearch.currentFilter = ""
 					magicSearch.searchForContacts()
