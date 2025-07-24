@@ -35,6 +35,8 @@ struct AddParticipantsFragment: View {
 	
 	@FocusState var isSearchFieldFocused: Bool
 	
+	var dismissOnCheckClick: Bool
+	
 	var body: some View {
 		ZStack(alignment: .bottomTrailing) {
 			VStack(spacing: 16) {
@@ -253,7 +255,7 @@ struct AddParticipantsFragment: View {
 				withAnimation {
 					confirmAddParticipantsFunc(addParticipantsViewModel.participantsToAdd)
 					
-					if SharedMainViewModel.shared.indexView == 3 {
+					if dismissOnCheckClick {
 						dismiss()
 					}
 					
@@ -336,8 +338,4 @@ struct AddParticipantsFragment: View {
 			.listRowSeparator(.hidden)
 		}
 	}
-}
-
-#Preview {
-	AddParticipantsFragment(addParticipantsViewModel: AddParticipantsViewModel(), confirmAddParticipantsFunc: { _ in })
 }

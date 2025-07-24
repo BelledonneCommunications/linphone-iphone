@@ -456,7 +456,7 @@ struct ConversationInfoFragment: View {
 												
 												if conversationViewModel.isUserAdmin {
 													NavigationLink(destination: {
-														AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: conversationViewModel.addParticipants)
+														AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: conversationViewModel.addParticipants, dismissOnCheckClick: true)
 															.onAppear {
 																conversationViewModel.getParticipants()
 																addParticipantsViewModel.participantsToAdd = conversationViewModel.participants

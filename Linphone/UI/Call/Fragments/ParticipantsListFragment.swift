@@ -83,7 +83,7 @@ struct ParticipantsListFragment: View {
 						
 						if callViewModel.myParticipantModel != nil && callViewModel.myParticipantModel!.isAdmin {
 							NavigationLink(destination: {
-								AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: callViewModel.addParticipants)
+								AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: callViewModel.addParticipants, dismissOnCheckClick: true)
 									.onAppear {
 										addParticipantsViewModel.participantsToAdd = []
 									}

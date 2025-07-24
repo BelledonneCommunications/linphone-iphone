@@ -30,7 +30,7 @@ struct StartGroupCallFragment: View {
 	
     var body: some View {
 		ZStack {
-			AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: startCallViewModel.addParticipants)
+			AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: startCallViewModel.addParticipants, dismissOnCheckClick: false)
 				.onAppear {
 					addParticipantsViewModel.participantsToAdd = startCallViewModel.participants
 				}
