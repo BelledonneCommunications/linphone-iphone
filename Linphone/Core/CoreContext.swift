@@ -254,20 +254,20 @@ class CoreContext: ObservableObject {
 					}
 				}
 			}, onAuthenticationRequested: { (core: Core, authInfo: AuthInfo, method: AuthMethod) in
-				guard let username = authInfo.username, let domain = authInfo.domain, let realm = authInfo.realm else {
-					Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
-					return
-				}
-				
 				if method == .Bearer {
 					if let server = authInfo.authorizationServer, !server.isEmpty {
-						Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(username)")
+						Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(authInfo.username ?? "")")
 						self.bearerAuthInfoPendingPasswordUpdate = authInfo
-						SingleSignOnManager.shared.setUp(ssoUrl: server, user: username)
+						SingleSignOnManager.shared.setUp(ssoUrl: server, user: authInfo.username ?? "")
 					}
 				}
 				
 				if method == .HttpDigest {
+					guard let username = authInfo.username, let domain = authInfo.domain, let realm = authInfo.realm else {
+						Log.error("Authentication requested but either username [\(String(describing: authInfo.username))], domain [\(String(describing: authInfo.domain))] or server [\(String(describing: authInfo.authorizationServer))] is nil or empty!")
+						return
+					}
+					
 					guard let accountFound = core.accountList.first(where: {
 						$0.params?.identityAddress?.username == authInfo.username &&
 						$0.params?.identityAddress?.domain == authInfo.domain
