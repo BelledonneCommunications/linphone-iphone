@@ -59,6 +59,7 @@ class CallViewModel: ObservableObject {
 	@Published var isOneOneCall: Bool = false
 	@Published var isConference: Bool = false
 	@Published var videoDisplayed: Bool = false
+	@Published var chatEnabled: Bool = false
 	@Published var participantList: [ParticipantModel] = []
 	@Published var activeSpeakerParticipant: ParticipantModel?
 	@Published var activeSpeakerName: String = ""
@@ -214,6 +215,13 @@ class CallViewModel: ObservableObject {
 					}
 				}
 				
+				var chatEnabledTmp = false
+				if self.currentCall?.conference != nil {
+					chatEnabledTmp = self.currentCall?.conference?.currentParams?.chatEnabled ?? false
+				} else {
+					chatEnabledTmp = true
+				}
+				
 				DispatchQueue.main.async {
 					self.direction = directionTmp
 					self.remoteAddressString = remoteAddressStringTmp
@@ -248,6 +256,7 @@ class CallViewModel: ObservableObject {
 					self.isNotEncrypted = false
 					self.isZrtp = isZrtpTmp
 					self.cacheMismatch = cacheMismatchFlag
+					self.chatEnabled = chatEnabledTmp
 					
 					self.getCallsList()
 					
@@ -1196,16 +1205,11 @@ class CallViewModel: ObservableObject {
 		let localAddress = call.callLog?.localAddress
 		let remoteAddress = call.remoteAddress
 		
-		let params: ConferenceParams? = nil
 		let existingConversation: ChatRoom?
 		if call.conference != nil {
-			existingConversation = call.core?.searchChatRoom(
-				params: params,
-				localAddr: localAddress,
-				remoteAddr: remoteAddress,
-				participants: []
-			)
+			existingConversation = call.conference?.chatRoom
 		} else {
+			let params = getChatRoomParams(call: call)
 			let participants = [remoteAddress!]
 			existingConversation = call.core?.searchChatRoom(
 				params: params,

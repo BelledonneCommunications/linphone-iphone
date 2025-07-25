@@ -2205,7 +2205,7 @@ struct CallView: View {
                 .frame(height: geo.size.height * 0.15)
                 
                 HStack(spacing: 0) {
-                    if !CorePreferences.disableChatFeature {
+					if !CorePreferences.disableChatFeature && callViewModel.chatEnabled {
                         VStack {
                             Button {
                                 callViewModel.createConversation()
@@ -2343,7 +2343,7 @@ struct CallView: View {
                     .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     .hidden()
                     
-                    if CorePreferences.disableChatFeature {
+					if CorePreferences.disableChatFeature || !callViewModel.chatEnabled {
                         VStack {
                             Button {
                             } label: {
@@ -2601,7 +2601,7 @@ struct CallView: View {
                         .frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
                     }
                     
-                    if !CorePreferences.disableChatFeature {
+                    if !CorePreferences.disableChatFeature && callViewModel.chatEnabled {
                         VStack {
                             Button {
                                 callViewModel.createConversation()
