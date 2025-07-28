@@ -248,15 +248,17 @@ class ConversationModel: ObservableObject, Identifiable {
 			
 			let lastMessageStateTmp = lastMessage?.state.rawValue ?? 0
 			
-			// DispatchQueue.main.async {
-			self.lastMessageText = lastMessageTextTmp
-			
-			self.lastMessageIsOutgoing = lastMessageIsOutgoingTmp
+            DispatchQueue.main.async {
+                self.lastMessageText = lastMessageTextTmp
+                
+                self.lastMessageIsOutgoing = lastMessageIsOutgoingTmp
+                
+                self.lastUpdateTime = lastUpdateTimeTmp
+                
+                self.lastMessageState = lastMessageStateTmp
+            }
             
-            self.lastUpdateTime = lastUpdateTimeTmp
-			
-			self.lastMessageState = lastMessageStateTmp
-			// }
+            getUnreadMessagesCount()
 		}
 	}
 	
@@ -314,19 +316,19 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.chatRoom.participants.forEach { participant in
 			participantsAddressTmp.append(participant.address?.asStringUriOnly() ?? "")
 		}
-		
-		// DispatchQueue.main.async {
-		self.subject = subjectTmp
-		self.avatarModel = avatarModelTmp
-		self.participantsAddress = participantsAddressTmp
-		// }
+        
+		DispatchQueue.main.async {
+            self.subject = subjectTmp
+            self.avatarModel = avatarModelTmp
+            self.participantsAddress = participantsAddressTmp
+		}
 	}
 	
 	func getUnreadMessagesCount() {
 		let unreadMessagesCountTmp = self.chatRoom.unreadMessagesCount
-		// DispatchQueue.main.async {
-		self.unreadMessagesCount = unreadMessagesCountTmp
-		// }
+        DispatchQueue.main.async {
+            self.unreadMessagesCount = unreadMessagesCountTmp
+        }
 	}
 	
 	func refreshAvatarModel() {

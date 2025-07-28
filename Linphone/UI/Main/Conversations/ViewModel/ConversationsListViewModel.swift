@@ -189,8 +189,9 @@ class ConversationsListViewModel: ObservableObject {
                 if let defaultAddress = core.defaultAccount?.contactAddress,
                    let localAddress = chatRoom.localAddress,
                    defaultAddress.weakEqual(address2: localAddress) {
-                    let model = ConversationModel(chatRoom: chatRoom)
                     let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+                    let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+                    model.getContentTextMessage(chatRoom: chatRoom)
                     let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
                     DispatchQueue.main.async {
                         if index != nil {
@@ -204,8 +205,9 @@ class ConversationsListViewModel: ObservableObject {
                 if let defaultAddress = core.defaultAccount?.contactAddress,
                    let localAddress = chatRoom.localAddress,
                    defaultAddress.weakEqual(address2: localAddress) {
-                    let model = ConversationModel(chatRoom: chatRoom)
                     let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+                    let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+                    model.getContentTextMessage(chatRoom: chatRoom)
                     let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
                     if index != nil {
                         self.conversationsList[index!].chatMessageRemoveDelegate()
@@ -222,8 +224,9 @@ class ConversationsListViewModel: ObservableObject {
                 if let defaultAddress = core.defaultAccount?.contactAddress,
                    let localAddress = chatRoom.localAddress,
                    defaultAddress.weakEqual(address2: localAddress) {
-                    let model = ConversationModel(chatRoom: chatRoom)
                     let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+                    let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+                    model.getContentTextMessage(chatRoom: chatRoom)
                     let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
                     DispatchQueue.main.async {
                         if index != nil {
