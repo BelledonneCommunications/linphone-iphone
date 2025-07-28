@@ -95,6 +95,7 @@ class NotificationService: UNNotificationServiceExtension {
 			VFSUtil.log("[VFS] Error unable to activate.", .error)
 		}
 		*/
+        
 		if let bestAttemptContent = bestAttemptContent {
 			createCore()
 			if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
@@ -197,13 +198,20 @@ class NotificationService: UNNotificationServiceExtension {
 						return
 					} else {
 						Log.info("Message not found for callid ["+callId+"]")
+                        stopCore()
+                        contentHandler(UNNotificationContent())
+                        return
 					}
-				}
+                } else {
+                    stopCore()
+                    contentHandler(UNNotificationContent())
+                    return
+                }
             } else {
+                stopCore()
                 contentHandler(UNNotificationContent())
                 return
             }
-			serviceExtensionTimeWillExpire()
 		}
 	}
 	
@@ -223,15 +231,18 @@ class NotificationService: UNNotificationServiceExtension {
 				let _ = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
 				stopCore()
 				contentHandler(UNNotificationContent())
+                return
 			} else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
 				stopCore()
 				bestAttemptContent.title = String(localized: "notification_chat_message_received_title")
 				bestAttemptContent.body = NSLocalizedString("IM_MSG", comment: "")
 				
 				contentHandler(bestAttemptContent)
+                return
 			} else {
 				stopCore()
 				contentHandler(UNNotificationContent())
+                return
 			}
 		}
 	}
