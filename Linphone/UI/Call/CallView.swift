@@ -458,13 +458,13 @@ struct CallView: View {
 				simpleCallView(geometry: geometry)
 					.frame(
 						width: geometry.size.width,
-                        height: geometry.size.height + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
+						height: geometry.size.height + geometry.safeAreaInsets.bottom + (callViewModel.calls.count > 1 ? 40 : geometry.safeAreaInsets.top)
 					)
 			}
 			
 			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 				if telecomManager.callStarted {
-                    let minHeight = (minBottomSheetHeight * geometry.size.height) + topBarHeight
+					let minHeight = (minBottomSheetHeight * geometry.size.height) + topBarHeight
                     let maxHeight = (maxBottomSheetHeight * geometry.size.height) + topBarHeight
 					BottomSheetView(
 						content: bottomSheetContent(geo: geometry),
