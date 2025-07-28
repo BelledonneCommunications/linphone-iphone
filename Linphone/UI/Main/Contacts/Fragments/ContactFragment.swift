@@ -41,7 +41,7 @@ struct ContactFragment: View {
 			contactInnerContent(contactsListViewModel: contactsListViewModel)
 				.sheet(isPresented: $showingSheet) {
 					ContactListBottomSheet(contactsListViewModel: contactsListViewModel, showingSheet: $showingSheet)
-						.presentationDetents([.fraction(0.2)])
+						.presentationDetents([.fraction(0.1)])
 				}
 				.sheet(isPresented: $showShareSheet) {
 					ShareSheet(friendToShare: contactAvatarModel)

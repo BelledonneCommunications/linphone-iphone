@@ -56,6 +56,7 @@ struct ContactsListBottomSheet: View {
 			}
 			
 			Spacer()
+            
 			Button {
 				self.contactsListViewModel.toggleStarredSelectedFriend()
 				
