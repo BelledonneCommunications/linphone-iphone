@@ -92,6 +92,7 @@ class RegisterViewModel: ObservableObject {
 	}
 	
 	init() {
+		SharedMainViewModel.shared.getDialPlansList()
 		getAccountCreationToken()
 		
 		self.usernameError = ""
@@ -175,15 +176,17 @@ class RegisterViewModel: ObservableObject {
 				parameterErrors?.keys.forEach({ parameter in
 					let parameterErrorMessage = parameterErrors?.getString(key: parameter) ?? ""
 					
-					switch parameter {
-					case "username":
-						self.usernameError = parameterErrorMessage
-					case "password":
-						self.passwordError = parameterErrorMessage
-					case "phone":
-						self.phoneNumberError = parameterErrorMessage
-					default:
-						break
+					DispatchQueue.main.async {
+						switch parameter {
+						case "username":
+							self.usernameError = parameterErrorMessage
+						case "password":
+							self.passwordError = parameterErrorMessage
+						case "phone":
+							self.phoneNumberError = parameterErrorMessage
+						default:
+							break
+						}
 					}
 				})
 				
@@ -318,9 +321,11 @@ class RegisterViewModel: ObservableObject {
 					request.submit()
 				} catch {
 					Log.error("\(RegisterViewModel.TAG) Can't create account creation token by push request")
+					self.onFlexiApiTokenRequestError()
 				}
 			} else {
-				Log.warn("\(RegisterViewModel.TAG) No remote push token available in core for account creator configuration")
+				Log.error("\(RegisterViewModel.TAG) No remote push token available in core for account creator configuration")
+				self.onFlexiApiTokenRequestError()
 			}
 			
 			Log.info("\(RegisterViewModel.TAG) Found push notification info: provider \("apns.dev"), param \(formatedPnParam ?? "error") and prid \(formatedRemoteToken)")
@@ -334,6 +339,8 @@ class RegisterViewModel: ObservableObject {
 		Log.error("\(RegisterViewModel.TAG) Flexi API token request by push error!")
 		
 		DispatchQueue.main.async {
+			self.createInProgress = false
+			
 			ToastViewModel.shared.toastMessage = "Failed_push_notification_not_received_error"
 			ToastViewModel.shared.displayToast = true
 		}

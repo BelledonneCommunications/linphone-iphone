@@ -184,10 +184,16 @@ struct RootView: View {
 						WelcomeView()
 						ToastView().zIndex(3)
 					}
+					.onAppear {
+						appDelegate.coreContext = coreContext
+					}
 				} else if showAssistant {
 					ZStack {
 						AssistantView()
 						ToastView().zIndex(3)
+					}
+					.onAppear {
+						appDelegate.coreContext = coreContext
 					}
 					
 					if coreContext.coreIsStarted {
