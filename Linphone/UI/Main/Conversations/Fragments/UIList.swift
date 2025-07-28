@@ -503,10 +503,10 @@ struct UIList: UIViewRepresentable {
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
 			let archiveAction = UIContextualAction(style: .normal, title: "") { _, _, completionHandler in
-                if !self.parent.isMessageTextFocused {
-                    self.parent.isMessageTextFocused = true
-                }
-                self.parent.conversationViewModel.replyToMessage(index: indexPath.row, isMessageTextFocused: self.parent.isMessageTextFocused)
+                self.parent.conversationViewModel.replyToMessage(index: indexPath.row, isMessageTextFocused: Binding(
+                    get: { self.parent.isMessageTextFocused },
+                    set: { self.parent.isMessageTextFocused = $0 }
+                ))
 				completionHandler(true)
 			}
 			

@@ -1100,10 +1100,10 @@ struct ConversationFragment: View {
 										Button {
 											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
 											conversationViewModel.selectedMessage = nil
-                                            if !isMessageTextFocused {
-                                                isMessageTextFocused = true
-                                            }
-											conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: isMessageTextFocused)
+											conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: Binding(
+                                                get: { isMessageTextFocused },
+                                                set: { isMessageTextFocused = $0 }
+                                            ))
 										} label: {
 											HStack {
 												Text("menu_reply_to_chat_message")

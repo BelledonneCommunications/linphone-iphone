@@ -1547,14 +1547,15 @@ class ConversationViewModel: ObservableObject {
 		conversationMessagesSection = []
 	}
 	
-    func replyToMessage(index: Int, isMessageTextFocused: Bool) {
+    func replyToMessage(index: Int, isMessageTextFocused: Binding<Bool>) {
 		coreContext.doOnCoreQueue { _ in
 			let messageToReplyTmp = self.conversationMessagesSection[0].rows[index]
-            DispatchQueue.main.asyncAfter(deadline: .now() + (isMessageTextFocused ? 0 : 0.22)){
+            DispatchQueue.main.async {
                 withAnimation(.linear(duration: 0.15)) {
                     self.messageToReply = messageToReplyTmp
                 }
-			}
+                isMessageTextFocused.wrappedValue = true
+            }
 		}
 	}
 	
