@@ -35,8 +35,6 @@ class ConversationsListViewModel: ObservableObject {
 	
 	@Published var conversationsList: [ConversationModel] = []
 	
-	@Published var unreadMessages: Int = 0
-	
 	var selectedConversation: ConversationModel?
 	
 	var currentFilter: String = ""
@@ -60,7 +58,7 @@ class ConversationsListViewModel: ObservableObject {
 					self.conversationsList = conversationsTmp
 				}
 				
-				self.updateUnreadMessagesCount()
+                SharedMainViewModel.shared.updateUnreadMessagesCount()
 			}
 		}
 	}
@@ -199,7 +197,7 @@ class ConversationsListViewModel: ObservableObject {
                         }
                         self.conversationsList.insert(model, at: 0)
                     }
-                    self.updateUnreadMessagesCount()
+                    SharedMainViewModel.shared.updateUnreadMessagesCount()
                 }
 			}, onMessageSent: { (_: Core, chatRoom: ChatRoom, _: ChatMessage) in
                 if let defaultAddress = core.defaultAccount?.contactAddress,
@@ -218,7 +216,7 @@ class ConversationsListViewModel: ObservableObject {
                         }
                         self.conversationsList.insert(model, at: 0)
                     }
-                    self.updateUnreadMessagesCount()
+                    SharedMainViewModel.shared.updateUnreadMessagesCount()
                 }
 			}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
                 if let defaultAddress = core.defaultAccount?.contactAddress,
@@ -236,7 +234,7 @@ class ConversationsListViewModel: ObservableObject {
                             self.conversationsList.insert(model, at: 0)
                         }
                     }
-                    self.updateUnreadMessagesCount()
+                    SharedMainViewModel.shared.updateUnreadMessagesCount()
                 }
 			}, onChatRoomStateChanged: { (core: Core, chatroom: ChatRoom, state: ChatRoom.State) in
 				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
@@ -333,26 +331,7 @@ class ConversationsListViewModel: ObservableObject {
 			self.conversationsList = sortedList.sorted { $0.lastUpdateTime > $1.lastUpdateTime }
 		}
 		
-		updateUnreadMessagesCount()
-	}
-	
-	func updateUnreadMessagesCount() {
-		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			if account != nil {
-				let count = account?.unreadChatMessageCount != nil ? account!.unreadChatMessageCount : core.unreadChatMessageCount
-				
-				DispatchQueue.main.async {
-					self.unreadMessages = count
-					UIApplication.shared.applicationIconBadgeNumber = count
-				}
-			} else {
-				DispatchQueue.main.async {
-					self.unreadMessages = 0
-					UIApplication.shared.applicationIconBadgeNumber = 0
-				}
-			}
-		}
+        SharedMainViewModel.shared.updateUnreadMessagesCount()
 	}
 	
 	func getContentTextMessage(message: ChatMessage, completion: @escaping (String) -> Void) {

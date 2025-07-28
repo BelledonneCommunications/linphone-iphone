@@ -42,6 +42,9 @@ class SharedMainViewModel: ObservableObject {
 	@Published var fileUrlsToShare: [String] = []
 	
 	@Published var operationInProgress = false
+    
+    @Published var unreadMessages: Int = 0
+    @Published var missedCallsCount: Int = 0
 	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
@@ -85,6 +88,9 @@ class SharedMainViewModel: ObservableObject {
 				defaultAvatar = defaultAvatarTmp
 			}
 		}
+        
+        updateMissedCallsCount()
+        updateUnreadMessagesCount()
 	}
 	
 	func changeWelcomeView() {
@@ -153,4 +159,56 @@ class SharedMainViewModel: ObservableObject {
 			}
 		}
 	}
+    
+    func resetMissedCallsCount() {
+        CoreContext.shared.doOnCoreQueue { core in
+            let account = core.defaultAccount
+            if account != nil {
+                account?.resetMissedCallsCount()
+                DispatchQueue.main.async {
+                    self.missedCallsCount = 0
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.missedCallsCount = 0
+                }
+            }
+        }
+    }
+    
+    func updateMissedCallsCount() {
+        CoreContext.shared.doOnCoreQueue { core in
+            let account = core.defaultAccount
+            if account != nil {
+                let count = account?.missedCallsCount != nil ? account!.missedCallsCount : core.missedCallsCount
+                
+                DispatchQueue.main.async {
+                    self.missedCallsCount = count
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.missedCallsCount = 0
+                }
+            }
+        }
+    }
+    
+    func updateUnreadMessagesCount() {
+        CoreContext.shared.doOnCoreQueue { core in
+            let account = core.defaultAccount
+            if account != nil {
+                let count = account?.unreadChatMessageCount != nil ? account!.unreadChatMessageCount : core.unreadChatMessageCount
+                
+                DispatchQueue.main.async {
+                    self.unreadMessages = count
+                    UIApplication.shared.applicationIconBadgeNumber = count
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.unreadMessages = 0
+                    UIApplication.shared.applicationIconBadgeNumber = 0
+                }
+            }
+        }
+    }
 }

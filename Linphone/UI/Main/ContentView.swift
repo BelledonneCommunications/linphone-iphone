@@ -250,12 +250,12 @@ struct ContentView: View {
 										.frame(height: geometry.size.height/4)
 										
 										ZStack {
-											if let historyListVM = historyListViewModel, historyListVM.missedCallsCount > 0 {
+											if SharedMainViewModel.shared.missedCallsCount > 0 {
 												VStack {
 													HStack {
 														Text(
-															historyListVM.missedCallsCount < 99
-															? String(historyListVM.missedCallsCount)
+                                                            SharedMainViewModel.shared.missedCallsCount < 99
+															? String(SharedMainViewModel.shared.missedCallsCount)
 															: "99+"
 														)
 														.foregroundStyle(.white)
@@ -275,8 +275,8 @@ struct ContentView: View {
 												sharedMainViewModel.displayedFriend = nil
 												sharedMainViewModel.displayedConversation = nil
 												sharedMainViewModel.displayedMeeting = nil
-												if let historyListVM = historyListViewModel, historyListVM.missedCallsCount > 0 {
-													historyListVM.resetMissedCallsCount()
+												if SharedMainViewModel.shared.missedCallsCount > 0 {
+                                                    SharedMainViewModel.shared.resetMissedCallsCount()
 												}
 											}, label: {
 												VStack {
@@ -300,12 +300,12 @@ struct ContentView: View {
 										
                                         if !CorePreferences.disableChatFeature {
                                             ZStack {
-                                                if let contactsListVM = conversationsListViewModel, contactsListVM.unreadMessages > 0 {
+                                                if SharedMainViewModel.shared.unreadMessages > 0 {
                                                     VStack {
                                                         HStack {
                                                             Text(
-                                                                contactsListVM.unreadMessages < 99
-                                                                ? String(contactsListVM.unreadMessages)
+                                                                SharedMainViewModel.shared.unreadMessages < 99
+                                                                ? String(SharedMainViewModel.shared.unreadMessages)
                                                                 : "99+"
                                                             )
                                                             .foregroundStyle(.white)
@@ -797,12 +797,12 @@ struct ContentView: View {
 									Spacer()
 									
 									ZStack {
-										if let historyListVM = historyListViewModel, historyListVM.missedCallsCount > 0 {
+										if SharedMainViewModel.shared.missedCallsCount > 0 {
 											VStack {
 												HStack {
 													Text(
-														historyListVM.missedCallsCount < 99
-														? String(historyListVM.missedCallsCount)
+                                                        SharedMainViewModel.shared.missedCallsCount < 99
+														? String(SharedMainViewModel.shared.missedCallsCount)
 														: "99+"
 													)
 													.foregroundStyle(.white)
@@ -822,8 +822,8 @@ struct ContentView: View {
 											sharedMainViewModel.displayedFriend = nil
 											sharedMainViewModel.displayedConversation = nil
 											sharedMainViewModel.displayedMeeting = nil
-											if let historyListVM = historyListViewModel, historyListVM.missedCallsCount > 0 {
-												historyListVM.resetMissedCallsCount()
+											if SharedMainViewModel.shared.missedCallsCount > 0 {
+                                                SharedMainViewModel.shared.resetMissedCallsCount()
 											}
 										}, label: {
 											VStack {
@@ -849,12 +849,12 @@ struct ContentView: View {
                                         Spacer()
                                     
                                         ZStack {
-                                            if let conversationsListVM = conversationsListViewModel, conversationsListVM.unreadMessages > 0 {
+                                            if SharedMainViewModel.shared.unreadMessages > 0 {
                                                 VStack {
                                                     HStack {
                                                         Text(
-                                                            conversationsListVM.unreadMessages < 99
-                                                            ? String(conversationsListVM.unreadMessages)
+                                                            SharedMainViewModel.shared.unreadMessages < 99
+                                                            ? String(SharedMainViewModel.shared.unreadMessages)
                                                             : "99+"
                                                         )
                                                         .foregroundStyle(.white)

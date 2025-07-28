@@ -31,8 +31,6 @@ class HistoryListViewModel: ObservableObject {
 	var callLogsAddressToDelete = ""
 	var callLogCoreDelegate: CoreDelegate?
 	
-	@Published var missedCallsCount: Int = 0
-	
 	@Published var selectedCall: HistoryModel?
 	
 	@Published var displayedConversation: ConversationModel?
@@ -41,7 +39,7 @@ class HistoryListViewModel: ObservableObject {
 	
 	init() {
 		computeCallLogsList()
-		updateMissedCallsCount()
+        SharedMainViewModel.shared.updateMissedCallsCount()
 	}
 	
 	func computeCallLogsList() {
@@ -87,42 +85,9 @@ class HistoryListViewModel: ObservableObject {
 					self.callLogsTmp = callLogsTmpBis
 				}
 				
-				self.updateMissedCallsCount()
+                SharedMainViewModel.shared.updateMissedCallsCount()
 			})
 			core.addDelegate(delegate: self.callLogCoreDelegate!)
-		}
-	}
-	
-	func resetMissedCallsCount() {
-		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			if account != nil {
-				account?.resetMissedCallsCount()
-				DispatchQueue.main.async {
-					self.missedCallsCount = 0
-				}
-			} else {
-				DispatchQueue.main.async {
-					self.missedCallsCount = 0
-				}
-			}
-		}
-	}
-	
-	func updateMissedCallsCount() {
-		coreContext.doOnCoreQueue { core in
-			let account = core.defaultAccount
-			if account != nil {
-				let count = account?.missedCallsCount != nil ? account!.missedCallsCount : core.missedCallsCount
-				
-				DispatchQueue.main.async {
-					self.missedCallsCount = count
-				}
-			} else {
-				DispatchQueue.main.async {
-					self.missedCallsCount = 0
-				}
-			}
 		}
 	}
 	
