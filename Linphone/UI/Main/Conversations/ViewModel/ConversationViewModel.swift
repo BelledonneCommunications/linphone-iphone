@@ -1547,13 +1547,13 @@ class ConversationViewModel: ObservableObject {
 		conversationMessagesSection = []
 	}
 	
-	func replyToMessage(index: Int) {
+    func replyToMessage(index: Int, isMessageTextFocused: Bool) {
 		coreContext.doOnCoreQueue { _ in
 			let messageToReplyTmp = self.conversationMessagesSection[0].rows[index]
-			DispatchQueue.main.async {
-				withAnimation(.linear(duration: 0.15)) {
-					self.messageToReply = messageToReplyTmp
-				}
+            DispatchQueue.main.asyncAfter(deadline: .now() + (isMessageTextFocused ? 0 : 0.22)){
+                withAnimation(.linear(duration: 0.15)) {
+                    self.messageToReply = messageToReplyTmp
+                }
 			}
 		}
 	}

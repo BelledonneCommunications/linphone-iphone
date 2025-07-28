@@ -108,6 +108,8 @@ struct UIList: UIViewRepresentable {
 	
 	let geometryProxy: GeometryProxy
 	let sections: [MessagesSection]
+    
+    @Binding var isMessageTextFocused: Bool
 	
 	@State private var isScrolledToTop = false
 	@State private var isScrolledToBottom = true
@@ -501,7 +503,10 @@ struct UIList: UIViewRepresentable {
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
 			let archiveAction = UIContextualAction(style: .normal, title: "") { _, _, completionHandler in
-				self.parent.conversationViewModel.replyToMessage(index: indexPath.row)
+                if !self.parent.isMessageTextFocused {
+                    self.parent.isMessageTextFocused = true
+                }
+                self.parent.conversationViewModel.replyToMessage(index: indexPath.row, isMessageTextFocused: self.parent.isMessageTextFocused)
 				completionHandler(true)
 			}
 			

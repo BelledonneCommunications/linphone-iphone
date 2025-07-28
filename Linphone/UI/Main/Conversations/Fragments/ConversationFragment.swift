@@ -444,8 +444,13 @@ struct ConversationFragment: View {
 						ZStack(alignment: .bottomTrailing) {
 							UIList(
 								geometryProxy: geometry,
-								sections: conversationViewModel.conversationMessagesSection
-							)
+                                sections: conversationViewModel.conversationMessagesSection,
+                                isMessageTextFocused: Binding(get: {
+                                    isMessageTextFocused
+                                }, set: { newValue in
+                                    isMessageTextFocused = newValue
+                                })
+                            )
 							.environmentObject(conversationViewModel)
 							.environmentObject(conversationsListViewModel)
 						}
@@ -1095,7 +1100,10 @@ struct ConversationFragment: View {
 										Button {
 											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
 											conversationViewModel.selectedMessage = nil
-											conversationViewModel.replyToMessage(index: indexMessage ?? 0)
+                                            if !isMessageTextFocused {
+                                                isMessageTextFocused = true
+                                            }
+											conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: isMessageTextFocused)
 										} label: {
 											HStack {
 												Text("menu_reply_to_chat_message")
