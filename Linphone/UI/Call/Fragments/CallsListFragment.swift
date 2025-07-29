@@ -254,7 +254,7 @@ struct CallsListFragment: View {
 									Avatar(contactAvatarModel: callViewModel.callsContactAvatarModel[index]!, avatarSize: 50)
 								} else {
 									VStack {
-										Image("users-three-square")
+										Image("video-conference")
 											.renderingMode(.template)
 											.resizable()
 											.frame(width: 28, height: 28)

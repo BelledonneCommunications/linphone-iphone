@@ -109,7 +109,7 @@ struct HistoryRow: View {
 					}
 				} else {
 					VStack {
-						Image("users-three-square")
+						Image("video-conference")
 							.renderingMode(.template)
 							.resizable()
 							.frame(width: 28, height: 28)

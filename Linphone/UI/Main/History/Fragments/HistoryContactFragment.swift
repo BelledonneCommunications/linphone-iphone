@@ -211,7 +211,7 @@ struct HistoryContactFragment: View {
 									}
 								} else {
 									VStack {
-										Image("users-three-square")
+										Image("video-conference")
 											.renderingMode(.template)
 											.resizable()
 											.frame(width: 60, height: 60)
@@ -324,7 +324,7 @@ struct HistoryContactFragment: View {
 									}, label: {
 										VStack {
 											HStack(alignment: .center) {
-												Image("users-three-square")
+												Image("video-conference")
 													.renderingMode(.template)
 													.resizable()
 													.foregroundStyle(Color.grayMain2c600)

@@ -136,13 +136,13 @@ struct StartConversationFragment: View {
 						}, label: {
 							HStack {
 								HStack(alignment: .center) {
-									Image("meetings")
+									Image("users-three")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(.white)
-										.frame(width: 20, height: 20, alignment: .leading)
+										.frame(width: 28, height: 28)
 								}
-								.padding(16)
+								.padding(10)
 								.background(Color.orangeMain500)
 								.cornerRadius(40)
 								
