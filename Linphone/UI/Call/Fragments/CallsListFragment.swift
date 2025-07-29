@@ -171,14 +171,12 @@ struct CallsListFragment: View {
                         HStack {
                             Image((callViewModel.selectedCall!.state == .PausedByRemote
                                     || callViewModel.selectedCall!.state == .Pausing
-								   || callViewModel.selectedCall!.state == .Paused) ? String(localized: "call_action_resume_call") : String(localized: "call_action_pause_call"))
+								   || callViewModel.selectedCall!.state == .Paused) ? "play" : "pause")
                                 .resizable()
                                 .frame(width: 30, height: 30)
                             
                         }
-                        .frame(width: 35, height: 30)
-                        .background(.clear)
-                        .cornerRadius(40)
+                        .frame(width: 35, height: 35)
                         
                         Text((callViewModel.selectedCall!.state == .PausedByRemote
                               || callViewModel.selectedCall!.state == .Pausing
@@ -209,13 +207,10 @@ struct CallsListFragment: View {
                             Image("phone-disconnect")
                                 .renderingMode(.template)
                                 .resizable()
-                                .foregroundStyle(.white)
-                                .frame(width: 20, height: 20)
-                            
+                                .foregroundStyle(Color.redDanger500)
+                                .frame(width: 30, height: 30)
                         }
-                        .frame(width: 35, height: 30)
-                        .background(Color.redDanger500)
-                        .cornerRadius(40)
+						.frame(width: 35, height: 35)
                         
                         Text("call_action_hang_up")
                             .foregroundStyle(Color.redDanger500)
@@ -246,113 +241,62 @@ struct CallsListFragment: View {
 	var callsList: some View {
 		VStack {
 			List {
-				ForEach(0..<callViewModel.calls.count, id: \.self) { index in
-					HStack {
+				ForEach(Array(callViewModel.calls.enumerated()), id: \.element.callLog?.callId) { index, call in
+					if let callLog = call.callLog, let remoteAddress = callLog.remoteAddress {
 						HStack {
-							if callViewModel.calls[index].callLog != nil && callViewModel.calls[index].callLog!.remoteAddress != nil {
-								if callViewModel.callsContactAvatarModel[index] != nil && callViewModel.calls[index].callLog?.conferenceInfo == nil {
-									Avatar(contactAvatarModel: callViewModel.callsContactAvatarModel[index]!, avatarSize: 50)
-								} else {
-									VStack {
-										Image("video-conference")
-											.renderingMode(.template)
-											.resizable()
-											.frame(width: 28, height: 28)
-											.foregroundStyle(Color.grayMain2c600)
-									}
+							if let avatarModel = callViewModel.callsContactAvatarModel[index], callLog.conferenceInfo == nil {
+								Avatar(contactAvatarModel: avatarModel, avatarSize: 50)
+							} else {
+								Image("video-conference")
+									.renderingMode(.template)
+									.resizable()
+									.frame(width: 28, height: 28)
+									.foregroundStyle(Color.grayMain2c600)
 									.frame(width: 50, height: 50)
 									.background(Color.grayMain2c200)
 									.clipShape(Circle())
-								}
-								
-								if callViewModel.calls[index].callLog?.conferenceInfo == nil {
-									Text(callViewModel.callsContactAvatarModel[index]!.name)
-										.default_text_style(styleSize: 16)
-										.frame(maxWidth: .infinity, alignment: .leading)
-										.lineLimit(1)
-								} else {
-									Text(callViewModel.calls[index].callLog!.conferenceInfo!.subject ?? String(localized: "conference_name_error"))
-									.default_text_style(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
+							}
+
+							// Display name or conference subject
+							let name = callLog.conferenceInfo == nil
+								? callViewModel.callsContactAvatarModel[index]?.name ?? "Unknown"
+								: callLog.conferenceInfo?.subject ?? String(localized: "conference_name_error")
+
+							Text(name)
+								.default_text_style(styleSize: 16)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.lineLimit(1)
+
+							Spacer()
+
+							HStack {
+								let state = call.state
+								let isPaused = state == .PausedByRemote || state == .Pausing || state == .Paused
+								let isResuming = state == .Resuming
+
+								Text(isResuming ? String(localized: "call_state_resuming") :
+									 isPaused ? String(localized: "call_state_paused") :
+									 String(localized: "call_state_connected"))
+									.default_text_style_300(styleSize: 14)
 									.lineLimit(1)
-								}
-								
-								Spacer()
-								
-								HStack {
-									if callViewModel.calls[index].state == .PausedByRemote
-										|| callViewModel.calls[index].state == .Pausing
-										|| callViewModel.calls[index].state == .Paused
-										|| callViewModel.calls[index].state == .Resuming {
-										Text(callViewModel.calls[index].state == .Resuming ? String(localized: "call_state_resuming") : String(localized: "call_state_paused"))
-										.default_text_style_300(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .trailing)
-										.lineLimit(1)
-										.padding(.horizontal, 4)
-										
-										Image("pause")
-											.resizable()
-											.frame(width: 25, height: 25)
-									} else {
-										Text("call_state_connected")
-										.default_text_style_300(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .trailing)
-										.lineLimit(1)
-										.padding(.horizontal, 4)
-										
-										Image("phone-call")
-											.resizable()
-											.frame(width: 25, height: 25)
-									}
-								}
+									.padding(.horizontal, 4)
+
+								Image(isPaused || isResuming ? "pause" : "phone-call")
+									.resizable()
+									.frame(width: 25, height: 25)
 							}
 						}
-					}
-					.buttonStyle(.borderless)
-					.listRowInsets(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
-					.listRowSeparator(.hidden)
-					.background(.white)
-					.onTapGesture {
-						if callViewModel.currentCall != nil && callViewModel.calls[index].callLog!.callId == callViewModel.currentCall!.callLog!.callId {
-							if callViewModel.currentCall!.state == .StreamsRunning {
-								do {
-									try callViewModel.currentCall!.pause()
-									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-										callViewModel.isPaused = true
-									}
-								} catch {
-									
-								}
-							} else {
-								do {
-									try callViewModel.currentCall!.resume()
-									
-									DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-										callViewModel.isPaused = false
-									}
-								} catch {
-									
-								}
-							}
-						} else {
-							CoreContext.shared.doOnCoreQueue { core in
-								if callViewModel.currentCall!.state == .StreamsRunning {
-									TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: "")
-								} else {
-									TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: callViewModel.currentCall?.callLog?.callId ?? "")
-								}
-							}
-						 	TelecomManager.shared.setHeld(call: callViewModel.calls[index], hold: false)
-							
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-								callViewModel.resetCallView()
-							}
+						.buttonStyle(.borderless)
+						.listRowInsets(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
+						.listRowSeparator(.hidden)
+						.background(.white)
+						.onTapGesture {
+							handleTap(on: call)
 						}
-					}
-					.onLongPressGesture(minimumDuration: 0.2) {
-                        callViewModel.selectedCall = callViewModel.calls[index]
-						isShowCallsListBottomSheet = true
+						.onLongPressGesture(minimumDuration: 0.2) {
+							callViewModel.selectedCall = call
+							isShowCallsListBottomSheet = true
+						}
 					}
 				}
 			}
@@ -365,19 +309,50 @@ struct CallsListFragment: View {
 							.resizable()
 							.scaledToFit()
 							.clipped()
-							.padding(.all)
+							.padding()
 						Text("history_list_empty_history")
 							.default_text_style_800(styleSize: 16)
 						Spacer()
 						Spacer()
 					}
 				}
-					.padding(.all)
 			)
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
 	}
+	
+	private func handleTap(on call: Call) {
+		guard let current = callViewModel.currentCall else { return }
+
+		if call.callLog?.callId == current.callLog?.callId {
+			if current.state == .StreamsRunning {
+				try? current.pause()
+				DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+					callViewModel.isPaused = true
+				}
+			} else {
+				try? current.resume()
+				DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+					callViewModel.isPaused = false
+				}
+			}
+		} else {
+			CoreContext.shared.doOnCoreQueue { core in
+				if current.state == .StreamsRunning {
+					TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: "")
+				} else {
+					TelecomManager.shared.setHeldOtherCalls(core: core, exceptCallid: current.callLog?.callId ?? "")
+				}
+			}
+			TelecomManager.shared.setHeld(call: call, hold: false)
+
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+				callViewModel.resetCallView()
+			}
+		}
+	}
+
 }
 
 #Preview {

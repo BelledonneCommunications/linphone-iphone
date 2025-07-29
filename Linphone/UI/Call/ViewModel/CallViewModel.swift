@@ -90,6 +90,7 @@ class CallViewModel: ObservableObject {
 	
 	@Published var operationInProgress: Bool = false
 	
+	private var mCoreDelegate: CoreDelegate?
 	private var chatRoomDelegate: ChatRoomDelegate?
 	
 	init() {
@@ -312,6 +313,7 @@ class CallViewModel: ObservableObject {
 			callsTmp.forEach { call in
 				ContactAvatarModel.getAvatarModelFromAddress(address: call.callLog!.remoteAddress!) { avatarResult in
 					DispatchQueue.main.async {
+						print("getCallsListgetCallsList 00 \(callsTmp.count)")
 						self.callsContactAvatarModel.append(avatarResult)
 						self.calls.append(call)
 					}

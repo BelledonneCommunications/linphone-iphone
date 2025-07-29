@@ -221,7 +221,6 @@ struct CallView: View {
 					HStack {}
 					.onAppear {
 						callViewModel.resetCallView()
-						callViewModel.getCallsList()
 					}
 				}
 			}

@@ -169,7 +169,7 @@ struct ParticipantsListFragment: View {
 								Toggle("", isOn: .constant(true))
 									.tint(Color.greenSuccess700)
 									.labelsHidden()
-									.padding(.horizontal, 4)
+									.padding(.horizontal, 10)
 								
 								HStack(alignment: .center, spacing: 10) {
 									Image("x")
