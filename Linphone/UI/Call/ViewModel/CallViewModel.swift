@@ -338,21 +338,21 @@ class CallViewModel: ObservableObject {
 				if conf.activeSpeakerParticipantDevice?.address != nil {
 					activeSpeakerParticipantTmp = ParticipantModel(
 						address: conf.activeSpeakerParticipantDevice!.address!,
-						isJoining: false,
+						isJoining: conf.activeSpeakerParticipantDevice!.state == .Joining || conf.activeSpeakerParticipantDevice!.state == .Alerting,
 						onPause: conf.activeSpeakerParticipantDevice!.state == .OnHold,
 						isMuted: conf.activeSpeakerParticipantDevice!.isMuted
 					)
 				} else if conf.participantList.first?.address != nil && conf.participantList.first!.address!.clone()!.equal(address2: (conf.me?.address)!) {
 					activeSpeakerParticipantTmp = ParticipantModel(
 						address: conf.participantDeviceList.first!.address!,
-						isJoining: false,
+						isJoining: conf.participantDeviceList.first!.state == .Joining || conf.participantDeviceList.first!.state == .Alerting,
 						onPause: conf.participantDeviceList.first!.state == .OnHold,
 						isMuted: conf.participantDeviceList.first!.isMuted
 					)
 				} else if conf.participantList.last?.address != nil {
 					activeSpeakerParticipantTmp = ParticipantModel(
 						address: conf.participantDeviceList.last!.address!,
-						isJoining: false,
+						isJoining: conf.participantDeviceList.last!.state == .Joining || conf.participantDeviceList.last!.state == .Alerting,
 						onPause: conf.participantDeviceList.last!.state == .OnHold,
 						isMuted: conf.participantDeviceList.last!.isMuted
 					)
@@ -457,21 +457,21 @@ class CallViewModel: ObservableObject {
 						if conference.activeSpeakerParticipantDevice?.address != nil {
 							activeSpeakerParticipantTmp = ParticipantModel(
 								address: conference.activeSpeakerParticipantDevice!.address!,
-								isJoining: false,
+								isJoining: conference.activeSpeakerParticipantDevice!.state == .Joining || conference.activeSpeakerParticipantDevice!.state == .Alerting,
 								onPause: conference.activeSpeakerParticipantDevice!.state == .OnHold,
 								isMuted: conference.activeSpeakerParticipantDevice!.isMuted
 							)
 						} else if conference.participantList.first?.address != nil && conference.participantList.first!.address!.clone()!.equal(address2: (conference.me?.address)!) {
 							activeSpeakerParticipantTmp = ParticipantModel(
 								address: conference.participantDeviceList.first!.address!,
-								isJoining: false,
+								isJoining: conference.participantDeviceList.first!.state == .Joining || conference.participantDeviceList.first!.state == .Alerting,
 								onPause: conference.participantDeviceList.first!.state == .OnHold,
 								isMuted: conference.participantDeviceList.first!.isMuted
 							)
 						} else if conference.participantList.last?.address != nil {
 							activeSpeakerParticipantTmp = ParticipantModel(
 								address: conference.participantDeviceList.last!.address!,
-								isJoining: false,
+								isJoining: conference.participantDeviceList.last!.state == .Joining || conference.participantDeviceList.last!.state == .Alerting,
 								onPause: conference.participantDeviceList.last!.state == .OnHold,
 								isMuted: conference.participantDeviceList.last!.isMuted
 							)
@@ -601,7 +601,7 @@ class CallViewModel: ObservableObject {
 					
 					let activeSpeakerParticipantTmp = ParticipantModel(
 						address: participantDevice!.address!,
-						isJoining: false,
+						isJoining: participantDevice!.state == .Joining || participantDevice!.state == .Alerting,
 						onPause: participantDevice!.state == .OnHold,
 						isMuted: participantDevice!.isMuted
 					)

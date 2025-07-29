@@ -843,6 +843,26 @@ struct CallView: View {
 					}
 					Spacer()
 				}
+			} else if callViewModel.activeSpeakerParticipant!.isJoining {
+				VStack {
+					VStack {
+						Spacer()
+						
+						ActivityIndicator(color: .white)
+							.frame(width: 40, height: 40)
+							.padding(.bottom, 5)
+						
+						Text("conference_participant_joining_text")
+							.frame(maxWidth: .infinity, alignment: .center)
+							.foregroundStyle(Color.white)
+							.default_text_style_500(styleSize: 14)
+							.lineLimit(1)
+							.padding(.horizontal, 10)
+						
+						Spacer()
+					}
+					Spacer()
+				}
 			} else {
 				VStack {
 					Spacer()
