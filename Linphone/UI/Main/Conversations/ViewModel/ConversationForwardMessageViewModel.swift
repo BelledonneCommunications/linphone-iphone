@@ -40,6 +40,7 @@ class ConversationForwardMessageViewModel: ObservableObject {
 	private var chatRoomDelegate: ChatRoomDelegate?
 	
 	init(conversationsList: [ConversationModel], selectedMessage: EventLogMessage?) {
+		self.conversationsListTmp = conversationsList
 		self.conversationsList = conversationsList
 		self.selectedMessage = selectedMessage
 	}
