@@ -424,6 +424,8 @@
 "conversation_composing_label_multiple" = "%@ скомпоновано…";
 "conversation_composing_label_single" = "%@ скомпоновано…";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
+"conversation_end_to_end_encrypted_event_title" = "Наскрізне шифрування розмови";
+"conversation_end_to_end_encrypted_event_subtitle" = "Повідомлення в цій розмові зашифровані за методом електронного шифрування (e2e). Розшифрувати їх може лише ваш співрозмовник.";
 "conversation_event_admin_set" = "%@ є адміном";
 "conversation_event_admin_unset" = "%@ більше не є адміном";
 "conversation_event_ephemeral_messages_lifetime_changed" = "Термін дії тимчасових повідомлень тепер %@";

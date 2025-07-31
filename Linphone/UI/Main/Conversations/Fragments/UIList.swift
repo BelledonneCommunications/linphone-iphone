@@ -135,6 +135,13 @@ struct UIList: UIViewRepresentable {
 		tableView.backgroundColor = UIColor(.white)
 		tableView.scrollsToTop = true
 		
+		if SharedMainViewModel.shared.displayedConversation != nil && SharedMainViewModel.shared.displayedConversation!.encryptionEnabled {
+			let footerView = Self.makeFooterView()
+			footerView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 120)
+			footerView.transform = CGAffineTransformMakeScale(1, -1)
+			tableView.tableFooterView = footerView
+		}
+		
 		// Create the floating UIButton
 		let button = FloatingButton(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
 		button.translatesAutoresizingMaskIntoConstraints = false
@@ -170,6 +177,47 @@ struct UIList: UIViewRepresentable {
 		context.coordinator.geometryProxy = geometryProxy
 
 		return containerView
+	}
+	
+	static func makeFooterView() -> UIView {
+		let host = UIHostingController(
+			rootView:
+				VStack {
+					HStack {
+						Image("lock-simple-bold")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.blueInfo500)
+							.frame(width: 25, height: 25)
+							.padding(10)
+						
+						VStack(spacing: 5) {
+							Text("conversation_end_to_end_encrypted_event_title")
+								.foregroundStyle(Color.blueInfo500)
+								.default_text_style_700(styleSize: 14)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.multilineTextAlignment(.leading)
+							
+							Text("conversation_end_to_end_encrypted_event_subtitle")
+								.foregroundStyle(Color.gray400)
+								.default_text_style(styleSize: 12)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.multilineTextAlignment(.leading)
+						}
+					}
+					.padding(10)
+					.cornerRadius(10)
+					.overlay(
+						RoundedRectangle(cornerRadius: 10)
+							.inset(by: 0.5)
+							.stroke(Color.blueInfo500, lineWidth: 0.5)
+					)
+					.padding(10)
+				}
+				.frame(height: 120)
+		)
+		host.view.backgroundColor = .clear
+		return host.view
 	}
 	
 	// func updateUIView(_ tableView: UITableView, context: Context) {
@@ -422,10 +470,11 @@ struct UIList: UIViewRepresentable {
 		}
 		
 		func progressView(_ section: Int) -> UIView? {
-			if section > parent.conversationViewModel.conversationMessagesSection.count
+			if section < parent.conversationViewModel.conversationMessagesSection.count
 				&& parent.conversationViewModel.conversationMessagesSection[section].rows.count < parent.conversationViewModel.displayedConversationHistorySize {
 				let header = UIHostingController(rootView:
 					ProgressView()
+						.frame(height: 50)
 						.frame(idealWidth: .infinity, maxWidth: .infinity, alignment: .center)
 				).view
 				header?.backgroundColor = UIColor(.white)
@@ -515,6 +564,18 @@ struct UIList: UIViewRepresentable {
 			let configuration = UISwipeActionsConfiguration(actions: [archiveAction])
 			
 			return configuration
+		}
+		
+		func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+			if section == tableView.numberOfSections - 1 {
+				let contentHeight = tableView.contentSize.height
+				let tableHeight = tableView.frame.height
+				let progressViewDisplayed = section < parent.conversationViewModel.conversationMessagesSection.count
+				&& parent.conversationViewModel.conversationMessagesSection[section].rows.count < parent.conversationViewModel.displayedConversationHistorySize
+				let extraSpace = max(progressViewDisplayed ? 50 : 0, tableHeight - contentHeight - 20)
+				return extraSpace
+			}
+			return 0
 		}
 	}
 }

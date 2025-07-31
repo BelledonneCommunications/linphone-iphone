@@ -201,6 +201,8 @@
 "conversation_dialog_set_subject" = "Set conversation subject";
 "conversation_dialog_subject_hint" = "Conversation subject";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
+"conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
+"conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";
 "conversation_ephemeral_messages_duration_disabled" = "Disabled";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d days";
 "conversation_ephemeral_messages_duration_one_day" = "1 day";

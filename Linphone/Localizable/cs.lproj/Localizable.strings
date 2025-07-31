@@ -414,6 +414,8 @@
 "conversation_composing_label_multiple" = "%@ píšou…";
 "conversation_composing_label_single" = "%@ píše…";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
+"conversation_end_to_end_encrypted_event_title" = "Koncově šifrovaná konverzace";
+"conversation_end_to_end_encrypted_event_subtitle" = "Zprávy v této konverzaci jsou koncově šifrovány. Dešifrovat je může pouze váš protějšek.";
 "conversation_event_device_added" = "Nové zařízení pro %@";
 "conversation_event_participant_added" = "%@ se připojil";
 "conversation_event_subject_changed" = "Nový předmět: %@";
