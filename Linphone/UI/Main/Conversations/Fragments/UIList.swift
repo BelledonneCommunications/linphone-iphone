@@ -137,7 +137,7 @@ struct UIList: UIViewRepresentable {
 		
 		if SharedMainViewModel.shared.displayedConversation != nil && SharedMainViewModel.shared.displayedConversation!.encryptionEnabled {
 			let footerView = Self.makeFooterView()
-			footerView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 120)
+			footerView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 80)
 			footerView.transform = CGAffineTransformMakeScale(1, -1)
 			tableView.tableFooterView = footerView
 		}
@@ -212,9 +212,9 @@ struct UIList: UIViewRepresentable {
 							.inset(by: 0.5)
 							.stroke(Color.blueInfo500, lineWidth: 0.5)
 					)
-					.padding(10)
+                    .padding(.horizontal, 10)
 				}
-				.frame(height: 120)
+				.frame(height: 80)
 		)
 		host.view.backgroundColor = .clear
 		return host.view
@@ -564,18 +564,6 @@ struct UIList: UIViewRepresentable {
 			let configuration = UISwipeActionsConfiguration(actions: [archiveAction])
 			
 			return configuration
-		}
-		
-		func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-			if section == tableView.numberOfSections - 1 {
-				let contentHeight = tableView.contentSize.height
-				let tableHeight = tableView.frame.height
-				let progressViewDisplayed = section < parent.conversationViewModel.conversationMessagesSection.count
-				&& parent.conversationViewModel.conversationMessagesSection[section].rows.count < parent.conversationViewModel.displayedConversationHistorySize
-				let extraSpace = max(progressViewDisplayed ? 50 : 0, tableHeight - contentHeight - 20)
-				return extraSpace
-			}
-			return 0
 		}
 	}
 }
