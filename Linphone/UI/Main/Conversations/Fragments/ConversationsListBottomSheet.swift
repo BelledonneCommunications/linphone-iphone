@@ -58,7 +58,6 @@ struct ConversationsListBottomSheet: View {
 				if selectedConversation.unreadMessagesCount > 0 {
 					Button {
 						conversationsListViewModel.markAsReadSelectedConversation()
-                        SharedMainViewModel.shared.updateUnreadMessagesCount()
 						
 						if #available(iOS 16.0, *) {
 							if idiom != .pad {

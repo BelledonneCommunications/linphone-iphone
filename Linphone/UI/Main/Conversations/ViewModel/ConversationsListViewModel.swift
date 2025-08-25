@@ -401,6 +401,7 @@ class ConversationsListViewModel: ObservableObject {
 			
 			if unreadMessagesCount > 0 {
 				self.selectedConversation!.chatRoom.markAsRead()
+				SharedMainViewModel.shared.updateUnreadMessagesCount()
                 DispatchQueue.main.async {
                     self.selectedConversation!.unreadMessagesCount = 0
                 }
