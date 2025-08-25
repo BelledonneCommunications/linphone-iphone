@@ -298,7 +298,7 @@ struct ContentView: View {
 										}
 										.frame(height: geometry.size.height/4)
 										
-                                        if !CorePreferences.disableChatFeature {
+                                        if !sharedMainViewModel.disableChatFeature {
                                             ZStack {
                                                 if SharedMainViewModel.shared.unreadMessages > 0 {
                                                     VStack {
@@ -845,7 +845,7 @@ struct ContentView: View {
 										.frame(width: 66)
 									}
                                     
-                                    if !CorePreferences.disableChatFeature {
+                                    if !sharedMainViewModel.disableChatFeature {
                                         Spacer()
                                     
                                         ZStack {
@@ -1181,7 +1181,7 @@ struct ContentView: View {
 							.onDisappear {
 								if let contactsListVM = contactsListViewModel, let displayedConversation = contactsListVM.displayedConversation {
                                     
-                                    if !CorePreferences.disableChatFeature {
+                                    if !sharedMainViewModel.disableChatFeature {
                                         sharedMainViewModel.displayedFriend = nil
                                         sharedMainViewModel.displayedCall = nil
                                         sharedMainViewModel.changeIndexView(indexViewInt: 2)
@@ -1206,7 +1206,7 @@ struct ContentView: View {
                                     }
 								} else if let historyListVM = historyListViewModel, let displayedConversation = historyListVM.displayedConversation {
                                     
-                                    if !CorePreferences.disableChatFeature {
+                                    if !sharedMainViewModel.disableChatFeature {
                                         sharedMainViewModel.displayedFriend = nil
                                         sharedMainViewModel.displayedCall = nil
                                         sharedMainViewModel.changeIndexView(indexViewInt: 2)
@@ -1276,7 +1276,7 @@ struct ContentView: View {
 					if  let meetingsListVM = meetingsListViewModel, isShowSendCancelMeetingNotificationPopup {
 						PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
 								  title: Text("meeting_schedule_cancel_dialog_title"),
-                                  content: !CorePreferences.disableChatFeature ? Text("meeting_schedule_cancel_dialog_message") : Text(""),
+                                  content: !sharedMainViewModel.disableChatFeature ? Text("meeting_schedule_cancel_dialog_message") : Text(""),
 								  titleFirstButton: Text("dialog_cancel"),
 								  actionFirstButton: {
 							sharedMainViewModel.displayedMeeting = nil
@@ -1382,7 +1382,7 @@ struct ContentView: View {
 			}
 			.onChange(of: navigationManager.selectedCallId) { newCallId in
 				if newCallId != nil {
-                    if !CorePreferences.disableChatFeature {
+                    if !sharedMainViewModel.disableChatFeature {
                         sharedMainViewModel.changeIndexView(indexViewInt: 2)
                     }
 				}

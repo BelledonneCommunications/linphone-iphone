@@ -46,6 +46,8 @@ class SharedMainViewModel: ObservableObject {
     @Published var unreadMessages: Int = 0
     @Published var missedCallsCount: Int = 0
 	
+	@Published var disableChatFeature: Bool = false
+	
 	let welcomeViewKey = "welcome_view"
 	let generalTermsKey = "general_terms"
 	let displayProfileModeKey = "display_profile_mode"
@@ -91,6 +93,7 @@ class SharedMainViewModel: ObservableObject {
         
         updateMissedCallsCount()
         updateUnreadMessagesCount()
+		updateDisableChatFeature()
 	}
 	
 	func changeWelcomeView() {
@@ -211,4 +214,14 @@ class SharedMainViewModel: ObservableObject {
             }
         }
     }
+	
+	func updateDisableChatFeature() {
+		CoreContext.shared.doOnCoreQueue { core in
+			let disableChatFeatureTmp = CorePreferences.disableChatFeature
+			
+			DispatchQueue.main.async {
+				self.disableChatFeature = disableChatFeatureTmp
+			}
+		}
+	}
 }
