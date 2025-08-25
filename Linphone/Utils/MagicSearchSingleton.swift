@@ -27,7 +27,7 @@ final class MagicSearchSingleton: ObservableObject {
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
 	
-	private var magicSearch: MagicSearch!
+	private var magicSearch: MagicSearch?
 	
 	var currentFilter: String = ""
 	var previousFilter: String?
@@ -52,7 +52,12 @@ final class MagicSearchSingleton: ObservableObject {
 			self.domainDefaultAccount = core.defaultAccount?.params?.domain ?? ""
 			
 			self.magicSearch = try? core.createMagicSearch()
-			self.magicSearch.limitedSearch = false
+			
+			guard let magicSearch = self.magicSearch else {
+				return
+			}
+			
+			magicSearch.limitedSearch = false
 			
 			self.searchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
 				print("[MagicSearchSingleton] [onSearchResultsReceived] Received search results")
@@ -111,7 +116,8 @@ final class MagicSearchSingleton: ObservableObject {
                 
                 self.updateContacts(sortedLastSearch: sortedLastSearch, lastSearchSuggestions: lastSearchSuggestions, addedAvatarListModel: addedAvatarListModel)
 			})
-			self.magicSearch.addDelegate(delegate: self.searchDelegate!)
+			
+			magicSearch.addDelegate(delegate: self.searchDelegate!)
 		}
 	}
     
@@ -152,11 +158,15 @@ final class MagicSearchSingleton: ObservableObject {
 			
 			self.previousFilter = self.currentFilter
 			
-			if needResetCache {
-				self.magicSearch.resetSearchCache()
+			guard let magicSearch = self.magicSearch else {
+				return
 			}
 			
-			self.magicSearch.getContactsListAsync(
+			if needResetCache {
+				magicSearch.resetSearchCache()
+			}
+			
+			magicSearch.getContactsListAsync(
 				filter: self.currentFilter,
 				domain: self.allContact ? "" : self.domainDefaultAccount,
 				sourceFlags: MagicSearch.Source.All.rawValue,
