@@ -130,43 +130,45 @@ struct StartConversationFragment: View {
 						.padding(.vertical)
 						.padding(.horizontal)
 						
-						NavigationLink(destination: {
-							StartGroupConversationFragment(isShowStartConversationFragment: $isShowStartConversationFragment)
-								.environmentObject(startConversationViewModel)
-						}, label: {
-							HStack {
-								HStack(alignment: .center) {
-									Image("users-three")
+						if !startConversationViewModel.hideGroupChatButton {
+							NavigationLink(destination: {
+								StartGroupConversationFragment(isShowStartConversationFragment: $isShowStartConversationFragment)
+									.environmentObject(startConversationViewModel)
+							}, label: {
+								HStack {
+									HStack(alignment: .center) {
+										Image("users-three")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 28, height: 28)
+									}
+									.padding(10)
+									.background(Color.orangeMain500)
+									.cornerRadius(40)
+									
+									Text("new_conversation_create_group")
+										.foregroundStyle(.black)
+										.default_text_style_800(styleSize: 16)
+										.lineLimit(1)
+									
+									Spacer()
+									
+									Image("caret-right")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 28, height: 28)
+										.foregroundStyle(Color.grayMain2c500)
+										.frame(width: 25, height: 25, alignment: .leading)
 								}
-								.padding(10)
-								.background(Color.orangeMain500)
-								.cornerRadius(40)
-								
-								Text("new_conversation_create_group")
-									.foregroundStyle(.black)
-									.default_text_style_800(styleSize: 16)
-									.lineLimit(1)
-								
-								Spacer()
-								
-								Image("caret-right")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 25, height: 25, alignment: .leading)
-							}
-						})
-						.padding(.vertical, 10)
-						.padding(.horizontal, 20)
-						.background(
-							LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
-								.padding(.vertical, 10)
-								.padding(.horizontal, 40)
-						)
+							})
+							.padding(.vertical, 10)
+							.padding(.horizontal, 20)
+							.background(
+								LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
+									.padding(.vertical, 10)
+									.padding(.horizontal, 40)
+							)
+						}
 						
 						ScrollView {
 							if !ContactsManager.shared.lastSearch.isEmpty {

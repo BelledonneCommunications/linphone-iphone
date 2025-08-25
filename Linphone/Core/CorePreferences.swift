@@ -260,6 +260,15 @@ class CorePreferences {
         }
     }
 	
+	static var disableMeetings: Bool {
+		get {
+			return Config.get().getBool(section: "ui", key: "disable_meetings_feature", defaultValue: false)
+		}
+		set {
+			Config.get().setBool(section: "ui", key: "disable_meetings_feature", value: newValue)
+		}
+	}
+	
 	private func copy(from: String, to: String, overrideIfExists: Bool = false) {
 		let fileManager = FileManager.default
 		if fileManager.fileExists(atPath: to), !overrideIfExists {

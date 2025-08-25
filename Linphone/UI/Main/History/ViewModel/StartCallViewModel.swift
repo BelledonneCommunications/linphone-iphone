@@ -38,13 +38,26 @@ class StartCallViewModel: ObservableObject {
 	
 	@Published var operationInProgress: Bool = false
 	
+	@Published var hideGroupCallButton: Bool = false
+	
 	private var conferenceDelegate: ConferenceDelegate?
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
             self.domain = core.defaultAccount?.params?.domain ?? ""
+			self.updateGroupCallButtonVisibility(core: core)
         }
+		
     }
+	
+	func updateGroupCallButtonVisibility(core: Core) {
+		let hideGroupCall = CorePreferences.disableMeetings ||
+		!LinphoneUtils.isRemoteConferencingAvailable(core: core) ||
+		core.callsNb > 0
+		DispatchQueue.main.async {
+			self.hideGroupCallButton = hideGroupCall
+		}
+	}
 	
 	func addParticipants(participantsToAdd: [SelectedAddressModel]) {
 		var list = participants

@@ -195,42 +195,45 @@ struct StartCallFragment: View {
 					.padding(.vertical)
 					.padding(.horizontal)
 					
-					NavigationLink(destination: {
-						StartGroupCallFragment(isShowStartCallFragment: $isShowStartCallFragment)
-							.environmentObject(startCallViewModel)
-					}, label: {
-						HStack {
-							HStack(alignment: .center) {
-								Image("video-conference")
+					
+					if !startCallViewModel.hideGroupCallButton {
+						NavigationLink(destination: {
+							StartGroupCallFragment(isShowStartCallFragment: $isShowStartCallFragment)
+								.environmentObject(startCallViewModel)
+						}, label: {
+							HStack {
+								HStack(alignment: .center) {
+									Image("video-conference")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(.white)
+										.frame(width: 28, height: 28)
+								}
+								.padding(10)
+								.background(Color.orangeMain500)
+								.cornerRadius(40)
+								
+								Text("history_call_start_create_group_call")
+									.foregroundStyle(.black)
+									.default_text_style_800(styleSize: 16)
+								
+								Spacer()
+								
+								Image("caret-right")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(.white)
-									.frame(width: 28, height: 28)
+									.foregroundStyle(Color.grayMain2c500)
+									.frame(width: 25, height: 25, alignment: .leading)
 							}
-							.padding(10)
-							.background(Color.orangeMain500)
-							.cornerRadius(40)
-							
-							Text("history_call_start_create_group_call")
-								.foregroundStyle(.black)
-								.default_text_style_800(styleSize: 16)
-							
-							Spacer()
-							
-							Image("caret-right")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
-								.frame(width: 25, height: 25, alignment: .leading)
-						}
-					})
-					.padding(.vertical, 10)
-					.padding(.horizontal, 20)
-					.background(
-						LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
-							.padding(.vertical, 10)
-							.padding(.horizontal, 40)
-					)
+						})
+						.padding(.vertical, 10)
+						.padding(.horizontal, 20)
+						.background(
+							LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
+								.padding(.vertical, 10)
+								.padding(.horizontal, 40)
+						)
+					}
 					
 					ScrollView {
 						if !ContactsManager.shared.lastSearch.isEmpty {

@@ -115,4 +115,12 @@ class LinphoneUtils: NSObject {
 	public class func getAccountForAddress(address: Address) -> Account? {
 		return CoreContext.shared.mCore.accountList.first { $0.params?.identityAddress?.weakEqual(address2: address) == true }
 	}
+	
+	public class func isRemoteConferencingAvailable(core: Core) -> Bool {
+		return core.defaultAccount?.params?.audioVideoConferenceFactoryAddress != nil
+	}
+	
+	public class func isGroupChatAvailable(core: Core) -> Bool {
+		return core.defaultAccount?.params?.conferenceFactoryUri != nil
+	}
 }

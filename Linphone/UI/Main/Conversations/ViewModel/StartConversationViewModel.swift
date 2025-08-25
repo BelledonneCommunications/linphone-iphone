@@ -40,11 +40,21 @@ class StartConversationViewModel: ObservableObject {
 	@Published var operationGroupInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
 	
+	@Published var hideGroupChatButton: Bool = false
+	
 	private var chatRoomDelegate: ChatRoomDelegate?
 	
 	init() {
 		coreContext.doOnCoreQueue { core in
 			self.domain = core.defaultAccount?.params?.domain ?? ""
+			self.updateGroupChatButtonVisibility(core: core)
+		}
+	}
+	
+	func updateGroupChatButtonVisibility(core: Core) {
+		let hideGroupChat = !LinphoneUtils.isGroupChatAvailable(core: core)
+		DispatchQueue.main.async {
+			self.hideGroupChatButton = hideGroupChat
 		}
 	}
 	
