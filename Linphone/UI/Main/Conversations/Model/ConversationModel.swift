@@ -67,8 +67,64 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.isGroup = !chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) && chatRoom.hasCapability(mask: ChatRoom.Capabilities.Conference.rawValue)
 
 		self.isReadOnly = chatRoom.isReadOnly
-
-		self.subject = chatRoom.subject ?? ""
+		
+		let chatRoomParticipants = chatRoom.participants
+		let addressFriend = (chatRoomParticipants.first != nil && chatRoomParticipants.first!.address != nil)
+		? self.contactsManager.getFriendWithAddress(address: chatRoomParticipants.first?.address)
+		: nil
+		
+		var subjectTmp = ""
+		
+		if self.isGroup {
+			subjectTmp = chatRoom.subject!
+		} else if addressFriend != nil {
+			subjectTmp = addressFriend!.name!
+		} else {
+			if chatRoomParticipants.first != nil
+				&& chatRoomParticipants.first!.address != nil {
+				
+				subjectTmp = chatRoomParticipants.first!.address!.displayName != nil
+				? chatRoomParticipants.first!.address!.displayName!
+				: (chatRoomParticipants.first!.address!.username ?? String(chatRoomParticipants.first!.address!.asStringUriOnly().dropFirst(4)))
+				
+			}
+		}
+		
+		let addressTmp = addressFriend?.address?.asStringUriOnly() ?? ""
+		
+		let avatarModelTmp: ContactAvatarModel
+		if let addressFriend = addressFriend, !self.isGroup {
+			if let existingAvatarModel = ContactsManager.shared.avatarListModel.first(where: {
+				$0.friend?.name == addressFriend.name &&
+				$0.friend?.address?.asStringUriOnly() == addressFriend.address?.asStringUriOnly()
+			}) {
+				avatarModelTmp = existingAvatarModel
+			} else {
+				avatarModelTmp = ContactAvatarModel(
+					friend: nil,
+					name: subjectTmp,
+					address: addressTmp,
+					withPresence: false
+				)
+			}
+		} else {
+			avatarModelTmp = ContactAvatarModel(
+				friend: nil,
+				name: subjectTmp,
+				address: chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
+				withPresence: false
+			)
+		}
+		
+		var participantsAddressTmp: [String] = []
+		
+		self.chatRoom.participants.forEach { participant in
+			participantsAddressTmp.append(participant.address?.asStringUriOnly() ?? "")
+		}
+		
+		self.subject = subjectTmp
+		self.avatarModel = avatarModelTmp
+		self.participantsAddress = participantsAddressTmp
 
 		self.lastUpdateTime = chatRoom.lastUpdateTime
 
@@ -89,11 +145,8 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.lastMessageState = 0
 
 		self.unreadMessagesCount = chatRoom.unreadMessagesCount
-
-		self.avatarModel = ContactAvatarModel(friend: nil, name: chatRoom.subject ?? "", address: chatRoom.peerAddress?.asStringUriOnly() ?? "", withPresence: false)
 		
 		getContentTextMessage(chatRoom: chatRoom)
-		getChatRoomSubject(chatRoom: chatRoom)
 	}
 	
 	func leave() {
@@ -259,68 +312,6 @@ class ConversationModel: ObservableObject, Identifiable {
             }
             
             getUnreadMessagesCount()
-		}
-	}
-	
-	func getChatRoomSubject(chatRoom: ChatRoom) {
-		let chatRoomParticipants = chatRoom.participants
-		let addressFriend = (chatRoomParticipants.first != nil && chatRoomParticipants.first!.address != nil)
-		? self.contactsManager.getFriendWithAddress(address: chatRoomParticipants.first?.address)
-		: nil
-		
-		var subjectTmp = ""
-		
-		if self.isGroup {
-			subjectTmp = chatRoom.subject!
-		} else if addressFriend != nil {
-			subjectTmp = addressFriend!.name!
-		} else {
-			if chatRoomParticipants.first != nil
-				&& chatRoomParticipants.first!.address != nil {
-				
-				subjectTmp = chatRoomParticipants.first!.address!.displayName != nil
-				? chatRoomParticipants.first!.address!.displayName!
-				: (chatRoomParticipants.first!.address!.username ?? String(chatRoomParticipants.first!.address!.asStringUriOnly().dropFirst(4)))
-				
-			}
-		}
-		
-		let addressTmp = addressFriend?.address?.asStringUriOnly() ?? ""
-		
-		let avatarModelTmp: ContactAvatarModel
-		if let addressFriend = addressFriend, !self.isGroup {
-			if let existingAvatarModel = ContactsManager.shared.avatarListModel.first(where: {
-				$0.friend?.name == addressFriend.name &&
-				$0.friend?.address?.asStringUriOnly() == addressFriend.address?.asStringUriOnly()
-			}) {
-				avatarModelTmp = existingAvatarModel
-			} else {
-				avatarModelTmp = ContactAvatarModel(
-					friend: nil,
-					name: subjectTmp,
-					address: addressTmp,
-					withPresence: false
-				)
-			}
-		} else {
-			avatarModelTmp = ContactAvatarModel(
-				friend: nil,
-				name: subjectTmp,
-				address: chatRoom.peerAddress?.asStringUriOnly() ?? addressTmp,
-				withPresence: false
-			)
-		}
-		
-		var participantsAddressTmp: [String] = []
-		
-		self.chatRoom.participants.forEach { participant in
-			participantsAddressTmp.append(participant.address?.asStringUriOnly() ?? "")
-		}
-        
-		DispatchQueue.main.async {
-            self.subject = subjectTmp
-            self.avatarModel = avatarModelTmp
-            self.participantsAddress = participantsAddressTmp
 		}
 	}
 	
