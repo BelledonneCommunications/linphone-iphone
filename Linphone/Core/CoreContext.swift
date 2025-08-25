@@ -432,7 +432,7 @@ class CoreContext: ObservableObject {
 	}
 	
 	func onEnterBackground() {
-		coreQueue.sync {
+		coreQueue.async {
 			// We can't rely on defaultAccount?.params?.isPublishEnabled
 			// as it will be modified by the SDK when changing the presence status
 			Log.info("App is in background, un-PUBLISHING presence info")
