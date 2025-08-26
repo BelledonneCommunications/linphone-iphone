@@ -292,8 +292,23 @@ class ConversationModel: ObservableObject, Identifiable {
 				fromAddressFriend = nil
 			}
 			
-			let lastMessageTextTmp = (fromAddressFriend ?? "")
+			var lastMessageTextTmp = (fromAddressFriend ?? "")
 			+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+			
+			if lastMessage!.contents.first != nil && lastMessage!.contents.first!.isIcalendar == true {
+				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: lastMessage!.contents.first!) {
+					if conferenceInfo.uri != nil {
+						//let meetingSubjectTmp = conferenceInfo.subject ?? ""
+						if conferenceInfo.state == .New {
+							lastMessageTextTmp = String(localized: "message_meeting_invitation_notification")
+						} else if conferenceInfo.state == .Updated {
+							lastMessageTextTmp = String(localized: "message_meeting_invitation_updated_notification")
+						} else if conferenceInfo.state == .Cancelled {
+							lastMessageTextTmp = String(localized: "message_meeting_invitation_cancelled_notification")
+						}
+					}
+				}
+			}
 			
 			let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false
             
