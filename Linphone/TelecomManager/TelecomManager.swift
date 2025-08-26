@@ -363,18 +363,21 @@ class TelecomManager: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { _ in
 			ContactsManager.shared.getFriendWithAddressInCoreQueue(address: call.remoteAddress!) { friendResult in
 				if call.remoteAddress != nil {
-					if friendResult != nil && friendResult!.address != nil && friendResult!.address!.displayName != nil {
-						completion(friendResult!.address!.displayName!)
-					} else {
-						if call.remoteAddress!.displayName != nil {
-							completion(call.remoteAddress!.displayName!)
-						} else if call.remoteAddress!.username != nil {
-							completion(call.remoteAddress!.username!)
-						} else {
-							completion(String(call.remoteAddress!.asStringUriOnly().dropFirst(4)))
+					if call.callLog?.wasConference() != true {
+						if let addressFriend = friendResult {
+							completion(addressFriend.name!)
+						} else if let remoteAddress = call.remoteAddress {
+							if remoteAddress.displayName != nil {
+								completion(remoteAddress.displayName!)
+							} else if remoteAddress.username != nil {
+								completion(remoteAddress.username!)
+							} else {
+								completion(String(remoteAddress.asStringUriOnly().dropFirst(4)))
+							}
 						}
+					} else {
+						completion(call.callLog?.conferenceInfo?.subject ?? "Error Conference Name")
 					}
-					
 				} else {
 					completion("IncomingDisplayName")
 				}
