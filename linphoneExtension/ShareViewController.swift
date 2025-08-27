@@ -44,23 +44,25 @@ class ShareViewController: SLComposeServiceViewController {
 
 		for item in extensionItems {
 			if let attachments = item.attachments {
-				for provider in attachments {
-					guard remainingSlots > 0 else { break }
-					if provider.hasItemConformingToTypeIdentifier("public.item") {
-						remainingSlots -= 1
-						dispatchGroup.enter()
-						provider.loadFileRepresentation(forTypeIdentifier: "public.item") { urlFile, error in
-							if let url = urlFile {
-								if let urlSaved = self.copyFileToSharedContainer(from: url) {
-									fileURLs.append(urlSaved)
-								}
-							}
-							dispatchGroup.leave()
-						}
-					}
-				}
-			}
-		}
+                for provider in attachments {
+                    guard remainingSlots > 0 else { break }
+                    if provider.hasItemConformingToTypeIdentifier("public.item") {
+                        remainingSlots -= 1
+                        dispatchGroup.enter()
+                        provider.loadItem(forTypeIdentifier: "public.item", options: nil) { item, error in
+                            if let url = item as? URL, let saved = self.copyFileToSharedContainer(from: url) {
+                                fileURLs.append(saved)
+                            } else if let image = item as? UIImage,
+                                      let data = image.pngData(),
+                                      let saved = self.saveDataToSharedContainer(data: data) {
+                                fileURLs.append(saved)
+                            }
+                            dispatchGroup.leave()
+                        }
+                    }
+                }
+            }
+        }
 
 		dispatchGroup.notify(queue: .main) {
 			if !fileURLs.isEmpty {
@@ -90,24 +92,45 @@ class ShareViewController: SLComposeServiceViewController {
 		self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
 	}
 	
-	func copyFileToSharedContainer(from url: URL) -> URL? {
-		let fileManager = FileManager.default
-		guard let sharedContainerURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension") else {
-			return nil
-		}
+    func copyFileToSharedContainer(from url: URL) -> URL? {
+        guard let sharedContainerURL = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension"
+        ) else { return nil }
 
-		let destinationURL = sharedContainerURL.appendingPathComponent(url.lastPathComponent)
+        let destinationURL = sharedContainerURL.appendingPathComponent(url.lastPathComponent)
 
-		do {
-			if fileManager.fileExists(atPath: destinationURL.path) {
-				try fileManager.removeItem(at: destinationURL)
-			}
+        do {
+            if FileManager.default.fileExists(atPath: destinationURL.path) {
+                try FileManager.default.removeItem(at: destinationURL)
+            }
+            try FileManager.default.copyItem(at: url, to: destinationURL)
+            
+            let attrs = try FileManager.default.attributesOfItem(atPath: destinationURL.path)
+            if let size = attrs[.size] as? NSNumber, size.intValue > 0 {
+                return destinationURL
+            } else {
+                try? FileManager.default.removeItem(at: destinationURL)
+                return nil
+            }
+        } catch {
+            return nil
+        }
+    }
 
-			try fileManager.copyItem(at: url, to: destinationURL)
-			return destinationURL
-		} catch {
-			return nil
-		}
-	}
+    func saveDataToSharedContainer(data: Data, suggestedName: String = "screenshot") -> URL? {
+        guard let sharedContainerURL = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension"
+        ) else { return nil }
+
+        let randomInt = Int.random(in: 1000...9999)
+        let destinationURL = sharedContainerURL.appendingPathComponent("\(suggestedName)_\(randomInt).png")
+
+        do {
+            try data.write(to: destinationURL)
+            return destinationURL
+        } catch {
+            return nil
+        }
+    }
 }
 
