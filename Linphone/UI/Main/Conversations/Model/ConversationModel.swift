@@ -205,6 +205,8 @@ class ConversationModel: ObservableObject, Identifiable {
 						callParams.videoDirection = .RecvOnly
 						
 						Log.info("\(ConversationModel.TAG) Inviting \(participantsList.count) participant(s) into newly created conference")
+                        
+                        self.conferenceAddDelegate(core: core, conference: conference)
 						
 						try conference.inviteParticipants(addresses: participantsList, params: callParams)
 						
