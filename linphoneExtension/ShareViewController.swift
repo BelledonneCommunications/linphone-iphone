@@ -52,12 +52,19 @@ class ShareViewController: SLComposeServiceViewController {
                         provider.loadItem(forTypeIdentifier: "public.item", options: nil) { item, error in
                             if let url = item as? URL, let saved = self.copyFileToSharedContainer(from: url) {
                                 fileURLs.append(saved)
+								dispatchGroup.leave()
                             } else if let image = item as? UIImage,
                                       let data = image.pngData(),
                                       let saved = self.saveDataToSharedContainer(data: data) {
                                 fileURLs.append(saved)
-                            }
-                            dispatchGroup.leave()
+								dispatchGroup.leave()
+							} else if let data = item as? Data,
+									  let saved = self.saveDataToSharedContainer(data: data) {
+								fileURLs.append(saved)
+								dispatchGroup.leave()
+							} else {
+								dispatchGroup.leave()
+							}
                         }
                     }
                 }
@@ -96,15 +103,15 @@ class ShareViewController: SLComposeServiceViewController {
         guard let sharedContainerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension"
         ) else { return nil }
-
+		
         let destinationURL = sharedContainerURL.appendingPathComponent(url.lastPathComponent)
-
+		
         do {
             if FileManager.default.fileExists(atPath: destinationURL.path) {
                 try FileManager.default.removeItem(at: destinationURL)
             }
             try FileManager.default.copyItem(at: url, to: destinationURL)
-            
+			
             let attrs = try FileManager.default.attributesOfItem(atPath: destinationURL.path)
             if let size = attrs[.size] as? NSNumber, size.intValue > 0 {
                 return destinationURL
@@ -121,10 +128,10 @@ class ShareViewController: SLComposeServiceViewController {
         guard let sharedContainerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension"
         ) else { return nil }
-
+		
         let randomInt = Int.random(in: 1000...9999)
         let destinationURL = sharedContainerURL.appendingPathComponent("\(suggestedName)_\(randomInt).png")
-
+		
         do {
             try data.write(to: destinationURL)
             return destinationURL
