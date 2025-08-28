@@ -53,7 +53,7 @@ struct EditContactView: UIViewControllerRepresentable {
 						name: cnc.givenName + cnc.familyName,
 						prefix: ((imageThumbnail == nil) ? "-default" : ""),
 						contact: newContact,
-						linphoneFriend: false,
+						linphoneFriend: "Native address-book",
 						existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact)) {
 							MagicSearchSingleton.shared.searchForContacts()
 						}

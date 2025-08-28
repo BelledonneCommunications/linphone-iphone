@@ -42,6 +42,10 @@ final class MagicSearchSingleton: ObservableObject {
 	var searchDelegate: MagicSearchDelegate?
     
     private var contactLoadedDebounceWorkItem: DispatchWorkItem?
+    
+    let nativeAddressBookFriendList = "Native address-book"
+    let linphoneAddressBookFriendList = "Linphone address-book"
+    let tempRemoteAddressBookFriendList = "TempRemoteDirectoryContacts address-book"
 	
 	func destroyMagicSearch() {
 		magicSearch = nil
@@ -67,7 +71,7 @@ final class MagicSearchSingleton: ObservableObject {
 				var lastSearchSuggestions: [SearchResult] = []
 				
 				magicSearch.lastSearch.forEach { searchResult in
-					if searchResult.friend != nil {
+                    if searchResult.friend != nil && (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
 						if let address = searchResult.address,
 						   !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
 							lastSearchFriend.append(searchResult)
@@ -99,14 +103,17 @@ final class MagicSearchSingleton: ObservableObject {
 				var addedAvatarListModel: [ContactAvatarModel] = []
 				sortedLastSearch.forEach { searchResult in
 					if searchResult.friend != nil {
-						addedAvatarListModel.append(
-							ContactAvatarModel(
-								friend: searchResult.friend!,
-								name: searchResult.friend?.name ?? "",
-								address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
-								withPresence: true
-							)
-						)
+                        if (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
+                            
+                            addedAvatarListModel.append(
+                                ContactAvatarModel(
+                                    friend: searchResult.friend!,
+                                    name: searchResult.friend?.name ?? "",
+                                    address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+                                    withPresence: true
+                                )
+                            )
+                        }
 					}
 				}
 				

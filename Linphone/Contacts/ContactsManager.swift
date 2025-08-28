@@ -36,9 +36,11 @@ final class ContactsManager: ObservableObject {
 	
 	private let nativeAddressBookFriendList = "Native address-book"
 	let linphoneAddressBookFriendList = "Linphone address-book"
+    let tempRemoteAddressBookFriendList = "TempRemoteDirectoryContacts address-book"
 	
 	var friendList: FriendList?
 	var linphoneFriendList: FriendList?
+    var tempRemoteFriendList: FriendList?
 	
 	@Published var lastSearch: [SearchResult] = []
 	@Published var lastSearchSuggestions: [SearchResult] = []
@@ -96,6 +98,21 @@ final class ContactsManager: ObservableObject {
 						core.addFriendList(list: linphoneFriendList)
 					}
 				}
+                
+                do {
+                    self.tempRemoteFriendList = try core.getFriendListByName(name: self.tempRemoteAddressBookFriendList) ?? core.createFriendList()
+                } catch let error {
+                    print("\(#function) - Failed to enumerate contacts: \(error)")
+                }
+                
+                if let tempRemoteFriendList = self.tempRemoteFriendList {
+                    if tempRemoteFriendList.displayName == nil || tempRemoteFriendList.displayName!.isEmpty {
+                        print("\(#function) - Friend list \(self.tempRemoteAddressBookFriendList) didn't exist yet, let's create it")
+                        tempRemoteFriendList.databaseStorageEnabled = true
+                        tempRemoteFriendList.displayName = self.tempRemoteAddressBookFriendList
+                        core.addFriendList(list: tempRemoteFriendList)
+                    }
+                }
 			}
 			
 			let store = CNContactStore()
@@ -142,7 +159,7 @@ final class ContactsManager: ObservableObject {
 										image: image,
 										name: contact.givenName + contact.familyName,
 										prefix: "",
-										contact: newContact, linphoneFriend: false, existingFriend: nil) {
+										contact: newContact, linphoneFriend: self.nativeAddressBookFriendList, existingFriend: nil) {
 											dispatchGroup.leave()
 										}
 								}
@@ -152,7 +169,7 @@ final class ContactsManager: ObservableObject {
 										image: image,
 										name: contact.givenName + contact.familyName,
 										prefix: "-default",
-										contact: newContact, linphoneFriend: false, existingFriend: nil) {
+										contact: newContact, linphoneFriend: self.nativeAddressBookFriendList, existingFriend: nil) {
 											dispatchGroup.leave()
 										}
 								}
@@ -237,7 +254,7 @@ final class ContactsManager: ObservableObject {
 		return IBImgViewUserProfile
 	}
 	
-	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: Bool, existingFriend: Friend?, completion: @escaping () -> Void) {
+	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: String, existingFriend: Friend?, completion: @escaping () -> Void) {
 		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
 			return
 		}
@@ -245,10 +262,12 @@ final class ContactsManager: ObservableObject {
 		awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 				if resultFriend != nil {
-					if linphoneFriend && existingFriend == nil {
-						if let linphoneFL = self.linphoneFriendList {
+					if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
+                        if let linphoneFL = self.linphoneFriendList, linphoneFriend == linphoneFL.displayName {
 							_ = linphoneFL.addFriend(linphoneFriend: resultFriend!)
-						}
+                        } else if let linphoneFL = self.tempRemoteFriendList {
+                            _ = linphoneFL.addFriend(linphoneFriend: resultFriend!)
+                        }
 					} else if existingFriend == nil {
 						if let friendListTmp = self.friendList {
 							_ = friendListTmp.addLocalFriend(linphoneFriend: resultFriend!)
@@ -378,12 +397,17 @@ final class ContactsManager: ObservableObject {
 		let sipUri = clonedAddress.asStringUriOnly()
 		
 		var friend: Friend?
+		
 		if let friendList = self.friendList {
 			friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
 		}
 		if friend == nil, let linphoneFriendList = self.linphoneFriendList {
 			friend = linphoneFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
-		}
+        }
+        if friend == nil, let tempRemoteFriendList = self.tempRemoteFriendList {
+            friend = tempRemoteFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+        }
+		
 		return friend
 	}
 	
@@ -414,7 +438,18 @@ final class ContactsManager: ObservableObject {
 				onSyncStatusChanged: { (friendList: FriendList, status: FriendList.SyncStatus?, message: String?) in
 					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onSyncStatusChanged")
 					if status == .Successful {
+                        if friendList.displayName != self.nativeAddressBookFriendList && friendList.displayName != self.linphoneAddressBookFriendList {
+                            if let tempRemoteFriendList = self.tempRemoteFriendList {
+                                tempRemoteFriendList.friends.forEach { friend in
+                                    _ = tempRemoteFriendList.removeFriend(linphoneFriend: friend)
+                                }
+                            }
+                        }
+                        
+                        let dispatchGroup = DispatchGroup()
+                        
 						friendList.friends.forEach { friend in
+                            dispatchGroup.enter()
 							let addressTmp = friend.address?.clone()?.asStringUriOnly() ?? ""
 							
 							let newContact = Contact(
@@ -434,14 +469,19 @@ final class ContactsManager: ObservableObject {
 									image: image,
 									name: friend.name ?? addressTmp,
 									prefix: "-default",
-									contact: newContact, linphoneFriend: false, existingFriend: friend) {
-										
+									contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: nil) {
+                                        dispatchGroup.leave()
 									}
 							}
 						}
+                        
+                        dispatchGroup.notify(queue: .main) {
+                            MagicSearchSingleton.shared.searchForContacts()
+                            if let linphoneFL = self.tempRemoteFriendList {
+                                linphoneFL.updateSubscriptions()
+                            }
+                        }
 					}
-					
-					MagicSearchSingleton.shared.searchForContacts()
 				},
 				onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
 					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")

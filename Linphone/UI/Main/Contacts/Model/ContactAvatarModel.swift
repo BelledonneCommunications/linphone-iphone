@@ -80,10 +80,11 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 			var presenceStatusTmp: ConsolidatedPresence = .Offline
 			
 			if let friend = friend, withPresence == true {
+                
 				lastPresenceInfoTmp = ""
 				
 				presenceStatusTmp = friend.consolidatedPresence
-				
+                
 				if friend.consolidatedPresence == .Online || friend.consolidatedPresence == .Busy {
 					if friend.consolidatedPresence == .Online || friend.presenceModel?.latestActivityTimestamp != -1 {
 						lastPresenceInfoTmp = (friend.consolidatedPresence == .Online) ?

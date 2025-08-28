@@ -554,7 +554,7 @@ struct EditContactFragment: View {
 					name: editContactViewModel.firstName
 					+ editContactViewModel.lastName,
 					prefix: ((selectedImage == nil) ? "-default" : ""),
-					contact: newContact, linphoneFriend: true, existingFriend: editContactViewModel.selectedEditFriend?.friend) {
+					contact: newContact, linphoneFriend: "Linphone address-book", existingFriend: editContactViewModel.selectedEditFriend?.friend) {
 						if let selectedFriendTmp = editContactViewModel.selectedEditFriend?.friend {
 							let addressTmp = selectedFriendTmp.address?.clone()?.asStringUriOnly() ?? ""
 							SharedMainViewModel.shared.displayedFriend?.resetContactAvatarModel(
