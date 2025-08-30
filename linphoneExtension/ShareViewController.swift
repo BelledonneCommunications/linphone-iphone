@@ -19,10 +19,12 @@
 
 import UIKit
 import Social
+import UniformTypeIdentifiers
 
 class ShareViewController: SLComposeServiceViewController {
 	
 	var remainingSlots = 12
+    var fileURLs: [URL] = []
 
 	override func isContentValid() -> Bool {
 		return true
@@ -36,50 +38,84 @@ class ShareViewController: SLComposeServiceViewController {
 		return []
 	}
 
-	private func handleSharedFiles() {
-		guard let extensionItems = self.extensionContext?.inputItems as? [NSExtensionItem] else { return }
-		
-		var fileURLs: [URL] = []
-		let dispatchGroup = DispatchGroup()
+    private func handleSharedFiles() {
+        // Get all items shared to the extension
+        guard let extensionItems = self.extensionContext?.inputItems as? [NSExtensionItem] else { return }
 
-		for item in extensionItems {
-			if let attachments = item.attachments {
+        let dispatchGroup = DispatchGroup()
+
+        for item in extensionItems {
+            if let attachments = item.attachments {
                 for provider in attachments {
                     guard remainingSlots > 0 else { break }
-                    if provider.hasItemConformingToTypeIdentifier("public.item") {
-                        remainingSlots -= 1
-                        dispatchGroup.enter()
-                        provider.loadItem(forTypeIdentifier: "public.item", options: nil) { item, error in
-                            if let url = item as? URL, let saved = self.copyFileToSharedContainer(from: url) {
-                                fileURLs.append(saved)
-								dispatchGroup.leave()
-                            } else if let image = item as? UIImage,
-                                      let data = image.pngData(),
-                                      let saved = self.saveDataToSharedContainer(data: data) {
-                                fileURLs.append(saved)
-								dispatchGroup.leave()
-							} else if let data = item as? Data,
-									  let saved = self.saveDataToSharedContainer(data: data) {
-								fileURLs.append(saved)
-								dispatchGroup.leave()
-							} else {
-								dispatchGroup.leave()
-							}
+                    remainingSlots -= 1
+                    dispatchGroup.enter()
+
+                    if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                        // Image / screenshot
+                        provider.loadItem(forTypeIdentifier: UTType.image.identifier, options: nil) { item, error in
+                            defer { dispatchGroup.leave() }
+                            self.handleImageItem(item)
                         }
+                    } else if provider.hasItemConformingToTypeIdentifier("public.item") {
+                        // Other files (PDF, video, document, etc.)
+                        provider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, error in
+                            defer { dispatchGroup.leave() }
+                            if let url = url, let saved = self.copyFileToSharedContainer(from: url) {
+                                self.fileURLs.append(saved)
+                                print("File copied to App Group: \(saved.path)")
+                            }
+                        }
+                    } else {
+                        // Unsupported type, just skip
+                        dispatchGroup.leave()
+                        print("Unsupported file type encountered.")
                     }
                 }
             }
         }
 
-		dispatchGroup.notify(queue: .main) {
-			if !fileURLs.isEmpty {
-				self.openParentApp(with: fileURLs)
-			} else {
-				self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
-			}
-		}
-	}
+        // Once all providers are processed, open parent app if we have files
+        dispatchGroup.notify(queue: .main) {
+            if !self.fileURLs.isEmpty {
+                self.openParentApp(with: self.fileURLs)
+            } else {
+                self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+                print("No valid files to send.")
+            }
+        }
+    }
+    
+    private func handleImageItem(_ item: NSSecureCoding?) {
+        guard let item = item else { return }
 
+        if let image = item as? UIImage {
+            // Create a temporary file for the image
+            let tempURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString + ".png")
+
+            if let data = image.pngData() {
+                do {
+                    try data.write(to: tempURL)
+                    if let saved = self.copyFileToSharedContainer(from: tempURL) {
+                        fileURLs.append(saved)
+                        print("Image copied to App Group: \(saved.path)")
+                    }
+                } catch {
+                    print("Error writing UIImage -> file: \(error)")
+                }
+            }
+        } else if let url = item as? URL {
+            // If iOS returned a URL
+            if let saved = self.copyFileToSharedContainer(from: url) {
+                fileURLs.append(saved)
+                print("Image file copied from URL: \(saved.path)")
+            }
+        } else {
+            print("Unsupported image type: \(type(of: item))")
+        }
+    }
+    
 	func openParentApp(with fileURLs: [URL]) {
 		let urlStrings = fileURLs.map { $0.path }
 		let joinedURLs = urlStrings.joined(separator: ",")
@@ -119,22 +155,6 @@ class ShareViewController: SLComposeServiceViewController {
                 try? FileManager.default.removeItem(at: destinationURL)
                 return nil
             }
-        } catch {
-            return nil
-        }
-    }
-
-    func saveDataToSharedContainer(data: Data, suggestedName: String = "screenshot") -> URL? {
-        guard let sharedContainerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension"
-        ) else { return nil }
-		
-        let randomInt = Int.random(in: 1000...9999)
-        let destinationURL = sharedContainerURL.appendingPathComponent("\(suggestedName)_\(randomInt).png")
-		
-        do {
-            try data.write(to: destinationURL)
-            return destinationURL
         } catch {
             return nil
         }
