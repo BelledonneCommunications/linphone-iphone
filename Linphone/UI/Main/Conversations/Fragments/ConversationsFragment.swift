@@ -48,6 +48,7 @@ struct ConversationsFragment: View {
 						ConversationsListBottomSheet(
 							showingSheet: $showingSheet
 						)
+                        .environmentObject(conversationsListViewModel)
 					} onDismiss: {}
 			}
 		}

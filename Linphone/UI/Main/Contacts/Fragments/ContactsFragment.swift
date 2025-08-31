@@ -56,6 +56,7 @@ struct ContactsFragment: View {
 							showingSheet: $showingSheet,
 							showShareSheet: $showShareSheet
 						)
+                        .environmentObject(contactsListViewModel)
 					} onDismiss: {}
 					.sheet(isPresented: $showShareSheet) {
 						ShareSheet(friendToShare: contactsListViewModel.selectedFriendToShare!)

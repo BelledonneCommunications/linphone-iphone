@@ -49,6 +49,7 @@ struct HistoryFragment: View {
 							isShowEditContactFragment: $isShowEditContactFragment,
 							isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 						)
+                        .environmentObject(historyListViewModel)
 					} onDismiss: {}
 			}
 		}
