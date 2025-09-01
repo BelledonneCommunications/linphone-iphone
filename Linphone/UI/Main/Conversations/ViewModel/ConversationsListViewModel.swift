@@ -219,10 +219,6 @@ class ConversationsListViewModel: ObservableObject {
                     SharedMainViewModel.shared.updateUnreadMessagesCount()
                 }
 			}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
-				print("markAsRead 00 ---- \(chatRoom.subject ?? "No subject")")
-				print("markAsRead 01 ---- \(core.defaultAccount != nil )")
-				print("markAsRead 02 ---- \(core.defaultAccount?.contactAddress?.asStringUriOnly() ?? "No default address")")
-				print("markAsRead 03 ---- \(chatRoom.localAddress?.asStringUriOnly() ?? "No local address")")
 				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
 				let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
 				model.getContentTextMessage(chatRoom: chatRoom)
