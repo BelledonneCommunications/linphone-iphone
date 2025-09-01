@@ -42,7 +42,7 @@ class HelpViewModel: ObservableObject {
 		let versionTmp = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
 		let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
 		
-		self.version = (versionTmp ?? "6.0.0") + (build ?? "0")
+		self.version = (versionTmp ?? "6.0.0")
 		
 		self.sdkVersion = Core.getVersion
 		
