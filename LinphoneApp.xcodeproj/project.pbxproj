@@ -413,6 +413,9 @@
 		D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsFragment.swift; sourceTree = "<group>"; };
 		D7EFD1E32CD11F53005E67CD /* EphemeralFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralFragment.swift; sourceTree = "<group>"; };
 		D7F01ADD2E1D0D92006942C0 /* PopupUpdatePassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUpdatePassword.swift; sourceTree = "<group>"; };
+		D7F372C22E65C5190008B863 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = Localizable/de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D7F372C32E65C51B0008B863 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = Localizable/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		D7F372C42E65C51E0008B863 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Localizable/zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListFragment.swift; sourceTree = "<group>"; };
 		D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SipAddressesPopup.swift; sourceTree = "<group>"; };
 		D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterFragment.swift; sourceTree = "<group>"; };
@@ -1147,6 +1150,9 @@
 				fr,
 				cs,
 				uk,
+				de,
+				ru,
+				"zh-Hans",
 			);
 			mainGroup = D719ABAA2ABC67BF00B41C10;
 			packageReferences = (
@@ -1436,6 +1442,9 @@
 				D737AEF02DA01203005C1280 /* fr */,
 				D70C3B5D2E0ABAB600F3F938 /* cs */,
 				D70C3B5E2E0ABAB900F3F938 /* uk */,
+				D7F372C22E65C5190008B863 /* de */,
+				D7F372C32E65C51B0008B863 /* ru */,
+				D7F372C42E65C51E0008B863 /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

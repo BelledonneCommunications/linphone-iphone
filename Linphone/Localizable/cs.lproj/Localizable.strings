@@ -519,3 +519,6 @@
 "welcome_page_3_message" = "**Bezplatná** a otevřená aplikace již od roku **2001**.";
 "Personnalize your profil mode" = "Přizpůsobte si svůj profilový režim";
 "website_contact_url" = "https://linphone.org/contact";
+"conversations_files_waiting_to_be_shared_single" = "1 soubor čekající na sdílení";
+"conversations_files_waiting_to_be_shared_multiple" = "%@ souborů čekajících na sdílení";
+"conversation_ephemeral_messages_duration_multiple_days" = "%d dnů";

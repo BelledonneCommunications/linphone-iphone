@@ -477,7 +477,7 @@
 "settings_contacts_ldap_max_results_title" = "Максимальна кількість для відображення";
 "settings_contacts_ldap_request_timeout_title" = "Тайм-аут (у секундах)";
 "settings_contacts_ldap_search_filter_title" = "Фільтр";
-"settings_contacts_carddav_sync_successful_toast" = "Синхронізацію виконано вдало";
+"settings_contacts_carddav_sync_successful_toast" = "Синхронізацію виконано";
 "sip_address" = "SIP-адреса";
 "sip.linphone.org" = "sip.linphone.org";
 "SRTP" = "SRTP";
@@ -519,3 +519,6 @@
 "conversation_pick_file_from_gallery_label" = "Відкрити галерею";
 "conversation_pick_any_file_label" = "Вибрати файл";
 "conversation_file_cant_be_opened_error_toast" = "Файл не вдається відкрити!";
+"conversations_files_waiting_to_be_shared_single" = "1 файл очікує на спільний доступ";
+"conversations_files_waiting_to_be_shared_multiple" = "%@ файлів, що очікують на спільний доступ";
+"conversation_ephemeral_messages_duration_multiple_days" = "%d днів";
