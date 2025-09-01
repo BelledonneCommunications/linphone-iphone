@@ -219,23 +219,20 @@ class ConversationsListViewModel: ObservableObject {
                     SharedMainViewModel.shared.updateUnreadMessagesCount()
                 }
 			}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
-                if let defaultAddress = core.defaultAccount?.contactAddress,
-                   let localAddress = chatRoom.localAddress,
-                   defaultAddress.weakEqual(address2: localAddress) {
-                    let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-                    let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
-                    model.getContentTextMessage(chatRoom: chatRoom)
-                    let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
-                    DispatchQueue.main.async {
-                        if index != nil {
-                            self.conversationsList.remove(at: index!)
-                            self.conversationsList.insert(model, at: index!)
-                        } else {
-                            self.conversationsList.insert(model, at: 0)
-                        }
-                    }
-                    SharedMainViewModel.shared.updateUnreadMessagesCount()
-                }
+				print("markAsRead 00 ---- \(chatRoom.subject ?? "No subject")")
+				print("markAsRead 01 ---- \(core.defaultAccount != nil )")
+				print("markAsRead 02 ---- \(core.defaultAccount?.contactAddress?.asStringUriOnly() ?? "No default address")")
+				print("markAsRead 03 ---- \(chatRoom.localAddress?.asStringUriOnly() ?? "No local address")")
+				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+				let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+				model.getContentTextMessage(chatRoom: chatRoom)
+				if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
+					DispatchQueue.main.async {
+						self.conversationsList.remove(at: index)
+						self.conversationsList.insert(model, at: index)
+					}
+				}
+				SharedMainViewModel.shared.updateUnreadMessagesCount()
 			}, onChatRoomStateChanged: { (core: Core, chatroom: ChatRoom, state: ChatRoom.State) in
 				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
                 if let defaultAddress = core.defaultAccount?.contactAddress,

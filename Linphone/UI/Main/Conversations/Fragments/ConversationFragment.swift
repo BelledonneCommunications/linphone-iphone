@@ -454,11 +454,11 @@ struct ConversationFragment: View {
 							.environmentObject(conversationViewModel)
 							.environmentObject(conversationsListViewModel)
 						}
-						/*
 						.onAppear {
-							conversationViewModel.getMessages()
-						}
-						*/
+							if conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
+								conversationViewModel.markAsRead()
+							}
+					  	}
 						.onDisappear {
 							conversationViewModel.resetMessage()
 						}
