@@ -23,7 +23,7 @@ various ways:
 
 ## Help on translations
 
-We no longer use transifex for the translation process, instead we have deployed our own instance of [Weblate](https://weblate.linphone.org/projects/linphone-iphone/).
+We no longer use transifex for the translation process, instead we have deployed our own instance of [Weblate](https://weblate.linphone.org/projects/linphone/).
 
 Due to the full app rewrite we can't re-use previous translations, so we'll be very happy if you want to contribute.
 
