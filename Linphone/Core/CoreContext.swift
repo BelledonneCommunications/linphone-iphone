@@ -424,26 +424,24 @@ class CoreContext: ObservableObject {
 	
 	func onEnterForeground() {
 		coreQueue.async {
-			// We can't rely on defaultAccount?.params?.isPublishEnabled
-			// as it will be modified by the SDK when changing the presence status
+			Log.info("[onEnterForegroundOrBackground] Entering foreground")
 			
 			try? self.mCore.start()
 		}
 	}
-	
+
 	func onEnterBackground() {
 		coreQueue.async {
-			// We can't rely on defaultAccount?.params?.isPublishEnabled
-			// as it will be modified by the SDK when changing the presence status
-			Log.info("App is in background, un-PUBLISHING presence info")
+			Log.info("[onEnterForegroundOrBackground] Entering background, un-PUBLISHING presence info")
 			
-			// We don't use ConsolidatedPresence.Busy but Offline to do an unsubscribe,
-			// Flexisip will handle the Busy status depending on other devices
-			self.updatePresence(core: self.mCore, presence: ConsolidatedPresence.Offline)
+			self.updatePresence(core: self.mCore, presence: .Offline)
 			self.mCore.iterate()
 			
-			if self.mCore.currentCall == nil {
+			if self.mCore.currentCall == nil && self.mCore.globalState == .On {
+				Log.info("[onEnterForegroundOrBackground] Stopping core because no active calls")
 				self.mCore.stop()
+			} else {
+				Log.info("[onEnterForegroundOrBackground] Skipped stop: core not fully On or active call in progress")
 			}
 		}
 	}
