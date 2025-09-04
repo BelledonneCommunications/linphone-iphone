@@ -347,7 +347,7 @@ struct CallView: View {
 										.padding(.leading, 50)
 										.padding(.top, 35)
 									
-									Text("call_zrtp_end_to_end_encrypted")
+									Text(callViewModel.isConference ? "call_srtp_point_to_point_encrypted" : "call_zrtp_end_to_end_encrypted")
 										.foregroundStyle(Color.blueInfo500)
 										.default_text_style_white(styleSize: 12)
 										.padding(.top, 35)
