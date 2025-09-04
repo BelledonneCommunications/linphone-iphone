@@ -29,14 +29,21 @@ struct HelpFragment: View {
 	
 	@FocusState var isVoicemailUriFocused: Bool
 	
+	var showAssistant: Bool {
+		(CoreContext.shared.coreIsStarted && CoreContext.shared.accounts.isEmpty)
+		|| SharedMainViewModel.shared.displayProfileMode
+	}
+	
 	var body: some View {
 		NavigationView {
 			ZStack {
 				VStack(spacing: 1) {
-					Rectangle()
-						.foregroundColor(Color.orangeMain500)
-						.edgesIgnoringSafeArea(.top)
-						.frame(height: 0)
+					if !showAssistant {
+						Rectangle()
+							.foregroundColor(Color.orangeMain500)
+							.edgesIgnoringSafeArea(.top)
+							.frame(height: 0)
+					}
 					
 					HStack {
 						Image("caret-left")
@@ -302,5 +309,7 @@ struct HelpFragment: View {
 			.navigationBarHidden(true)
 		}
 		.navigationViewStyle(StackNavigationViewStyle())
+		.navigationTitle("")
+		.navigationBarHidden(true)
 	}
 }
