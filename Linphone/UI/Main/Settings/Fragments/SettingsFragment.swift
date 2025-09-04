@@ -77,6 +77,8 @@ struct SettingsFragment: View {
 					
 					ScrollView {
 						VStack(spacing: 0) {
+							// TODO: Wait for VFS fix
+							/*
 							HStack(alignment: .center) {
 								Text("settings_security_title")
 									.default_text_style_800(styleSize: 18)
@@ -134,6 +136,7 @@ struct SettingsFragment: View {
 								.zIndex(-1)
 								.transition(.move(edge: .top))
 							}
+							*/
 							
 							HStack(alignment: .center) {
 								Text("settings_calls_title")
