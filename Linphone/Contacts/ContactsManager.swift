@@ -197,61 +197,55 @@ final class ContactsManager: ObservableObject {
 		}
 	}
 	
-	func textToImageInMainThread(firstName: String, lastName: String, completion: @escaping (UIImage) -> Void) {
+	func textToImageInMainThread(firstName: String?, lastName: String?, completion: @escaping (UIImage) -> Void) {
 		DispatchQueue.main.async {
 			let lblNameInitialize = UILabel()
 			lblNameInitialize.frame.size = CGSize(width: 200.0, height: 200.0)
-			lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80)
+			lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80) ?? UIFont.boldSystemFont(ofSize: 80)
 			lblNameInitialize.textColor = UIColor(Color.grayMain2c600)
 			
-			let textToDisplay = (firstName.first.map { String($0) } ?? "") + (lastName.first.map { String($0) } ?? "")
-			
+			let textToDisplay = (firstName?.first.map { String($0) } ?? "") + (lastName?.first.map { String($0) } ?? "")
 			lblNameInitialize.text = textToDisplay.uppercased()
 			lblNameInitialize.textAlignment = .center
 			lblNameInitialize.backgroundColor = UIColor(Color.grayMain2c200)
 			lblNameInitialize.layer.cornerRadius = 10.0
 			lblNameInitialize.clipsToBounds = true
 			
-			UIGraphicsBeginImageContext(lblNameInitialize.frame.size)
+			UIGraphicsBeginImageContextWithOptions(lblNameInitialize.frame.size, false, 0)
 			defer { UIGraphicsEndImageContext() }
 			
-			guard let context = UIGraphicsGetCurrentContext() else {
+			if let context = UIGraphicsGetCurrentContext() {
+				lblNameInitialize.layer.render(in: context)
+				let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+				completion(image)
+			} else {
 				completion(UIImage())
-				return
 			}
-			
-			lblNameInitialize.layer.render(in: context)
-			let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
-			completion(image)
 		}
 	}
 	
-	func textToImage(firstName: String, lastName: String) -> UIImage {
+	func textToImage(firstName: String?, lastName: String?) -> UIImage {
+		let firstInitial = firstName?.first.map { String($0) } ?? ""
+		let lastInitial = lastName?.first.map { String($0) } ?? ""
+		let textToDisplay = (firstInitial + lastInitial).uppercased()
+		
 		let lblNameInitialize = UILabel()
-		lblNameInitialize.frame.size = CGSize(width: 200.0, height: 200.0)
-		lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80)
+		lblNameInitialize.frame.size = CGSize(width: 200, height: 200)
+		lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80) ?? UIFont.boldSystemFont(ofSize: 80)
 		lblNameInitialize.textColor = UIColor(Color.grayMain2c600)
-		
-		var textToDisplay = ""
-		if firstName.first != nil {
-			textToDisplay += String(firstName.first!)
-		}
-		if lastName.first != nil {
-			textToDisplay += String(lastName.first!)
-		}
-		
-		lblNameInitialize.text = textToDisplay.uppercased()
+		lblNameInitialize.text = textToDisplay
 		lblNameInitialize.textAlignment = .center
 		lblNameInitialize.backgroundColor = UIColor(Color.grayMain2c200)
-		lblNameInitialize.layer.cornerRadius = 10.0
+		lblNameInitialize.layer.cornerRadius = 10
+		lblNameInitialize.clipsToBounds = true
 		
-		var IBImgViewUserProfile = UIImage()
-		UIGraphicsBeginImageContext(lblNameInitialize.frame.size)
-		lblNameInitialize.layer.render(in: UIGraphicsGetCurrentContext()!)
-		IBImgViewUserProfile = UIGraphicsGetImageFromCurrentImageContext()!
-		UIGraphicsEndImageContext()
+		UIGraphicsBeginImageContextWithOptions(lblNameInitialize.frame.size, false, 0)
+		defer { UIGraphicsEndImageContext() }
 		
-		return IBImgViewUserProfile
+		guard let context = UIGraphicsGetCurrentContext() else { return UIImage() }
+		lblNameInitialize.layer.render(in: context)
+		
+		return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
 	}
 	
 	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: String, existingFriend: Friend?, completion: @escaping () -> Void) {
