@@ -37,6 +37,8 @@ struct LoginFragment: View {
 	@State private var isLinkSIPActive = false
 	@State private var isLinkREGActive = false
 	
+	@State var isShowHelpFragment = false
+	
 	var isShowBack = false
 	
 	var onBackPressed: (() -> Void)?
@@ -93,6 +95,14 @@ struct LoginFragment: View {
 					}
 				}
 				
+				if isShowHelpFragment {
+					HelpFragment(
+						isShowHelpFragment: $isShowHelpFragment
+					)
+					.transition(.move(edge: .trailing))
+					.zIndex(3)
+				}
+				
 				if coreContext.loggingInProgress {
 					PopupLoadingView()
 						.background(.black.opacity(0.65))
@@ -129,6 +139,26 @@ struct LoginFragment: View {
 					}
 
 					Spacer()
+					
+					Button {
+						withAnimation {
+							isShowHelpFragment = true
+						}
+					} label: {
+						HStack {
+							Image("question")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 20, height: 20)
+							
+							Text("help_title")
+								.foregroundStyle(Color.grayMain2c500)
+								.default_text_style_orange_600(styleSize: 15)
+								.frame(height: 35)
+						}
+						.padding(.horizontal, 20)
+					}
 				}
 
 				Text("assistant_account_login")
