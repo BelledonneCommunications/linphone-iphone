@@ -154,25 +154,22 @@ final class ContactsManager: ObservableObject {
 							
 							let imageThumbnail = UIImage(data: contact.thumbnailImageData ?? Data())
 							if let image = imageThumbnail {
-								DispatchQueue.main.async {
-									self.saveImage(
-										image: image,
-										name: contact.givenName + contact.familyName,
-										prefix: "",
-										contact: newContact, linphoneFriend: self.nativeAddressBookFriendList, existingFriend: nil) {
-											dispatchGroup.leave()
-										}
-								}
+								self.saveImage(
+									image: image,
+									name: contact.givenName + contact.familyName,
+									prefix: "",
+									contact: newContact, linphoneFriend: self.nativeAddressBookFriendList, existingFriend: nil) {
+										dispatchGroup.leave()
+									}
 							} else {
-								self.textToImageInMainThread(firstName: contact.givenName, lastName: contact.familyName) { image in
-									self.saveImage(
-										image: image,
-										name: contact.givenName + contact.familyName,
-										prefix: "-default",
-										contact: newContact, linphoneFriend: self.nativeAddressBookFriendList, existingFriend: nil) {
-											dispatchGroup.leave()
-										}
-								}
+								let image = self.textToImage(firstName: contact.givenName, lastName: contact.familyName)
+								self.saveImage(
+									image: image,
+									name: contact.givenName + contact.familyName,
+									prefix: "-default",
+									contact: newContact, linphoneFriend: self.nativeAddressBookFriendList, existingFriend: nil) {
+										dispatchGroup.leave()
+									}
 							}
 						})
 						
@@ -193,33 +190,6 @@ final class ContactsManager: ObservableObject {
 					self.addCoreDelegate(core: core)
 					MagicSearchSingleton.shared.searchForContacts()
 				}
-			}
-		}
-	}
-	
-	func textToImageInMainThread(firstName: String?, lastName: String?, completion: @escaping (UIImage) -> Void) {
-		DispatchQueue.main.async {
-			let lblNameInitialize = UILabel()
-			lblNameInitialize.frame.size = CGSize(width: 200.0, height: 200.0)
-			lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80) ?? UIFont.boldSystemFont(ofSize: 80)
-			lblNameInitialize.textColor = UIColor(Color.grayMain2c600)
-			
-			let textToDisplay = (firstName?.first.map { String($0) } ?? "") + (lastName?.first.map { String($0) } ?? "")
-			lblNameInitialize.text = textToDisplay.uppercased()
-			lblNameInitialize.textAlignment = .center
-			lblNameInitialize.backgroundColor = UIColor(Color.grayMain2c200)
-			lblNameInitialize.layer.cornerRadius = 10.0
-			lblNameInitialize.clipsToBounds = true
-			
-			UIGraphicsBeginImageContextWithOptions(lblNameInitialize.frame.size, false, 0)
-			defer { UIGraphicsEndImageContext() }
-			
-			if let context = UIGraphicsGetCurrentContext() {
-				lblNameInitialize.layer.render(in: context)
-				let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
-				completion(image)
-			} else {
-				completion(UIImage())
 			}
 		}
 	}
@@ -468,15 +438,14 @@ final class ContactsManager: ObservableObject {
 								imageData: ""
 							)
 							
-							self.textToImageInMainThread(firstName: friend.name ?? addressTmp, lastName: "") { image in
-								self.saveImage(
-									image: image,
-									name: friend.name ?? addressTmp,
-									prefix: "-default",
-									contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: nil) {
-                                        dispatchGroup.leave()
-									}
-							}
+							let image = self.textToImage(firstName: friend.name ?? addressTmp, lastName: "")
+							self.saveImage(
+								image: image,
+								name: friend.name ?? addressTmp,
+								prefix: "-default",
+								contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: nil) {
+									dispatchGroup.leave()
+								}
 						}
                         
                         dispatchGroup.notify(queue: .main) {
