@@ -292,9 +292,11 @@ final class ContactsManager: ObservableObject {
 				friend.organization = contact.organizationName
 				
 				var friendAddresses: [Address] = []
-				friend.addresses.forEach({ address in
+				let existingAddresses = Array(friend.addresses)
+				for address in existingAddresses {
 					friend.removeAddress(address: address)
-				})
+				}
+				
 				contact.sipAddresses.forEach { sipAddress in
 					if !sipAddress.isEmpty {
 						let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true)
@@ -307,9 +309,11 @@ final class ContactsManager: ObservableObject {
 				}
 				
 				var friendPhoneNumbers: [PhoneNumber] = []
-				friend.phoneNumbersWithLabel.forEach({ phoneNumber in
+				let existingPhoneNumbers = Array(friend.phoneNumbersWithLabel)
+				for phoneNumber in existingPhoneNumbers {
 					friend.removePhoneNumberWithLabel(phoneNumber: phoneNumber)
-				})
+				}
+				
 				contact.phoneNumbers.forEach { phone in
 					do {
 						if (friendPhoneNumbers.firstIndex(where: {$0.num == phone.num})) == nil {
