@@ -100,13 +100,9 @@ struct DialerBottomSheet: View {
 				HStack {
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("1".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "1"
-							} catch {
-								
-							}
+							let digit = ("1".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "1"
 						} else {
 							startCallViewModel.searchField += "1"
 						}
@@ -125,13 +121,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("2".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "2"
-							} catch {
-								
-							}
+							let digit = ("2".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "2"
 						} else {
 							startCallViewModel.searchField += "2"
 						}
@@ -150,13 +142,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("3".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "3"
-							} catch {
-								
-							}
+							let digit = ("3".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "3"
 						} else {
 							startCallViewModel.searchField += "3"
 						}
@@ -177,13 +165,9 @@ struct DialerBottomSheet: View {
 				HStack {
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("4".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "4"
-							} catch {
-								
-							}
+							let digit = ("4".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "4"
 						} else {
 							startCallViewModel.searchField += "4"
 						}
@@ -202,13 +186,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("5".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "5"
-							} catch {
-								
-							}
+							let digit = ("5".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "5"
 						} else {
 							startCallViewModel.searchField += "5"
 						}
@@ -227,13 +207,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("6".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "6"
-							} catch {
-								
-							}
+							let digit = ("6".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "6"
 						} else {
 							startCallViewModel.searchField += "6"
 						}
@@ -255,13 +231,9 @@ struct DialerBottomSheet: View {
 				HStack {
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("7".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "7"
-							} catch {
-								
-							}
+							let digit = ("7".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "7"
 						} else {
 							startCallViewModel.searchField += "7"
 						}
@@ -280,13 +252,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("8".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "8"
-							} catch {
-								
-							}
+							let digit = ("8".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "8"
 						} else {
 							startCallViewModel.searchField += "8"
 						}
@@ -305,13 +273,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("9".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "9"
-							} catch {
-								
-							}
+							let digit = ("9".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "9"
 						} else {
 							startCallViewModel.searchField += "9"
 						}
@@ -333,13 +297,9 @@ struct DialerBottomSheet: View {
 				HStack {
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("*".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "*"
-							} catch {
-								
-							}
+							let digit = ("*".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "*"
 						} else {
 							startCallViewModel.searchField += "*"
 						}
@@ -393,13 +353,9 @@ struct DialerBottomSheet: View {
 						)
 					} else {
 						Button {
-							do {
-								let digit = ("0".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "0"
-							} catch {
-								
-							}
+							let digit = ("0".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "0"
 						} label: {
 							Text("0")
 								.foregroundStyle(currentCall != nil ? .white : Color.grayMain2c600)
@@ -416,13 +372,9 @@ struct DialerBottomSheet: View {
 					
 					Button {
 						if currentCall != nil {
-							do {
-								let digit = ("#".cString(using: String.Encoding.utf8)?[0])!
-								try currentCall!.sendDtmf(dtmf: digit)
-								dialerField += "#"
-							} catch {
-								
-							}
+							let digit = ("#".cString(using: String.Encoding.utf8)?[0])!
+							self.sendDtmf(dtmf: digit)
+							dialerField += "#"
 						} else {
 							startCallViewModel.searchField += "#"
 						}
@@ -532,6 +484,21 @@ struct DialerBottomSheet: View {
 		.frame(maxHeight: .infinity)
 		.onRotate { newOrientation in
 			orientation = newOrientation
+		}
+	}
+	
+	func sendDtmf(dtmf: CChar) {
+		CoreContext.shared.doOnCoreQueue { core in
+			guard let call = self.currentCall, call.state == .StreamsRunning else {
+				Log.warn("Cannot send DTMF: call not active")
+				return
+			}
+			
+			do {
+				try call.sendDtmf(dtmf: dtmf)
+			} catch {
+				Log.error("Cannot send DTMF \(dtmf) to call \(call.callLog?.callId ?? ""): \(error)")
+			}
 		}
 	}
 }
