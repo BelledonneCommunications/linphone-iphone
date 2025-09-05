@@ -131,7 +131,7 @@ class AccountProfileViewModel: ObservableObject {
 		
 		let photoAvatarModelKey = CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
 		
-		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
+		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { result in
 			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)
 			
 			CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = ""
