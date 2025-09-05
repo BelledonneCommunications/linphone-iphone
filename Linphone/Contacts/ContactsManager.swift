@@ -228,24 +228,35 @@ final class ContactsManager: ObservableObject {
 		let firstInitial = firstName?.first.map { String($0) } ?? ""
 		let lastInitial = lastName?.first.map { String($0) } ?? ""
 		let textToDisplay = (firstInitial + lastInitial).uppercased()
-		
-		let lblNameInitialize = UILabel()
-		lblNameInitialize.frame.size = CGSize(width: 200, height: 200)
-		lblNameInitialize.font = UIFont(name: "NotoSans-ExtraBold", size: 80) ?? UIFont.boldSystemFont(ofSize: 80)
-		lblNameInitialize.textColor = UIColor(Color.grayMain2c600)
-		lblNameInitialize.text = textToDisplay
-		lblNameInitialize.textAlignment = .center
-		lblNameInitialize.backgroundColor = UIColor(Color.grayMain2c200)
-		lblNameInitialize.layer.cornerRadius = 10
-		lblNameInitialize.clipsToBounds = true
-		
-		UIGraphicsBeginImageContextWithOptions(lblNameInitialize.frame.size, false, 0)
-		defer { UIGraphicsEndImageContext() }
-		
-		guard let context = UIGraphicsGetCurrentContext() else { return UIImage() }
-		lblNameInitialize.layer.render(in: context)
-		
-		return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+
+		let size = CGSize(width: 200, height: 200)
+		let renderer = UIGraphicsImageRenderer(size: size)
+
+		return renderer.image { _ in
+			let rect = CGRect(origin: .zero, size: size)
+			
+			UIColor(Color.grayMain2c200).setFill()
+			UIBezierPath(roundedRect: rect, cornerRadius: 10).fill()
+			
+			let paragraph = NSMutableParagraphStyle()
+			paragraph.alignment = .center
+
+			let attributes: [NSAttributedString.Key: Any] = [
+				.font: UIFont(name: "NotoSans-ExtraBold", size: 80) ?? UIFont.boldSystemFont(ofSize: 80),
+				.foregroundColor: UIColor(Color.grayMain2c600),
+				.paragraphStyle: paragraph
+			]
+
+			let textSize = textToDisplay.size(withAttributes: attributes)
+			let textRect = CGRect(
+				x: (size.width - textSize.width) / 2,
+				y: (size.height - textSize.height) / 2,
+				width: textSize.width,
+				height: textSize.height
+			)
+
+			textToDisplay.draw(in: textRect, withAttributes: attributes)
+		}
 	}
 	
 	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: String, existingFriend: Friend?, completion: @escaping () -> Void) {
