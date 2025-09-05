@@ -105,13 +105,11 @@ class AccountModel: ObservableObject {
 		
 		if !photoAvatarModelKey.isEmpty {
 			if preferences.object(forKey: photoAvatarModelKey) == nil {
-				DispatchQueue.main.async {
-					self.saveImage(
-						image: ContactsManager.shared.textToImage(
-							firstName: usernaneAvatarTmp, lastName: ""),
-						name: usernaneAvatarTmp,
-						prefix: "-default")
-				}
+				self.saveImage(
+					image: ContactsManager.shared.textToImage(
+						firstName: usernaneAvatarTmp, lastName: ""),
+					name: usernaneAvatarTmp,
+					prefix: "-default")
 			} else {
 				photoAvatarModelTmp = preferences.string(forKey: photoAvatarModelKey)!
 			}

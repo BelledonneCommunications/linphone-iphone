@@ -52,13 +52,11 @@ class AccountProfileViewModel: ObservableObject {
 						if self.getImagePath().lastPathComponent.contains("-default") || self.getImagePath().lastPathComponent == "Documents" {
 							let usernameTmp = CoreContext.shared.accounts[self.accountModelIndex!].usernaneAvatar
 							
-							DispatchQueue.main.async {
-								self.saveImage(
-									image: ContactsManager.shared.textToImage(
-										firstName: displayNameAccountModel.isEmpty ? usernameTmp : displayNameAccountModel, lastName: ""),
-									name: usernameTmp,
-									prefix: "-default")
-							}
+							self.saveImage(
+								image: ContactsManager.shared.textToImage(
+									firstName: displayNameAccountModel.isEmpty ? usernameTmp : displayNameAccountModel, lastName: ""),
+								name: usernameTmp,
+								prefix: "-default")
 						}
 					}
 					

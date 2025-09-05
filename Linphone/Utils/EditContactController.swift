@@ -26,38 +26,36 @@ struct EditContactView: UIViewControllerRepresentable {
 	class Coordinator: NSObject, CNContactViewControllerDelegate, UINavigationControllerDelegate {
 		func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
 			if let cnc = contact {
-				DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-					self.parent.contact = cnc
-                    
-					let newContact = Contact(
-						identifier: cnc.identifier,
-						firstName: cnc.givenName,
-						lastName: cnc.familyName,
-						organizationName: cnc.organizationName,
-						jobTitle: "",
-						displayName: cnc.nickname,
-						sipAddresses: cnc.instantMessageAddresses.map { $0.value.service == "SIP" ? $0.value.username : "" },
-						phoneNumbers: cnc.phoneNumbers.map { PhoneNumber(numLabel: $0.label ?? "", num: $0.value.stringValue)},
-						imageData: ""
-					)
-					
-					let imageThumbnail = UIImage(data: contact!.thumbnailImageData ?? Data())
-					ContactsManager.shared.saveImage(
-						image: imageThumbnail
-						?? ContactsManager.shared.textToImage(
-							firstName: cnc.givenName.isEmpty
-							&& cnc.familyName.isEmpty
-							&& cnc.phoneNumbers.first?.value.stringValue != nil
-							? cnc.phoneNumbers.first!.value.stringValue
-							: cnc.givenName, lastName: cnc.familyName),
-						name: cnc.givenName + cnc.familyName,
-						prefix: ((imageThumbnail == nil) ? "-default" : ""),
-						contact: newContact,
-						linphoneFriend: "Native address-book",
-						existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact)) {
-							MagicSearchSingleton.shared.searchForContacts()
-						}
-				}
+				self.parent.contact = cnc
+				
+				let newContact = Contact(
+					identifier: cnc.identifier,
+					firstName: cnc.givenName,
+					lastName: cnc.familyName,
+					organizationName: cnc.organizationName,
+					jobTitle: "",
+					displayName: cnc.nickname,
+					sipAddresses: cnc.instantMessageAddresses.map { $0.value.service == "SIP" ? $0.value.username : "" },
+					phoneNumbers: cnc.phoneNumbers.map { PhoneNumber(numLabel: $0.label ?? "", num: $0.value.stringValue)},
+					imageData: ""
+				)
+				
+				let imageThumbnail = UIImage(data: contact!.thumbnailImageData ?? Data())
+				ContactsManager.shared.saveImage(
+					image: imageThumbnail
+					?? ContactsManager.shared.textToImage(
+						firstName: cnc.givenName.isEmpty
+						&& cnc.familyName.isEmpty
+						&& cnc.phoneNumbers.first?.value.stringValue != nil
+						? cnc.phoneNumbers.first!.value.stringValue
+						: cnc.givenName, lastName: cnc.familyName),
+					name: cnc.givenName + cnc.familyName,
+					prefix: ((imageThumbnail == nil) ? "-default" : ""),
+					contact: newContact,
+					linphoneFriend: "Native address-book",
+					existingFriend: ContactsManager.shared.getFriendWithContact(contact: newContact)) {
+						MagicSearchSingleton.shared.searchForContacts()
+					}
 			}
 			viewController.dismiss(animated: true, completion: {})
 		}
