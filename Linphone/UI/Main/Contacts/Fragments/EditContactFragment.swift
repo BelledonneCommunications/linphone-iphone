@@ -100,8 +100,8 @@ struct EditContactFragment: View {
 							if editContactViewModel.selectedEditFriend == nil
 								&& editContactViewModel.firstName.isEmpty
 								&& editContactViewModel.lastName.isEmpty
-								&& editContactViewModel.sipAddresses.first!.isEmpty
-								&& editContactViewModel.phoneNumbers.first!.isEmpty
+								&& editContactViewModel.sipAddresses.first?.isEmpty ?? true
+								&& editContactViewModel.phoneNumbers.first?.isEmpty ?? true
 								&& editContactViewModel.company.isEmpty
 								&& editContactViewModel.jobTitle.isEmpty {
 								delayColorDismiss()
@@ -113,8 +113,8 @@ struct EditContactFragment: View {
 							} else {
 								if editContactViewModel.firstName.isEmpty
 									&& editContactViewModel.lastName.isEmpty
-									&& editContactViewModel.sipAddresses.first!.isEmpty
-									&& editContactViewModel.phoneNumbers.first!.isEmpty
+									&& editContactViewModel.sipAddresses.first?.isEmpty ?? true
+									&& editContactViewModel.phoneNumbers.first?.isEmpty ?? true
 									&& editContactViewModel.company.isEmpty
 									&& editContactViewModel.jobTitle.isEmpty {
 									withAnimation {
@@ -318,7 +318,6 @@ struct EditContactFragment: View {
 									.padding(.bottom, -5)
 								
 								ForEach(editContactViewModel.sipAddresses.indices, id: \.self) { index in
-									
 									HStack(alignment: .center) {
 										TextField("sip_address", text: $editContactViewModel.sipAddresses[index])
 											.default_text_style(styleSize: 15)
@@ -336,29 +335,31 @@ struct EditContactFragment: View {
 											)
 											.focused($isSIPAddressFocused, equals: index)
 											.onChange(of: editContactViewModel.sipAddresses[index]) { newValue in
-												if !newValue.isEmpty && index + 1 == editContactViewModel.sipAddresses.count {
+												if !newValue.isEmpty && index == editContactViewModel.sipAddresses.count - 1 {
 													editContactViewModel.sipAddresses.append("")
 												}
 											}
-										
+
 										Button(action: {
+											guard editContactViewModel.sipAddresses.indices.contains(index) else { return }
 											editContactViewModel.sipAddresses.remove(at: index)
-										}, label: {
+										}) {
 											Image("x")
 												.renderingMode(.template)
 												.resizable()
 												.foregroundStyle(
-													editContactViewModel.sipAddresses[index].isEmpty && editContactViewModel.sipAddresses.count == index + 1
-													? Color.gray100
-													: Color.grayMain2c600
+													editContactViewModel.sipAddresses[index].isEmpty && index == editContactViewModel.sipAddresses.count - 1
+														? Color.gray100
+														: Color.grayMain2c600
 												)
 												.frame(width: 25, height: 25)
 												.padding(.all, 10)
-										})
-										.disabled(editContactViewModel.sipAddresses[index].isEmpty && editContactViewModel.sipAddresses.count == index + 1)
+										}
+										.disabled(editContactViewModel.sipAddresses[index].isEmpty && index == editContactViewModel.sipAddresses.count - 1)
 										.frame(maxHeight: .infinity)
 									}
 								}
+
 							}
 							.padding(.bottom)
 							
@@ -367,7 +368,7 @@ struct EditContactFragment: View {
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
-								ForEach(0..<editContactViewModel.phoneNumbers.count, id: \.self) { index in
+								ForEach(editContactViewModel.phoneNumbers.indices, id: \.self) { index in
 									HStack(alignment: .center) {
 										TextField("phone_number", text: $editContactViewModel.phoneNumbers[index])
 											.default_text_style(styleSize: 15)
@@ -385,33 +386,35 @@ struct EditContactFragment: View {
 											)
 											.focused($isPhoneNumberFocused, equals: index)
 											.onChange(of: editContactViewModel.phoneNumbers[index]) { newValue in
-												if !newValue.isEmpty && index + 1 == editContactViewModel.phoneNumbers.count {
+												if !newValue.isEmpty && index == editContactViewModel.phoneNumbers.count - 1 {
 													withAnimation {
 														editContactViewModel.phoneNumbers.append("")
 													}
 												}
 											}
-										
+
 										Button(action: {
+											guard editContactViewModel.phoneNumbers.indices.contains(index) else { return }
 											editContactViewModel.phoneNumbers.remove(at: index)
-										}, label: {
+										}) {
 											Image("x")
 												.renderingMode(.template)
 												.resizable()
 												.foregroundStyle(
-													editContactViewModel.phoneNumbers[index].isEmpty && editContactViewModel.phoneNumbers.count == index + 1
-													? Color.gray100
-													: Color.grayMain2c600
+													editContactViewModel.phoneNumbers[index].isEmpty && index == editContactViewModel.phoneNumbers.count - 1
+														? Color.gray100
+														: Color.grayMain2c600
 												)
 												.frame(width: 25, height: 25)
 												.padding(.all, 10)
-										})
-										.disabled(editContactViewModel.phoneNumbers[index].isEmpty && editContactViewModel.phoneNumbers.count == index + 1)
+										}
+										.disabled(editContactViewModel.phoneNumbers[index].isEmpty && index == editContactViewModel.phoneNumbers.count - 1)
 										.frame(maxHeight: .infinity)
 									}
 									.zIndex(isPhoneNumberFocused == index ? 1 : 0)
 									.transition(.move(edge: .top))
 								}
+
 							}
 							.padding(.bottom)
 							
@@ -542,8 +545,9 @@ struct EditContactFragment: View {
 									dismiss()
 								}
 							}
-							editContactViewModel.resetValues()
 						}
+						
+						editContactViewModel.resetValues()
 					}
 				)
 			} else {
@@ -581,8 +585,9 @@ struct EditContactFragment: View {
 									dismiss()
 								}
 							}
-							editContactViewModel.resetValues()
 						}
+						
+						editContactViewModel.resetValues()
 					}
 			}
 		}
