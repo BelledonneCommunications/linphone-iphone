@@ -253,7 +253,7 @@ final class ContactsManager: ObservableObject {
 			return
 		}
 		
-		awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
+		awaitDataWrite(data: data, name: name, prefix: prefix) { result in
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 				if resultFriend != nil {
 					if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
@@ -268,7 +268,7 @@ final class ContactsManager: ObservableObject {
 						}
 					}
 				}
-				completion()
+				DispatchQueue.main.async { completion() }
 			}
 		}
 	}
@@ -352,26 +352,21 @@ final class ContactsManager: ObservableObject {
 		return imagePath
 	}
 	
-	func awaitDataWrite(data: Data, name: String, prefix: String, completion: @escaping ((), String) -> Void) {
-		let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+	func awaitDataWrite(data: Data, name: String, prefix: String, completion: @escaping (String) -> Void) {
+		guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+			completion("")
+			return
+		}
 		
-		if directory != nil {
-			DispatchQueue.main.async {
-				do {
-					if let urlName = URL(string: name + prefix) {
-						let imagePath = urlName.absoluteString.replacingOccurrences(of: "%", with: "")
-						
-						let decodedData: () = try data.write(to: directory!.appendingPathComponent(imagePath + ".png"))
-						
-						completion(decodedData, imagePath + ".png")
-					} else {
-					 	completion((), "")
-					}
-				} catch {
-					print("Error: ", error)
-					completion((), "")
-				}
-			}
+		do {
+			let fileName = name + prefix + ".png"
+			let fileURL = directory.appendingPathComponent(fileName)
+			
+			try data.write(to: fileURL)
+			completion(fileName)
+		} catch {
+			print("Error writing image: \(error)")
+			completion("")
 		}
 	}
 	
@@ -556,7 +551,7 @@ final class ContactsManager: ObservableObject {
 		for contact in avatarListModel {
 			contact.$starred
 				.sink { [weak self] _ in
-					self?.starredChangeTrigger = UUID() // 🔁 Déclenche le refresh de la vue
+					self?.starredChangeTrigger = UUID()
 				}
 				.store(in: &cancellables)
 		}

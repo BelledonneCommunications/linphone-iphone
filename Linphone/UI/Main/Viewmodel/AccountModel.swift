@@ -271,7 +271,7 @@ class AccountModel: ObservableObject {
 		
 		let photoAvatarModelKey = name
 		
-		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { _, result in
+		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { result in
 			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)
 			
 			self.photoAvatarModel = ""
