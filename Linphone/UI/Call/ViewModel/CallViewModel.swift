@@ -985,14 +985,11 @@ class CallViewModel: ObservableObject {
 						self.isNotEncrypted = false
 					}
 				case MediaEncryption.None:
+					let isNotEncryptedTmp = self.currentCall?.state == .StreamsRunning
 					DispatchQueue.main.async {
 						self.isMediaEncrypted = false
 						self.isZrtp = false
-						if self.currentCall!.state == .StreamsRunning {
-							self.isNotEncrypted = true
-						} else {
-							self.isNotEncrypted = false
-						}
+						self.isNotEncrypted = isNotEncryptedTmp
 					}
 				}
 			}
