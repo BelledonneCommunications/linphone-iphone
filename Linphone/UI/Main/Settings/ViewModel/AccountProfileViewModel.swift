@@ -132,9 +132,11 @@ class AccountProfileViewModel: ObservableObject {
 		ContactsManager.shared.awaitDataWrite(data: data, name: name, prefix: prefix) { result in
 			UserDefaults.standard.set(result, forKey: photoAvatarModelKey)
 			
-			CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = ""
-			CoreContext.shared.accounts[self.accountModelIndex ?? 0].imagePathAvatar = nil
-			NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
+			DispatchQueue.main.async {
+				CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = ""
+				CoreContext.shared.accounts[self.accountModelIndex ?? 0].imagePathAvatar = nil
+				NotificationCenter.default.post(name: NSNotification.Name("ImageChanged"), object: nil)
+			}
 			
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 				CoreContext.shared.accounts[self.accountModelIndex ?? 0].photoAvatarModel = result
