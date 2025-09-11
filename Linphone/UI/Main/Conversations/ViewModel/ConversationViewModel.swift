@@ -378,12 +378,15 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 				}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
-					let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
-					let ephemeralExpireTimeTmp = message.ephemeralExpireTime
-					
-					DispatchQueue.main.async {
-						if indexMessage != nil {
-							self.conversationMessagesSection[0].rows[indexMessage!].message.ephemeralExpireTime = ephemeralExpireTimeTmp
+					if !self.conversationMessagesSection.isEmpty,
+					   !self.conversationMessagesSection[0].rows.isEmpty,
+					   let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.eventModel.eventLogId == message.messageId }),
+					   indexMessage < self.conversationMessagesSection[0].rows.count {
+						
+						let ephemeralExpireTimeTmp = message.ephemeralExpireTime
+						
+						DispatchQueue.main.async {
+							self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
 						}
 					}
 				})
