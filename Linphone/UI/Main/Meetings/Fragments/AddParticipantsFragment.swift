@@ -168,21 +168,21 @@ struct AddParticipantsFragment: View {
 				.padding(.horizontal)
 				
 				ScrollView {
-					ForEach(0..<contactsManager.lastSearch.count, id: \.self) { index in
+					ForEach(0..<contactsManager.avatarListModel.count, id: \.self) { index in
 						HStack {
 							HStack {
 								if index == 0
-									|| contactsManager.lastSearch[index].friend?.name!.lowercased().folding(
+									|| contactsManager.avatarListModel[index].name.lowercased().folding(
 										options: .diacriticInsensitive,
 										locale: .current
 									).first
-									!= contactsManager.lastSearch[index-1].friend?.name!.lowercased().folding(
+									!= contactsManager.avatarListModel[index-1].name.lowercased().folding(
 										options: .diacriticInsensitive,
 										locale: .current
 									).first {
 									Text(
 										String(
-											(contactsManager.lastSearch[index].friend?.name!.uppercased().folding(
+											(contactsManager.avatarListModel[index].name.uppercased().folding(
 												options: .diacriticInsensitive,
 												locale: .current
 											).first)!))
@@ -198,40 +198,28 @@ struct AddParticipantsFragment: View {
 										.padding(.trailing, 5)
 								}
 								
-								if index < contactsManager.avatarListModel.count,
-								   let friend = contactsManager.avatarListModel[index].friend,
-								   let photo = friend.photo,
-								   !photo.isEmpty {
-									Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
-								} else {
-									Image("profil-picture-default")
-										.resizable()
-										.frame(width: 50, height: 50)
-										.clipShape(Circle())
-								}
+								Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
 								
-								Text((contactsManager.lastSearch[index].friend?.name ?? "")!)
+								Text(contactsManager.avatarListModel[index].name)
 									.default_text_style(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.foregroundStyle(Color.orangeMain500)
 								
-								if let searchAddress = contactsManager.lastSearch[index].friend?.address?.asStringUriOnly() {
-									if addParticipantsViewModel.participantsToAdd.contains(where: {
-										$0.address.asStringUriOnly() == searchAddress
-									}) {
-										Image("check")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.orangeMain500)
-											.frame(width: 25, height: 25)
-											.padding(.horizontal)
-									}
+								if addParticipantsViewModel.participantsToAdd.contains(where: {
+									$0.address.asStringUriOnly() == contactsManager.avatarListModel[index].address
+								}) {
+									Image("check")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.orangeMain500)
+										.frame(width: 25, height: 25)
+										.padding(.horizontal)
 								}
 							}
 						}
 						.background(.white)
 						.onTapGesture {
-							if let addr = contactsManager.lastSearch[index].address {
+							if let addr = try? Factory.Instance.createAddress(addr: contactsManager.avatarListModel[index].address) {
 								addParticipantsViewModel.selectParticipant(addr: addr)
 							}
 						}
