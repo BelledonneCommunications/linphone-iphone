@@ -414,8 +414,11 @@ final class ContactsManager: ObservableObject {
 					if status == .Successful {
                         if friendList.displayName != self.nativeAddressBookFriendList && friendList.displayName != self.linphoneAddressBookFriendList {
                             if let tempRemoteFriendList = self.tempRemoteFriendList {
-                                tempRemoteFriendList.friends.forEach { friend in
-                                    _ = tempRemoteFriendList.removeFriend(linphoneFriend: friend)
+								tempRemoteFriendList.friends.forEach { friend in
+									if let friendAddress = friend.address,
+									   friendList.friends.contains(where: { $0.address?.weakEqual(address2: friendAddress) == true }) {
+										_ = tempRemoteFriendList.removeFriend(linphoneFriend: friend)
+									}
                                 }
                             }
                         }
@@ -458,6 +461,58 @@ final class ContactsManager: ObservableObject {
 				},
 				onPresenceReceived: { (friendList: FriendList, friends: [Friend?]) in
 					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onPresenceReceived \(friends.count)")
+					if (friendList.isSubscriptionBodyless) {
+						Log.info("\(ContactsManager.TAG) Bodyless friendlist \(friendList.displayName ?? "No Display Name") presence received")
+						
+						if friendList.displayName != self.nativeAddressBookFriendList && friendList.displayName != self.linphoneAddressBookFriendList {
+							if let tempRemoteFriendList = self.tempRemoteFriendList {
+								tempRemoteFriendList.friends.forEach { friend in
+									if let friendAddress = friend.address,
+									   friends.contains(where: { $0?.address?.weakEqual(address2: friendAddress) == true }) {
+										_ = tempRemoteFriendList.removeFriend(linphoneFriend: friend)
+									}
+								}
+							}
+						}
+						
+						let dispatchGroup = DispatchGroup()
+						
+						friends.forEach { friend in
+							dispatchGroup.enter()
+							if let friend = friend {
+								let addressTmp = friend.address?.clone()?.asStringUriOnly() ?? ""
+								Log.debug("\(ContactsManager.TAG) Newly discovered SIP Address \(addressTmp) for friend \(friend.name ?? "No Name") in bodyless list \(friendList.displayName ?? "No Display Name")")
+								
+								let newContact = Contact(
+									identifier: UUID().uuidString,
+									firstName: friend.name ?? addressTmp,
+									lastName: "",
+									organizationName: "",
+									jobTitle: "",
+									displayName: friend.address?.displayName ?? "",
+									sipAddresses: friend.addresses.map { $0.asStringUriOnly() },
+									phoneNumbers: [],
+									imageData: ""
+								)
+								
+								let image = self.textToImage(firstName: friend.name ?? addressTmp, lastName: "")
+								self.saveImage(
+									image: image,
+									name: friend.name ?? addressTmp,
+									prefix: "-default",
+									contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: nil) {
+										dispatchGroup.leave()
+									}
+							}
+						}
+						
+						dispatchGroup.notify(queue: .main) {
+							MagicSearchSingleton.shared.searchForContacts()
+							if let linphoneFL = self.tempRemoteFriendList {
+								linphoneFL.updateSubscriptions()
+							}
+						}
+					}
 				},
 				onNewSipAddressDiscovered: { (friendList: FriendList, linphoneFriend: Friend, sipUri: String) in
 					Log.info("\(ContactsManager.TAG) FriendListDelegateStub onNewSipAddressDiscovered \(linphoneFriend.name ?? "")")
