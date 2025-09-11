@@ -181,6 +181,14 @@ struct RegisterFragment: View {
 						.autocapitalization(.none)
 						.padding(.leading, 5)
 						.keyboardType(.numberPad)
+						.toolbar {
+							ToolbarItemGroup(placement: .keyboard) {
+								Spacer()
+								Button("Done") {
+									UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+								}
+							}
+						}
 						.onChange(of: registerViewModel.phoneNumber) { _ in
 							if !registerViewModel.phoneNumberError.isEmpty {
 								registerViewModel.phoneNumberError = ""

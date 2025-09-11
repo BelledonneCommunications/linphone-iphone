@@ -379,6 +379,14 @@ struct EditContactFragment: View {
 											.padding(.vertical, 15)
 											.background(.white)
 											.cornerRadius(60)
+											.toolbar {
+												ToolbarItemGroup(placement: .keyboard) {
+													Spacer()
+													Button("Done") {
+														UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+													}
+												}
+											}
 											.overlay(
 												RoundedRectangle(cornerRadius: 60)
 													.inset(by: 0.5)
