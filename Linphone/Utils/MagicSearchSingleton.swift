@@ -94,11 +94,13 @@ final class MagicSearchSingleton: ObservableObject {
 					}
 				}
 				
-				let sortedLastSearch = lastSearchFriend.sorted(by: {
-					$0.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
-					<
-						$1.friend!.name!.lowercased().folding(options: .diacriticInsensitive, locale: .current)
-				})
+				let sortedLastSearch = lastSearchFriend.sorted {
+					let name1 = $0.friend?.name?.lowercased()
+						.folding(options: .diacriticInsensitive, locale: .current) ?? ""
+					let name2 = $1.friend?.name?.lowercased()
+						.folding(options: .diacriticInsensitive, locale: .current) ?? ""
+					return name1 < name2
+				}
 				
 				var addedAvatarListModel: [ContactAvatarModel] = []
 				sortedLastSearch.forEach { searchResult in
