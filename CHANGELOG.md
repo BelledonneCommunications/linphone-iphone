@@ -10,6 +10,32 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+## [6.0.1] - 2025-09-12
+
+### Added
+- Done button toolbar to number pads
+- Help view to login page
+
+### Changed
+- textToImage updated to generate image on the core queue
+- Send DTMF execution moved to the core queue
+- Use saveImage on core queue
+- Use point_to_point string for encrypted calls in conference
+- Hide VFS setting
+
+### Fixed
+- Avatar photo refresh
+- onEphemeralMessageTimerStarted callback
+- Crash in updateEncryption by safely handling optional currentCall
+- Sorted list in MagicSearch when friend is nil
+- Friend list refresh triggered by onPresenceReceived
+- Crash when adding or removing SIP addresses and phone numbers in EditContactFragment
+- awaitDataWrite execution on main queue
+- Crash by copying Friend addresses and phone numbers before removal
+- Ensure core is On before stopping it on background entry
+- textToImage crash
+
+
 ## [6.0.0] - 2025-09-01
 
 6.0.0 release is a complete rework of Linphone, with a fully redesigned UI, so it is impossible to list everything here.
