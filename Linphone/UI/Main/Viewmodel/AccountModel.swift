@@ -154,11 +154,14 @@ class AccountModel: ObservableObject {
 	}
 	
 	private func computeNotificationsCount() {
-		let count = account.unreadChatMessageCount + account.missedCallsCount
-        SharedMainViewModel.shared.updateMissedCallsCount()
-        SharedMainViewModel.shared.updateUnreadMessagesCount()
-		DispatchQueue.main.async { [self] in
-			notificationsCount = count
+		CoreContext.shared.doOnCoreQueue { core in
+			let count = self.account.unreadChatMessageCount + self.account.missedCallsCount
+			SharedMainViewModel.shared.updateMissedCallsCount()
+			SharedMainViewModel.shared.updateUnreadMessagesCount()
+			
+			DispatchQueue.main.async {
+				self.notificationsCount = count
+			}
 		}
 	}
 	
