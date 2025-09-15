@@ -50,7 +50,8 @@ class CorePreferences {
 	
 	static var checkForUpdateServerUrl: String {
 		get {
-			return Config.get().getString(section: "misc", key: "version_check_url_root", defaultString: "")
+			let raw = Config.get().getString(section: "misc", key: "version_check_url_root", defaultString: "")
+			return safeString(raw, defaultValue: "")
 		}
 		set {
 			Config.get().setString(section: "misc", key: "version_check_url_root", value: newValue)
@@ -86,7 +87,8 @@ class CorePreferences {
 	
 	static var deviceName: String {
 		get {
-			return Config.get().getString(section: "app", key: "device", defaultString: "").trimmingCharacters(in: .whitespaces)
+			let raw = Config.get().getString(section: "app", key: "device", defaultString: "").trimmingCharacters(in: .whitespaces)
+			return safeString(raw, defaultValue: "")
 		}
 		set {
 			Config.get().setString(section: "app", key: "device", value: newValue.trimmingCharacters(in: .whitespaces))
@@ -131,7 +133,8 @@ class CorePreferences {
 	
 	static var contactsFilter: String {
 		get {
-			return Config.get().getString(section: "ui", key: "contacts_filter", defaultString: "")
+			let raw = Config.get().getString(section: "ui", key: "contacts_filter", defaultString: "")
+			return safeString(raw, defaultValue: "")
 		}
 		set {
 			Config.get().setString(section: "ui", key: "contacts_filter", value: newValue)
@@ -177,7 +180,8 @@ class CorePreferences {
 	
 	static var themeMainColor: String {
 		get {
-			return Config.get().getString(section: "ui", key: "theme_main_color", defaultString: "orange")
+			let raw = Config.get().getString(section: "ui", key: "theme_main_color", defaultString: "orange")
+			return safeString(raw, defaultValue: "orange")
 		}
 		set {
 			Config.get().setString(section: "ui", key: "theme_main_color", value: newValue)
@@ -244,7 +248,8 @@ class CorePreferences {
 	
 	static var defaultDomain: String {
 		get {
-			return Config.get().getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
+			let raw = Config.get().getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
+			return safeString(raw, defaultValue: "sip.linphone.org")
 		}
 		set {
 			Config.get().setString(section: "app", key: "default_domain", value: newValue)
@@ -282,5 +287,13 @@ class CorePreferences {
 				print("Error copying file: \(error)")
 			}
 		}
+	}
+	
+	private static func safeString(_ raw: String?, defaultValue: String = "") -> String {
+		guard let raw = raw else { return defaultValue }
+		if let data = raw.data(using: .utf8), let s = String(data: data, encoding: .utf8) {
+			return s
+		}
+		return defaultValue
 	}
 }
