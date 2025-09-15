@@ -133,17 +133,16 @@ class MeetingsListViewModel: ObservableObject {
 		}
 		
 		if let index = self.meetingsList.firstIndex(where: { $0.model?.address == meetingToDelete.address }) {
-			if self.todayIdx > index {
-				// bump todayIdx one place up
-				self.todayIdx -= 1
-			}
-			self.meetingsList.remove(at: index)
-			if self.meetingsList.count == 1 && self.meetingsList[0].model == nil {
-				// Only remaining meeting is the fake TodayMeeting, remove it too
-				meetingsList.removeAll()
-			}
-            
 			DispatchQueue.main.async {
+				if self.todayIdx > index {
+					// bump todayIdx one place up
+					self.todayIdx -= 1
+				}
+				self.meetingsList.remove(at: index)
+				if self.meetingsList.count == 1 && self.meetingsList[0].model == nil {
+					// Only remaining meeting is the fake TodayMeeting, remove it too
+					self.meetingsList.removeAll()
+				}
 				ToastViewModel.shared.toastMessage = "Success_toast_meeting_deleted"
 				ToastViewModel.shared.displayToast = true
 			}

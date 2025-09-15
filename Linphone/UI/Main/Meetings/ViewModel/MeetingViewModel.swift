@@ -170,7 +170,18 @@ class MeetingViewModel: ObservableObject {
 			chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
 			chatRoomParams.encryptionEnabled = true
 			chatRoomParams.subject = "Meeting ics"
-			self.conferenceScheduler?.sendInvitations(chatRoomParams: chatRoomParams)
+			
+			if self.conferenceScheduler == nil {
+				Log.info("\(MeetingViewModel.TAG) ConferenceScheduler is nil, resetting...")
+				self.resetConferenceSchedulerAndListeners(core: core)
+			}
+			
+			guard let scheduler = self.conferenceScheduler else {
+				Log.error("\(MeetingViewModel.TAG) ConferenceScheduler still nil after reset")
+				return
+			}
+			
+			scheduler.sendInvitations(chatRoomParams: chatRoomParams)
 		} else {
 			Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
 		}
@@ -180,6 +191,10 @@ class MeetingViewModel: ObservableObject {
 		self.mSchedulerDelegate = nil
 		self.conferenceScheduler = try? core.createConferenceScheduler()
 		
+		guard let scheduler = self.conferenceScheduler else {
+			Log.info("\(MeetingViewModel.TAG) ConferenceScheduler is nil after reset, nothing to cancel")
+			return
+		}
 		self.mSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (_: ConferenceScheduler, state: ConferenceScheduler.State) in
 			Log.info("\(MeetingViewModel.TAG) Conference state changed \(state)")
 			if state == ConferenceScheduler.State.Error {
@@ -190,8 +205,10 @@ class MeetingViewModel: ObservableObject {
 					ToastViewModel.shared.displayToast = true
 				}
 			} else if state == ConferenceScheduler.State.Ready {
-				let conferenceAddress = self.conferenceScheduler?.info?.uri
-				Log.info("\(MeetingViewModel.TAG) Conference info created, address will be \(conferenceAddress?.asStringUriOnly() ?? "'nil'")")
+				if let confInfo = scheduler.info, let conferenceAddress = confInfo.uri {
+					Log.info("\(MeetingViewModel.TAG) Conference info created, address will be \(conferenceAddress.asStringUriOnly())")
+				}
+				
 				DispatchQueue.main.async {
 					ToastViewModel.shared.toastMessage = "Success_meeting_info_created_toast"
 					ToastViewModel.shared.displayToast = true
@@ -249,7 +266,7 @@ class MeetingViewModel: ObservableObject {
 				self.conferenceCreatedEvent = true
 			}
 		})
-		self.conferenceScheduler?.addDelegate(delegate: self.mSchedulerDelegate!)
+		scheduler.addDelegate(delegate: self.mSchedulerDelegate!)
 	}
 	
 	func schedule() {
@@ -263,41 +280,67 @@ class MeetingViewModel: ObservableObject {
 		}
 		
 		guard CoreContext.shared.networkStatusIsConnected else {
-				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Unavailable_network"
-					ToastViewModel.shared.displayToast = true
-				}
-				return
+			DispatchQueue.main.async {
+				ToastViewModel.shared.toastMessage = "Unavailable_network"
+				ToastViewModel.shared.displayToast = true
+			}
+			return
 		}
 		
 		operationInProgress = true
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("\(MeetingViewModel.TAG) Scheduling \(self.isBroadcastSelected ? "broadcast" : "meeting")")
 			
-			if let conferenceInfo = (SharedMainViewModel.shared.displayedMeeting != nil ? SharedMainViewModel.shared.displayedMeeting!.confInfo : try? Factory.Instance.createConferenceInfo()) {
-				let localAccount = core.defaultAccount
-				conferenceInfo.organizer = localAccount?.params?.identityAddress
-				
-				// Allows to have a chat room within the conference
-				conferenceInfo.setCapability(streamType: StreamType.Text, enable: true)
-				
-				// Enable end-to-end encryption if client supports it
-				if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
-					Log.info("\(MeetingViewModel.TAG) Requesting EndToEnd security level for conference")
-					 conferenceInfo.securityLevel = Conference.SecurityLevel.EndToEnd
-				} else {
-					Log.info("\(MeetingViewModel.TAG) Requesting PointToPoint security level for conference")
-					conferenceInfo.securityLevel = Conference.SecurityLevel.PointToPoint
-				}
-				
-				self.fillConferenceInfo(confInfo: conferenceInfo)
-				self.resetConferenceSchedulerAndListeners(core: core)
-				self.conferenceScheduler?.account = localAccount
-				// Will trigger the conference creation automatically
-				self.conferenceScheduler?.info = conferenceInfo
+			let conferenceInfo: ConferenceInfo?
+			if let displayedMeeting = SharedMainViewModel.shared.displayedMeeting {
+				conferenceInfo = displayedMeeting.confInfo
+			} else {
+				conferenceInfo = try? Factory.Instance.createConferenceInfo()
 			}
+			
+			guard let confInfo = conferenceInfo else {
+				Log.error("\(MeetingViewModel.TAG) Failed to create conference info")
+				return
+			}
+			
+			guard let localAccount = core.defaultAccount else {
+				Log.error("\(MeetingViewModel.TAG) Default account is nil")
+				return
+			}
+			
+			guard let organizer = localAccount.params?.identityAddress else {
+				Log.error("\(MeetingViewModel.TAG) Account params or identityAddress is nil")
+				return
+			}
+
+			confInfo.organizer = organizer
+			
+			confInfo.setCapability(streamType: .Text, enable: true)
+			
+			if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
+				Log.info("\(MeetingViewModel.TAG) Requesting EndToEnd security level for conference")
+				confInfo.securityLevel = .EndToEnd
+			} else {
+				Log.info("\(MeetingViewModel.TAG) Requesting PointToPoint security level for conference")
+				confInfo.securityLevel = .PointToPoint
+			}
+			
+			if self.conferenceScheduler == nil {
+				Log.info("\(MeetingViewModel.TAG) ConferenceScheduler is nil, resetting...")
+				self.resetConferenceSchedulerAndListeners(core: core)
+			}
+			
+			guard let scheduler = self.conferenceScheduler else {
+				Log.error("\(MeetingViewModel.TAG) ConferenceScheduler still nil after reset")
+				return
+			}
+			
+			self.fillConferenceInfo(confInfo: confInfo)
+			scheduler.account = localAccount
+			scheduler.info = confInfo
 		}
 	}
+
 	
 	// Warning: must be called from core queue. Removed the dispatchQueue.main.async in order to have the animation properly trigger.
 	func loadExistingMeeting(meeting: MeetingModel) {
@@ -352,7 +395,13 @@ class MeetingViewModel: ObservableObject {
 	func cancelMeetingWithNotifications(meeting: MeetingModel) {
 		CoreContext.shared.doOnCoreQueue { core in
 			self.resetConferenceSchedulerAndListeners(core: core)
-			self.conferenceScheduler?.cancelConference(conferenceInfo: meeting.confInfo)
+			
+			guard let scheduler = self.conferenceScheduler else {
+				Log.info("\(MeetingViewModel.TAG) ConferenceScheduler is nil after reset, nothing to cancel")
+				return
+			}
+			
+			scheduler.cancelConference(conferenceInfo: meeting.confInfo)
 		}
 	}
 	
