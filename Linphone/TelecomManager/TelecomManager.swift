@@ -342,11 +342,13 @@ class TelecomManager: ObservableObject {
 	}
 	
 	func terminateCall(call: Call) {
-		do {
-			try call.terminate()
-			Log.info("Call terminated")
-		} catch {
-			Log.error("Failed to terminate call failed because \(error)")
+		CoreContext.shared.doOnCoreQueue { _ in
+			do {
+				try call.terminate()
+				Log.info("Call terminated")
+			} catch {
+				Log.error("Failed to terminate call failed because \(error)")
+			}
 		}
 	}
 	
