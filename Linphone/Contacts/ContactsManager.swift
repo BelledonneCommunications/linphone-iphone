@@ -452,10 +452,12 @@ final class ContactsManager: ObservableObject {
 						}
                         
                         dispatchGroup.notify(queue: .main) {
-                            MagicSearchSingleton.shared.searchForContacts()
-                            if let linphoneFL = self.tempRemoteFriendList {
-                                linphoneFL.updateSubscriptions()
-                            }
+							self.coreContext.doOnCoreQueue { _ in
+								MagicSearchSingleton.shared.searchForContacts()
+								if let linphoneFL = self.tempRemoteFriendList {
+									linphoneFL.updateSubscriptions()
+								}
+							}
                         }
 					}
 				},
@@ -507,9 +509,11 @@ final class ContactsManager: ObservableObject {
 						}
 						
 						dispatchGroup.notify(queue: .main) {
-							MagicSearchSingleton.shared.searchForContacts()
-							if let linphoneFL = self.tempRemoteFriendList {
-								linphoneFL.updateSubscriptions()
+							self.coreContext.doOnCoreQueue { _ in
+								MagicSearchSingleton.shared.searchForContacts()
+								if let linphoneFL = self.tempRemoteFriendList {
+									linphoneFL.updateSubscriptions()
+								}
 							}
 						}
 					}
@@ -549,6 +553,8 @@ final class ContactsManager: ObservableObject {
 					}
 				}
 			)
+			
+			self.friendListDelegate = friendListDelegateTmp
 			
 			CoreContext.shared.mCore.friendsLists.forEach { friendList in
 				friendList.addDelegate(delegate: friendListDelegateTmp)
@@ -593,8 +599,10 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func updateSubscriptionsLinphoneList() {
-		if let linphoneFL = self.linphoneFriendList {
-			linphoneFL.updateSubscriptions()
+		self.coreContext.doOnCoreQueue { _ in
+			if let linphoneFL = self.linphoneFriendList {
+				linphoneFL.updateSubscriptions()
+			}
 		}
 	}
 }
