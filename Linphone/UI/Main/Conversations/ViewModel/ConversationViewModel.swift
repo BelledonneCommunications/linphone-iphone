@@ -2004,25 +2004,23 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func resetDisplayedChatRoom() {
-		if !self.conversationMessagesSection.isEmpty && !self.conversationMessagesSection[0].rows.isEmpty {
-			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
-				CoreContext.shared.doOnCoreQueue { core in
-					let nilParams: ConferenceParams? = nil
-					if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: displayedConversation.chatRoom.peerAddress, participants: nil) {
-						if LinphoneUtils.getChatRoomId(room: newChatRoom) == displayedConversation.id {
-							self.addConversationDelegate(chatRoom: newChatRoom)
-							let conversation = ConversationModel(chatRoom: newChatRoom)
-							DispatchQueue.main.async {
-								self.sharedMainViewModel.displayedConversation = conversation
-							}
-							self.computeComposingLabel()
-							let historyEventsSizeTmp = newChatRoom.historyEventsSize
-							if self.displayedConversationHistorySize < historyEventsSizeTmp {
-								let eventLogList = newChatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
-								
-								if !eventLogList.isEmpty {
-									self.getNewMessages(eventLogs: eventLogList)
-								}
+		if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+			CoreContext.shared.doOnCoreQueue { core in
+				let nilParams: ConferenceParams? = nil
+				if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: displayedConversation.chatRoom.peerAddress, participants: nil) {
+					if LinphoneUtils.getChatRoomId(room: newChatRoom) == displayedConversation.id {
+						self.addConversationDelegate(chatRoom: newChatRoom)
+						let conversation = ConversationModel(chatRoom: newChatRoom)
+						DispatchQueue.main.async {
+							self.sharedMainViewModel.displayedConversation = conversation
+						}
+						self.computeComposingLabel()
+						let historyEventsSizeTmp = newChatRoom.historyEventsSize
+						if self.displayedConversationHistorySize < historyEventsSizeTmp {
+							let eventLogList = newChatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
+							
+							if !eventLogList.isEmpty {
+								self.getNewMessages(eventLogs: eventLogList)
 							}
 						}
 					}
