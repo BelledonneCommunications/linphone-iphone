@@ -405,6 +405,17 @@ struct ContentView: View {
 									VStack(spacing: 0) {
 										if searchIsActive == false {
 											HStack {
+												Button {
+													openMenu()
+												} label: {
+													Image("list")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(.white)
+														.frame(width: 25, height: 25, alignment: .leading)
+														.padding(.all, 5)
+												}
+												
                                                 if let index = accountProfileViewModel.defaultAccountModelIndex,
                                                    index < coreContext.accounts.count {
                                                     
@@ -473,7 +484,7 @@ struct ContentView: View {
 												
 												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
 													.default_text_style_white_800(styleSize: 20)
-													.padding(.leading, 10)
+													.padding(.leading, 2)
 												
 												Spacer()
 												
