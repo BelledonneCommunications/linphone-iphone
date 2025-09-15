@@ -2219,7 +2219,7 @@ struct CallView: View {
                                 changeLayoutSheet = true
                             } label: {
                                 HStack {
-                                    Image("notebook")
+                                    Image("layout")
                                         .renderingMode(.template)
                                         .resizable()
                                         .foregroundStyle(.white)
@@ -2648,7 +2648,7 @@ struct CallView: View {
                                 changeLayoutSheet = true
                             } label: {
                                 HStack {
-                                    Image("notebook")
+                                    Image("layout")
                                         .renderingMode(.template)
                                         .resizable()
                                         .foregroundStyle(.white)
