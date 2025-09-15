@@ -713,44 +713,47 @@ class CallViewModel: ObservableObject {
 	
 	func displayMyVideo() {
 		coreContext.doOnCoreQueue { core in
-			if self.currentCall != nil {
-				do {
-					let params = try core.createCallParams(call: self.currentCall)
-					
-					if (params.videoEnabled == false) {
-						Log.info("\(CallViewModel.TAG) Conference found and video disabled in params, enabling it")
-						params.videoEnabled = true
-						params.videoDirection = MediaDirection.SendRecv
+			guard let call = self.currentCall else { return }
+			
+			let invalidStates: [Call.State] = [.Released, .End, .Error, .Idle]
+
+			guard !invalidStates.contains(call.state) else {
+				Log.warn("\(CallViewModel.TAG) displayMyVideo called in invalid state: \(call.state), skipping update")
+				return
+			}
+			
+			do {
+				let params = try core.createCallParams(call: call)
+				
+				if !params.videoEnabled {
+					Log.info("\(CallViewModel.TAG) Video disabled in params, enabling it")
+					params.videoEnabled = true
+					params.videoDirection = .SendRecv
+				} else {
+					if params.videoDirection == .SendRecv || params.videoDirection == .SendOnly {
+						Log.info("\(CallViewModel.TAG) Video already enabled, switching to recv only")
+						params.videoDirection = .RecvOnly
 					} else {
-						if (params.videoDirection == MediaDirection.SendRecv || params.videoDirection == MediaDirection.SendOnly) {
-							Log.info(
-								"\(CallViewModel.TAG) Conference found with video already enabled, changing video media direction to receive only"
-							)
-							params.videoDirection = MediaDirection.RecvOnly
-						} else {
-							Log.info(
-								"\(CallViewModel.TAG) Conference found with video already enabled, changing video media direction to send & receive"
-							)
-							params.videoDirection = MediaDirection.SendRecv
-						}
+						Log.info("\(CallViewModel.TAG) Video already enabled, switching to send & recv")
+						params.videoDirection = .SendRecv
 					}
-					
-					try self.currentCall!.update(params: params)
-					
-					let video = params.videoDirection == .SendRecv || params.videoDirection == .SendOnly
-					
-					DispatchQueue.main.asyncAfter(deadline: .now() + (video ? 1 : 0)) {
-						if video {
-							self.videoDisplayed = false
-						}
-						self.videoDisplayed = video
-					}
-				} catch {
-					
 				}
+				
+				try call.update(params: params)
+				
+				let video = params.videoDirection == .SendRecv || params.videoDirection == .SendOnly
+				DispatchQueue.main.asyncAfter(deadline: .now() + (video ? 1 : 0)) {
+					if video {
+						self.videoDisplayed = false
+					}
+					self.videoDisplayed = video
+				}
+			} catch {
+				Log.error("\(CallViewModel.TAG) Failed to update video params: \(error)")
 			}
 		}
 	}
+
 	
 	func toggleVideoMode(isAudioOnlyMode: Bool) {
 		coreContext.doOnCoreQueue { core in
