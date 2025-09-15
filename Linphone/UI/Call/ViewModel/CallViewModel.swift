@@ -714,10 +714,8 @@ class CallViewModel: ObservableObject {
 	func displayMyVideo() {
 		coreContext.doOnCoreQueue { core in
 			guard let call = self.currentCall else { return }
-			
-			let invalidStates: [Call.State] = [.Released, .End, .Error, .Idle]
 
-			guard !invalidStates.contains(call.state) else {
+			guard call.state == .StreamsRunning else {
 				Log.warn("\(CallViewModel.TAG) displayMyVideo called in invalid state: \(call.state), skipping update")
 				return
 			}
