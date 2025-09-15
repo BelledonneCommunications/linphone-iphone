@@ -558,6 +558,10 @@ struct CallView: View {
 						}
 					}
 					.onDisappear {
+						coreContext.doOnCoreQueue { core in
+							core.nativeVideoWindow = nil
+						}
+						
 						if callViewModel.videoDisplayed {
 							if !callViewModel.isPaused && TelecomManager.shared.callInProgress
 								&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
@@ -583,6 +587,11 @@ struct CallView: View {
 								LinphoneVideoViewHolder { view in
 									coreContext.doOnCoreQueue { core in
 										core.nativePreviewWindow = view
+									}
+								}
+								.onDisappear {
+									coreContext.doOnCoreQueue { core in
+										core.nativePreviewWindow = nil
 									}
 								}
 								.aspectRatio(callViewModel.callStatsModel.sentVideoWindow.widthFactor/callViewModel.callStatsModel.sentVideoWindow.heightFactor, contentMode: .fill)
@@ -701,6 +710,11 @@ struct CallView: View {
 							LinphoneVideoViewHolder { view in
 								coreContext.doOnCoreQueue { core in
 									core.nativePreviewWindow = view
+								}
+							}
+							.onDisappear {
+								coreContext.doOnCoreQueue { core in
+									core.nativePreviewWindow = nil
 								}
 							}
 							.aspectRatio(callViewModel.callStatsModel.sentVideoWindow.widthFactor/callViewModel.callStatsModel.sentVideoWindow.heightFactor, contentMode: .fill)
@@ -897,6 +911,9 @@ struct CallView: View {
 									}
 								}
 								.onDisappear {
+									coreContext.doOnCoreQueue { core in
+										core.nativeVideoWindow = nil
+									}
 									if !callViewModel.isPaused && TelecomManager.shared.callInProgress
 										&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
 										// TODO: Enable PIP in 6.1
@@ -976,6 +993,11 @@ struct CallView: View {
 											LinphoneVideoViewHolder { view in
 												coreContext.doOnCoreQueue { core in
 													core.nativePreviewWindow = view
+												}
+											}
+											.onDisappear {
+												coreContext.doOnCoreQueue { core in
+													core.nativePreviewWindow = nil
 												}
 											}
 											.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
@@ -1141,6 +1163,11 @@ struct CallView: View {
 										LinphoneVideoViewHolder { view in
 											coreContext.doOnCoreQueue { core in
 												core.nativePreviewWindow = view
+											}
+										}
+										.onDisappear {
+											coreContext.doOnCoreQueue { core in
+												core.nativePreviewWindow = nil
 											}
 										}
 										.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
@@ -1360,6 +1387,11 @@ struct CallView: View {
 									LinphoneVideoViewHolder { view in
 										coreContext.doOnCoreQueue { core in
 											core.nativePreviewWindow = view
+										}
+									}
+									.onDisappear {
+										coreContext.doOnCoreQueue { core in
+											core.nativePreviewWindow = nil
 										}
 									}
 									.frame(
@@ -1596,6 +1628,11 @@ struct CallView: View {
 									LinphoneVideoViewHolder { view in
 										coreContext.doOnCoreQueue { core in
 											core.nativePreviewWindow = view
+										}
+									}
+									.onDisappear {
+										coreContext.doOnCoreQueue { core in
+											core.nativePreviewWindow = nil
 										}
 									}
 									.frame(
