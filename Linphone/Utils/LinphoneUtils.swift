@@ -72,6 +72,32 @@ class LinphoneUtils: NSObject {
 		core.defaultAccount?.params?.conferenceFactoryUri != nil
 	}
 	
+	public class func createConferenceScheduler(core: Core) -> ConferenceScheduler? {
+		let account = LinphoneUtils.getDefaultAccount()
+		if let url = account?.params?.ccmpServerUrl, !url.isEmpty {
+			Log.info(
+				"CCMP server URL has been set in Account's params, using CCMP conference scheduler"
+			)
+			
+			let conferenceScheduler = try? core.createConferenceSchedulerWithType(
+				account: account,
+				schedulingType: .CCMP
+			)
+				
+			return conferenceScheduler
+		}
+		Log.info(
+			"CCMP server URL hasn't been set in Account's params, using SIP conference scheduler"
+		)
+		
+		let conferenceScheduler = try? core.createConferenceSchedulerWithType(
+			account: account,
+			schedulingType: .SIP
+		)
+		
+		return conferenceScheduler
+	}
+	
 	public class func createGroupCall(core: Core, account: Account?, subject: String) -> Conference? {
 		do {
 			let conferenceParams = try core.createConferenceParams(conference: nil)

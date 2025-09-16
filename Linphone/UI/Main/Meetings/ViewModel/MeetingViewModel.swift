@@ -189,7 +189,7 @@ class MeetingViewModel: ObservableObject {
 	
 	private func resetConferenceSchedulerAndListeners(core: Core) {
 		self.mSchedulerDelegate = nil
-		self.conferenceScheduler = try? core.createConferenceScheduler()
+		self.conferenceScheduler = LinphoneUtils.createConferenceScheduler(core: core)
 		
 		guard let scheduler = self.conferenceScheduler else {
 			Log.info("\(MeetingViewModel.TAG) ConferenceScheduler is nil after reset, nothing to cancel")
@@ -317,7 +317,9 @@ class MeetingViewModel: ObservableObject {
 			
 			confInfo.setCapability(streamType: .Text, enable: true)
 			
-			if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
+			// Enable end-to-end encryption if client supports it
+			//if isEndToEndEncryptedChatAvailable(core: core) {
+			if false {
 				Log.info("\(MeetingViewModel.TAG) Requesting EndToEnd security level for conference")
 				confInfo.securityLevel = .EndToEnd
 			} else {
