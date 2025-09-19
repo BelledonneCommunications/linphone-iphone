@@ -93,8 +93,6 @@ class AccountModel: ObservableObject {
 		let displayName = account.displayName()
 		let address = account.params?.identityAddress?.asString()
 		
-		self.requestDevicesList()
-		
 		let displayNameTmp = account.params?.identityAddress?.displayName ?? displayName
 		let usernaneAvatarTmp = account.contactAddress?.username ?? displayName
 		var photoAvatarModelTmp = ""
