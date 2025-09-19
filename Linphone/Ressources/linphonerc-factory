@@ -22,20 +22,17 @@ zrtp_key_agreements_suites=MS_ZRTP_KEY_AGREEMENT_K255_MLK512,MS_ZRTP_KEY_AGREEME
 chat_messages_aggregation_delay=1000
 chat_messages_aggregation=1
 update_presence_model_timestamp_before_publish_expires_refresh=1
-rls_uri=sips:rls@sip.linphone.org
 
 [sound]
 #remove this property for any application that is not Linphone public version itself
 ec_calibrator_cool_tones=1
-disable_ringing=1
+disable_ringing=0
 
 [audio]
 
 [video]
 auto_resize_preview_to_keep_ratio=1
 max_conference_size=vga
-automatically_accept=1
-automatically_initiate=0
 
 [misc]
 enable_basic_to_client_group_chat_room_migration=0
@@ -49,6 +46,7 @@ record_aware=1
 
 [account_creator]
 url=https://subscribe.linphone.org/api/
+backend=1
 
 [lime]
 lime_update_threshold=86400
