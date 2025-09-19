@@ -107,8 +107,11 @@ class AccountLoginViewModel: ObservableObject {
 				try accountParams.setServeraddress(newValue: address)
 				// And we ensure the account will start the registration process
 				accountParams.registerEnabled = true
-				accountParams.pushNotificationAllowed = true
-				accountParams.remotePushNotificationAllowed = true
+				
+				if accountParams.pushNotificationAllowed {
+					accountParams.pushNotificationAllowed = true
+					accountParams.remotePushNotificationAllowed = true
+				}
 #if DEBUG
 				let pushEnvironment = ".dev"
 #else

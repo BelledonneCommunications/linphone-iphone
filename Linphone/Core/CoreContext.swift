@@ -146,7 +146,8 @@ class CoreContext: ObservableObject {
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: Config.appGroupName, mainCore: true)
 			
 			self.mCore.callkitEnabled = true
-			self.mCore.pushNotificationEnabled = true
+			
+			self.mCore.pushNotificationEnabled = self.mCore.defaultAccount?.params?.pushNotificationAllowed ?? false
 			
 			let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String
 			let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
