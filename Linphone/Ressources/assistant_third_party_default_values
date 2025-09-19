@@ -18,6 +18,7 @@
 	<entry name="conference_factory_uri" overwrite="true"></entry>
 	<entry name="audio_video_conference_factory_uri" overwrite="true"></entry>
 	<entry name="push_notification_allowed" overwrite="true">0</entry>
+	<entry name="remote_push_notification_allowed" overwrite="true">0</entry>
 	<entry name="cpim_in_basic_chat_rooms_enabled" overwrite="true">0</entry>
 	<entry name="rtp_bundle" overwrite="true">0</entry>
 	<entry name="lime_server_url" overwrite="true"></entry>
