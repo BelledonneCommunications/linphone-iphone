@@ -346,32 +346,34 @@ struct ContentView: View {
                                             }
                                             .frame(height: geometry.size.height/4)
                                         }
-                                        
-										Button(action: {
-											sharedMainViewModel.changeIndexView(indexViewInt: 3)
-											sharedMainViewModel.displayedFriend = nil
-											sharedMainViewModel.displayedCall = nil
-											sharedMainViewModel.displayedConversation = nil
-										}, label: {
-											VStack {
-												Image("video-conference")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.orangeMain500 : Color.grayMain2c600)
-													.frame(width: 25, height: 25)
-												if sharedMainViewModel.indexView == 0 {
-													Text("bottom_navigation_meetings_label")
-														.default_text_style_700(styleSize: 10)
-												} else {
-													Text("bottom_navigation_meetings_label")
-														.default_text_style(styleSize: 10)
-												}
-											}
-										})
-										.padding(.top)
-										.frame(height: geometry.size.height/4)
 										
-										Spacer()
+										if !sharedMainViewModel.disableMeetingFeature {
+											Button(action: {
+												sharedMainViewModel.changeIndexView(indexViewInt: 3)
+												sharedMainViewModel.displayedFriend = nil
+												sharedMainViewModel.displayedCall = nil
+												sharedMainViewModel.displayedConversation = nil
+											}, label: {
+												VStack {
+													Image("video-conference")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.orangeMain500 : Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+													if sharedMainViewModel.indexView == 0 {
+														Text("bottom_navigation_meetings_label")
+															.default_text_style_700(styleSize: 10)
+													} else {
+														Text("bottom_navigation_meetings_label")
+															.default_text_style(styleSize: 10)
+													}
+												}
+											})
+											.padding(.top)
+											.frame(height: geometry.size.height/4)
+											
+											Spacer()
+										}
 									}
 								}
 								.frame(width: 75, height: geometry.size.height)
@@ -906,31 +908,33 @@ struct ContentView: View {
                                             .frame(width: 66)
                                         }
                                     }
-                                    
-									Spacer()
-									Button(action: {
-										sharedMainViewModel.changeIndexView(indexViewInt: 3)
-										sharedMainViewModel.displayedFriend = nil
-										sharedMainViewModel.displayedCall = nil
-										sharedMainViewModel.displayedConversation = nil
-									}, label: {
-										VStack {
-											Image("video-conference")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.orangeMain500 : Color.grayMain2c600)
-												.frame(width: 25, height: 25)
-											if sharedMainViewModel.indexView == 3 {
-												Text("bottom_navigation_meetings_label")
-													.default_text_style_700(styleSize: 9)
-											} else {
-												Text("bottom_navigation_meetings_label")
-													.default_text_style(styleSize: 9)
+									
+									if !sharedMainViewModel.disableMeetingFeature {
+										Spacer()
+										Button(action: {
+											sharedMainViewModel.changeIndexView(indexViewInt: 3)
+											sharedMainViewModel.displayedFriend = nil
+											sharedMainViewModel.displayedCall = nil
+											sharedMainViewModel.displayedConversation = nil
+										}, label: {
+											VStack {
+												Image("video-conference")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.orangeMain500 : Color.grayMain2c600)
+													.frame(width: 25, height: 25)
+												if sharedMainViewModel.indexView == 3 {
+													Text("bottom_navigation_meetings_label")
+														.default_text_style_700(styleSize: 9)
+												} else {
+													Text("bottom_navigation_meetings_label")
+														.default_text_style(styleSize: 9)
+												}
 											}
-										}
-									})
-									.padding(.top)
-									.frame(width: 66)
+										})
+										.padding(.top)
+										.frame(width: 66)
+									}
 									
 									Spacer()
 								}

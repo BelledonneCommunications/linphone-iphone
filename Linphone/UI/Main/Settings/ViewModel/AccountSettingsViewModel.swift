@@ -215,6 +215,9 @@ class AccountSettingsViewModel: ObservableObject {
 				newParams.limeServerUrl = self.limeServerUrl
 				
 				self.accountModel.account.params = newParams
+				
+				SharedMainViewModel.shared.updateDisableMeetingFeature()
+				
 				print("\(AccountSettingsViewModel.TAG) Changes have been saved")
 			}
 		}
