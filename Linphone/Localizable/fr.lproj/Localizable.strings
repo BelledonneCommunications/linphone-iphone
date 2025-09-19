@@ -337,7 +337,7 @@
 "manage_account_international_prefix" = "Indicatif international";
 "manage_account_no_device" = "Aucun appareil n'a été trouvé…";
 "manage_account_remove_picture" = "Supprimer";
-"manage_account_settings" = "Mon compte";
+"manage_account_settings" = "Paramètres";
 "manage_account_status_cleared_summary" = "Compte désactivé, vous ne recevrez ni appel ni message.";
 "manage_account_status_connected_summary" = "Vous êtes en ligne, on peut vous joindre.";
 "manage_account_status_failed_summary" = "Erreur de connexion, vérifiez vos paramètres.";
