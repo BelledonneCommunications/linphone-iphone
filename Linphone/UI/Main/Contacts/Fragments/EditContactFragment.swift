@@ -521,84 +521,89 @@ struct EditContactFragment: View {
 				organizationName: editContactViewModel.company,
 				jobTitle: editContactViewModel.jobTitle,
 				displayName: "",
-				sipAddresses: editContactViewModel.sipAddresses.map { $0 },
-				phoneNumbers: editContactViewModel.phoneNumbers.map { PhoneNumber(numLabel: "", num: $0)},
+				sipAddresses: editContactViewModel.sipAddresses,
+				phoneNumbers: editContactViewModel.phoneNumbers.map { PhoneNumber(numLabel: "", num: $0) },
 				imageData: ""
 			)
 			
-			if editContactViewModel.selectedEditFriend != nil && editContactViewModel.selectedEditFriend!.friend != nil && selectedImage == nil &&
-				!removedImage && editContactViewModel.selectedEditFriend!.friend!.photo!.suffix(11) != "default.png" {
-				ContactsManager.shared.saveFriend(
-					result: String(editContactViewModel.selectedEditFriend!.friend!.photo!.dropFirst(6)),
-					contact: newContact,
-					existingFriend: editContactViewModel.selectedEditFriend!.friend, completion: {_ in
-						if let selectedFriendTmp = editContactViewModel.selectedEditFriend?.friend {
-							let addressTmp = selectedFriendTmp.address?.clone()?.asStringUriOnly() ?? ""
-							SharedMainViewModel.shared.displayedFriend?.resetContactAvatarModel(
-								friend: selectedFriendTmp,
-								name: selectedFriendTmp.name ?? "",
-								address: addressTmp,
-								withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
-							)
-						}
-						let friendIsNil = editContactViewModel.selectedEditFriend?.friend == nil
-						DispatchQueue.main.async {
-							delayColorDismiss()
-							if friendIsNil {
-								withAnimation {
-									isShowEditContactFragment.toggle()
-								}
-							} else {
-								withAnimation {
-									dismiss()
-								}
-							}
-						}
-						
-						editContactViewModel.resetValues()
-					}
-				)
+			let existingFriend = editContactViewModel.selectedEditFriend?.friend
+			let friendHasCustomPhoto = existingFriend?.photo?.suffix(11) != "default.png"
+			
+			// Case: editing existing friend without changing the image
+			if let existingFriend = existingFriend,
+			   selectedImage == nil,
+			   !removedImage,
+			   friendHasCustomPhoto,
+			   let photo = existingFriend.photo {
+				
+				let resultPhoto = String(photo.dropFirst(6))
+				ContactsManager.shared.saveFriend(result: resultPhoto, contact: newContact, existingFriend: existingFriend) { _ in
+					self.updateAvatar(for: existingFriend)
+					self.finishUIUpdate(existingFriend: existingFriend)
+				}
+				
 			} else {
-				ContactsManager.shared.saveImage(
-					image: selectedImage
-					?? ContactsManager.shared.textToImage(
-						firstName: editContactViewModel.firstName, lastName: editContactViewModel.lastName),
-					name: editContactViewModel.firstName
-					+ editContactViewModel.lastName,
-					prefix: ((selectedImage == nil) ? "-default" : ""),
-					contact: newContact, linphoneFriend: "Linphone address-book", existingFriend: editContactViewModel.selectedEditFriend?.friend) {
-						if let selectedFriendTmp = editContactViewModel.selectedEditFriend?.friend {
-							let addressTmp = selectedFriendTmp.address?.clone()?.asStringUriOnly() ?? ""
-							SharedMainViewModel.shared.displayedFriend?.resetContactAvatarModel(
-								friend: selectedFriendTmp,
-								name: selectedFriendTmp.name ?? "",
-								address: addressTmp,
-								withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
-							)
-						} else {
-							MagicSearchSingleton.shared.searchForContacts()
-							ContactsManager.shared.updateSubscriptionsLinphoneList()
-						}
-						
-						let friendIsNil = editContactViewModel.selectedEditFriend?.friend == nil
-						
-						DispatchQueue.main.async {
-							delayColorDismiss()
-							if friendIsNil {
-								withAnimation {
-									isShowEditContactFragment.toggle()
-								}
-							} else {
-								withAnimation {
-									dismiss()
-								}
-							}
-						}
-						
-						editContactViewModel.resetValues()
-					}
+				// Case: creating new friend or updating with a new image
+				let imageToSave = selectedImage ?? ContactsManager.shared.textToImage(
+					firstName: editContactViewModel.firstName,
+					lastName: editContactViewModel.lastName
+				)
+				let prefix = selectedImage == nil ? "-default" : ""
+				
+				saveImageThreadSafe(
+					image: imageToSave,
+					name: editContactViewModel.firstName + editContactViewModel.lastName,
+					prefix: prefix,
+					contact: newContact,
+					existingFriend: existingFriend,
+					linphoneFriend: "Linphone address-book"
+				)
 			}
 		}
+	}
+	
+	private func saveImageThreadSafe(image: UIImage, name: String, prefix: String, contact: Contact, existingFriend: Friend?, linphoneFriend: String) {
+		ContactsManager.shared.saveImage(
+			image: image,
+			name: name,
+			prefix: prefix,
+			contact: contact,
+			linphoneFriend: linphoneFriend,
+			existingFriend: existingFriend
+		) {
+			if let existingFriend = existingFriend {
+				self.updateAvatar(for: existingFriend)
+			} else {
+				MagicSearchSingleton.shared.searchForContacts()
+				ContactsManager.shared.updateSubscriptionsLinphoneList()
+			}
+			self.finishUIUpdate(existingFriend: existingFriend)
+		}
+	}
+
+	private func updateAvatar(for friend: Friend) {
+		let addressTmp = friend.address?.clone()?.asStringUriOnly() ?? ""
+		SharedMainViewModel.shared.displayedFriend?.resetContactAvatarModel(
+			friend: friend,
+			name: friend.name ?? "",
+			address: addressTmp,
+			withPresence: SharedMainViewModel.shared.displayedFriend?.withPresence
+		)
+	}
+
+	private func finishUIUpdate(existingFriend: Friend?) {
+		let friendIsNil = existingFriend == nil
+		DispatchQueue.main.async {
+			delayColorDismiss()
+			withAnimation {
+				if friendIsNil {
+					isShowEditContactFragment.toggle()
+				} else {
+					dismiss()
+				}
+			}
+		}
+		editContactViewModel.resetValues()
 	}
 }
 
