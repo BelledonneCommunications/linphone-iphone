@@ -358,7 +358,7 @@
 "sip_address_display_name" = "Anzeigename";
 "sip_address_domain" = "Domäne";
 "start" = "Start";
-"web_platform_register_email_url" = "";
+"web_platform_register_email_url" = "TURN aktivieren";
 "welcome_page_3_title" = "Open source";
 "welcome_page_title" = "Willkommen";
 "conversation_end_to_end_encrypted_event_subtitle" = "Nachrichten in dieser Gespr sind Ende-zu-Ende verschlüsselt. Nur Ihr Gesprächspartner kann sie entschlüsseln.";
