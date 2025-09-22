@@ -236,94 +236,91 @@ final class ContactsManager: ObservableObject {
 		
 		awaitDataWrite(data: data, name: name, prefix: prefix) { result in
 			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
-				if resultFriend != nil {
-					if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
-                        if let linphoneFL = self.linphoneFriendList, linphoneFriend == linphoneFL.displayName {
-							_ = linphoneFL.addFriend(linphoneFriend: resultFriend!)
-                        } else if let linphoneFL = self.tempRemoteFriendList {
-                            _ = linphoneFL.addFriend(linphoneFriend: resultFriend!)
-                        }
-					} else if existingFriend == nil {
-						if let friendListTmp = self.friendList {
-							_ = friendListTmp.addLocalFriend(linphoneFriend: resultFriend!)
+				self.coreContext.doOnCoreQueue { core in
+					if let friend = resultFriend {
+						if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
+							if let linphoneFL = self.linphoneFriendList, linphoneFriend == linphoneFL.displayName {
+								_ = linphoneFL.addFriend(linphoneFriend: friend)
+							} else if let linphoneFL = self.tempRemoteFriendList {
+								_ = linphoneFL.addFriend(linphoneFriend: friend)
+							}
+						} else if existingFriend == nil {
+							if let friendListTmp = self.friendList {
+								_ = friendListTmp.addLocalFriend(linphoneFriend: friend)
+							}
 						}
 					}
+					
+					DispatchQueue.main.async {
+						completion()
+					}
 				}
-				DispatchQueue.main.async { completion() }
 			}
 		}
 	}
+
 	
 	func saveFriend(result: String, contact: Contact, existingFriend: Friend?, completion: @escaping (Friend?) -> Void) {
 		self.coreContext.doOnCoreQueue { core in
 			do {
+				// Create or use existing friend
 				let friend = try existingFriend ?? core.createFriend()
-                
+				
+				// Strong capture in closure to avoid threading issues
 				friend.edit()
+				
 				friend.nativeUri = contact.identifier
 				try friend.setName(newValue: contact.firstName + " " + contact.lastName)
 				
-				let friendvCard = friend.vcard
-				
-				if friendvCard != nil {
-					friendvCard!.givenName = contact.firstName
-					friendvCard!.familyName = contact.lastName
+				// Safely update vCard
+				if let vcard = friend.vcard {
+					vcard.givenName = contact.firstName
+					vcard.familyName = contact.lastName
 				}
 				
-				friend.organization = contact.organizationName
-				
-				var friendAddresses: [Address] = []
-				let existingAddresses = Array(friend.addresses)
-				for address in existingAddresses {
-					friend.removeAddress(address: address)
-				}
-				
-				contact.sipAddresses.forEach { sipAddress in
-					if !sipAddress.isEmpty {
-						let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true)
-						
-						if address != nil && ((friendAddresses.firstIndex(where: {$0.asString() == address?.asString()})) == nil) {
-							friend.addAddress(address: address!)
-							friendAddresses.append(address!)
-						}
-					}
-				}
-				
-				var friendPhoneNumbers: [PhoneNumber] = []
-				let existingPhoneNumbers = Array(friend.phoneNumbersWithLabel)
-				for phoneNumber in existingPhoneNumbers {
-					friend.removePhoneNumberWithLabel(phoneNumber: phoneNumber)
-				}
-				
-				contact.phoneNumbers.forEach { phone in
-					do {
-						if (friendPhoneNumbers.firstIndex(where: {$0.num == phone.num})) == nil {
-							let labelDrop = String(phone.numLabel.dropFirst(4).dropLast(4))
-							let phoneNumber = try Factory.Instance.createFriendPhoneNumber(phoneNumber: phone.num, label: labelDrop)
-							friend.addPhoneNumberWithLabel(phoneNumber: phoneNumber)
-							friendPhoneNumbers.append(phone)
-						}
-					} catch let error {
-						print("\(#function) - Failed to create friend phone number for \(phone.numLabel):", error)
-					}
-				}
-				
-				friend.photo = "file:/" + result
 				friend.organization = contact.organizationName
 				friend.jobTitle = contact.jobTitle
 				
+				// Clear existing addresses and add new ones
+				friend.addresses.forEach { friend.removeAddress(address: $0) }
+				for sipAddress in contact.sipAddresses where !sipAddress.isEmpty {
+					if let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true),
+					   !friend.addresses.contains(where: { $0.asString() == address.asString() }) {
+						friend.addAddress(address: address)
+					}
+				}
+				
+				// Clear existing phone numbers and add new ones
+				friend.phoneNumbersWithLabel.forEach { friend.removePhoneNumberWithLabel(phoneNumber: $0) }
+				for phone in contact.phoneNumbers {
+					do {
+						let labelDrop = String(phone.numLabel.dropFirst(4).dropLast(4))
+						let phoneNumber = try Factory.Instance.createFriendPhoneNumber(phoneNumber: phone.num, label: labelDrop)
+						friend.addPhoneNumberWithLabel(phoneNumber: phoneNumber)
+					} catch {
+						print("saveFriend - Failed to create friend phone number for \(phone.numLabel):", error)
+					}
+				}
+				
+				// Set photo
+				friend.photo = "file:/" + result
+				
+				// Linphone subscription settings
 				try friend.setSubscribesenabled(newValue: false)
 				try friend.setIncsubscribepolicy(newValue: .SPDeny)
 				
+				// Commit changes
 				friend.done()
 				
+				// Notify completion safely
 				completion(friend)
-			} catch let error {
-				print("Failed to enumerate contact", error)
+			} catch {
+				print("saveFriend - Failed to save friend:", error)
 				completion(nil)
 			}
 		}
 	}
+
 	
 	func getImagePath(friendPhotoPath: String) -> URL {
 		let friendPath = String(friendPhotoPath.dropFirst(6))
