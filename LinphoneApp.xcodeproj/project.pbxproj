@@ -306,6 +306,7 @@
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
 		D71A0E182B485ADF0002C6CD /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
+		D71C266F2E819A0D001A7F92 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Localizable/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListFragment.swift; sourceTree = "<group>"; };
 		D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFragment.swift; sourceTree = "<group>"; };
 		D720E6AC2BAD822000DDFD87 /* ParticipantModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipantModel.swift; sourceTree = "<group>"; };
@@ -1153,6 +1154,7 @@
 				de,
 				ru,
 				"zh-Hans",
+				sk,
 			);
 			mainGroup = D719ABAA2ABC67BF00B41C10;
 			packageReferences = (
@@ -1445,6 +1447,7 @@
 				D7F372C22E65C5190008B863 /* de */,
 				D7F372C32E65C51B0008B863 /* ru */,
 				D7F372C42E65C51E0008B863 /* zh-Hans */,
+				D71C266F2E819A0D001A7F92 /* sk */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
