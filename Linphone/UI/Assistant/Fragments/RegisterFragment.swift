@@ -26,6 +26,8 @@ struct RegisterFragment: View {
 	@ObservedObject var registerViewModel: RegisterViewModel
 	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
 	
+	@StateObject private var keyboard = KeyboardResponder()
+	
 	@Environment(\.dismiss) var dismiss
 	
 	@State private var isSecured: Bool = true
@@ -181,14 +183,6 @@ struct RegisterFragment: View {
 						.autocapitalization(.none)
 						.padding(.leading, 5)
 						.keyboardType(.numberPad)
-						.toolbar {
-							ToolbarItemGroup(placement: .keyboard) {
-								Spacer()
-								Button("Done") {
-									UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-								}
-							}
-						}
 						.onChange(of: registerViewModel.phoneNumber) { _ in
 							if !registerViewModel.phoneNumberError.isEmpty {
 								registerViewModel.phoneNumberError = ""
@@ -355,11 +349,8 @@ struct RegisterFragment: View {
 				.clipped()
 		}
 		.frame(minHeight: geometry.size.height)
+		.padding(.bottom, keyboard.currentHeight)
 	}
-}
-
-#Preview {
-	RegisterFragment(registerViewModel: RegisterViewModel())
 }
 
 // swiftlint:enable line_length
