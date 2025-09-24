@@ -29,6 +29,8 @@ class AccountLoginViewModel: ObservableObject {
 	@Published var domain: String = "sip.linphone.org"
 	@Published var displayName: String = ""
 	@Published var transportType: String = "TLS"
+	@Published var authId: String = ""
+	@Published var outboundProxy: String = ""
 	
 	private var mCoreDelegate: CoreDelegate!
 	
@@ -83,7 +85,7 @@ class AccountLoginViewModel: ObservableObject {
 				// The realm will be determined automatically from the first register, as well as the algorithm
 				let authInfo = try Factory.Instance.createAuthInfo(
 					username: self.username,
-					userid: "",
+					userid: self.authId,
 					passwd: self.passwd,
 					ha1: "",
 					realm: "",
@@ -100,7 +102,15 @@ class AccountLoginViewModel: ObservableObject {
 				try accountParams.setIdentityaddress(newValue: identity)
 				
 				// We also need to configure where the proxy server is located
-				let address = try Factory.Instance.createAddress(addr: String("sip:" + self.domain))
+				var serverAddress: Address
+				if (!self.outboundProxy.isEmpty) {
+					let server = self.outboundProxy.starts(with: "sip:") ? self.outboundProxy : String("sip:" + self.outboundProxy)
+					serverAddress = try Factory.Instance.createAddress(addr: server)
+				} else {
+					serverAddress = try Factory.Instance.createAddress(addr: String("sip:" + self.domain))
+				}
+				
+				let address = serverAddress
 				
 				// We use the Address object to easily set the transport protocol
 				try address.setTransport(newValue: transport)
@@ -156,6 +166,8 @@ class AccountLoginViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					self.domain = "sip.linphone.org"
 					self.transportType = "TLS"
+					self.authId = ""
+					self.outboundProxy = ""
 				}
 				
 			} catch { NSLog(error.localizedDescription) }

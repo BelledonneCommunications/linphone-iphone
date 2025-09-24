@@ -93,6 +93,7 @@
 "assistant_third_party_sip_account_warning_explanation" = "Certaines fonctionnalités telles que les conversations de groupe, les vidéo-conférences, etc… nécessitent un compte %@.\n\nCes fonctionnalités seront masquées si vous utilisez un compte SIP tiers.\n\nPour les activer dans un projet commercial, merci de nous contacter.";
 "assistant_third_party_sip_account_warning_ok" = "J’ai compris";
 "assistant_web_platform_link" = "subscribe.linphone.org";
+"authentication_id" = "Identifiant de connexion (si différent)";
 "bottom_navigation_calls_label" = "Appels";
 "bottom_navigation_contacts_label" = "Contacts";
 "bottom_navigation_conversations_label" = "Conversations";

@@ -93,6 +93,7 @@
 "assistant_third_party_sip_account_warning_explanation" = "Some features require a %@ account, such as group messaging, video conferences…\n\nThese features are hidden when you register with a third party SIP account.\n\nTo enable it in a commercial project, please contact us.";
 "assistant_third_party_sip_account_warning_ok" = "I understand";
 "assistant_web_platform_link" = "subscribe.linphone.org";
+"authentication_id" = "Authentication ID (if different)";
 "bottom_navigation_calls_label" = "Calls";
 "bottom_navigation_contacts_label" = "Contacts";
 "bottom_navigation_conversations_label" = "Conversations";
