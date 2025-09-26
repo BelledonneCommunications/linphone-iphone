@@ -345,7 +345,7 @@ struct LoginFragment: View {
 					.foregroundStyle(Color.grayMain2c700)
 					.padding(.horizontal, 10)
 				
-				NavigationLink(destination: RegisterFragment(registerViewModel: RegisterViewModel()), isActive: $isLinkREGActive, label: { Text("assistant_account_register")
+				NavigationLink(destination: RegisterFragment(), isActive: $isLinkREGActive, label: { Text("assistant_account_register")
 						.default_text_style_white_600(styleSize: 20)
 						.frame(height: 35)
 				})

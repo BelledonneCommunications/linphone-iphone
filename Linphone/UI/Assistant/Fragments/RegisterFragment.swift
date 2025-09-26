@@ -22,9 +22,9 @@
 import SwiftUI
 
 struct RegisterFragment: View {
-	
-	@ObservedObject var registerViewModel: RegisterViewModel
 	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
+	
+	@StateObject private var registerViewModel = RegisterViewModel()
 	
 	@StateObject private var keyboard = KeyboardResponder()
 	
@@ -271,13 +271,13 @@ struct RegisterFragment: View {
 				})
 				.padding(.horizontal, 20)
 				.padding(.vertical, 10)
-				.background((registerViewModel.username.isEmpty || registerViewModel.phoneNumber.isEmpty || registerViewModel.passwd.isEmpty) ? Color.orangeMain100 : Color.orangeMain500)
+				.background((registerViewModel.username.isEmpty || registerViewModel.dialPlanValueSelected == "---" || registerViewModel.phoneNumber.isEmpty || registerViewModel.passwd.isEmpty) ? Color.orangeMain100 : Color.orangeMain500)
 				.cornerRadius(60)
 				.disabled(!registerViewModel.isLinkActive)
 				.padding(.bottom)
 				.simultaneousGesture(
 					TapGesture().onEnded {
-						if !(registerViewModel.username.isEmpty || registerViewModel.phoneNumber.isEmpty || registerViewModel.passwd.isEmpty) {
+						if !(registerViewModel.username.isEmpty || registerViewModel.dialPlanValueSelected == "---" || registerViewModel.phoneNumber.isEmpty || registerViewModel.passwd.isEmpty) {
 							withAnimation {
 								self.isShowPopup = true
 							}

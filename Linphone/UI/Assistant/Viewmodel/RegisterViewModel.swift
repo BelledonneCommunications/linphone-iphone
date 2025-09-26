@@ -41,7 +41,7 @@ class RegisterViewModel: ObservableObject {
 	@Published var displayName: String = ""
 	@Published var transportType: String = "TLS"
 	
-	@Published var dialPlanValueSelected: String = "🇫🇷 +33"
+	@Published var dialPlanValueSelected: String = "---"
 	
 	private let HASHALGORITHM = "SHA-256"
 	
@@ -257,7 +257,7 @@ class RegisterViewModel: ObservableObject {
 			
 			SharedMainViewModel.shared.dialPlansList.forEach { dial in
 				let countryCode = dialPlanValueSelected.components(separatedBy: "+")
-				if dial.countryCallingCode == countryCode[1] {
+				if dial?.countryCallingCode == countryCode[1] {
 					dialPlan = dial
 				}
 			}
@@ -412,7 +412,7 @@ class RegisterViewModel: ObservableObject {
 				
 				for dial in SharedMainViewModel.shared.dialPlansList {
 					let countryCode = self.dialPlanValueSelected.components(separatedBy: "+")
-					if dial.countryCallingCode == countryCode[1] {
+					if dial?.countryCallingCode == countryCode[1] {
 						dialPlan = dial
 						break
 					}
