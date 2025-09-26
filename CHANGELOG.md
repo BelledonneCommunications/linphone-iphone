@@ -10,6 +10,25 @@ Group changes to describe their impact on the project, as follows:
 	Fixed for any bug fixes.
 	Security to invite users to upgrade in case of vulnerabilities.
 	
+	
+## [6.0.2] - 2025-09-26
+
+### Added
+- Advanced settings to third-party SIP account login view
+- Burger button to open the side menu
+
+### Changed
+- Layout icon in conference call
+- Translations from Weblate
+- Disable meetings view when audio/video conference factory address is missing
+
+### Fixed
+- EditContactFragment view and allow '+' in number dialer
+- Dial plan selector and dial plan default
+- Crash when editing a contact by safely unwrapping friend/photo
+- Meeting scheduler
+
+
 ## [6.0.1] - 2025-09-12
 
 ### Added
