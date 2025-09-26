@@ -29,6 +29,7 @@ struct EditContactFragment: View {
 	@State private var orientation = UIDevice.current.orientation
 	
 	@StateObject private var editContactViewModel: EditContactViewModel
+	@StateObject private var keyboard = KeyboardResponder()
 	
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowDismissPopup: Bool
@@ -339,7 +340,7 @@ struct EditContactFragment: View {
 													editContactViewModel.sipAddresses.append("")
 												}
 											}
-
+										
 										Button(action: {
 											guard editContactViewModel.sipAddresses.indices.contains(index) else { return }
 											editContactViewModel.sipAddresses.remove(at: index)
@@ -349,17 +350,15 @@ struct EditContactFragment: View {
 												.resizable()
 												.foregroundStyle(
 													editContactViewModel.sipAddresses[index].isEmpty && index == editContactViewModel.sipAddresses.count - 1
-														? Color.gray100
-														: Color.grayMain2c600
+													? Color.gray100
+													: Color.grayMain2c600
 												)
 												.frame(width: 25, height: 25)
 												.padding(.all, 10)
 										}
 										.disabled(editContactViewModel.sipAddresses[index].isEmpty && index == editContactViewModel.sipAddresses.count - 1)
-										.frame(maxHeight: .infinity)
 									}
 								}
-
 							}
 							.padding(.bottom)
 							
@@ -373,20 +372,12 @@ struct EditContactFragment: View {
 										TextField("phone_number", text: $editContactViewModel.phoneNumbers[index])
 											.default_text_style(styleSize: 15)
 											.textContentType(.oneTimeCode)
-											.keyboardType(.numberPad)
+											.keyboardType(.phonePad)
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
 											.background(.white)
 											.cornerRadius(60)
-											.toolbar {
-												ToolbarItemGroup(placement: .keyboard) {
-													Spacer()
-													Button("Done") {
-														UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-													}
-												}
-											}
 											.overlay(
 												RoundedRectangle(cornerRadius: 60)
 													.inset(by: 0.5)
@@ -400,7 +391,7 @@ struct EditContactFragment: View {
 													}
 												}
 											}
-
+										
 										Button(action: {
 											guard editContactViewModel.phoneNumbers.indices.contains(index) else { return }
 											editContactViewModel.phoneNumbers.remove(at: index)
@@ -410,19 +401,17 @@ struct EditContactFragment: View {
 												.resizable()
 												.foregroundStyle(
 													editContactViewModel.phoneNumbers[index].isEmpty && index == editContactViewModel.phoneNumbers.count - 1
-														? Color.gray100
-														: Color.grayMain2c600
+													? Color.gray100
+													: Color.grayMain2c600
 												)
 												.frame(width: 25, height: 25)
 												.padding(.all, 10)
 										}
 										.disabled(editContactViewModel.phoneNumbers[index].isEmpty && index == editContactViewModel.phoneNumbers.count - 1)
-										.frame(maxHeight: .infinity)
 									}
 									.zIndex(isPhoneNumberFocused == index ? 1 : 0)
 									.transition(.move(edge: .top))
 								}
-
 							}
 							.padding(.bottom)
 							
