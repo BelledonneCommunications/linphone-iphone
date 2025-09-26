@@ -129,10 +129,6 @@ class AccountLoginViewModel: ObservableObject {
 #endif
 				accountParams.pushNotificationConfig?.provider = "apns" + pushEnvironment
 				
-				accountParams.internationalPrefix = "33"
-				accountParams.internationalPrefixIsoCountryCode = "FRA"
-				accountParams.useInternationalPrefixForCallsAndChats = true
-				
 				self.mCoreDelegate = CoreDelegateStub(onAccountRegistrationStateChanged: { (core: Core, account: Account, state: RegistrationState, message: String) in
 					
 					Log.info("New registration state is \(state) for user id " +

@@ -216,12 +216,6 @@ class CoreContext: ObservableObject {
 							newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
 						}
 						
-						if account.params?.internationalPrefix == nil {
-							Log.info("Account \(account.displayName()): no international prefix set, adding 33 FRA by default: \(account.params?.internationalPrefix ?? "NIL")")
-							newParams?.internationalPrefix = "33"
-							newParams?.internationalPrefixIsoCountryCode = "FRA"
-							newParams?.useInternationalPrefixForCallsAndChats = true
-						}
 						account.params = newParams
 					}
 					
