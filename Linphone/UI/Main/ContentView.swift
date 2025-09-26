@@ -1062,17 +1062,22 @@ struct ContentView: View {
 					}
 					
 					if isShowEditContactFragment {
-						EditContactFragment(
-							isShowEditContactFragment: $isShowEditContactFragment,
-							isShowDismissPopup: $isShowDismissPopup,
-							isShowEditContactFragmentAddress: isShowEditContactFragmentAddress
-						)
+						VStack {
+							EditContactFragment(
+								isShowEditContactFragment: $isShowEditContactFragment,
+								isShowDismissPopup: $isShowDismissPopup,
+								isShowEditContactFragmentAddress: isShowEditContactFragmentAddress
+							)
+							.frame(height: geometry.size.height)
+							.onAppear {
+								sharedMainViewModel.displayedFriend = nil
+								isShowEditContactFragmentAddress = ""
+							}
+							
+							Spacer()
+						}
 						.zIndex(3)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
-						.onAppear {
-							sharedMainViewModel.displayedFriend = nil
-							isShowEditContactFragmentAddress = ""
-						}
 					}
 					
 					if isShowStartCallFragment {
