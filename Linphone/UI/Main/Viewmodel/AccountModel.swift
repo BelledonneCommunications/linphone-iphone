@@ -260,6 +260,10 @@ class AccountModel: ObservableObject {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("Account \(self.account.displayName()) has been removed")
 			core.removeAccount(account: self.account)
+			
+			if let authInfo = self.account.findAuthInfo() {
+				core.removeAuthInfo(info: authInfo)
+			}
 		}
 	}
 	
