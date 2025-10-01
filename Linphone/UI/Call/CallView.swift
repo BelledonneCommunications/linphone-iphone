@@ -526,8 +526,10 @@ struct CallView: View {
 						.padding(.top)
 						.default_text_style_white(styleSize: 22)
 					
-					Text(callViewModel.remoteAddressCleanedString)
-						.default_text_style_white_300(styleSize: 16)
+					if !CorePreferences.hideSipAddresses {
+						Text(callViewModel.remoteAddressCleanedString)
+							.default_text_style_white_300(styleSize: 16)
+					}
 					
 					Spacer()
 				}

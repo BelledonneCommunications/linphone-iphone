@@ -274,6 +274,15 @@ class CorePreferences {
 		}
 	}
 	
+	static var hideSipAddresses: Bool {
+		get {
+			return Config.get().getBool(section: "ui", key: "hide_sip_addresses", defaultValue: false)
+		}
+		set {
+			Config.get().setBool(section: "ui", key: "hide_sip_addresses", value: newValue)
+		}
+	}
+	
 	private func copy(from: String, to: String, overrideIfExists: Bool = false) {
 		let fileManager = FileManager.default
 		if fileManager.fileExists(atPath: to), !overrideIfExists {

@@ -39,127 +39,135 @@ struct ContactInnerActionsFragment: View {
 	
 	var actionEditButton: () -> Void
 	
-    var body: some View {
-		HStack(alignment: .center) {
-			Text("contact_details_numbers_and_addresses_title")
-				.default_text_style_800(styleSize: 15)
-			
-			Spacer()
-			
-			Image(informationIsOpen ? "caret-up" : "caret-down")
-				.renderingMode(.template)
-				.resizable()
-				.foregroundStyle(Color.grayMain2c600)
-				.frame(width: 25, height: 25, alignment: .leading)
-				.padding(.all, 10)
-		}
-		.padding(.top, 30)
-		.padding(.bottom, 10)
-		.padding(.horizontal, 16)
-		.background(Color.gray100)
-		.onTapGesture {
-			withAnimation {
-				informationIsOpen.toggle()
-			}
-		}
-		
-		if informationIsOpen {
-			VStack(spacing: 0) {
-				ForEach(0..<contactAvatarModel.addresses.count, id: \.self) { index in
-					HStack {
-						HStack {
-							VStack {
-								Text(String(localized: "sip_address") + ":")
-									.default_text_style_700(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-								Text(contactAvatarModel.addresses[index].dropFirst(4))
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
-							}
-							Spacer()
-							
-							Image("phone")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c600)
-								.frame(width: 25, height: 25)
-								.padding(.all, 10)
-						}
-						.padding(.vertical, 15)
-						.padding(.horizontal, 20)
-					}
-					.background(.white)
-					.onTapGesture {
-						do {
-							let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
-							withAnimation {
-								telecomManager.doCallOrJoinConf(address: address)
-							}
-						} catch {
-							Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
-						}
-					}
-					.onLongPressGesture(minimumDuration: 0.2) {
-						contactsListViewModel.stringToCopy = contactAvatarModel.addresses[index]
-						showingSheet.toggle()
-					}
-					
-					if !contactAvatarModel.phoneNumbersWithLabel.isEmpty
-						|| index < contactAvatarModel.addresses.count - 1 {
-						VStack {
-							Divider()
-						}
-						.padding(.horizontal)
-					}
-				}
+	var body: some View {
+		if !CorePreferences.hideSipAddresses || (CorePreferences.hideSipAddresses && !contactAvatarModel.phoneNumbersWithLabel.isEmpty) {
+			HStack(alignment: .center) {
+				Text("contact_details_numbers_and_addresses_title")
+					.default_text_style_800(styleSize: 15)
 				
-				ForEach(contactAvatarModel.phoneNumbersWithLabel.indices, id: \.self) { index in
-					let entry = contactAvatarModel.phoneNumbersWithLabel[index]
-					HStack {
-						HStack {
-							VStack {
-								if !entry.label.isEmpty {
-									Text(String(localized: "phone_number") + " (\(entry.label)):")
-										.default_text_style_700(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
-								} else {
-									Text(String(localized: "phone_number") + ":")
-										.default_text_style_700(styleSize: 14)
-										.frame(maxWidth: .infinity, alignment: .leading)
+				Spacer()
+				
+				Image(informationIsOpen ? "caret-up" : "caret-down")
+					.renderingMode(.template)
+					.resizable()
+					.foregroundStyle(Color.grayMain2c600)
+					.frame(width: 25, height: 25, alignment: .leading)
+					.padding(.all, 10)
+			}
+			.padding(.top, 30)
+			.padding(.bottom, 10)
+			.padding(.horizontal, 16)
+			.background(Color.gray100)
+			.onTapGesture {
+				withAnimation {
+					informationIsOpen.toggle()
+				}
+			}
+			
+			
+			if informationIsOpen {
+				VStack(spacing: 0) {
+					if !CorePreferences.hideSipAddresses {
+						ForEach(0..<contactAvatarModel.addresses.count, id: \.self) { index in
+							HStack {
+								HStack {
+									VStack {
+										Text(String(localized: "sip_address") + ":")
+											.default_text_style_700(styleSize: 14)
+											.frame(maxWidth: .infinity, alignment: .leading)
+										Text(contactAvatarModel.addresses[index].dropFirst(4))
+											.default_text_style(styleSize: 14)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.lineLimit(1)
+											.fixedSize(horizontal: false, vertical: true)
+									}
+									Spacer()
+									
+									Image("phone")
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(Color.grayMain2c600)
+										.frame(width: 25, height: 25)
+										.padding(.all, 10)
 								}
-								Text(entry.phoneNumber)
-									.default_text_style(styleSize: 14)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.lineLimit(1)
-									.fixedSize(horizontal: false, vertical: true)
+								.padding(.vertical, 15)
+								.padding(.horizontal, 20)
 							}
-							Spacer()
+							.background(.white)
+							.onTapGesture {
+								do {
+									let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
+									withAnimation {
+										telecomManager.doCallOrJoinConf(address: address)
+									}
+								} catch {
+									Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
+								}
+							}
+							.onLongPressGesture(minimumDuration: 0.2) {
+								contactsListViewModel.stringToCopy = contactAvatarModel.addresses[index]
+								showingSheet.toggle()
+							}
+							
+							if !contactAvatarModel.phoneNumbersWithLabel.isEmpty
+								|| index < contactAvatarModel.addresses.count - 1 {
+								VStack {
+									Divider()
+								}
+								.padding(.horizontal)
+							}
 						}
-						.padding(.vertical, 15)
-						.padding(.horizontal, 20)
-					}
-					.background(.white)
-					.onLongPressGesture(minimumDuration: 0.2) {
-						contactsListViewModel.stringToCopy = entry.phoneNumber
-						showingSheet.toggle()
 					}
 					
-					if index < contactAvatarModel.phoneNumbersWithLabel.count - 1 {
-						VStack {
-							Divider()
+					ForEach(contactAvatarModel.phoneNumbersWithLabel.indices, id: \.self) { index in
+						let entry = contactAvatarModel.phoneNumbersWithLabel[index]
+						HStack {
+							HStack {
+								VStack {
+									if !entry.label.isEmpty {
+										Text(String(localized: "phone_number") + " (\(entry.label)):")
+											.default_text_style_700(styleSize: 14)
+											.frame(maxWidth: .infinity, alignment: .leading)
+									} else {
+										Text(String(localized: "phone_number") + ":")
+											.default_text_style_700(styleSize: 14)
+											.frame(maxWidth: .infinity, alignment: .leading)
+									}
+									Text(entry.phoneNumber)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
+										.fixedSize(horizontal: false, vertical: true)
+								}
+								Spacer()
+							}
+							.padding(.vertical, 15)
+							.padding(.horizontal, 20)
 						}
-						.padding(.horizontal)
+						.background(.white)
+						.onLongPressGesture(minimumDuration: 0.2) {
+							contactsListViewModel.stringToCopy = entry.phoneNumber
+							showingSheet.toggle()
+						}
+						
+						if index < contactAvatarModel.phoneNumbersWithLabel.count - 1 {
+							VStack {
+								Divider()
+							}
+							.padding(.horizontal)
+						}
 					}
 				}
+				.background(.white)
+				.cornerRadius(15)
+				.padding(.horizontal)
+				.zIndex(-1)
+				.transition(.move(edge: .top))
+			}
+		} else {
+			HStack {}
+				.frame(height: 20)
 		}
-			.background(.white)
-			.cornerRadius(15)
-			.padding(.horizontal)
-			.zIndex(-1)
-			.transition(.move(edge: .top))
-	}
 		
 		if !contactAvatarModel.organization.isEmpty || !contactAvatarModel.jobTitle.isEmpty {
 			VStack {

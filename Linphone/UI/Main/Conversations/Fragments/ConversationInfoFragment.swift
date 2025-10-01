@@ -104,12 +104,14 @@ struct ConversationInfoFragment: View {
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
 											
-											Text(conversationViewModel.participantConversationModel.first?.address ?? "")
-												.foregroundStyle(Color.grayMain2c700)
-												.multilineTextAlignment(.center)
-												.default_text_style(styleSize: 14)
-												.frame(maxWidth: .infinity)
-												.padding(.top, 5)
+											if !CorePreferences.hideSipAddresses {
+												Text(conversationViewModel.participantConversationModel.first?.address ?? "")
+													.foregroundStyle(Color.grayMain2c700)
+													.multilineTextAlignment(.center)
+													.default_text_style(styleSize: 14)
+													.frame(maxWidth: .infinity)
+													.padding(.top, 5)
+											}
 											
 											if !SharedMainViewModel.shared.displayedConversation!.avatarModel.lastPresenceInfo.isEmpty {
 												Text(SharedMainViewModel.shared.displayedConversation!.avatarModel.lastPresenceInfo)

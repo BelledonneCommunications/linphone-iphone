@@ -187,12 +187,14 @@ struct HistoryContactFragment: View {
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
 									
-									Text(historyModel.address)
-										.foregroundStyle(Color.grayMain2c700)
-										.multilineTextAlignment(.center)
-										.default_text_style(styleSize: 14)
-										.frame(maxWidth: .infinity)
-										.padding(.top, 5)
+									if !CorePreferences.hideSipAddresses {
+										Text(historyModel.address)
+											.foregroundStyle(Color.grayMain2c700)
+											.multilineTextAlignment(.center)
+											.default_text_style(styleSize: 14)
+											.frame(maxWidth: .infinity)
+											.padding(.top, 5)
+									}
 									
 									if let avatarModel = historyModel.avatarModel {
 										Text(avatarModel.lastPresenceInfo)

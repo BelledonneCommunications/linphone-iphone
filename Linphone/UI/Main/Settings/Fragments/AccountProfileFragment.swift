@@ -270,29 +270,31 @@ struct AccountProfileFragment: View {
 										if accountModel.avatarModel != nil {
 											VStack(spacing: 0) {
 												VStack(spacing: 30) {
-													HStack {
-														Text(String(localized: "sip_address") + ":")
-															.default_text_style_700(styleSize: 15)
-														
-														Text(accountModel.avatarModel!.address)
-															.foregroundStyle(Color.grayMain2c700)
-															.default_text_style(styleSize: 15)
-															.frame(maxWidth: .infinity, alignment: .leading)
-															.lineLimit(1)
-														
-														Button(action: {
-															UIPasteboard.general.setValue(
-																accountModel.avatarModel!.address,
-																forPasteboardType: UTType.plainText.identifier
-															)
+													if !CorePreferences.hideSipAddresses {
+														HStack {
+															Text(String(localized: "sip_address") + ":")
+																.default_text_style_700(styleSize: 15)
 															
-															ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
-															ToastViewModel.shared.displayToast.toggle()
-														}, label: {
-															Image("copy")
-																.resizable()
-																.frame(width: 20, height: 20)
-														})
+															Text(accountModel.avatarModel!.address)
+																.foregroundStyle(Color.grayMain2c700)
+																.default_text_style(styleSize: 15)
+																.frame(maxWidth: .infinity, alignment: .leading)
+																.lineLimit(1)
+															
+															Button(action: {
+																UIPasteboard.general.setValue(
+																	accountModel.avatarModel!.address,
+																	forPasteboardType: UTType.plainText.identifier
+																)
+																
+																ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
+																ToastViewModel.shared.displayToast.toggle()
+															}, label: {
+																Image("copy")
+																	.resizable()
+																	.frame(width: 20, height: 20)
+															})
+														}
 													}
 													
 													VStack(alignment: .leading) {

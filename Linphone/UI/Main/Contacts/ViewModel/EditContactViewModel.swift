@@ -39,11 +39,11 @@ class EditContactViewModel: ObservableObject {
 	
 	func resetValues() {
 		CoreContext.shared.doOnCoreQueue { _ in
-			let nativeUriTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.nativeUri) ?? ""
+			let nativeUriTmp = self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.nativeUri
 			let givenNameTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.vcard?.givenName) ?? ""
 			let familyNameTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.vcard?.familyName) ?? ""
-			let organizationTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.organization) ?? ""
-			let jobTitleTmp = (self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.jobTitle) ?? ""
+			let organizationTmp = self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.organization
+			let jobTitleTmp = self.selectedEditFriend == nil ? "" : self.selectedEditFriend!.jobTitle
 			
 			var sipAddressesTmp: [String] = []
 			var phoneNumbersTmp: [String] = []
