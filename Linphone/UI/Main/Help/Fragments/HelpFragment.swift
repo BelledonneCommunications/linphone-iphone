@@ -77,11 +77,31 @@ struct HelpFragment: View {
 					ScrollView {
 						VStack(spacing: 0) {
 							VStack(spacing: 20) {
+								if let urlString = CorePreferences.themeAboutPictureUrl,
+								   let url = URL(string: urlString) {
+									AsyncImage(url: url) { phase in
+										switch phase {
+										case .empty:
+											ProgressView()
+												.frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100)
+										case .success(let image):
+											image
+												.resizable()
+												.scaledToFit()
+												.frame(maxWidth: .infinity, maxHeight: 100, alignment: .center)
+										case .failure:
+											EmptyView()
+										@unknown default:
+											EmptyView()
+										}
+									}
+								} else {
+									EmptyView()
+								}
 								Text("help_about_title")
 									.default_text_style_800(styleSize: 16)
 									.frame(maxWidth: .infinity, alignment: .leading)
 									.padding(.bottom, 5)
-								
 								Button {
 									if let url = URL(string: NSLocalizedString("website_user_guide_url", comment: "")) {
 										UIApplication.shared.open(url)

@@ -188,6 +188,12 @@ class CorePreferences {
 		}
 	}
 	
+	static var themeAboutPictureUrl: String? {
+		get {
+			return Config.get().getString(section: "ui", key: "theme_about_picture_url", defaultString: nil)
+		}
+	}
+	
 	static var darkModeAllowed: Bool {
 		return Config.get().getBool(section: "ui", key: "dark_mode_allowed", defaultValue: true)
 	}
