@@ -257,6 +257,7 @@ struct StartConversationFragment: View {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
 						&& contactsManager.lastSearchSuggestions[index].address != nil {
+						if contactsManager.lastSearchSuggestions[index].address!.domain != CorePreferences.defaultDomain {
 							Image(uiImage: contactsManager.textToImage(
 								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
 								lastName: ""))
@@ -266,9 +267,29 @@ struct StartConversationFragment: View {
 							
 							Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
 								.default_text_style(styleSize: 16)
-                                .lineLimit(1)
+								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.foregroundStyle(Color.orangeMain500)
+						} else {
+							if let address = contactsManager.lastSearchSuggestions[index].address {
+								let nameTmp = address.displayName
+								?? address.username
+								?? String(address.asStringUriOnly().dropFirst(4))
+								
+								Image(uiImage: contactsManager.textToImage(
+									firstName: nameTmp,
+									lastName: ""))
+								.resizable()
+								.frame(width: 45, height: 45)
+								.clipShape(Circle())
+								
+								Text(nameTmp)
+									.default_text_style(styleSize: 16)
+									.lineLimit(1)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.foregroundStyle(Color.orangeMain500)
+							}
+						}
 					} else {
 						Image("profil-picture-default")
 							.resizable()
