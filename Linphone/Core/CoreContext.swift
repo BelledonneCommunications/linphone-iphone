@@ -305,6 +305,7 @@ class CoreContext: ObservableObject {
 				}
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
+				let themeMainColor = CorePreferences.themeMainColor
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
 						var accountModels: [AccountModel] = []
@@ -312,6 +313,7 @@ class CoreContext: ObservableObject {
 							accountModels.append(AccountModel(account: account, core: self.mCore))
 						}
 						self.accounts = accountModels
+						ThemeManager.shared.applyTheme(named: themeMainColor)
 					}
 				}
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in

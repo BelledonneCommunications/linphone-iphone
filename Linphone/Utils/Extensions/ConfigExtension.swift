@@ -38,6 +38,10 @@ extension Config {
 		if _instance == nil {
 			let factoryPath = FileUtil.bundleFilePath("linphonerc-factory")!
 			_instance =  Config.newForSharedCore(appGroupId: Config.appGroupName, configFilename: "linphonerc", factoryConfigFilename: factoryPath)!
+			let themeMainColor = CorePreferences.themeMainColor
+			DispatchQueue.main.async {
+				ThemeManager.shared.applyTheme(named: themeMainColor)
+			}
 		}
 		return _instance!
 	}
