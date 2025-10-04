@@ -18,9 +18,11 @@
  */
 
 import SwiftUI
+import Combine
 
+// MARK: - Theme definition
 
-struct Theme {
+struct Theme: Equatable {
 	let name: String
 	let main100: Color
 	let main100Alpha50: Color
@@ -29,26 +31,28 @@ struct Theme {
 	let main700: Color
 }
 
-class ThemeManager {
-	
+// MARK: - Theme Manager
+
+final class ThemeManager: ObservableObject {
 	static let shared = ThemeManager()
 	private let themeKey = "selectedTheme"
-	var currentTheme: Theme
 	
-	init () {
+	@Published var currentTheme: Theme = ThemeManager.orange
+	
+	private init() {
 		let storedName = UserDefaults.standard.string(forKey: themeKey)
 		currentTheme = themes[storedName ?? ""] ?? ThemeManager.orange
 	}
 	
 	func applyTheme(named name: String) {
-		guard let theme = themes[name] else {
-			return
+		guard let theme = themes[name] else { return }
+		withAnimation(.easeInOut(duration: 0.3)) {
+			self.currentTheme = theme
 		}
-		self.currentTheme = theme
-		UserDefaults.standard.setValue(name, forKey: self.themeKey)
+		UserDefaults.standard.setValue(name, forKey: themeKey)
 	}
 	
-	// MARK: - Theme Instances
+	// MARK: - Theme Presets
 	
 	let themes: [String: Theme] = [
 		orange.name: orange,
@@ -122,5 +126,25 @@ class ThemeManager {
 		main500: Color(hex: "#800080"),
 		main700: Color(hex: "#520052")
 	)
+}
+
+// MARK: - Color Provider (reactive bridge for SwiftUI)
+
+final class ColorProvider: ObservableObject {
+	static let shared = ColorProvider()
 	
+	@Published private(set) var theme: Theme
+	private var cancellable: AnyCancellable?
+	
+	private init() {
+		let manager = ThemeManager.shared
+		self.theme = manager.currentTheme
+		
+		cancellable = manager.$currentTheme
+			.sink { [weak self] theme in
+				withAnimation(.easeInOut(duration: 0.3)) {
+					self?.theme = theme
+				}
+			}
+	}
 }
