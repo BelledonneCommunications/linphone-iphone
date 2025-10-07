@@ -79,6 +79,8 @@ final class MagicSearchSingleton: ObservableObject {
 								  !lastSearchFriend.contains(where: { $0.phoneNumber == phoneNumber }) {
 							lastSearchFriend.append(searchResult)
 						}
+					} else if searchResult.friend != nil && (searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV || searchResult.hasSourceFlag(source: .LdapServers)) {
+						lastSearchFriend.append(searchResult)
 					} else {
 						lastSearchSuggestions.append(searchResult)
 					}
@@ -106,7 +108,6 @@ final class MagicSearchSingleton: ObservableObject {
 				sortedLastSearch.forEach { searchResult in
 					if searchResult.friend != nil {
                         if (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
-                            
                             addedAvatarListModel.append(
                                 ContactAvatarModel(
                                     friend: searchResult.friend!,
@@ -115,7 +116,25 @@ final class MagicSearchSingleton: ObservableObject {
                                     withPresence: true
                                 )
                             )
-                        }
+						} else if searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV {
+							addedAvatarListModel.append(
+								ContactAvatarModel(
+									friend: searchResult.friend!,
+									name: searchResult.friend?.name ?? "",
+									address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+									withPresence: true
+								)
+							)
+						} else if searchResult.hasSourceFlag(source: .LdapServers) {
+							addedAvatarListModel.append(
+								ContactAvatarModel(
+									friend: searchResult.friend!,
+									name: searchResult.friend?.name ?? "",
+									address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+									withPresence: false
+								)
+							)
+						}
 					}
 				}
 				
@@ -178,8 +197,9 @@ final class MagicSearchSingleton: ObservableObject {
 			magicSearch.getContactsListAsync(
 				filter: self.currentFilter,
 				domain: self.allContact ? "" : self.domainDefaultAccount,
-				sourceFlags: MagicSearch.Source.All.rawValue,
-				aggregation: MagicSearch.Aggregation.Friend)
+				sourceFlags: MagicSearch.Source.All.rawValue, //MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue | MagicSearch.Source.RemoteCardDAV.rawValue,
+				aggregation: MagicSearch.Aggregation.Friend
+			)
 		}
 	}
 }

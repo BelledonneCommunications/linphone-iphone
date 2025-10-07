@@ -38,6 +38,10 @@ class SettingsViewModel: ObservableObject {
 	// Conversations settings
 	@Published var autoDownload: Bool = false
 	
+	// Contacts settings
+	@Published var ldapServers: [String] = []
+	@Published var cardDavFriendsLists: [String] = []
+	
 	// Meetings settings
 	@Published var defaultLayout: String = ""
 	
@@ -141,6 +145,8 @@ class SettingsViewModel: ObservableObject {
 				core.addDelegate(delegate: self.coreDelegate!)
 				*/
 				
+				self.reloadLdapServers()
+				self.reloadConfiguredCardDavServers()
 				self.setupCodecs()
 			}
 		}
@@ -153,6 +159,43 @@ class SettingsViewModel: ObservableObject {
 			}
 		}
 	}
+	
+	func reloadLdapServers() {
+		CoreContext.shared.doOnCoreQueue { core in
+			var list: [String] = []
+
+			core.ldapList.forEach({ ldap in
+				let label = ldap.params?.server ?? ""
+				if !label.isEmpty {
+					list.append(label)
+				}
+			})
+
+			DispatchQueue.main.async {
+				self.ldapServers = list
+			}
+		}
+	}
+	
+	func reloadConfiguredCardDavServers() {
+		CoreContext.shared.doOnCoreQueue { core in
+			var list: [String] = []
+			
+			core.friendsLists.forEach({ friendList in
+				if friendList.type == .CardDAV {
+					let label = friendList.displayName ?? friendList.uri ?? ""
+					if !label.isEmpty {
+						list.append(label)
+					}
+				}
+			})
+
+			DispatchQueue.main.async {
+				self.cardDavFriendsLists = list
+			}
+		}
+	}
+
 	
 	func downloadAndApplyRemoteProvisioning() {
 		Log.info("\(SettingsViewModel.TAG) Updating remote provisioning URI now and then download/apply it")

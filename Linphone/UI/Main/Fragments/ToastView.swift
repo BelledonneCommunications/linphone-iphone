@@ -315,6 +315,27 @@ struct ToastView: View {
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
+						
+					case "Success_settings_contacts_carddav_sync_successful_toast":
+						Text("settings_contacts_carddav_sync_successful_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "settings_contacts_carddav_sync_error_toast":
+						Text("settings_contacts_carddav_sync_error_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_settings_contacts_carddav_deleted_toast":
+						Text("settings_contacts_carddav_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
 					
 					default:
 						Text("Error")

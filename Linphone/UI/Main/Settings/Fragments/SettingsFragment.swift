@@ -245,9 +245,6 @@ struct SettingsFragment: View {
 								.transition(.move(edge: .top))
 							}
 							
-							/*
-							// Hide Contacts
-							
 							HStack(alignment: .center) {
 								Text("settings_contacts_title")
 									.default_text_style_800(styleSize: 18)
@@ -273,12 +270,100 @@ struct SettingsFragment: View {
 							
 							if contactsIsOpen {
 								VStack(spacing: 0) {
-									VStack(spacing: 30) {
-										Toggle("account_settings_avpf_title", isOn: $isOn)
-											.default_text_style_700(styleSize: 15)
+									VStack(spacing: 20) {
+										NavigationLink(destination: {
+											LdapServerConfigurationFragment()
+												.environmentObject(settingsViewModel)
+										}, label: {
+											HStack(alignment: .center) {
+												Text("settings_contacts_add_ldap_server_title")
+													.default_text_style_700(styleSize: 15)
+													.frame(maxWidth: .infinity, alignment: .leading)
+												
+												Spacer()
+												
+												Image("caret-right")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c600)
+													.frame(width: 20, height: 20, alignment: .leading)
+													.padding(.all, 10)
+											}
+											.frame(maxWidth: .infinity)
+										})
 										
-										Toggle("account_settings_avpf_title", isOn: $isOn)
-											.default_text_style_700(styleSize: 15)
+										if !settingsViewModel.ldapServers.isEmpty {
+											ForEach(settingsViewModel.ldapServers, id: \.self) { ldap in
+												NavigationLink(destination: {
+													LdapServerConfigurationFragment(url: ldap)
+														.environmentObject(settingsViewModel)
+												}, label: {
+													HStack(alignment: .center) {
+														Text(ldap)
+															.default_text_style_700(styleSize: 15)
+															.frame(maxWidth: .infinity, alignment: .leading)
+														
+														Spacer()
+														
+														Image("pencil-simple")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c600)
+															.frame(width: 20, height: 20, alignment: .leading)
+															.padding(.all, 10)
+													}
+													.padding(.horizontal, 10)
+													.frame(maxWidth: .infinity)
+												})
+											}
+										}
+										
+										NavigationLink(destination: {
+											CardDavAddressBookConfigurationFragment()
+												.environmentObject(settingsViewModel)
+										}, label: {
+											HStack(alignment: .center) {
+												Text("settings_contacts_add_carddav_server_title")
+													.default_text_style_700(styleSize: 15)
+													.frame(maxWidth: .infinity, alignment: .leading)
+												
+												Spacer()
+												
+												Image("caret-right")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c600)
+													.frame(width: 20, height: 20, alignment: .leading)
+													.padding(.all, 10)
+											}
+											.frame(maxWidth: .infinity)
+										})
+										
+										if !settingsViewModel.cardDavFriendsLists.isEmpty {
+											ForEach(settingsViewModel.cardDavFriendsLists, id: \.self) { cardDavName in
+												NavigationLink(destination: {
+													CardDavAddressBookConfigurationFragment(name: cardDavName)
+												  .environmentObject(settingsViewModel)
+												}, label: {
+													HStack(alignment: .center) {
+														Text(cardDavName)
+															.default_text_style_700(styleSize: 15)
+															.frame(maxWidth: .infinity, alignment: .leading)
+														
+														Spacer()
+														
+														Image("pencil-simple")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c600)
+															.frame(width: 20, height: 20, alignment: .leading)
+															.padding(.all, 10)
+													}
+													.padding(.horizontal, 10)
+													.frame(maxWidth: .infinity)
+												})
+											}
+										}
 									}
 									.padding(.vertical, 30)
 									.padding(.horizontal, 20)
@@ -289,7 +374,6 @@ struct SettingsFragment: View {
 								.zIndex(-4)
 								.transition(.move(edge: .top))
 							}
-							*/
 							
 							HStack(alignment: .center) {
 								Text("settings_meetings_title")

@@ -80,6 +80,9 @@ struct ContactsInnerFragment: View {
 						.frame(height: 12)
 				})
 				.listStyle(.plain)
+				.refreshable {
+					contactsManager.refreshCardDavContacts()
+				}
 				.overlay(
 					VStack {
 						if contactsManager.avatarListModel.isEmpty {

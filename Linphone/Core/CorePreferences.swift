@@ -150,6 +150,15 @@ class CorePreferences {
 		}
 	}
 	
+	static var friendListInWhichStoreNewlyCreatedFriends: String {
+		get {
+			return Config.get().getString(section: "app", key: "friend_list_to_store_newly_created_contacts", defaultString: "Linphone address-book")
+		}
+		set {
+			Config.get().setString(section: "app", key: "friend_list_to_store_newly_created_contacts", value: newValue)
+		}
+	}
+	
 	static var voiceRecordingMaxDuration: Int {
 		get {
 			return Config.get().getInt(section: "app", key: "voice_recording_max_duration", defaultValue: 600000)

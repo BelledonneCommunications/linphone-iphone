@@ -35,6 +35,10 @@ class ContactsListViewModel: ObservableObject {
 	
 	private var contactChatRoomDelegate: ChatRoomDelegate?
 	
+	private let nativeAddressBookFriendList = "Native address-book"
+	let linphoneAddressBookFriendList = "Linphone address-book"
+	let tempRemoteAddressBookFriendList = "TempRemoteDirectoryContacts address-book"
+	
 	init() {}
 	
 	func createOneToOneChatRoomWith(remote: Address) {
