@@ -208,14 +208,14 @@ class CoreContext: ObservableObject {
 					let pushEnvironment = ""
 #endif
 					for account in core.accountList {
-						
-						let newParams = account.params?.clone()
 						if account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
+							let newParams = account.params?.clone()
+							
 							Log.info("Account \(String(describing: newParams?.identityAddress?.asStringUriOnly())) - updating apple push provider from \(String(describing: newParams?.pushNotificationConfig?.provider)) to apns\(pushEnvironment)")
 							newParams?.pushNotificationConfig?.provider = "apns" + pushEnvironment
+							
+							account.params = newParams
 						}
-						
-						account.params = newParams
 					}
 					
 					// TODO: Temporary workaround until SDK fixs
