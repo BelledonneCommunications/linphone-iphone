@@ -72,8 +72,9 @@ struct ContactInnerFragment: View {
 						
 						Spacer()
 						
-						if !contactAvatarModel.nativeUri.isEmpty {
+						if !contactAvatarModel.editable {
 							Button(action: {
+								print("nativeUrinativeUri 00 \(contactAvatarModel.nativeUri)")
 								editNativeContact()
 							}, label: {
 								Image("pencil-simple")
@@ -99,6 +100,7 @@ struct ContactInnerFragment: View {
 								}
 								.simultaneousGesture(
 									TapGesture().onEnded {
+										print("nativeUrinativeUri 11 \(contactAvatarModel.nativeUri)")
 										isShowEditContactFragmentInContactDetails = true
 									}
 						  )

@@ -211,7 +211,7 @@ struct ContactInnerActionsFragment: View {
 		.background(Color.gray100)
 		
 		VStack(spacing: 0) {
-			if !contactAvatarModel.nativeUri.isEmpty {
+			if !contactAvatarModel.editable {
 				Button {
 					actionEditButton()
 				} label: {

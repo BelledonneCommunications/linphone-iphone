@@ -32,6 +32,7 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	@Published var phoneNumbersWithLabel: [(label: String, phoneNumber: String)] = []
 	
 	var nativeUri: String = ""
+	var editable: Bool = true
 	var withPresence: Bool?
 	
 	@Published var starred: Bool = false
@@ -70,6 +71,7 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 				}
 			}
 			let nativeUriTmp = friend?.nativeUri ?? ""
+			let editableTmp = friend?.friendList?.type == .CardDAV || nativeUriTmp.isEmpty
 			let withPresenceTmp = withPresence
 			let starredTmp = friend?.starred ?? false
 			let vcardTmp = friend?.vcard ?? nil
@@ -108,6 +110,7 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 				self.addresses = addressesTmp
 				self.phoneNumbersWithLabel = phoneNumbersWithLabelTmp
 				self.nativeUri = nativeUriTmp
+				self.editable = editableTmp
 				self.withPresence = withPresenceTmp
 				self.starred = starredTmp
 				self.vcard = vcardTmp
