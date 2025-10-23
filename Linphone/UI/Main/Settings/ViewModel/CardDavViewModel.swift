@@ -241,7 +241,10 @@ class CardDavViewModel: ObservableObject {
 								Log.info("\(CardDavViewModel.TAG) Updating default friend list to store newly created contacts from \(previous) to \(name)")
 								CorePreferences.friendListInWhichStoreNewlyCreatedFriends = name
 							}
-							self.isReadOnly = friendList.isReadOnly
+							
+							DispatchQueue.main.async {
+								self.isReadOnly = friendList.isReadOnly
+							}
 						}
 						
 						Log.info("\(CardDavViewModel.TAG) Notifying contacts manager that contacts have changed")

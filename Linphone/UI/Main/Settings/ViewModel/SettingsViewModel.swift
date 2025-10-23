@@ -192,6 +192,7 @@ class SettingsViewModel: ObservableObject {
 
 			DispatchQueue.main.async {
 				self.cardDavFriendsLists = list
+				SharedMainViewModel.shared.updateCardDavFriendsListsCount(cardDavFriendsListsCount: self.cardDavFriendsLists.count)
 			}
 		}
 	}

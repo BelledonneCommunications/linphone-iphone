@@ -545,7 +545,7 @@ struct EditContactFragment: View {
 					prefix: prefix,
 					contact: newContact,
 					existingFriend: existingFriend,
-					linphoneFriend: "Linphone address-book"
+					linphoneFriend: CorePreferences.friendListInWhichStoreNewlyCreatedFriends
 				)
 			}
 		}
@@ -558,7 +558,8 @@ struct EditContactFragment: View {
 			prefix: prefix,
 			contact: contact,
 			linphoneFriend: linphoneFriend,
-			existingFriend: existingFriend
+			existingFriend: existingFriend,
+			editingFriend: true
 		) {
 			if let existingFriend = existingFriend {
 				self.updateAvatar(for: existingFriend)

@@ -77,7 +77,13 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 			let vcardTmp = friend?.vcard ?? nil
 			let organizationTmp = friend?.organization ?? ""
 			let jobTitleTmp = friend?.jobTitle ?? ""
-			let photoTmp = friend?.photo ?? ""
+			var photoTmp = friend?.photo ?? ""
+			
+			if friend?.friendList?.type == .CardDAV && friend?.photo?.isEmpty == false {
+				let fileName = "file:/" + name + ".png"
+				photoTmp = fileName.replacingOccurrences(of: " ", with: "")
+			}
+			
 			var lastPresenceInfoTmp = ""
 			var presenceStatusTmp: ConsolidatedPresence = .Offline
 			

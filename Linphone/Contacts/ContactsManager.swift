@@ -247,33 +247,47 @@ final class ContactsManager: ObservableObject {
 		return UIImage(data: imageData)
 	}
 	
-	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: String, existingFriend: Friend?, completion: @escaping () -> Void) {
+	func saveImage(image: UIImage, name: String, prefix: String, contact: Contact, linphoneFriend: String, existingFriend: Friend?, editingFriend: Bool = false, completion: @escaping () -> Void) {
 		guard let data = image.jpegData(compressionQuality: 1) ?? image.pngData() else {
 			return
 		}
 		
-		awaitDataWrite(data: data, name: name, prefix: prefix) { result in
-			self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
-				self.coreContext.doOnCoreQueue { core in
-					if let friend = resultFriend {
-						if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
-							if let linphoneFL = self.linphoneFriendList, linphoneFriend == linphoneFL.displayName {
-								_ = linphoneFL.addFriend(linphoneFriend: friend)
-							} else if let linphoneFL = self.tempRemoteFriendList {
-								if friend.friendList?.type != .CardDAV {
+		let base64Tmp = existingFriend?.friendList?.type == .CardDAV || linphoneAddressBookFriendList != CorePreferences.friendListInWhichStoreNewlyCreatedFriends
+		
+		awaitDataWrite(data: data, name: name, prefix: prefix, base64: base64Tmp) { result in
+			if existingFriend?.friendList?.type != .CardDAV
+				|| (existingFriend?.friendList?.type == .CardDAV && linphoneFriend == self.linphoneAddressBookFriendList)
+				|| (editingFriend && linphoneFriend == CorePreferences.friendListInWhichStoreNewlyCreatedFriends) {
+				self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
+					self.coreContext.doOnCoreQueue { core in
+						if let friend = resultFriend {
+							if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
+								if let linphoneFL = self.linphoneFriendList, linphoneFriend == linphoneFL.displayName {
 									_ = linphoneFL.addFriend(linphoneFriend: friend)
+								} else if let linphoneFL = core.friendsLists.first(where: { $0.type == .CardDAV && $0.displayName == CorePreferences.friendListInWhichStoreNewlyCreatedFriends }) {
+									if linphoneFL.type == .CardDAV {
+										_ = linphoneFL.addFriend(linphoneFriend: friend)
+									}
+								} else if let linphoneFL = self.tempRemoteFriendList {
+									if friend.friendList?.type != .CardDAV {
+										_ = linphoneFL.addFriend(linphoneFriend: friend)
+									}
+								}
+							} else if existingFriend == nil {
+								if let friendListTmp = self.friendList {
+									_ = friendListTmp.addLocalFriend(linphoneFriend: friend)
 								}
 							}
-						} else if existingFriend == nil {
-							if let friendListTmp = self.friendList {
-								_ = friendListTmp.addLocalFriend(linphoneFriend: friend)
-							}
+						}
+						
+						DispatchQueue.main.async {
+							completion()
 						}
 					}
-					
-					DispatchQueue.main.async {
-						completion()
-					}
+				}
+			} else {
+				DispatchQueue.main.async {
+					completion()
 				}
 			}
 		}
@@ -323,7 +337,7 @@ final class ContactsManager: ObservableObject {
 				}
 				
 				// Set photo
-				friend.photo = "file:/" + result
+				friend.photo = (friend.friendList?.type != .CardDAV && self.linphoneAddressBookFriendList == CorePreferences.friendListInWhichStoreNewlyCreatedFriends ? "file:/" : "") + result
 				
 				// Linphone subscription settings
 				try friend.setSubscribesenabled(newValue: false)
@@ -350,22 +364,41 @@ final class ContactsManager: ObservableObject {
 		return imagePath
 	}
 	
-	func awaitDataWrite(data: Data, name: String, prefix: String, completion: @escaping (String) -> Void) {
+	func awaitDataWrite(data: Data, name: String, prefix: String, base64: Bool? = false, completion: @escaping (String) -> Void) {
 		guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
 			completion("")
 			return
 		}
-		
-		do {
-			let fileName = name + prefix + ".png"
-			
-			let fileURL = directory.appendingPathComponent(fileName.replacingOccurrences(of: " ", with: ""))
-			
-			try data.write(to: fileURL)
-			completion(fileName.replacingOccurrences(of: " ", with: ""))
-		} catch {
-			print("Error writing image: \(error)")
-			completion("")
+		if base64 == false {
+			do {
+				let fileName = name + prefix + ".png"
+				
+				let fileURL = directory.appendingPathComponent(fileName.replacingOccurrences(of: " ", with: ""))
+				
+				try data.write(to: fileURL)
+				completion(fileName.replacingOccurrences(of: " ", with: ""))
+			} catch {
+				print("Error writing image: \(error)")
+				completion("")
+			}
+		} else {
+			do {
+				let fileName = name + prefix + ".png"
+				
+				let fileURL = directory.appendingPathComponent(fileName.replacingOccurrences(of: " ", with: ""))
+				
+				try data.write(to: fileURL)
+				
+				if prefix.isEmpty {
+					let base64 = data.base64EncodedString()
+					completion("data:image/jpeg;base64,\(base64)")
+				} else {
+					completion("")
+				}
+			} catch {
+				print("Error writing image: \(error)")
+				completion("")
+			}
 		}
 	}
 	
@@ -472,24 +505,42 @@ final class ContactsManager: ObservableObject {
 							)
 							
 							let image: UIImage?
-							if let photo = friend.photo, !photo.isEmpty {
+							
+							if let photo = friend.photo, !photo.isEmpty, friendList.type == .CardDAV {
 								if let imageTmp = self.imageFromBase64(photo) {
 									image = imageTmp
+									if let image = image {
+										self.saveImage(
+											image: image,
+											name: friend.name ?? addressTmp,
+											prefix: "",
+											contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: friend.friendList?.type == .CardDAV ? friend : nil) {
+												dispatchGroup.leave()
+											}
+									}
 								} else {
 									image = self.textToImage(firstName: friend.name ?? addressTmp, lastName: "")
+									if let image = image {
+										self.saveImage(
+											image: image,
+											name: friend.name ?? addressTmp,
+											prefix: "-default",
+											contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: friend.friendList?.type == .CardDAV ? friend : nil) {
+												dispatchGroup.leave()
+											}
+									}
 								}
 							} else {
 								image = self.textToImage(firstName: friend.name ?? addressTmp, lastName: "")
-							}
-							
-							if let image = image {
-								self.saveImage(
-									image: image,
-									name: friend.name ?? addressTmp,
-									prefix: "-default",
-									contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: friend.friendList?.type == .CardDAV ? friend : nil) {
-										dispatchGroup.leave()
-									}
+								if let image = image {
+									self.saveImage(
+										image: image,
+										name: friend.name ?? addressTmp,
+										prefix: "-default",
+										contact: newContact, linphoneFriend: friendList.displayName ?? "No Display Name", existingFriend: friend.friendList?.type == .CardDAV ? friend : nil) {
+											dispatchGroup.leave()
+										}
+								}
 							}
 						}
                         

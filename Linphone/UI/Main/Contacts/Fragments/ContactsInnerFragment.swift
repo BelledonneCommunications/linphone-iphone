@@ -22,6 +22,7 @@ import linphonesw
 
 struct ContactsInnerFragment: View {
 	
+	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
 	
 	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
@@ -74,14 +75,16 @@ struct ContactsInnerFragment: View {
 			
 			VStack {
 				List {
-                    ContactsListFragment(showingSheet: $showingSheet, startCallFunc: {_ in })}
+					ContactsListFragment(showingSheet: $showingSheet, startCallFunc: {_ in })}
 				.safeAreaInset(edge: .top, content: {
 					Spacer()
 						.frame(height: 12)
 				})
 				.listStyle(.plain)
-				.refreshable {
-					contactsManager.refreshCardDavContacts()
+				.if(sharedMainViewModel.cardDavFriendsListsCount > 0) { view in
+					view.refreshable {
+						contactsManager.refreshCardDavContacts()
+					}
 				}
 				.overlay(
 					VStack {
