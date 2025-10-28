@@ -55,49 +55,51 @@ struct ContactsListBottomSheet: View {
 				.padding(.trailing)
 			}
 			
-			Spacer()
-            
-			Button {
-				self.contactsListViewModel.toggleStarredSelectedFriend()
+			if !contactsListViewModel.selectedFriend!.isReadOnly {
+				Spacer()
 				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
+				Button {
+					self.contactsListViewModel.toggleStarredSelectedFriend()
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
-					 	dismiss()
+						dismiss()
 					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
+				} label: {
+					HStack {
+						Image(contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(
+								contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
+								? Color.redDanger500
+								: Color.grayMain2c500
+							)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+						Text(contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
+							 ? "contact_details_remove_from_favourites"
+							 : "contact_details_add_to_favourites")
+						.default_text_style(styleSize: 16)
+						Spacer()
+					}
+					.frame(maxHeight: .infinity)
 				}
-			} label: {
-				HStack {
-					Image(contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true ? "heart-fill" : "heart")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(
-							contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
-							? Color.redDanger500
-							: Color.grayMain2c500
-						)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text(contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
-						 ? "contact_details_remove_from_favourites"
-						 : "contact_details_add_to_favourites")
-					.default_text_style(styleSize: 16)
-					Spacer()
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
+				
+				VStack {
+					Divider()
 				}
-				.frame(maxHeight: .infinity)
+				.frame(maxWidth: .infinity)
 			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
 			
 			Button {
 				if #available(iOS 16.0, *) {
@@ -135,45 +137,46 @@ struct ContactsListBottomSheet: View {
 			.padding(.horizontal, 30)
 			.background(Color.gray100)
 			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
-			
-			Button {
-				if contactsListViewModel.selectedFriend != nil {
-					isShowDeletePopup.toggle()
+			if !contactsListViewModel.selectedFriend!.isReadOnly {
+				VStack {
+					Divider()
 				}
+				.frame(maxWidth: .infinity)
 				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
+				Button {
+					if contactsListViewModel.selectedFriend != nil {
+						isShowDeletePopup.toggle()
+					}
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
 						dismiss()
 					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
+				} label: {
+					HStack {
+						Image("trash-simple")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.redDanger500)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+						Text("contact_details_delete")
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 16)
+						Spacer()
+					}
+					.frame(maxHeight: .infinity)
 				}
-			} label: {
-				HStack {
-					Image("trash-simple")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.redDanger500)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					Text("contact_details_delete")
-						.foregroundStyle(Color.redDanger500)
-						.default_text_style(styleSize: 16)
-					Spacer()
-				}
-				.frame(maxHeight: .infinity)
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
 			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
 		}
 		.background(Color.gray100)
 		.frame(maxWidth: .infinity)

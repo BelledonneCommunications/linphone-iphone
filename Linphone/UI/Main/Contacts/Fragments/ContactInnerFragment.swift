@@ -72,24 +72,11 @@ struct ContactInnerFragment: View {
 						
 						Spacer()
 						
-						if !contactAvatarModel.editable {
-							Button(action: {
-								print("nativeUrinativeUri 00 \(contactAvatarModel.nativeUri)")
-								editNativeContact()
-							}, label: {
-								Image("pencil-simple")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.orangeMain500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, 2)
-							})
-						} else {
-							NavigationLink(destination: EditContactFragment(
-								contactAvatarModel: contactAvatarModel,
-								isShowEditContactFragment: $isShowEditContactFragmentInContactDetails,
-								isShowDismissPopup: $isShowDismissPopup)) {
+						if !contactAvatarModel.isReadOnly {
+							if !contactAvatarModel.editable {
+								Button(action: {
+									editNativeContact()
+								}, label: {
 									Image("pencil-simple")
 										.renderingMode(.template)
 										.resizable()
@@ -97,13 +84,26 @@ struct ContactInnerFragment: View {
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
 										.padding(.top, 2)
-								}
-								.simultaneousGesture(
-									TapGesture().onEnded {
-										print("nativeUrinativeUri 11 \(contactAvatarModel.nativeUri)")
-										isShowEditContactFragmentInContactDetails = true
+								})
+							} else {
+								NavigationLink(destination: EditContactFragment(
+									contactAvatarModel: contactAvatarModel,
+									isShowEditContactFragment: $isShowEditContactFragmentInContactDetails,
+									isShowDismissPopup: $isShowDismissPopup)) {
+										Image("pencil-simple")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
+											.padding(.top, 2)
 									}
-						  )
+									.simultaneousGesture(
+										TapGesture().onEnded {
+											isShowEditContactFragmentInContactDetails = true
+										}
+									)
+							}
 						}
 					}
 					.frame(maxWidth: .infinity)

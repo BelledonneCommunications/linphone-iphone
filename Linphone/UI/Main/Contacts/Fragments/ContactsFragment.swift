@@ -41,7 +41,7 @@ struct ContactsFragment: View {
 							showingSheet: $showingSheet,
 							showShareSheet: $showShareSheet
 						)
-						.presentationDetents([.fraction(0.3)])
+						.presentationDetents(contactsListViewModel.selectedFriend?.isReadOnly == true ? [.fraction(0.1)] : [.fraction(0.3)])
 					}
 					.sheet(isPresented: $showShareSheet) {
 						ShareSheet(friendToShare: contactsListViewModel.selectedFriendToShare!)

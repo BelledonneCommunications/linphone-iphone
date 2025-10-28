@@ -52,7 +52,6 @@ struct ContactListBottomSheet: View {
 				.padding(.trailing)
 			}
 			
-			Spacer()
 			Button {
 				UIPasteboard.general.setValue(
 					contactsListViewModel.stringToCopy.prefix(4) == "sip:"
