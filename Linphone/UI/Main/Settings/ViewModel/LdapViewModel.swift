@@ -172,7 +172,6 @@ class LdapViewModel: ObservableObject {
 					Log.info("\(LdapViewModel.TAG) LDAP changes have been applied")
 				} else {
 					let ldap = try core.createLdapWithParams(params: ldapParams)
-					core.addLdap(ldap: ldap)
 					Log.info("\(LdapViewModel.TAG) New LDAP config created")
 				}
 				
