@@ -64,7 +64,7 @@ class AccountProfileViewModel: ObservableObject {
 						newParams?.internationalPrefix = self.dialPlanSelected?.countryCallingCode
 						newParams?.internationalPrefixIsoCountryCode = self.dialPlanSelected?.isoCountryCode
 						newParams?.useInternationalPrefixForCallsAndChats = true
-					} else if newParams?.useInternationalPrefixForCallsAndChats == true {
+					} else if self.dialPlanSelected == nil && newParams?.useInternationalPrefixForCallsAndChats == true {
 						newParams?.internationalPrefix = nil
 						newParams?.internationalPrefixIsoCountryCode = nil
 						newParams?.useInternationalPrefixForCallsAndChats = false
@@ -75,18 +75,18 @@ class AccountProfileViewModel: ObservableObject {
 			}
 		}
 	}
-	 
-    func setAvatarModel() {
-        CoreContext.shared.doOnCoreQueue { _ in
-            CoreContext.shared.accounts.forEach { accountTmp in
-                let displayNameTmp = accountTmp.account.params?.identityAddress?.displayName ?? ""
-                let contactAddressTmp = accountTmp.account.params?.identityAddress?.asStringUriOnly() ?? ""
-                
-                let prefix = accountTmp.account.params?.internationalPrefix ?? ""
-                let isoCountryCode = accountTmp.account.params?.internationalPrefixIsoCountryCode ?? ""
-                
-                var dialPlanValueSelectedTmp = ""
-                if !prefix.isEmpty || !isoCountryCode.isEmpty {
+	
+	func setAvatarModel() {
+		CoreContext.shared.doOnCoreQueue { _ in
+			CoreContext.shared.accounts.forEach { accountTmp in
+				let displayNameTmp = accountTmp.account.params?.identityAddress?.displayName ?? ""
+				let contactAddressTmp = accountTmp.account.params?.identityAddress?.asStringUriOnly() ?? ""
+				
+				let prefix = accountTmp.account.params?.internationalPrefix ?? ""
+				let isoCountryCode = accountTmp.account.params?.internationalPrefixIsoCountryCode ?? ""
+				
+				var dialPlanValueSelectedTmp = ""
+				if !prefix.isEmpty || !isoCountryCode.isEmpty {
 					Log.info(
 						"\(AccountProfileViewModel.TAG) Account \(accountTmp.account.params?.identityAddress?.asStringUriOnly() ?? "") prefix is \(prefix) \(isoCountryCode)"
 					)
@@ -101,32 +101,36 @@ class AccountProfileViewModel: ObservableObject {
 				} else {
 					dialPlanValueSelectedTmp = "No country code"
 				}
-                
-                let accountDisplayName = accountTmp.account.displayName()
+				
+				self.updateDialPlan(newDialPlan: dialPlanValueSelectedTmp)
+				
+				let accountDisplayName = accountTmp.account.displayName()
 				
 				let defaultAccountModelIndexTmp = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
 				
-                DispatchQueue.main.async {
-                    accountTmp.avatarModel = ContactAvatarModel(
-                        friend: nil,
-                        name: displayNameTmp.isEmpty ? accountDisplayName : displayNameTmp,
-                        address: contactAddressTmp,
-                        withPresence: false
-                    )
-                    
-                    self.defaultAccountModelIndex = defaultAccountModelIndexTmp
+				DispatchQueue.main.async {
+					accountTmp.avatarModel = ContactAvatarModel(
+						friend: nil,
+						name: displayNameTmp.isEmpty ? accountDisplayName : displayNameTmp,
+						address: contactAddressTmp,
+						withPresence: false
+					)
 					
-                    self.dialPlanValueSelected = dialPlanValueSelectedTmp
-                }
-            }
-        }
-    }
+					self.defaultAccountModelIndex = defaultAccountModelIndexTmp
+					
+					self.dialPlanValueSelected = dialPlanValueSelectedTmp
+				}
+			}
+		}
+	}
 	
 	func updateDialPlan(newDialPlan: String) {
 		let dialPlansList = SharedMainViewModel.shared.dialPlansList
 		if let dialPlan = dialPlansList.first(where: { newDialPlan.contains($0?.isoCountryCode ?? "") }) ??
 			dialPlansList.first(where: { newDialPlan.contains($0?.countryCallingCode ?? "") }) {
 			self.dialPlanSelected = dialPlan
+		} else {
+			self.dialPlanSelected = nil
 		}
 	}
 	
