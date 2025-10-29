@@ -124,7 +124,7 @@
       "location" : "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git",
       "state" : {
         "branch" : "alpha",
-        "revision" : "92aaa6e23f62bffdca8946c0ec172c5eb4605e76"
+        "revision" : "49ecbf8a30d98ec4f83f4b0f10f239b46a7fd1cc"
       }
     },
     {
