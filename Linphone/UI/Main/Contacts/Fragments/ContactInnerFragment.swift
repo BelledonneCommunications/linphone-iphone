@@ -144,16 +144,24 @@ struct ContactInnerFragment: View {
 									Spacer()
 									
 									Button(action: {
-										if contactAvatarModel.addresses.count <= 1 {
-											do {
-												let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
-												telecomManager.doCallOrJoinConf(address: address, isVideo: false)
-											} catch {
-												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+										CoreContext.shared.doOnCoreQueue { core in
+											if contactAvatarModel.addresses.count == 1 {
+												do {
+													let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+													telecomManager.doCallOrJoinConf(address: address, isVideo: false)
+												} catch {
+													Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+												}
+											} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+												if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: true) {
+													telecomManager.doCallOrJoinConf(address: address, isVideo: false)
+												}
+											} else {
+												DispatchQueue.main.async {
+													isShowSipAddressesPopupType = 0
+											  		isShowSipAddressesPopup = true
+												}
 											}
-										} else {
-											isShowSipAddressesPopupType = 0
-											isShowSipAddressesPopup = true
 										}
 									}, label: {
 										VStack {
@@ -161,67 +169,81 @@ struct ContactInnerFragment: View {
 												Image("phone")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
+													.foregroundStyle(Color.grayMain2c600)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
+											.background(Color.grayMain2c200)
 											.cornerRadius(40)
 											
 											Text("contact_call_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
-									.disabled(contactAvatarModel.address.isEmpty)
                                     
                                     if !CorePreferences.disableChatFeature {
                                         Spacer()
                                         
                                         Button(action: {
-                                            if contactAvatarModel.addresses.count <= 1 {
-                                                do {
-                                                    let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
-                                                    contactsListViewModel.createOneToOneChatRoomWith(remote: address)
-                                                } catch {
-                                                    Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
-                                                }
-                                            } else {
-                                                isShowSipAddressesPopupType = 1
-                                                isShowSipAddressesPopup = true
-                                            }
+											CoreContext.shared.doOnCoreQueue { core in
+												if contactAvatarModel.addresses.count == 1 {
+													do {
+														let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+														contactsListViewModel.createOneToOneChatRoomWith(remote: address)
+													} catch {
+														Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+													}
+												} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+													if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: true) {
+														contactsListViewModel.createOneToOneChatRoomWith(remote: address)
+													}
+												} else {
+													DispatchQueue.main.async {
+														isShowSipAddressesPopupType = 1
+														isShowSipAddressesPopup = true
+													}
+												}
+											}
                                         }, label: {
                                             VStack {
                                                 HStack(alignment: .center) {
                                                     Image("chat-teardrop-text")
                                                         .renderingMode(.template)
                                                         .resizable()
-                                                        .foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
+                                                        .foregroundStyle(Color.grayMain2c600)
                                                         .frame(width: 25, height: 25)
                                                 }
                                                 .padding(16)
-                                                .background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
+                                                .background(Color.grayMain2c200)
                                                 .cornerRadius(40)
                                                 
                                                 Text("contact_message_action")
                                                     .default_text_style(styleSize: 14)
                                             }
                                         })
-                                        .disabled(contactAvatarModel.address.isEmpty)
                                     }
                                     
 									Spacer()
 									
 									Button(action: {
-										if contactAvatarModel.addresses.count <= 1 {
-											do {
-												let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
-												telecomManager.doCallOrJoinConf(address: address, isVideo: true)
-											} catch {
-												Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+										CoreContext.shared.doOnCoreQueue { core in
+											if contactAvatarModel.addresses.count == 1 {
+												do {
+													let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+													telecomManager.doCallOrJoinConf(address: address, isVideo: true)
+												} catch {
+													Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+												}
+											} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+												if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: true) {
+													telecomManager.doCallOrJoinConf(address: address, isVideo: true)
+												}
+											} else {
+												DispatchQueue.main.async {
+													isShowSipAddressesPopupType = 2
+													isShowSipAddressesPopup = true
+												}
 											}
-										} else {
-											isShowSipAddressesPopupType = 2
-											isShowSipAddressesPopup = true
 										}
 									}, label: {
 										VStack {
@@ -229,18 +251,17 @@ struct ContactInnerFragment: View {
 												Image("video-camera")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(contactAvatarModel.address.isEmpty ? Color.grayMain2c400 : Color.grayMain2c600)
+													.foregroundStyle(Color.grayMain2c600)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(contactAvatarModel.address.isEmpty ? Color.grayMain2c100 : Color.grayMain2c200)
+											.background(Color.grayMain2c200)
 											.cornerRadius(40)
 											
 											Text("contact_video_call_action")
 												.default_text_style(styleSize: 14)
 										}
 									})
-									.disabled(contactAvatarModel.address.isEmpty)
 									
 									Spacer()
 								}

@@ -81,6 +81,7 @@ struct ContactInnerActionsFragment: View {
 											.lineLimit(1)
 											.fixedSize(horizontal: false, vertical: true)
 									}
+									
 									Spacer()
 									
 									Image("phone")
@@ -95,13 +96,13 @@ struct ContactInnerActionsFragment: View {
 							}
 							.background(.white)
 							.onTapGesture {
-								do {
-									let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
-									withAnimation {
+								CoreContext.shared.doOnCoreQueue { core in
+									do {
+										let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
 										telecomManager.doCallOrJoinConf(address: address)
+									} catch {
+										Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
 									}
-								} catch {
-									Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
 								}
 							}
 							.onLongPressGesture(minimumDuration: 0.2) {
@@ -139,12 +140,28 @@ struct ContactInnerActionsFragment: View {
 										.lineLimit(1)
 										.fixedSize(horizontal: false, vertical: true)
 								}
+								
 								Spacer()
+								
+								Image("phone")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c600)
+									.frame(width: 25, height: 25)
+									.padding(.all, 10)
 							}
 							.padding(.vertical, 15)
 							.padding(.horizontal, 20)
 						}
 						.background(.white)
+						.onTapGesture {
+							CoreContext.shared.doOnCoreQueue { core in
+								let address = core.interpretUrl(url: contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: true)
+								if address != nil {
+									TelecomManager.shared.doCallOrJoinConf(address: address!)
+								}
+							}
+						}
 						.onLongPressGesture(minimumDuration: 0.2) {
 							contactsListViewModel.stringToCopy = entry.phoneNumber
 							showingSheet.toggle()
