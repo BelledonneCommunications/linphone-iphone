@@ -292,6 +292,10 @@ class CallViewModel: ObservableObject {
                             self.zrtpPopupDisplayed = true
                         }
 					}
+				}, onStateChanged: { (_: Call, state: Call.State, message: String) in
+					if let currentParamsTmp = self.currentCall?.currentParams, state == .StreamsRunning, currentParamsTmp.mediaEncryption == .None || currentParamsTmp.mediaEncryption == .SRTP {
+						self.updateEncryption(withToast: false)
+					}
 				}, onStatsUpdated: { (_: Call, stats: CallStats) in
 					DispatchQueue.main.async {
 						if self.currentCall != nil {
@@ -986,7 +990,7 @@ class CallViewModel: ObservableObject {
 						self.isNotEncrypted = false
 					}
 				case MediaEncryption.None:
-					let isNotEncryptedTmp = self.currentCall?.state == .StreamsRunning
+					let isNotEncryptedTmp = self.currentCall?.state == .StreamsRunning && !self.telecomManager.outgoingCallStarted
 					DispatchQueue.main.async {
 						self.isMediaEncrypted = false
 						self.isZrtp = false
