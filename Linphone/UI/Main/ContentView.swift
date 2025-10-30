@@ -522,7 +522,7 @@ struct ContentView: View {
 															Button {
 																sharedMainViewModel.displayedFriend = nil
 																isMenuOpen = false
-																magicSearch.allContact = true
+																magicSearch.changeAllContact(allContactBool: true)
 																magicSearch.searchForContacts()
 															} label: {
 																HStack {
@@ -540,7 +540,7 @@ struct ContentView: View {
 															Button {
 																sharedMainViewModel.displayedFriend = nil
 																isMenuOpen = false
-																magicSearch.allContact = false
+																magicSearch.changeAllContact(allContactBool: false)
 																magicSearch.searchForContacts()
 															} label: {
 																HStack {
