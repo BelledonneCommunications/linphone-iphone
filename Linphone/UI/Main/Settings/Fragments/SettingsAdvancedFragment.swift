@@ -80,10 +80,22 @@ struct SettingsAdvancedFragment: View {
 									.padding(.bottom, -5)
 								
 								Menu {
-									Button("None") { settingsViewModel.mediaEncryption = "None"}
-									Button("SRTP") { settingsViewModel.mediaEncryption = "SRTP"}
-									Button("ZRTP") { settingsViewModel.mediaEncryption = "ZRTP"}
-									Button("DTLS") { settingsViewModel.mediaEncryption = "DTLS"}
+									Button("None") {
+										settingsViewModel.mediaEncryption = "None"
+										settingsViewModel.mediaEncryptionMandatory = false
+									}
+									Button("SRTP") {
+										settingsViewModel.mediaEncryption = "SRTP"
+										settingsViewModel.mediaEncryptionMandatory = true
+									}
+									Button("ZRTP") {
+										settingsViewModel.mediaEncryption = "ZRTP"
+										settingsViewModel.mediaEncryptionMandatory = true
+									}
+									Button("DTLS") {
+										settingsViewModel.mediaEncryption = "DTLS"
+										settingsViewModel.mediaEncryptionMandatory = true
+									}
 								} label: {
 									Text(settingsViewModel.mediaEncryption)
 										.default_text_style(styleSize: 15)
