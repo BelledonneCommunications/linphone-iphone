@@ -206,6 +206,7 @@
 		D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */; };
 		D7F5F6412C359F3B007FCF2F /* SipAddressesPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */; };
 		D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */; };
+		D7FC8E4A2EBA12F90080C09D /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7FC8E492EBA12F90080C09D /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -434,6 +435,7 @@
 		D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListFragment.swift; sourceTree = "<group>"; };
 		D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SipAddressesPopup.swift; sourceTree = "<group>"; };
 		D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterFragment.swift; sourceTree = "<group>"; };
+		D7FC8E492EBA12F90080C09D /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -645,6 +647,7 @@
 		D719ABB52ABC67BF00B41C10 /* Linphone */ = {
 			isa = PBXGroup;
 			children = (
+				D7FC8E492EBA12F90080C09D /* Launch Screen.storyboard */,
 				D7A03FC52ACC458A0081A588 /* SplashScreen.swift */,
 				D719ABB62ABC67BF00B41C10 /* LinphoneApp.swift */,
 				D777DBB12AE12C4000565A99 /* Contacts */,
@@ -1212,6 +1215,7 @@
 				D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */,
 				D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */,
 				D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */,
+				D7FC8E4A2EBA12F90080C09D /* Launch Screen.storyboard in Resources */,
 				D737AEEF2DA011F2005C1280 /* Localizable.strings in Resources */,
 				D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */,
 				D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */,
@@ -1708,7 +1712,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Linphone;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = YES;
+				INFOPLIST_KEY_ITSEncryptionExportComplianceCode = "b5cb085f-772a-4a4f-8c77-5d1332b1f93f";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Deprecated - Prior to iOS 17 full calendar access is required";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "App requires access to the local network to establish VoIP connections";
@@ -1720,8 +1727,9 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = NO;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = NO;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
@@ -1766,7 +1774,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Linphone/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Linphone;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = YES;
+				INFOPLIST_KEY_ITSEncryptionExportComplianceCode = "b5cb085f-772a-4a4f-8c77-5d1332b1f93f";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Deprecated - Prior to iOS 17 full calendar access is required";
+				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera usage is required for video VOIP calls";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Make calls with your friends";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "App requires access to the local network to establish VoIP connections";
@@ -1778,8 +1789,9 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = NO;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = NO;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
