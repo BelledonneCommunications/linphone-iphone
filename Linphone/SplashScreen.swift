@@ -20,20 +20,19 @@
 import SwiftUI
 
 struct SplashScreen: View {
-	
 	var body: some View {
-		GeometryReader { _ in
-			VStack {
-				Spacer()
-				HStack {
-					Spacer()
-					Image("linphone")
-					Spacer()
-				}
-				Spacer()
-			}
+		ZStack {
+			Color.white
+				.ignoresSafeArea()
 			
+			Image("linphone")
+				.resizable()
+				.renderingMode(.template)
+				.aspectRatio(contentMode: .fit)
+				.frame(width: 240, height: 128)
+				.foregroundColor(Color.orangeMain500)
 		}
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.ignoresSafeArea(.all)
 	}
 }
