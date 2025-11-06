@@ -204,6 +204,8 @@
 "conversation_dialog_edit_subject" = "Edit conversation subject";
 "conversation_dialog_set_subject" = "Set conversation subject";
 "conversation_dialog_subject_hint" = "Conversation subject";
+"conversation_editing_message_title" = "Message being edited";
+"conversation_message_edited_label" = "Edited";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
 "conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";
@@ -394,6 +396,7 @@
 "menu_delete_selected_item" = "Delete";
 "menu_forward_chat_message" = "Forward";
 "menu_invite" = "Invite";
+"menu_edit_chat_message" = "Edit";
 "menu_reply_to_chat_message" = "Reply";
 "menu_resend_chat_message" = "Re-send";
 "menu_see_existing_contact" = "See contact";

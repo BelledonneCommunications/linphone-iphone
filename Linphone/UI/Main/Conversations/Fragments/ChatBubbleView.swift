@@ -325,6 +325,14 @@ struct ChatBubbleView: View {
 															.padding(.top, 1)
 													}
 													
+													if eventLogMessage.message.isEdited && eventLogMessage.message.isOutgoing {
+														Text("conversation_message_edited_label")
+														 .foregroundStyle(Color.grayMain2c500)
+														 .default_text_style_300(styleSize: 12)
+														 .padding(.top, 1)
+														 .padding(.trailing, -4)
+													}
+													
 													Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
 														.foregroundStyle(Color.grayMain2c500)
 														.default_text_style_300(styleSize: 12)
@@ -347,6 +355,14 @@ struct ChatBubbleView: View {
 																.frame(width: 15, height: 15)
 																.padding(.top, 1)
 														}
+													}
+													
+													if eventLogMessage.message.isEdited && !eventLogMessage.message.isOutgoing {
+														Text("conversation_message_edited_label")
+														 .foregroundStyle(Color.grayMain2c500)
+														 .default_text_style_300(styleSize: 12)
+														 .padding(.top, 1)
+														 .padding(.trailing, -4)
 													}
 													
 													if eventLogMessage.message.isEphemeral && !eventLogMessage.message.isOutgoing {

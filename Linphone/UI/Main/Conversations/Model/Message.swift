@@ -68,6 +68,8 @@ public struct Message: Identifiable, Hashable {
 	public var status: Status?
 	public var createdAt: Date
 	public var isOutgoing: Bool
+	public var isEditable: Bool
+	public var isEdited: Bool
 	public var dateReceived: time_t
 
 	public var address: String
@@ -94,6 +96,8 @@ public struct Message: Identifiable, Hashable {
 		status: Status? = nil,
 		createdAt: Date = Date(),
 		isOutgoing: Bool,
+		isEditable: Bool,
+		isEdited: Bool,
 		dateReceived: time_t,
 		address: String,
 		isFirstMessage: Bool = false,
@@ -116,6 +120,8 @@ public struct Message: Identifiable, Hashable {
 		self.status = status
 		self.createdAt = createdAt
 		self.isOutgoing = isOutgoing
+		self.isEditable = isEditable
+		self.isEdited = isEdited
 		self.dateReceived = dateReceived
 		self.isFirstMessage = isFirstMessage
 		self.address = address
@@ -163,6 +169,8 @@ public struct Message: Identifiable, Hashable {
 				status: status,
 				createdAt: draft.createdAt,
 				isOutgoing: draft.isOutgoing,
+				isEditable: draft.isEditable,
+				isEdited: draft.isEdited,
 				dateReceived: draft.dateReceived,
 				address: draft.address,
 				isFirstMessage: draft.isFirstMessage,
@@ -184,7 +192,7 @@ extension Message {
 
 extension Message: Equatable {
 	public static func == (lhs: Message, rhs: Message) -> Bool {
-		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isFirstMessage == rhs.isFirstMessage && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions && lhs.ephemeralExpireTime == rhs.ephemeralExpireTime && lhs.attachments == rhs.attachments
+		lhs.id == rhs.id && lhs.status == rhs.status && lhs.isEdited == rhs.isEdited && lhs.isFirstMessage == rhs.isFirstMessage && lhs.text == rhs.text && lhs.attachments == rhs.attachments && lhs.replyMessage?.text == rhs.replyMessage?.text && lhs.ownReaction == rhs.ownReaction && lhs.reactions == rhs.reactions && lhs.ephemeralExpireTime == rhs.ephemeralExpireTime
 	}
 }
 
@@ -211,6 +219,8 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 	public var isFirstMessage: Bool
 	public var text: String
 	public var isOutgoing: Bool
+	public var isEditable: Bool
+	public var isEdited: Bool
 	public var dateReceived: time_t
 	public var attachmentsNames: String
 	public var attachments: [Attachment]
@@ -221,6 +231,8 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 				isFirstMessage: Bool = false,
 				text: String = "",
 				isOutgoing: Bool,
+				isEditable: Bool,
+				isEdited: Bool,
 				dateReceived: time_t,
 				attachmentsNames: String = "",
 				attachments: [Attachment] = [],
@@ -231,6 +243,8 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 		self.isFirstMessage = isFirstMessage
 		self.text = text
 		self.isOutgoing = isOutgoing
+		self.isEditable = isEditable
+		self.isEdited = isEdited
 		self.dateReceived = dateReceived
 		self.attachmentsNames = attachmentsNames
 		self.attachments = attachments
@@ -238,20 +252,22 @@ public struct ReplyMessage: Codable, Identifiable, Hashable {
 	}
 
 	func toMessage() -> Message {
-		Message(id: id, isOutgoing: isOutgoing, dateReceived: dateReceived, address: address, isFirstMessage: isFirstMessage, text: text, attachments: attachments, recording: recording)
+		Message(id: id, isOutgoing: isOutgoing, isEditable: isEditable, isEdited: isEdited, dateReceived: dateReceived, address: address, isFirstMessage: isFirstMessage, text: text, attachments: attachments, recording: recording)
 	}
 }
 
 public extension Message {
 
 	func toReplyMessage() -> ReplyMessage {
-		ReplyMessage(id: id, address: address, isFirstMessage: isFirstMessage, text: text, isOutgoing: isOutgoing, dateReceived: dateReceived, attachments: attachments, recording: recording)
+		ReplyMessage(id: id, address: address, isFirstMessage: isFirstMessage, text: text, isOutgoing: isOutgoing, isEditable: isEditable, isEdited: isEdited, dateReceived: dateReceived, attachments: attachments, recording: recording)
 	}
 }
 
 public struct DraftMessage {
 	public var id: String?
 	public let isOutgoing: Bool
+	public let isEditable: Bool
+	public let isEdited: Bool
 	public var dateReceived: time_t
 	public let address: String
 	public let isFirstMessage: Bool
@@ -265,6 +281,8 @@ public struct DraftMessage {
 	
 	public init(id: String? = nil,
 				isOutgoing: Bool,
+				isEditable: Bool,
+				isEdited: Bool,
 				dateReceived: time_t,
 				address: String,
 				isFirstMessage: Bool,
@@ -278,6 +296,8 @@ public struct DraftMessage {
 	) {
 		self.id = id
 		self.isOutgoing = isOutgoing
+		self.isEditable = isEditable
+		self.isEdited = isEdited
 		self.dateReceived = dateReceived
 		self.address = address
 		self.isFirstMessage = isFirstMessage
