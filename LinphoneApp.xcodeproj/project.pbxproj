@@ -147,6 +147,9 @@
 		D78E062C2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */; };
 		D78E062E2BEA69F400CE3783 /* AudioRouteBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062D2BEA69F400CE3783 /* AudioRouteBottomSheet.swift */; };
 		D78E06302BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062F2BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift */; };
+		D795F57E2EC5F9500022C17D /* RecordingsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D795F57D2EC5F9480022C17D /* RecordingsListFragment.swift */; };
+		D795F5802EC5F9660022C17D /* RecordingsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D795F57F2EC5F95B0022C17D /* RecordingsListViewModel.swift */; };
+		D795F5832EC6133C0022C17D /* RecordingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D795F5822EC6133A0022C17D /* RecordingModel.swift */; };
 		D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79622332B1DFE600037EACD /* DialerBottomSheet.swift */; };
 		D796F2002B0BB61A0041115F /* ToastViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D796F1FF2B0BB61A0041115F /* ToastViewModel.swift */; };
 		D79F1C162CD3D6AD00FF0A05 /* ConversationInfoFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79F1C152CD3D6AD00FF0A05 /* ConversationInfoFragment.swift */; };
@@ -379,6 +382,9 @@
 		D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStatisticsSheetBottomSheet.swift; sourceTree = "<group>"; };
 		D78E062D2BEA69F400CE3783 /* AudioRouteBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteBottomSheet.swift; sourceTree = "<group>"; };
 		D78E062F2BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeLayoutBottomSheet.swift; sourceTree = "<group>"; };
+		D795F57D2EC5F9480022C17D /* RecordingsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsListFragment.swift; sourceTree = "<group>"; };
+		D795F57F2EC5F95B0022C17D /* RecordingsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsListViewModel.swift; sourceTree = "<group>"; };
+		D795F5822EC6133A0022C17D /* RecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingModel.swift; sourceTree = "<group>"; };
 		D79622332B1DFE600037EACD /* DialerBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialerBottomSheet.swift; sourceTree = "<group>"; };
 		D796F1FF2B0BB61A0041115F /* ToastViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModel.swift; sourceTree = "<group>"; };
 		D79F1C152CD3D6AD00FF0A05 /* ConversationInfoFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInfoFragment.swift; sourceTree = "<group>"; };
@@ -695,6 +701,7 @@
 				D7A03FBE2ACC2E010081A588 /* History */,
 				66E56BC52BA45E49006CE56F /* Meetings */,
 				66D382032CEB7DB80063E1C5 /* Models */,
+				D795F57A2EC5F89B0022C17D /* Recordings */,
 				D7DC096A2CFA192200A6D47C /* Settings */,
 				D7A2EDD42AC180FE005D90FC /* Viewmodel */,
 				D719ABB82ABC67BF00B41C10 /* ContentView.swift */,
@@ -893,6 +900,40 @@
 				D7C3650B2AF0084000FE6142 /* EditContactViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		D795F57A2EC5F89B0022C17D /* Recordings */ = {
+			isa = PBXGroup;
+			children = (
+				D795F57B2EC5F8FF0022C17D /* Fragments */,
+				D795F5812EC613220022C17D /* Models */,
+				D795F57C2EC5F9090022C17D /* ViewModel */,
+			);
+			path = Recordings;
+			sourceTree = "<group>";
+		};
+		D795F57B2EC5F8FF0022C17D /* Fragments */ = {
+			isa = PBXGroup;
+			children = (
+				D795F57D2EC5F9480022C17D /* RecordingsListFragment.swift */,
+			);
+			path = Fragments;
+			sourceTree = "<group>";
+		};
+		D795F57C2EC5F9090022C17D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				D795F57F2EC5F95B0022C17D /* RecordingsListViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		D795F5812EC613220022C17D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D795F5822EC6133A0022C17D /* RecordingModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		D7A03FBB2ACC2D850081A588 /* Contacts */ = {
@@ -1280,6 +1321,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */,
+				D795F57E2EC5F9500022C17D /* RecordingsListFragment.swift in Sources */,
 				D7ADF6002AFE356400212231 /* Avatar.swift in Sources */,
 				D7CEE03B2B7A234200FD79B7 /* ConversationsFragment.swift in Sources */,
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
@@ -1380,8 +1422,10 @@
 				D7A03FC02ACC2E390081A588 /* HistoryView.swift in Sources */,
 				D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */,
 				6613A0B42BAEBE3F008923A4 /* MeetingViewModel.swift in Sources */,
+				D795F5832EC6133C0022C17D /* RecordingModel.swift in Sources */,
 				D7173EBE2B7A5C0A00BCC481 /* LinphoneUtils.swift in Sources */,
 				66C492012B24DB6900CEA16D /* Log.swift in Sources */,
+				D795F5802EC5F9660022C17D /* RecordingsListViewModel.swift in Sources */,
 				D756C8182D352C5F00A58F2F /* CorePreferences.swift in Sources */,
 				C6A5A9432C10B5ED0070FEA4 /* DecodableExtension.swift in Sources */,
 				D714035B2BE11E00004BD8CA /* CallMediaEncryptionModel.swift in Sources */,

@@ -21,6 +21,11 @@ import Foundation
 import linphonesw
 
 class LinphoneUtils: NSObject {
+	static let RECORDING_FILE_NAME_HEADER = "call_recording_sip_"
+	static let RECORDING_FILE_NAME_URI_TIMESTAMP_SEPARATOR = "_on_"
+	static let RECORDING_MKV_FILE_EXTENSION = ".mkv"
+	static let RECORDING_SMFF_FILE_EXTENSION = ".smff"
+	
 	public class func isChatRoomAGroup(chatRoom: ChatRoom) -> Bool {
 		let oneToOne = chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue)
 		let conference = chatRoom.hasCapability(mask: ChatRoom.Capabilities.Conference.rawValue)

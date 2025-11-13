@@ -152,8 +152,10 @@ struct HistoryRow: View {
 				
 				if !historyModel.isConf {
 					Image("phone")
+						.renderingMode(.template)
 						.resizable()
 						.frame(width: 25, height: 25)
+						.foregroundStyle(Color.grayMain2c600)
 						.padding(.all, 10)
 						.padding(.trailing, 5)
 						.highPriorityGesture(

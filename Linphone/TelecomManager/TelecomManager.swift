@@ -195,17 +195,13 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	private func makeRecordFilePath() -> String {
-		var filePath = "recording_"
-		let now = Date()
-		let dateFormat = DateFormatter()
-		dateFormat.dateFormat = "E-d-MMM-yyyy-HH-mm-ss"
-		let date = dateFormat.string(from: now)
-		filePath = filePath.appending("\(date).mkv")
+	private func makeRecordFilePath(address: String) -> String {
+		var filePath = "call_recording_sip_" + address.dropFirst(4) + "_on_"
 		
-		let paths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
-		let writablePath = paths[0]
-		return writablePath.appending("/\(filePath)")
+		filePath = filePath.appending("\(Int(Date().timeIntervalSince1970)).mkv")
+		
+		let writablePath = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Recordings/\(filePath)")
+		return writablePath.path
 	}
 	
 	func doCall(core: Core, addr: Address, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
@@ -237,7 +233,7 @@ class TelecomManager: ObservableObject {
 			// Log.directLog(BCTBX_LOG_DEBUG, text: "record file path: \(writablePath)")
 			// lcallParams.recordFile = writablePath
 			
-			lcallParams.recordFile = makeRecordFilePath()
+			lcallParams.recordFile = makeRecordFilePath(address: addr.asStringUriOnly())
 			
 			if isSas {
 				lcallParams.mediaEncryption = .ZRTP
@@ -292,7 +288,7 @@ class TelecomManager: ObservableObject {
 	func acceptCall(core: Core, call: Call, hasVideo: Bool) {
 		do {
 			let callParams = try core.createCallParams(call: call)
-			callParams.recordFile = makeRecordFilePath()
+			callParams.recordFile = makeRecordFilePath(address: call.remoteAddress?.asStringUriOnly() ?? "")
 			callParams.videoEnabled = hasVideo
 			/*if (ConfigManager.instance().lpConfigBoolForKey(key: "edge_opt_preference")) {
 			 let low_bandwidth = (AppManager.network() == .network_2g)

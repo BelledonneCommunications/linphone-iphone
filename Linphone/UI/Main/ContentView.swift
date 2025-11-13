@@ -65,6 +65,7 @@ struct ContentView: View {
 	@State var isShowConversationFragment = false
 	@State var isShowAccountProfileFragment = false
 	@State var isShowSettingsFragment = false
+	@State var isShowRecordingsListFragment = false
 	@State var isShowHelpFragment = false
 	
 	@State var fullscreenVideo = false
@@ -1041,6 +1042,7 @@ struct ContentView: View {
 						isShowLoginFragment: $isShowLoginFragment,
 						isShowAccountProfileFragment: $isShowAccountProfileFragment,
 						isShowSettingsFragment: $isShowSettingsFragment,
+						isShowRecordingsListFragment: $isShowRecordingsListFragment,
 						isShowHelpFragment: $isShowHelpFragment
 					)
 					.environmentObject(accountProfileViewModel)
@@ -1280,6 +1282,14 @@ struct ContentView: View {
 					if isShowSettingsFragment {
 						SettingsFragment(
 							isShowSettingsFragment: $isShowSettingsFragment
+						)
+						.zIndex(3)
+						.transition(.move(edge: .trailing))
+					}
+					
+					if isShowRecordingsListFragment {
+						RecordingsListFragment(
+							isShowRecordingsListFragment: $isShowRecordingsListFragment
 						)
 						.zIndex(3)
 						.transition(.move(edge: .trailing))

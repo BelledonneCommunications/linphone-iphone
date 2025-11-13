@@ -25,10 +25,6 @@ struct HelpFragment: View {
 	
 	@Binding var isShowHelpFragment: Bool
 	
-	@State var advancedSettingsIsOpen: Bool = false
-	
-	@FocusState var isVoicemailUriFocused: Bool
-	
 	var showAssistant: Bool {
 		(CoreContext.shared.coreIsStarted && CoreContext.shared.accounts.isEmpty)
 		|| SharedMainViewModel.shared.displayProfileMode
