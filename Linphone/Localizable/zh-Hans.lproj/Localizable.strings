@@ -362,3 +362,5 @@
 "menu_show_imdn" = "送达状态";
 "conversation_end_to_end_encrypted_event_title" = "端到端加密聊天";
 "conversation_end_to_end_encrypted_event_subtitle" = "此聊天中的消息是端对端e2e加密的。只有您的对话方才能解密它们。";
+"authentication_id" = "认证ID";
+"settings_contacts_ldap_search_filter_title" = "搜索base（不能为空） 过滤";

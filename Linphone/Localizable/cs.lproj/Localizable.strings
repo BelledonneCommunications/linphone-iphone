@@ -522,3 +522,4 @@
 "conversations_files_waiting_to_be_shared_single" = "1 soubor čekající na sdílení";
 "conversations_files_waiting_to_be_shared_multiple" = "%@ souborů čekajících na sdílení";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d dnů";
+"authentication_id" = "ID pro ověření (je-li odlišné)";

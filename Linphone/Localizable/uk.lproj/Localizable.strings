@@ -522,3 +522,4 @@
 "conversations_files_waiting_to_be_shared_single" = "1 файл очікує на спільний доступ";
 "conversations_files_waiting_to_be_shared_multiple" = "%@ файлів, що очікують на спільний доступ";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d днів";
+"authentication_id" = "Ідентифікатор автентифікації (якщо відрізняється)";
