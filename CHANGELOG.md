@@ -11,6 +11,30 @@ Group changes to describe their impact on the project, as follows:
 	Security to invite users to upgrade in case of vulnerabilities.
 	
 	
+## [6.1.0] - 2025-11-13
+
+### Added
+- LDAP and CardDAV settings
+- Advanced settings in third-party SIP account login view
+- Phone number calls in contact details
+
+### Changed
+- Launch Screen (Splash Screen)
+- Updated translations from Weblate
+- Updated SPM dependencies
+- Disabled meetings view when audio/video conference factory address is missing
+- Moved disable_chat_feature to UI section
+- Updated configuration files
+
+### Fixed
+- International prefix reset in settings
+- Prevent editing of read-only (LDAP) contacts
+- Crash when editing a contact (safe unwrapping of friend/photo)
+- EditContactFragment view and “+” allowed in dialer
+- Dial plan selector and default dial plan
+- Encryption update when call state changes
+
+
 ## [6.0.2] - 2025-09-26
 
 ### Added
