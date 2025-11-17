@@ -167,76 +167,84 @@ struct AddParticipantsFragment: View {
 				.padding(.bottom)
 				.padding(.horizontal)
 				
-				ScrollView {
-					ForEach(0..<contactsManager.avatarListModel.count, id: \.self) { index in
-						HStack {
+				ZStack {
+					ScrollView {
+						ForEach(0..<contactsManager.avatarListModel.count, id: \.self) { index in
 							HStack {
-								if index == 0
-									|| contactsManager.avatarListModel[index].name.lowercased().folding(
-										options: .diacriticInsensitive,
-										locale: .current
-									).first
-									!= contactsManager.avatarListModel[index-1].name.lowercased().folding(
-										options: .diacriticInsensitive,
-										locale: .current
-									).first {
-									Text(
-										String(
-											(contactsManager.avatarListModel[index].name.uppercased().folding(
-												options: .diacriticInsensitive,
-												locale: .current
-											).first)!))
-									.contact_text_style_500(styleSize: 20)
-									.frame(width: 18)
-									.padding(.leading, 5)
-									.padding(.trailing, 5)
-								} else {
-									Text("")
+								HStack {
+									if index == 0
+										|| contactsManager.avatarListModel[index].name.lowercased().folding(
+											options: .diacriticInsensitive,
+											locale: .current
+										).first
+										!= contactsManager.avatarListModel[index-1].name.lowercased().folding(
+											options: .diacriticInsensitive,
+											locale: .current
+										).first {
+										Text(
+											String(
+												(contactsManager.avatarListModel[index].name.uppercased().folding(
+													options: .diacriticInsensitive,
+													locale: .current
+												).first)!))
 										.contact_text_style_500(styleSize: 20)
 										.frame(width: 18)
 										.padding(.leading, 5)
 										.padding(.trailing, 5)
-								}
-								
-								Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
-								
-								Text(contactsManager.avatarListModel[index].name)
-									.default_text_style(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
-								
-								if addParticipantsViewModel.participantsToAdd.contains(where: {
-									$0.address.asStringUriOnly() == contactsManager.avatarListModel[index].address
-								}) {
-									Image("check")
-										.renderingMode(.template)
-										.resizable()
+									} else {
+										Text("")
+											.contact_text_style_500(styleSize: 20)
+											.frame(width: 18)
+											.padding(.leading, 5)
+											.padding(.trailing, 5)
+									}
+									
+									Avatar(contactAvatarModel: contactsManager.avatarListModel[index], avatarSize: 50)
+									
+									Text(contactsManager.avatarListModel[index].name)
+										.default_text_style(styleSize: 16)
+										.frame(maxWidth: .infinity, alignment: .leading)
 										.foregroundStyle(Color.orangeMain500)
-										.frame(width: 25, height: 25)
-										.padding(.horizontal)
+									
+									if addParticipantsViewModel.participantsToAdd.contains(where: {
+										$0.address.asStringUriOnly() == contactsManager.avatarListModel[index].address
+									}) {
+										Image("check")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.orangeMain500)
+											.frame(width: 25, height: 25)
+											.padding(.horizontal)
+									}
 								}
 							}
-						}
-						.background(.white)
-						.onTapGesture {
-							if let addr = try? Factory.Instance.createAddress(addr: contactsManager.avatarListModel[index].address) {
-								addParticipantsViewModel.selectParticipant(addr: addr)
+							.background(.white)
+							.onTapGesture {
+								if let addr = try? Factory.Instance.createAddress(addr: contactsManager.avatarListModel[index].address) {
+									addParticipantsViewModel.selectParticipant(addr: addr)
+								}
 							}
+							.buttonStyle(.borderless)
+							.listRowSeparator(.hidden)
 						}
-						.buttonStyle(.borderless)
-						.listRowSeparator(.hidden)
-					}
-					
-					HStack(alignment: .center) {
-						Text("generic_address_picker_suggestions_list_title")
-							.default_text_style_800(styleSize: 16)
 						
-						Spacer()
+						HStack(alignment: .center) {
+							Text("generic_address_picker_suggestions_list_title")
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+						}
+						.padding(.vertical, 10)
+						.padding(.horizontal, 16)
+						
+						suggestionsList
 					}
-					.padding(.vertical, 10)
-					.padding(.horizontal, 16)
 					
-					suggestionsList
+					if magicSearch.isLoading {
+						ProgressView()
+							.controlSize(.large)
+							.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+					}
 				}
 			}
 			Button {

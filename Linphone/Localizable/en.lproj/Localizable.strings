@@ -188,6 +188,7 @@
 "contacts_list_favourites_title" = "Favourites";
 "contacts_list_filter_popup_see_all" = "See all";
 "contacts_list_filter_popup_see_linphone_only" = "See %@ contacts";
+"contacts_list_filter_popup_see_sip_only" = "See SIP contacts";
 "conversation_action_call" = "Call";
 "conversation_action_configure_ephemeral_messages" = "Configure ephemeral messages";
 "conversation_action_delete" = "Delete conversation";
