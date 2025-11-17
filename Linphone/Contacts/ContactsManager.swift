@@ -318,7 +318,7 @@ final class ContactsManager: ObservableObject {
 				// Clear existing addresses and add new ones
 				friend.addresses.forEach { friend.removeAddress(address: $0) }
 				for sipAddress in contact.sipAddresses where !sipAddress.isEmpty {
-					if let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: true),
+					if let address = core.interpretUrl(url: sipAddress, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)),
 					   !friend.addresses.contains(where: { $0.asString() == address.asString() }) {
 						friend.addAddress(address: address)
 					}

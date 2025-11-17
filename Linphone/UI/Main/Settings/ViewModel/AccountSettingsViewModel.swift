@@ -30,6 +30,8 @@ class AccountSettingsViewModel: ObservableObject {
 	@Published var imEncryptionMandatory: Bool
 	@Published var voicemailUri: String
 	@Published var mwiUri: String
+	@Published var applyInternationalPrefix: Bool
+	@Published var replacePlusBy00: Bool
 	@Published var stunServerUrl: String
 	@Published var enableIce: Bool
 	@Published var enableTurn: Bool
@@ -57,6 +59,8 @@ class AccountSettingsViewModel: ObservableObject {
 		self.imEncryptionMandatory = accountModel.account.params?.instantMessagingEncryptionMandatory ?? false
 		self.voicemailUri = accountModel.account.params?.voicemailAddress?.asStringUriOnly() ?? ""
 		self.mwiUri = accountModel.account.params?.mwiServerAddress?.asStringUriOnly() ?? ""
+		self.applyInternationalPrefix = accountModel.account.params?.useInternationalPrefixForCallsAndChats ?? false
+		self.replacePlusBy00 = accountModel.account.params?.dialEscapePlusEnabled ?? false
 		
 		self.natPolicy = accountModel.account.params?.natPolicy
 		self.stunServerUrl = accountModel.account.params?.natPolicy?.stunServer ?? ""
@@ -189,6 +193,9 @@ class AccountSettingsViewModel: ObservableObject {
 				} else {
 					newParams.voicemailAddress = nil
 				}
+				
+				newParams.useInternationalPrefixForCallsAndChats = self.applyInternationalPrefix
+				newParams.dialEscapePlusEnabled = self.replacePlusBy00
 				
 				let expireInt: Int = {
 					if !self.expire.isEmpty {
