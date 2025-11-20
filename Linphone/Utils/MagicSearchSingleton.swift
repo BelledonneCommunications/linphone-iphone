@@ -151,7 +151,13 @@ final class MagicSearchSingleton: ObservableObject {
         lastSearchSuggestions: [SearchResult],
         addedAvatarListModel: [ContactAvatarModel]
     ) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async {			
+			if SharedMainViewModel.shared.displayedFriend != nil {
+				if let avatarModel = addedAvatarListModel.first(where: { $0.address == SharedMainViewModel.shared.displayedFriend?.address }) {
+					SharedMainViewModel.shared.displayedFriend = avatarModel
+				}
+			}
+			
             self.contactsManager.lastSearch = sortedLastSearch
             self.contactsManager.lastSearchSuggestions = lastSearchSuggestions
             
