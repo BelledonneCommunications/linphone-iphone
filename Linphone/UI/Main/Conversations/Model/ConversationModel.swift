@@ -49,6 +49,7 @@ class ConversationModel: ObservableObject, Identifiable {
 	@Published var lastMessageText: String
 	@Published var lastMessageIsOutgoing: Bool
 	@Published var lastMessageState: Int
+	@Published var lastMessageInItalic: Bool
 	@Published var unreadMessagesCount: Int
 	@Published var avatarModel: ContactAvatarModel
 	
@@ -143,6 +144,8 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.lastMessageIsOutgoing = false
 		
 		self.lastMessageState = 0
+		
+		self.lastMessageInItalic = false
 
 		self.unreadMessagesCount = chatRoom.unreadMessagesCount
 		
@@ -297,6 +300,8 @@ class ConversationModel: ObservableObject, Identifiable {
 			var lastMessageTextTmp = (fromAddressFriend ?? "")
 			+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
 			
+			var lastMessageInItalicTmp = false
+			
 			if lastMessage!.contents.first != nil && lastMessage!.contents.first!.isIcalendar == true {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: lastMessage!.contents.first!) {
 					if conferenceInfo.uri != nil {
@@ -308,8 +313,16 @@ class ConversationModel: ObservableObject, Identifiable {
 						} else if conferenceInfo.state == .Cancelled {
 							lastMessageTextTmp = String(localized: "message_meeting_invitation_cancelled_notification")
 						}
+						
+						lastMessageInItalicTmp = true
 					}
 				}
+			}
+			
+			if lastMessage!.isRetracted {
+				lastMessageTextTmp += lastMessage!.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
+				
+				lastMessageInItalicTmp = true
 			}
 			
 			let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false
@@ -326,6 +339,8 @@ class ConversationModel: ObservableObject, Identifiable {
                 self.lastUpdateTime = lastUpdateTimeTmp
                 
                 self.lastMessageState = lastMessageStateTmp
+				
+				self.lastMessageInItalic = lastMessageInItalicTmp
             }
             
             getUnreadMessagesCount()

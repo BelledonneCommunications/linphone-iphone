@@ -175,6 +175,10 @@ class ConversationViewModel: ObservableObject {
 		}, onMessageContentEdited: {(chatRoom: ChatRoom, message: ChatMessage) in
 			let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
 			
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				displayedConversation.getContentTextMessage(chatRoom: displayedConversation.chatRoom)
+			}
+			
 			var attachmentNameList: String = ""
 			var attachmentList: [Attachment] = []
 			var contentText = ""
@@ -290,7 +294,28 @@ class ConversationViewModel: ObservableObject {
 				}
 			}
 		}, onMessageRetracted: {(chatRoom: ChatRoom, message: ChatMessage) in
-			// TODO
+			let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+			let indexReplyMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.replyMessage?.id == message.messageId})
+			
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				displayedConversation.getContentTextMessage(chatRoom: displayedConversation.chatRoom)
+			}
+													 
+			DispatchQueue.main.async {
+				if indexMessage != nil {
+					self.conversationMessagesSection[0].rows[indexMessage!].message.text = ""
+					self.conversationMessagesSection[0].rows[indexMessage!].message.isRetracted = true
+					self.conversationMessagesSection[0].rows[indexMessage!].message.attachments = []
+					self.conversationMessagesSection[0].rows[indexMessage!].message.attachmentsNames = ""
+				}
+				
+				if indexReplyMessage != nil {
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.text = ""
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.isRetracted = true
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.attachments = []
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.attachmentsNames = ""
+				}
+			}
 		})
 		
 		self.chatRoomDelegateHolder = ChatRoomDelegateHolder(chatroom: chatRoom, delegate: chatRoomDelegate)
@@ -666,7 +691,9 @@ class ConversationViewModel: ObservableObject {
 									status: nil,
 									isOutgoing: false,
 									isEditable: false,
+									isRetractable: false,
 									isEdited: false,
+									isRetracted: false,
 									dateReceived: 0,
 									address: "",
 									isFirstMessage: false,
@@ -827,6 +854,8 @@ class ConversationViewModel: ObservableObject {
 						
 						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 						
+						let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+						
 						var attachmentNameReplyList: String = ""
 						
 						chatMessage.replyMessage?.contents.forEach { content in
@@ -844,9 +873,11 @@ class ConversationViewModel: ObservableObject {
 							address: addressReplyCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: false,
 							text: contentReplyText,
-							isOutgoing: false,
+							isOutgoing: chatMessage.replyMessage!.isOutgoing,
 							isEditable: false,
+							isRetractable: false,
 							isEdited: false,
+							isRetracted: isReplyRetracted,
 							dateReceived: 0,
 							attachmentsNames: attachmentNameReplyList,
 							attachments: []
@@ -861,7 +892,9 @@ class ConversationViewModel: ObservableObject {
 								status: statusTmp,
 								isOutgoing: chatMessage.isOutgoing,
 								isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+								isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
 								isEdited: chatMessage.isEdited,
+								isRetracted: chatMessage.isRetracted,
 								dateReceived: chatMessage.time,
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
@@ -916,7 +949,9 @@ class ConversationViewModel: ObservableObject {
 									status: nil,
 									isOutgoing: false,
 									isEditable: false,
+									isRetractable: false,
 									isEdited: false,
+									isRetracted: false,
 									dateReceived: 0,
 									address: "",
 									isFirstMessage: false,
@@ -1076,6 +1111,8 @@ class ConversationViewModel: ObservableObject {
 						
 						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 						
+						let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+						
 						var attachmentNameReplyList: String = ""
 						
 						chatMessage.replyMessage?.contents.forEach { content in
@@ -1093,9 +1130,11 @@ class ConversationViewModel: ObservableObject {
 							address: addressReplyCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: false,
 							text: contentReplyText,
-							isOutgoing: false,
+							isOutgoing: chatMessage.replyMessage!.isOutgoing,
 							isEditable: false,
+							isRetractable: false,
 							isEdited: false,
+							isRetracted: isReplyRetracted,
 							dateReceived: 0,
 							attachmentsNames: attachmentNameReplyList,
 							attachments: []
@@ -1110,7 +1149,9 @@ class ConversationViewModel: ObservableObject {
 								status: statusTmp,
 								isOutgoing: chatMessage.isOutgoing,
 								isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+								isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
 								isEdited: chatMessage.isEdited,
+								isRetracted: chatMessage.isRetracted,
 								dateReceived: chatMessage.time,
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
@@ -1182,7 +1223,9 @@ class ConversationViewModel: ObservableObject {
 								status: nil,
 								isOutgoing: false,
 								isEditable: false,
+								isRetractable: false,
 								isEdited: false,
+								isRetracted: false,
 								dateReceived: 0,
 								address: "",
 								isFirstMessage: false,
@@ -1356,6 +1399,8 @@ class ConversationViewModel: ObservableObject {
 					
 					let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 					
+					let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+					
 					var attachmentNameReplyList: String = ""
 					
 					chatMessage.replyMessage?.contents.forEach { content in
@@ -1373,9 +1418,11 @@ class ConversationViewModel: ObservableObject {
 						address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
 						isFirstMessage: false,
 						text: contentReplyText,
-						isOutgoing: false,
+						isOutgoing: chatMessage.replyMessage!.isOutgoing,
 						isEditable: false,
+						isRetractable: false,
 						isEdited: false,
+						isRetracted: isReplyRetracted,
 						dateReceived: 0,
 						attachmentsNames: attachmentNameReplyList,
 						attachments: []
@@ -1391,7 +1438,9 @@ class ConversationViewModel: ObservableObject {
 							status: statusTmp,
 							isOutgoing: chatMessage.isOutgoing,
 							isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+							isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
 							isEdited: chatMessage.isEdited,
+							isRetracted: chatMessage.isRetracted,
 							dateReceived: chatMessage.time,
 							address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
 							isFirstMessage: isFirstMessageTmp,
@@ -1592,6 +1641,8 @@ class ConversationViewModel: ObservableObject {
 			
 			let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 			
+			let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+			
 			var attachmentNameReplyList: String = ""
 			
 			chatMessage.replyMessage?.contents.forEach { content in
@@ -1609,9 +1660,11 @@ class ConversationViewModel: ObservableObject {
 				address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
 				isFirstMessage: false,
 				text: contentReplyText,
-				isOutgoing: false,
+				isOutgoing: chatMessage.replyMessage!.isOutgoing,
 				isEditable: false,
+				isRetractable: false,
 				isEdited: false,
+				isRetracted: isReplyRetracted,
 				dateReceived: 0,
 				attachmentsNames: attachmentNameReplyList,
 				attachments: []
@@ -1627,7 +1680,9 @@ class ConversationViewModel: ObservableObject {
 					status: statusTmp,
 					isOutgoing: chatMessage.isOutgoing,
 					isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+					isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
 					isEdited: chatMessage.isEdited,
+					isRetracted: chatMessage.isRetracted,
 					dateReceived: chatMessage.time,
 					address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
 					isFirstMessage: isFirstMessageTmp,
@@ -1670,7 +1725,9 @@ class ConversationViewModel: ObservableObject {
 				status: nil,
 				isOutgoing: false,
 				isEditable: false,
+				isRetractable: false,
 				isEdited: false,
+				isRetracted: false,
 				dateReceived: 0,
 				address: "",
 				isFirstMessage: false,
@@ -1783,7 +1840,9 @@ class ConversationViewModel: ObservableObject {
 											status: nil,
 											isOutgoing: false,
 											isEditable: false,
+											isRetractable: false,
 											isEdited: false,
+											isRetracted: false,
 											dateReceived: 0,
 											address: "",
 											isFirstMessage: false,
@@ -1943,6 +2002,8 @@ class ConversationViewModel: ObservableObject {
 								
 								let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 								
+								let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+								
 								var attachmentNameReplyList: String = ""
 								
 								chatMessage.replyMessage?.contents.forEach { content in
@@ -1960,9 +2021,11 @@ class ConversationViewModel: ObservableObject {
 									address: addressReplyCleaned?.asStringUriOnly() ?? "",
 									isFirstMessage: false,
 									text: contentReplyText,
-									isOutgoing: false,
+									isOutgoing: chatMessage.replyMessage!.isOutgoing,
 									isEditable: false,
+									isRetractable: false,
 									isEdited: false,
+									isRetracted: isReplyRetracted,
 									dateReceived: 0,
 									attachmentsNames: attachmentNameReplyList,
 									attachments: []
@@ -1977,7 +2040,9 @@ class ConversationViewModel: ObservableObject {
 										status: statusTmp,
 										isOutgoing: chatMessage.isOutgoing,
 										isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+										isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
 										isEdited: chatMessage.isEdited,
+										isRetracted: chatMessage.isRetracted,
 										dateReceived: chatMessage.time,
 										address: addressCleaned?.asStringUriOnly() ?? "",
 										isFirstMessage: isFirstMessageTmp,
@@ -2845,12 +2910,34 @@ class ConversationViewModel: ObservableObject {
 			if let displayedConversation = self.sharedMainViewModel.displayedConversation,
 			   let selectedMessage = self.selectedMessage,
 			   let chatMessage = selectedMessage.eventModel.eventLog.chatMessage {
+				
+				let indexReplyMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.replyMessage?.id == chatMessage.messageId})
 				displayedConversation.chatRoom.deleteMessage(message: chatMessage)
+				
+				displayedConversation.getContentTextMessage(chatRoom: displayedConversation.chatRoom)
+				
 				DispatchQueue.main.async {
 					if let sectionIndex = self.conversationMessagesSection.firstIndex(where: { $0.chatRoomID == displayedConversation.id }),
 					   let rowIndex = self.conversationMessagesSection[sectionIndex].rows.firstIndex(of: selectedMessage) {
 						self.conversationMessagesSection[sectionIndex].rows.remove(at: rowIndex)
+						
+						if indexReplyMessage != nil {
+							self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage = nil
+						}
 					}
+					self.selectedMessage = nil
+				}
+			}
+		}
+	}
+	
+	func deleteMessageForEveryone(){
+		coreContext.doOnCoreQueue { _ in
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation,
+			   let selectedMessage = self.selectedMessage,
+			   let chatMessage = selectedMessage.eventModel.eventLog.chatMessage {
+				displayedConversation.chatRoom.retractMessage(message: chatMessage)
+				DispatchQueue.main.async {
 					self.selectedMessage = nil
 				}
 			}

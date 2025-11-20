@@ -105,14 +105,26 @@ struct ConversationRow: View {
 					.frame(maxWidth: .infinity, alignment: .leading)
 					.lineLimit(1)
 				
-				Text(conversation.lastMessageText)
-					.foregroundStyle(Color.grayMain2c400)
-					.if(conversation.unreadMessagesCount > 0) { view in
-						view.default_text_style_700(styleSize: 14)
-					}
-					.default_text_style(styleSize: 14)
-					.frame(maxWidth: .infinity, alignment: .leading)
-					.lineLimit(1)
+				if conversation.lastMessageInItalic {
+					Text(conversation.lastMessageText)
+						.italic()
+						.if(conversation.unreadMessagesCount > 0) { view in
+							view.bold()
+						}
+						.foregroundStyle(Color.grayMain2c400)
+						.font(.system(size: 14))
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.lineLimit(1)
+				} else {
+					Text(conversation.lastMessageText)
+						.foregroundStyle(Color.grayMain2c400)
+						.if(conversation.unreadMessagesCount > 0) { view in
+							view.default_text_style_700(styleSize: 14)
+						}
+						.default_text_style(styleSize: 14)
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.lineLimit(1)
+				}
 				
 				Spacer()
 			}

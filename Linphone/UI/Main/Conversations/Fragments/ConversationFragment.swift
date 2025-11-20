@@ -64,6 +64,7 @@ struct ConversationFragment: View {
 	
 	@Binding var isShowConversationFragment: Bool
 	@Binding var isShowStartCallGroupPopup: Bool
+	@Binding var isShowDeleteMessagePopup: Bool
 	
 	@State private var selectedCategoryIndex = 0
 	
@@ -1194,27 +1195,29 @@ struct ConversationFragment: View {
 											Divider()
 										}
 									
-										Button {
-											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
-											conversationViewModel.selectedMessage = nil
-											conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: Binding(
-                                                get: { isMessageTextFocused },
-                                                set: { isMessageTextFocused = $0 }
-                                            ))
-										} label: {
-											HStack {
-												Text("menu_reply_to_chat_message")
-													.default_text_style(styleSize: 15)
-												Spacer()
-												Image("reply")
-													.resizable()
-													.frame(width: 20, height: 20, alignment: .leading)
+										if !conversationViewModel.selectedMessage!.message.isRetracted {
+											Button {
+												let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
+												conversationViewModel.selectedMessage = nil
+												conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: Binding(
+													get: { isMessageTextFocused },
+													set: { isMessageTextFocused = $0 }
+												))
+											} label: {
+												HStack {
+													Text("menu_reply_to_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("reply")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
 											}
-											.padding(.vertical, 5)
-											.padding(.horizontal, 20)
+											
+											Divider()
 										}
-										
-										Divider()
 										
 										if !conversationViewModel.selectedMessage!.message.text.isEmpty {
 											Button {
@@ -1243,27 +1246,35 @@ struct ConversationFragment: View {
 											Divider()
 										}
 										
-										Button {
-											withAnimation {
-												isShowConversationForwardMessageFragment = true
+										if !conversationViewModel.selectedMessage!.message.isRetracted {
+											Button {
+												withAnimation {
+													isShowConversationForwardMessageFragment = true
+												}
+											} label: {
+												HStack {
+													Text("menu_forward_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("forward")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
 											}
-										} label: {
-											HStack {
-												Text("menu_forward_chat_message")
-													.default_text_style(styleSize: 15)
-												Spacer()
-												Image("forward")
-													.resizable()
-													.frame(width: 20, height: 20, alignment: .leading)
-											}
-											.padding(.vertical, 5)
-											.padding(.horizontal, 20)
+											
+											Divider()
 										}
 										
-										Divider()
-										
 										Button {
-											conversationViewModel.deleteMessage()
+											if conversationViewModel.selectedMessage!.message.isOutgoing
+												&& !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly)
+												&& conversationViewModel.selectedMessage!.message.isRetractable && !conversationViewModel.selectedMessage!.message.isRetracted {
+												isShowDeleteMessagePopup = true
+											} else {
+												conversationViewModel.deleteMessage()
+											}
 										} label: {
 											HStack {
 												Text("menu_delete_selected_item")
@@ -1316,6 +1327,10 @@ struct ConversationFragment: View {
 					if conversationViewModel.selectedMessage != nil {
 						conversationViewModel.selectedMessage = nil
 					}
+				}.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DeleteMessageForMe"))) { _ in
+					conversationViewModel.deleteMessage()
+				}.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DeleteMessageForEveryone"))) { _ in
+					conversationViewModel.deleteMessageForEveryone()
 				}
 			}
 			

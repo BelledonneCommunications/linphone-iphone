@@ -467,9 +467,9 @@
 "message_delivery_info_read_title" = "Gelesen";
 "message_delivery_info_received_title" = "Empfangen";
 "message_delivery_info_sent_title" = "Gesendet";
-"message_meeting_invitation_cancelled_notification" = "📅 Die Besprechung wurde abgesagt";
-"message_meeting_invitation_notification" = "📅 Sie sind zu einer Besprechung eingeladen";
-"message_meeting_invitation_updated_notification" = "📅 Besprechung wurde aktualisiert";
+"message_meeting_invitation_cancelled_notification" = "Die Besprechung wurde abgesagt";
+"message_meeting_invitation_notification" = "Sie sind zu einer Besprechung eingeladen";
+"message_meeting_invitation_updated_notification" = "Besprechung wurde aktualisiert";
 "message_reactions_info_all_title" = "Reaktionen";
 "network_reachable_again" = "Netzwerk ist nun wieder erreichbar";
 "None" = "Kein";

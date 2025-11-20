@@ -206,6 +206,11 @@
 "conversation_dialog_subject_hint" = "Conversation subject";
 "conversation_editing_message_title" = "Message being edited";
 "conversation_message_edited_label" = "Edited";
+"conversation_dialog_delete_chat_message_title" = "Delete this message?";
+"conversation_dialog_delete_locally_label" = "For me";
+"conversation_dialog_delete_for_everyone_label" = "For everyone";
+"conversation_message_content_deleted_label" = "This message has been deleted";
+"conversation_message_content_deleted_by_us_label" = "You have deleted this message";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
 "conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";
@@ -407,9 +412,9 @@
 "message_delivery_info_received_title" = "Received";
 "message_delivery_info_sent_title" = "Sent";
 "message_forwarded_label" = "Forwarded";
-"message_meeting_invitation_cancelled_notification" = "📅 Meeting has been cancelled";
-"message_meeting_invitation_notification" = "📅 You are invited to a meeting";
-"message_meeting_invitation_updated_notification" = "📅 Meeting has been updated";
+"message_meeting_invitation_cancelled_notification" = "Meeting has been cancelled";
+"message_meeting_invitation_notification" = "You are invited to a meeting";
+"message_meeting_invitation_updated_notification" = "Meeting has been updated";
 "message_reaction_click_to_remove_label" = "Click to remove";
 "message_reactions_info_all_title" = "Reactions";
 "network_not_reachable" = "You aren't connected to internet";

@@ -89,7 +89,11 @@ class ConversationsListViewModel: ObservableObject {
 										fromAddressFriend = nil
 									}
 									
-									let lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
+									var lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
+									
+									if lastMessage.isRetracted {
+										lastMessageTextTmp += lastMessage.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
+									}
 									
 									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 										DispatchQueue.main.async {
@@ -148,7 +152,11 @@ class ConversationsListViewModel: ObservableObject {
 									fromAddressFriend = nil
 								}
 								
-								let lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
+								var lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
+								
+								if lastMessage.isRetracted {
+									lastMessageTextTmp += lastMessage.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
+								}
 								
 								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 									DispatchQueue.main.async {

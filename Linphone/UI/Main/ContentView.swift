@@ -60,6 +60,7 @@ struct ContentView: View {
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowStartCallGroupPopup = false
+	@State var isShowDeleteMessagePopup = false
 	@State var isShowSipAddressesPopup = false
 	@State var isShowSipAddressesPopupType = 0 // 0 to call, 1  to message, 2 to video call
 	@State var isShowConversationFragment = false
@@ -987,6 +988,7 @@ struct ContentView: View {
 								ConversationFragment(
 									isShowConversationFragment: $isShowConversationFragment,
 									isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
+									isShowDeleteMessagePopup: $isShowDeleteMessagePopup,
 									isShowEditContactFragment: $isShowEditContactFragment,
 									isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
 									isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
@@ -1354,31 +1356,30 @@ struct ContentView: View {
 						}
 					}
 					
-					/*
-					if isShowStartCallGroupPopup {
+					if isShowDeleteMessagePopup {
 						PopupView(
-							isShowPopup: $isShowStartCallGroupPopup,
-							title: Text("conversation_info_confirm_start_group_call_dialog_title"),
-							content: Text("conversation_info_confirm_start_group_call_dialog_message"),
-							titleFirstButton: Text("dialog_cancel"),
-							actionFirstButton: { self.isShowStartCallGroupPopup.toggle() },
-							titleSecondButton: Text("dialog_confirm"),
+							isShowPopup: $isShowDeleteMessagePopup,
+							title: Text("conversation_dialog_delete_chat_message_title"),
+							content: nil,
+							titleFirstButton: Text("conversation_dialog_delete_for_everyone_label"),
+							actionFirstButton: {
+								NotificationCenter.default.post(name: NSNotification.Name("DeleteMessageForEveryone"), object: nil)
+								self.isShowDeleteMessagePopup.toggle()
+							},
+							titleSecondButton: Text("conversation_dialog_delete_locally_label"),
 							actionSecondButton: {
-								if sharedMainViewModel.displayedConversation != nil {
-									sharedMainViewModel.displayedConversation!.createGroupCall()
-								}
-								self.isShowStartCallGroupPopup.toggle()
+								NotificationCenter.default.post(name: NSNotification.Name("DeleteMessageForMe"), object: nil)
+								self.isShowDeleteMessagePopup.toggle()
 							},
 							titleThirdButton: Text("dialog_cancel"),
-							actionThirdButton: { self.isShowStartCallGroupPopup.toggle() }
+							actionThirdButton: { self.isShowDeleteMessagePopup.toggle() }
 						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
-							self.isShowStartCallGroupPopup.toggle()
+							self.isShowDeleteMessagePopup.toggle()
 						}
 					}
-					*/
 					
 					if isShowConversationInfoPopup {
 						PopupViewWithTextField(

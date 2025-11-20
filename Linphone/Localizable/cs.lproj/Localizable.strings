@@ -474,9 +474,9 @@
 "message_copied_to_clipboard_toast" = "Zpráva zkopírována do schránky";
 "message_delivery_info_read_title" = "Přečteno";
 "message_delivery_info_received_title" = "Přijato";
-"message_meeting_invitation_cancelled_notification" = "📅 Schůzka byla zrušena";
-"message_meeting_invitation_notification" = "📅 Jste pozváni na schůzku";
-"message_meeting_invitation_updated_notification" = "📅 Schůzka byla aktualizována";
+"message_meeting_invitation_cancelled_notification" = "Schůzka byla zrušena";
+"message_meeting_invitation_notification" = "Jste pozváni na schůzku";
+"message_meeting_invitation_updated_notification" = "Schůzka byla aktualizována";
 "message_reactions_info_all_title" = "Reakce";
 "network_reachable_again" = "Síť je znovu dostupná";
 "menu_block_number" = "Blokovat číslo";

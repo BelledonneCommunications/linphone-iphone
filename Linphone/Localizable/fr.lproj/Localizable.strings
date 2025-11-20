@@ -206,6 +206,11 @@
 "conversation_dialog_subject_hint" = "Nom de la conversation";
 "conversation_editing_message_title" = "Modification du message";
 "conversation_message_edited_label" = "Modifié";
+"conversation_dialog_delete_chat_message_title" = "Supprimer le message ?";
+"conversation_dialog_delete_locally_label" = "Pour moi";
+"conversation_dialog_delete_for_everyone_label" = "Pour tout le monde";
+"conversation_message_content_deleted_label" = "*Le message a été supprimé*";
+"conversation_message_content_deleted_by_us_label" = "*Vous avez supprimé le message*";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "Conversation chiffrée de bout en bout";
 "conversation_end_to_end_encrypted_event_subtitle" = "Les messages de cette conversation sont chiffrés de bout en bout. Seul votre correspondant peut les déchiffrer.";
@@ -407,9 +412,9 @@
 "message_delivery_info_received_title" = "Reçu";
 "message_delivery_info_sent_title" = "Envoyé";
 "message_forwarded_label" = "Transféré";
-"message_meeting_invitation_cancelled_notification" = "📅 Réunion annulée";
-"message_meeting_invitation_notification" = "📅 Invitation à une réunion";
-"message_meeting_invitation_updated_notification" = "📅 Réunion mise à jour";
+"message_meeting_invitation_cancelled_notification" = "Réunion annulée";
+"message_meeting_invitation_notification" = "Invitation à une réunion";
+"message_meeting_invitation_updated_notification" = "Réunion mise à jour";
 "message_reaction_click_to_remove_label" = "Cliquez pour supprimer";
 "message_reactions_info_all_title" = "Réactions";
 "network_not_reachable" = "Vous n’êtes pas connecté à internet";
