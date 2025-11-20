@@ -194,14 +194,8 @@ struct HistoryContactFragment: View {
 										.frame(maxWidth: .infinity)
 										.padding(.top, 5)
 									
-									if let avatarModel = historyModel.avatarModel {
-										Text(avatarModel.lastPresenceInfo)
-											.foregroundStyle(avatarModel.lastPresenceInfo == "Online" ? Color.greenSuccess500 : Color.orangeWarning600)
-											.multilineTextAlignment(.center)
-											.default_text_style_300(styleSize: 12)
-											.frame(maxWidth: .infinity)
-											.frame(height: 20)
-											.padding(.top, 5)
+									if let avatar = historyModel.avatarModel {
+										AvatarPresenceView(avatarModel: avatar)
 									} else {
 										Text("")
 											.multilineTextAlignment(.center)
@@ -420,6 +414,21 @@ struct HistoryContactFragment: View {
 		.navigationViewStyle(.stack)
 	}
 }
+
+struct AvatarPresenceView: View {
+	@ObservedObject var avatarModel: ContactAvatarModel
+
+	var body: some View {
+		Text(avatarModel.lastPresenceInfo)
+			.foregroundStyle(avatarModel.lastPresenceInfo == "Online" ? Color.greenSuccess500 : Color.orangeWarning600)
+			.multilineTextAlignment(.center)
+			.default_text_style_300(styleSize: 12)
+			.frame(maxWidth: .infinity)
+			.frame(height: 20)
+			.padding(.top, 5)
+	}
+}
+
 
 #Preview {
 	HistoryContactFragment(
