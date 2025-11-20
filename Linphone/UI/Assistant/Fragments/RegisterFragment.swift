@@ -57,22 +57,21 @@ struct RegisterFragment: View {
 						let titlePopup = Text("assistant_dialog_confirm_phone_number_title")
 						let contentPopup = Text(String(format: String(localized: "assistant_dialog_confirm_phone_number_message"), registerViewModel.phoneNumber))
 						
-						
 						PopupView(
 							isShowPopup: $isShowPopup,
 							title: titlePopup,
 							content: contentPopup,
-							titleFirstButton: Text("dialog_cancel"),
-							actionFirstButton: {
-								self.isShowPopup = false
-							},
+							titleFirstButton: nil,
+							actionFirstButton: {},
 							titleSecondButton: Text("dialog_continue"),
 							actionSecondButton: {
 								self.isShowPopup = false
 								registerViewModel.createInProgress = true
 								registerViewModel.startAccountCreation()
 								registerViewModel.phoneNumberConfirmedByUser()
-							}
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: { self.isShowPopup = false },
 						)
 						.background(.black.opacity(0.65))
 						.onTapGesture {

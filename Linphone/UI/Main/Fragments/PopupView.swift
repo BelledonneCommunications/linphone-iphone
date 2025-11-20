@@ -34,6 +34,9 @@ struct PopupView: View {
 	var titleSecondButton: Text?
 	var actionSecondButton: () -> Void
 	
+	var titleThirdButton: Text?
+	var actionThirdButton: () -> Void
+	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(alignment: .leading) {
@@ -49,40 +52,57 @@ struct PopupView: View {
 						.padding(.bottom, 20)
 				}
 				
-				if titleFirstButton != nil {
-					Button(action: {
-						actionFirstButton()
-					}, label: {
-						titleFirstButton
-							.default_text_style_orange_600(styleSize: 20)
-							.frame(height: 35)
-							.frame(maxWidth: .infinity)
-					})
-					.padding(.horizontal, 20)
-					.padding(.vertical, 10)
-					.cornerRadius(60)
-					.overlay(
-						RoundedRectangle(cornerRadius: 60)
-							.inset(by: 0.5)
-							.stroke(Color.orangeMain500, lineWidth: 1)
-					)
-					.padding(.bottom, 10)
+				HStack {
+					if titleFirstButton != nil {
+						Button(action: {
+							actionFirstButton()
+						}, label: {
+							titleFirstButton
+								.default_text_style_white_600(styleSize: 14)
+							.frame(height: 30)
+						})
+						.padding(.horizontal, 20)
+						.padding(.vertical, 10)
+						.background(Color.orangeMain500)
+						.cornerRadius(60)
+						.padding(.horizontal, 2)
+					}
+					
+					if titleSecondButton != nil {
+						Button(action: {
+							actionSecondButton()
+						}, label: {
+							titleSecondButton
+								.default_text_style_white_600(styleSize: 14)
+							.frame(height: 30)
+						})
+						.padding(.horizontal, 20)
+						.padding(.vertical, 10)
+						.background(Color.orangeMain500)
+						.cornerRadius(60)
+						.padding(.horizontal, 2)
+					}
+					
+					if titleThirdButton != nil {
+						Button(action: {
+							actionThirdButton()
+						}, label: {
+							titleThirdButton
+								.default_text_style_orange_600(styleSize: 14)
+							.frame(height: 30)
+						})
+						.padding(.horizontal, 20)
+						.padding(.vertical, 10)
+						.cornerRadius(60)
+						.overlay(
+							RoundedRectangle(cornerRadius: 60)
+								.inset(by: 0.5)
+								.stroke(Color.orangeMain500, lineWidth: 1)
+						)
+						.padding(.horizontal, 2)
+					}
 				}
-				
-				if titleSecondButton != nil {
-					Button(action: {
-						actionSecondButton()
-					}, label: {
-						titleSecondButton
-							.default_text_style_white_600(styleSize: 20)
-							.frame(height: 35)
-							.frame(maxWidth: .infinity)
-					})
-					.padding(.horizontal, 20)
-					.padding(.vertical, 10)
-					.background(Color.orangeMain500)
-					.cornerRadius(60)
-				}
+				.frame(maxWidth: .infinity, alignment: .trailing)
 			}
 			.padding(.horizontal, 20)
 			.padding(.vertical, 20)
@@ -101,9 +121,11 @@ struct PopupView: View {
 	PopupView(isShowPopup: .constant(true),
 			  title: Text("Title"),
 			  content: Text("Content"),
-			  titleFirstButton: Text("Deny all"),
+			  titleFirstButton: Text("Accept all"),
 			  actionFirstButton: {},
-			  titleSecondButton: Text("Accept all"),
-			  actionSecondButton: {})
+			  titleSecondButton: Text("dialog_confirm"),
+			  actionSecondButton: {},
+			  titleThirdButton: Text("dialog_cancel"),
+			  actionThirdButton: {})
 	.background(.black.opacity(0.65))
 }

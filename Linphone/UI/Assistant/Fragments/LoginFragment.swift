@@ -70,25 +70,33 @@ struct LoginFragment: View {
 							let contentPopup3 = Text(.init(splitMsg[1]))
 							let contentPopup4 = Text(.init(privacyPolicy)).underline()
 							let contentPopup5 = Text(.init(splitMsg[2]))
-							PopupView(isShowPopup: $isShowPopup,
-									  title: Text("assistant_dialog_general_terms_and_privacy_policy_title"),
-									  content: contentPopup1 + contentPopup2 + contentPopup3 + contentPopup4 + contentPopup5,
-									  titleFirstButton: Text("dialog_deny"),
-									  actionFirstButton: {self.isShowPopup.toggle()},
-									  titleSecondButton: Text("dialog_accept"),
-									  actionSecondButton: {acceptGeneralTerms()})
+							PopupView(
+								isShowPopup: $isShowPopup,
+								title: Text("assistant_dialog_general_terms_and_privacy_policy_title"),
+								content: contentPopup1 + contentPopup2 + contentPopup3 + contentPopup4 + contentPopup5,
+								titleFirstButton: nil,
+								actionFirstButton: {},
+								titleSecondButton: Text("dialog_accept"),
+								actionSecondButton: { acceptGeneralTerms() },
+								titleThirdButton: Text("dialog_deny"),
+								actionThirdButton: { self.isShowPopup.toggle() }
+							)
 							.background(.black.opacity(0.65))
 							.onTapGesture {
 								self.isShowPopup.toggle()
 							}
 						} else {  // backup just in case
-							PopupView(isShowPopup: $isShowPopup,
-									  title: Text("assistant_dialog_general_terms_and_privacy_policy_title"),
-									  content: Text(.init(String(format: String(localized: "assistant_dialog_general_terms_and_privacy_policy_message"), generalTerms, privacyPolicy))),
-									  titleFirstButton: Text("dialog_deny"),
-									  actionFirstButton: {self.isShowPopup.toggle()},
-									  titleSecondButton: Text("dialog_accept"),
-									  actionSecondButton: {acceptGeneralTerms()})
+							PopupView(
+								isShowPopup: $isShowPopup,
+								title: Text("assistant_dialog_general_terms_and_privacy_policy_title"),
+								content: Text(.init(String(format: String(localized: "assistant_dialog_general_terms_and_privacy_policy_message"), generalTerms, privacyPolicy))),
+								titleFirstButton: nil,
+								actionFirstButton: {},
+								titleSecondButton: Text("dialog_accept"),
+								actionSecondButton: { acceptGeneralTerms() },
+								titleThirdButton: Text("dialog_deny"),
+								actionThirdButton: { self.isShowPopup.toggle() }
+							)
 							.background(.black.opacity(0.65))
 							.onTapGesture {
 								self.isShowPopup.toggle()

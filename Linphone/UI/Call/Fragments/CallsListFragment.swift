@@ -103,17 +103,21 @@ struct CallsListFragment: View {
 			.background(.white)
 			
 			if self.isShowPopup {
-				PopupView(isShowPopup: $isShowPopup,
-						  title: Text("calls_list_dialog_merge_into_conference_title"),
-						  content: nil,
-						  titleFirstButton: Text("dialog_cancel"),
-						  actionFirstButton: {self.isShowPopup.toggle()},
-						  titleSecondButton: Text("calls_list_dialog_merge_into_conference_label"),
-						  actionSecondButton: {
-					callViewModel.mergeCallsIntoConference()
-					self.isShowPopup.toggle()
-					isShowCallsListFragment.toggle()
-				})
+				PopupView(
+					isShowPopup: $isShowPopup,
+					title: Text("calls_list_dialog_merge_into_conference_title"),
+					content: nil,
+					titleFirstButton: nil,
+					actionFirstButton: {},
+					titleSecondButton: Text("calls_list_dialog_merge_into_conference_label"),
+					actionSecondButton: {
+						callViewModel.mergeCallsIntoConference()
+						self.isShowPopup.toggle()
+						isShowCallsListFragment.toggle()
+					},
+					titleThirdButton: Text("dialog_cancel"),
+					actionThirdButton: { self.isShowPopup.toggle() },
+				)
 				.background(.black.opacity(0.65))
 				.onTapGesture {
 					self.isShowPopup.toggle()

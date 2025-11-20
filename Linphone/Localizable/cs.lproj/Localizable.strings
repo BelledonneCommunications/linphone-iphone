@@ -2,7 +2,7 @@
 "assistant_sip_account_transport_protocol" = "Transport";
 "contact_call_action" = "Volat";
 "conversation_action_call" = "Volat";
-"dialog_ok" = "OK";
+"dialog_confirm" = "Confirm";
 "drawer_menu_manage_account" = "Spravovat profil";
 "help_error_checking_version_toast_message" = "Během kontroly aktualizací nastala chyba";
 "settings_contacts_carddav_name_title" = "Zobrazené jméno";

@@ -468,7 +468,7 @@ struct ScheduleMeetingFragment: View {
 								showDatePicker.toggle()
 							}
 						}
-					Text("dialog_ok")
+					Text("dialog_confirm")
 						.default_text_style_orange_500(styleSize: 16)
 						.onTapGesture {
 							pickDate()

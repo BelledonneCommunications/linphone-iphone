@@ -171,7 +171,7 @@
 "dialog_deny" = "Odmietnuť";
 "dialog_install" = "Inštalovať";
 "dialog_no" = "Nie";
-"dialog_ok" = "OK";
+"dialog_confirm" = "Confirm";
 "dialog_yes" = "Áno";
 "meeting_waiting_room_cancel" = "Zrušiť";
 "menu_delete_selected_item" = "Vymazať";

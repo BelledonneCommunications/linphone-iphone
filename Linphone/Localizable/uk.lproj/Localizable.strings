@@ -377,7 +377,7 @@
 "conversation_ephemeral_messages_duration_one_week" = "1 тиждень";
 "conversation_ephemeral_messages_duration_three_days" = "3 доби";
 "conversation_ephemeral_messages_duration_one_day" = "1 доба";
-"dialog_ok" = "ОК";
+"dialog_confirm" = "ОК";
 "welcome_page_title" = "Ласкаво просимо";
 ": %@" = ": %@";
 "[https://sip.linphone.org](https://sip.linphone.org)" = "[https://sip.linphone.org](https://sip.linphone.org)";

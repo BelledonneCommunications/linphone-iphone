@@ -306,17 +306,17 @@ struct HelpFragment: View {
 						isShowPopup: $helpViewModel.checkUpdateAvailable,
 						title: Text("help_dialog_update_available_title"),
 						content: Text(String(format: String(localized: "help_dialog_update_available_message"), helpViewModel.versionAvailable)),
-						titleFirstButton: Text("dialog_cancel"),
-						actionFirstButton: {
-							helpViewModel.checkUpdateAvailable = false
-						},
+						titleFirstButton: nil,
+						actionFirstButton: {},
 						titleSecondButton: Text("dialog_install"),
 						actionSecondButton: {
 							helpViewModel.checkUpdateAvailable = false
 							if let url = URL(string: helpViewModel.urlVersionAvailable) {
 								UIApplication.shared.open(url)
 							}
-						}
+						},
+						titleThirdButton: Text("dialog_cancel"),
+						actionThirdButton: { helpViewModel.checkUpdateAvailable = false }
 					)
 					.background(.black.opacity(0.65))
 					.zIndex(3)
