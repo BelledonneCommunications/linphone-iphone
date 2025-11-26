@@ -89,20 +89,16 @@ class ConversationsListViewModel: ObservableObject {
 										fromAddressFriend = nil
 									}
 									
-									var lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
-									
-									if lastMessage.isRetracted {
-										lastMessageTextTmp += lastMessage.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
-									}
+									let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
 									
 									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 										DispatchQueue.main.async {
-											conversationModel.lastMessageText = lastMessageTextTmp
-											self.conversationsList[index].lastMessageText = lastMessageTextTmp
+											conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
+											self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
 										}
 									} else {
 										DispatchQueue.main.async {
-											conversationModel.lastMessageText = lastMessageTextTmp
+											conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 										}
 									}
 								}
@@ -152,20 +148,16 @@ class ConversationsListViewModel: ObservableObject {
 									fromAddressFriend = nil
 								}
 								
-								var lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
-								
-								if lastMessage.isRetracted {
-									lastMessageTextTmp += lastMessage.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
-								}
+								let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
 								
 								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 									DispatchQueue.main.async {
-										conversationModel.lastMessageText = lastMessageTextTmp
-										self.conversationsList[index].lastMessageText = lastMessageTextTmp
+										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
+										self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
 									}
 								} else {
 									DispatchQueue.main.async {
-										conversationModel.lastMessageText = lastMessageTextTmp
+										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 									}
 								}
 							}
