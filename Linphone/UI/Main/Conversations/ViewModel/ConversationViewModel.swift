@@ -2608,10 +2608,20 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func compose() {
+	func compose(stop: Bool, cachedConversation: ConversationModel? = nil) {
 		coreContext.doOnCoreQueue { _ in
-			if self.sharedMainViewModel.displayedConversation != nil {
-				self.sharedMainViewModel.displayedConversation!.chatRoom.compose()
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				if stop {
+					displayedConversation.chatRoom.stopComposing()
+				} else {
+					displayedConversation.chatRoom.composeTextMessage()
+				}
+			} else if let displayedConversation = cachedConversation {
+				if stop {
+					displayedConversation.chatRoom.stopComposing()
+				} else {
+					displayedConversation.chatRoom.composeTextMessage()
+				}
 			}
 		}
 	}

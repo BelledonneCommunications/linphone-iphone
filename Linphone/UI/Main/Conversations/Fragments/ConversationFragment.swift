@@ -234,6 +234,8 @@ struct ConversationFragment: View {
 					if SharedMainViewModel.shared.displayedConversation != nil && (navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(SharedMainViewModel.shared.displayedConversation!.remoteSipUri)) {
 						conversationViewModel.resetDisplayedChatRoom()
 					}
+				} else {
+					conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)
 				}
 			}
 		}
@@ -461,6 +463,7 @@ struct ConversationFragment: View {
 							}
 					  	}
 						.onDisappear {
+							conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)
 							conversationViewModel.resetMessage()
 						}
 					} else {
@@ -556,6 +559,7 @@ struct ConversationFragment: View {
 								conversationViewModel.getMessages()
 							}
 							.onDisappear {
+								conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)
 								conversationViewModel.resetMessage()
 							}
 						}
@@ -885,9 +889,7 @@ struct ConversationFragment: View {
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
 											.onChange(of: messageText) { text in
-												if !text.isEmpty {
-													conversationViewModel.compose()
-												}
+												conversationViewModel.compose(stop: text.isEmpty)
 											}
 									} else {
 										ZStack(alignment: .leading) {
@@ -898,9 +900,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: 15)
 												.focused($isMessageTextFocused)
 												.onChange(of: messageText) { text in
-													if !text.isEmpty {
-														conversationViewModel.compose()
-													}
+													conversationViewModel.compose(stop: text.isEmpty)
 												}
 											
 											if messageText.isEmpty {
