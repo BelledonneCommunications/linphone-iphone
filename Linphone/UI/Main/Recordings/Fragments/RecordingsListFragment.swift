@@ -72,48 +72,52 @@ struct RecordingsListFragment: View {
 											.frame(maxWidth: .infinity, alignment: .leading)
 									}
 									
-									HStack {
-										VStack {
-											HStack {
-												Image("phone")
-													.renderingMode(.template)
-													.resizable()
-													.frame(width: 25, height: 25)
-													.foregroundStyle(Color.grayMain2c600)
+									NavigationLink(destination: LazyView {
+										RecordingMediaPlayerFragment(recording: recording)
+									}) {
+										HStack {
+											VStack {
+												HStack {
+													Image("phone")
+														.renderingMode(.template)
+														.resizable()
+														.frame(width: 25, height: 25)
+														.foregroundStyle(Color.grayMain2c600)
+													
+													Text(recording.displayName)
+														.default_text_style_700(styleSize: 14)
+														.frame(maxWidth: .infinity, alignment: .leading)
+												}
 												
-												Text(recording.displayName)
-													.default_text_style_700(styleSize: 14)
+												Spacer()
+												
+												Text(recording.dateTime)
+													.default_text_style(styleSize: 14)
 													.frame(maxWidth: .infinity, alignment: .leading)
 											}
 											
-											Spacer()
-											
-											Text(recording.dateTime)
-												.default_text_style(styleSize: 14)
-												.frame(maxWidth: .infinity, alignment: .leading)
+											VStack {
+												Image("play-fill")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.orangeMain500)
+													.frame(width: 30, height: 30)
+													.padding(.leading, -6)
+												
+												Spacer()
+												
+												Text(recording.formattedDuration)
+													.default_text_style(styleSize: 14)
+													.frame(alignment: .center)
+											}
+											.padding(.trailing, 6)
 										}
-										
-										VStack {
-											Image("play-fill")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(Color.orangeMain500)
-												.frame(width: 30, height: 30)
-												.padding(.leading, -6)
-											
-											Spacer()
-											
-											Text(recording.formattedDuration)
-												.default_text_style(styleSize: 14)
-												.frame(alignment: .center)
-										}
-										.padding(.trailing, 6)
+										.frame(height: 60)
+										.padding(20)
+										.background(.white)
+										.clipShape(RoundedRectangle(cornerRadius: 10))
+										.shadow(color: .gray.opacity(0.4), radius: 4)
 									}
-									.frame(height: 60)
-									.padding(20)
-									.background(.white)
-									.clipShape(RoundedRectangle(cornerRadius: 10))
-									.shadow(color: .gray.opacity(0.4), radius: 4)
 								}
 							}
 							.padding(.all, 20)
@@ -139,4 +143,12 @@ struct RecordingsListFragment: View {
 			.padding(5)
 			.default_text_style_500(styleSize: 22)
 	}
+}
+
+struct LazyView<Content: View>: View {
+	let build: () -> Content
+	init(_ build: @escaping () -> Content) {
+		self.build = build
+	}
+	var body: some View { build() }
 }
