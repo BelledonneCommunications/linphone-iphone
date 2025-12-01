@@ -175,6 +175,7 @@
 		D7CEE03B2B7A234200FD79B7 /* ConversationsFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */; };
 		D7CEE03D2B7A23B200FD79B7 /* ConversationsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7CEE03C2B7A23B200FD79B7 /* ConversationsListFragment.swift */; };
 		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
+		D7D1F5452EDDBBA70034EEB0 /* GeneratedGit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1F5442EDDBBA70034EEB0 /* GeneratedGit.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
 		D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */; };
@@ -408,6 +409,7 @@
 		D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsFragment.swift; sourceTree = "<group>"; };
 		D7CEE03C2B7A23B200FD79B7 /* ConversationsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsListFragment.swift; sourceTree = "<group>"; };
 		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
+		D7D1F5442EDDBBA70034EEB0 /* GeneratedGit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedGit.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
 		D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Light.ttf"; sourceTree = "<group>"; };
@@ -662,6 +664,7 @@
 				D719ABBD2ABC67BF00B41C10 /* Preview Content */,
 				D7D24D0C2AC1B4C700C6F35B /* Fonts */,
 				D7ADF6012AFE5C7C00212231 /* Ressources */,
+				D7D1F5442EDDBBA70034EEB0 /* GeneratedGit.swift */,
 			);
 			path = Linphone;
 			sourceTree = "<group>";
@@ -1108,6 +1111,7 @@
 				660AAF802B839272004C0FA6 /* Embed Foundation Extensions */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
 				D72F04F52DDB2CB800F4C713 /* ShellScript */,
+				D7D1F5432EDDB9C20034EEB0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1184,7 +1188,7 @@
 				D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
-				D7690B3B2EAF8878009CB3B7 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D7D1F5482EDDD8D30034EEB0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -1256,6 +1260,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+		D7D1F5432EDDB9C20034EEB0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/bash\n\nbranch=$(git rev-parse --abbrev-ref HEAD)\ncommit=$(git rev-parse --short HEAD)\ntag=$(git describe --tags --abbrev=0 2>/dev/null || echo \"no-tag\")\n\ncat <<EOF > \"$SRCROOT/Linphone/GeneratedGit.swift\"\nimport Foundation\n\npublic let APP_GIT_BRANCH = \"$branch\"\npublic let APP_GIT_COMMIT = \"$commit\"\npublic let APP_GIT_TAG = \"$tag\"\nEOF\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1348,6 +1369,7 @@
 				C628172E2C1C3A3600DBA646 /* AccountExtension.swift in Sources */,
 				66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */,
 				C62817322C1C400A00DBA646 /* StringExtension.swift in Sources */,
+				D7D1F5452EDDBBA70034EEB0 /* GeneratedGit.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,
@@ -1932,7 +1954,7 @@
 				kind = branch;
 			};
 		};
-		D7690B3B2EAF8878009CB3B7 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
+		D7D1F5482EDDD8D30034EEB0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git";
 			requirement = {

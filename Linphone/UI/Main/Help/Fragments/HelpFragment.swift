@@ -181,7 +181,7 @@ struct HelpFragment: View {
 											.frame(maxWidth: .infinity, alignment: .leading)
 											.multilineTextAlignment(.leading)
 										
-										Text(helpViewModel.version)
+										Text(helpViewModel.appVersion)
 											.default_text_style(styleSize: 14)
 											.frame(maxWidth: .infinity, alignment: .leading)
 											.multilineTextAlignment(.leading)
