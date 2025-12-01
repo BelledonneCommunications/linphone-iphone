@@ -327,20 +327,20 @@ class ConversationModel: ObservableObject, Identifiable {
 				}
 			}
 			
-			if lastMessage!.isRetracted {
-				lastMessageTextTmp += lastMessage!.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
-				
-				lastMessageIconTmp = "trash"
-				
-				lastMessageInItalicTmp = true
-			}
-			
 			if (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name != nil) {
 				lastMessageIconTmp = "file"
 			} else if lastMessage!.isReply {
 				lastMessageIconTmp = "reply"
 			} else if lastMessage!.isForward {
 				lastMessageIconTmp = "forward"
+			}
+			
+			if lastMessage!.isRetracted {
+				lastMessageTextTmp += lastMessage!.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
+				
+				lastMessageIconTmp = "trash"
+				
+				lastMessageInItalicTmp = true
 			}
 			
 			let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false

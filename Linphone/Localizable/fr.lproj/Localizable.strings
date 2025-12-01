@@ -209,8 +209,8 @@
 "conversation_dialog_delete_chat_message_title" = "Supprimer le message ?";
 "conversation_dialog_delete_locally_label" = "Pour moi";
 "conversation_dialog_delete_for_everyone_label" = "Pour tout le monde";
-"conversation_message_content_deleted_label" = "*Le message a été supprimé*";
-"conversation_message_content_deleted_by_us_label" = "*Vous avez supprimé le message*";
+"conversation_message_content_deleted_label" = "Le message a été supprimé";
+"conversation_message_content_deleted_by_us_label" = "Vous avez supprimé le message";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "Conversation chiffrée de bout en bout";
 "conversation_end_to_end_encrypted_event_subtitle" = "Les messages de cette conversation sont chiffrés de bout en bout. Seul votre correspondant peut les déchiffrer.";
