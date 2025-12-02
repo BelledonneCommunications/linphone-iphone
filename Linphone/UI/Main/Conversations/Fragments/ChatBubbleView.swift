@@ -52,7 +52,7 @@ struct ChatBubbleView: View {
 		HStack {
 			if eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage {
 				VStack {
-					if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty || eventLogMessage.message.isIcalendar {
+					if !eventLogMessage.message.text.isEmpty || !eventLogMessage.message.attachments.isEmpty || eventLogMessage.message.isIcalendar || eventLogMessage.message.isRetracted {
 						HStack(alignment: .top, content: {
 							if eventLogMessage.message.isOutgoing {
 								Spacer()
@@ -137,6 +137,12 @@ struct ChatBubbleView: View {
 														.foregroundStyle(Color.grayMain2c700)
 														.default_text_style(styleSize: 14)
 														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
+												} else if eventLogMessage.message.replyMessage!.isRetracted {
+													Text(eventLogMessage.message.replyMessage!.isOutgoing ? "conversation_message_content_deleted_by_us_label" : "conversation_message_content_deleted_label")
+														.italic()
+														.foregroundStyle(Color.grayMain2c500)
+														.font(.system(size: 14))
+														.lineLimit(1)
 												}
 											}
 											.padding(.all, 15)
@@ -174,6 +180,12 @@ struct ChatBubbleView: View {
 												
 												if !eventLogMessage.message.text.isEmpty {
 													DynamicLinkText(text: eventLogMessage.message.text)
+												} else if eventLogMessage.message.isRetracted {
+													Text(eventLogMessage.message.isOutgoing ? "conversation_message_content_deleted_by_us_label" : "conversation_message_content_deleted_label")
+														.italic()
+														.foregroundStyle(Color.grayMain2c500)
+														.font(.system(size: 14))
+														.lineLimit(1)
 												}
 												
 												if eventLogMessage.message.isIcalendar && eventLogMessage.message.messageConferenceInfo != nil {
@@ -325,6 +337,14 @@ struct ChatBubbleView: View {
 															.padding(.top, 1)
 													}
 													
+													if eventLogMessage.message.isEdited && eventLogMessage.message.isOutgoing {
+														Text("conversation_message_edited_label")
+														 .foregroundStyle(Color.grayMain2c500)
+														 .default_text_style_300(styleSize: 12)
+														 .padding(.top, 1)
+														 .padding(.trailing, -4)
+													}
+													
 													Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
 														.foregroundStyle(Color.grayMain2c500)
 														.default_text_style_300(styleSize: 12)
@@ -347,6 +367,14 @@ struct ChatBubbleView: View {
 																.frame(width: 15, height: 15)
 																.padding(.top, 1)
 														}
+													}
+													
+													if eventLogMessage.message.isEdited && !eventLogMessage.message.isOutgoing {
+														Text("conversation_message_edited_label")
+														 .foregroundStyle(Color.grayMain2c500)
+														 .default_text_style_300(styleSize: 12)
+														 .padding(.top, 1)
+														 .padding(.trailing, -4)
 													}
 													
 													if eventLogMessage.message.isEphemeral && !eventLogMessage.message.isOutgoing {

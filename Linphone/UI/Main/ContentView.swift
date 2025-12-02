@@ -60,6 +60,7 @@ struct ContentView: View {
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowStartCallGroupPopup = false
+	@State var isShowDeleteMessagePopup = false
 	@State var isShowSipAddressesPopup = false
 	@State var isShowSipAddressesPopupType = 0 // 0 to call, 1  to message, 2 to video call
 	@State var isShowConversationFragment = false
@@ -545,7 +546,7 @@ struct ContentView: View {
 																magicSearch.searchForContacts()
 															} label: {
 																HStack {
-																	Text(String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
+																	Text(magicSearch.domainDefaultAccount == "*" ? String(localized: "contacts_list_filter_popup_see_sip_only") : String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
 																	Spacer()
 																	if !magicSearch.allContact {
 																		Image("green-check")
@@ -988,6 +989,7 @@ struct ContentView: View {
 								ConversationFragment(
 									isShowConversationFragment: $isShowConversationFragment,
 									isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
+									isShowDeleteMessagePopup: $isShowDeleteMessagePopup,
 									isShowEditContactFragment: $isShowEditContactFragment,
 									isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
 									isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
@@ -1113,14 +1115,16 @@ struct ContentView: View {
 								)
 							),
 							content: Text("contact_dialog_delete_message"),
-							titleFirstButton: Text("dialog_cancel"),
-							actionFirstButton: {
-								self.isShowDeleteContactPopup.toggle()},
-							titleSecondButton: Text("dialog_ok"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
 							actionSecondButton: {
 								contactsListVM.deleteSelectedContact()
 								self.isShowDeleteContactPopup.toggle()
-						})
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: { self.isShowDeleteContactPopup.toggle() }
+						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
@@ -1132,27 +1136,31 @@ struct ContentView: View {
 					}
 					
 					if isShowDeleteAllHistoryPopup {
-						PopupView(isShowPopup: $isShowDeleteContactPopup,
-								  title: Text("history_dialog_delete_all_call_logs_title"),
-								  content: Text("history_dialog_delete_all_call_logs_message"),
-								  titleFirstButton: Text("dialog_cancel"),
-								  actionFirstButton: {
-							self.isShowDeleteAllHistoryPopup.toggle()
-							if let historyListVM = historyListViewModel {
-								historyListVM.callLogsAddressToDelete = ""
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("history_dialog_delete_all_call_logs_title"),
+							content: Text("history_dialog_delete_all_call_logs_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
+							actionSecondButton: {
+								if let historyListVM = historyListViewModel {
+									historyListVM.removeCallLogs()
+								}
+								self.isShowDeleteAllHistoryPopup.toggle()
+								sharedMainViewModel.displayedCall = nil
+								
+								ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
+								ToastViewModel.shared.displayToast.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.isShowDeleteAllHistoryPopup.toggle()
+								if let historyListVM = historyListViewModel {
+									historyListVM.callLogsAddressToDelete = ""
+								}
 							}
-						},
-								  titleSecondButton: Text("dialog_ok"),
-								  actionSecondButton: {
-							if let historyListVM = historyListViewModel {
-								historyListVM.removeCallLogs()
-							}
-							self.isShowDeleteAllHistoryPopup.toggle()
-							sharedMainViewModel.displayedCall = nil
-							
-							ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
-							ToastViewModel.shared.displayToast.toggle()
-						})
+						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
@@ -1161,20 +1169,24 @@ struct ContentView: View {
 					}
 					
 					if isShowDismissPopup {
-						PopupView(isShowPopup: $isShowDismissPopup,
-								  title: Text("contact_editor_dialog_abort_confirmation_title"),
-								  content: Text("contact_editor_dialog_abort_confirmation_message"),
-								  titleFirstButton: Text("dialog_cancel"),
-								  actionFirstButton: {self.isShowDismissPopup.toggle()},
-								  titleSecondButton: Text("dialog_ok"),
-								  actionSecondButton: {
-							self.isShowDismissPopup.toggle()
-							if isShowEditContactFragment {
-								isShowEditContactFragment = false
-							} else {
-								isShowEditContactFragmentInContactDetails = false
-							}
-						})
+						PopupView(
+							isShowPopup: $isShowDismissPopup,
+							title: Text("contact_editor_dialog_abort_confirmation_title"),
+							content: Text("contact_editor_dialog_abort_confirmation_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
+							actionSecondButton: {
+								self.isShowDismissPopup.toggle()
+								if isShowEditContactFragment {
+									isShowEditContactFragment = false
+								} else {
+									isShowEditContactFragmentInContactDetails = false
+								}
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: { self.isShowDismissPopup.toggle() }
+						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
@@ -1304,21 +1316,25 @@ struct ContentView: View {
 					}
 					
 					if  let meetingsListVM = meetingsListViewModel, isShowSendCancelMeetingNotificationPopup {
-						PopupView(isShowPopup: $isShowSendCancelMeetingNotificationPopup,
-								  title: Text("meeting_schedule_cancel_dialog_title"),
-                                  content: !sharedMainViewModel.disableChatFeature ? Text("meeting_schedule_cancel_dialog_message") : Text(""),
-								  titleFirstButton: Text("dialog_cancel"),
-								  actionFirstButton: {
-							sharedMainViewModel.displayedMeeting = nil
-							meetingsListVM.deleteSelectedMeeting()
-							self.isShowSendCancelMeetingNotificationPopup.toggle(
-							) },
-								  titleSecondButton: Text("dialog_ok"),
-								  actionSecondButton: {
-							sharedMainViewModel.displayedMeeting = nil
-							meetingsListVM.cancelMeetingWithNotifications()
-							self.isShowSendCancelMeetingNotificationPopup.toggle()
-						})
+						PopupView(
+							isShowPopup: $isShowSendCancelMeetingNotificationPopup,
+							title: Text("meeting_schedule_cancel_dialog_title"),
+							content: !sharedMainViewModel.disableChatFeature ? Text("meeting_schedule_cancel_dialog_message") : Text(""),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
+							actionSecondButton: {
+								sharedMainViewModel.displayedMeeting = nil
+								meetingsListVM.cancelMeetingWithNotifications()
+								self.isShowSendCancelMeetingNotificationPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								sharedMainViewModel.displayedMeeting = nil
+								meetingsListVM.deleteSelectedMeeting()
+								self.isShowSendCancelMeetingNotificationPopup.toggle()
+							}
+						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
@@ -1331,22 +1347,47 @@ struct ContentView: View {
 							isShowPopup: $isShowStartCallGroupPopup,
 							title: Text("conversation_info_confirm_start_group_call_dialog_title"),
 							content: Text("conversation_info_confirm_start_group_call_dialog_message"),
-							titleFirstButton: Text("dialog_cancel"),
-							actionFirstButton: {
-								self.isShowStartCallGroupPopup.toggle()
-							},
-							titleSecondButton: Text("dialog_ok"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
 							actionSecondButton: {
 								if sharedMainViewModel.displayedConversation != nil {
 									sharedMainViewModel.displayedConversation!.createGroupCall()
 								}
 								self.isShowStartCallGroupPopup.toggle()
-							}
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: { self.isShowStartCallGroupPopup.toggle() }
 						)
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
 							self.isShowStartCallGroupPopup.toggle()
+						}
+					}
+					
+					if isShowDeleteMessagePopup {
+						PopupView(
+							isShowPopup: $isShowDeleteMessagePopup,
+							title: Text("conversation_dialog_delete_chat_message_title"),
+							content: nil,
+							titleFirstButton: Text("conversation_dialog_delete_for_everyone_label"),
+							actionFirstButton: {
+								NotificationCenter.default.post(name: NSNotification.Name("DeleteMessageForEveryone"), object: nil)
+								self.isShowDeleteMessagePopup.toggle()
+							},
+							titleSecondButton: Text("conversation_dialog_delete_locally_label"),
+							actionSecondButton: {
+								NotificationCenter.default.post(name: NSNotification.Name("DeleteMessageForMe"), object: nil)
+								self.isShowDeleteMessagePopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: { self.isShowDeleteMessagePopup.toggle() }
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowDeleteMessagePopup.toggle()
 						}
 					}
 					

@@ -65,6 +65,8 @@ class AccountModel: ObservableObject {
 			self.computeNotificationsCount()
 		}, onChatRoomRead: { (_: Core, _: ChatRoom) in
 			self.computeNotificationsCount()
+		}, onMessageRetracted: { (_: Core, _: ChatRoom, _: ChatMessage) in
+			self.computeNotificationsCount()
 		})
 		core.addDelegate(delegate: coreDelegate!)
 		

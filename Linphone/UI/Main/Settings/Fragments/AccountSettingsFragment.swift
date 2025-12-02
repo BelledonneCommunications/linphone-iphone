@@ -132,6 +132,12 @@ struct AccountSettingsFragment: View {
 											)
 											.focused($isMwiUriFocused)
 									}
+									
+									Toggle("account_settings_apply_international_prefix_title", isOn: $accountSettingsViewModel.applyInternationalPrefix)
+										.default_text_style_700(styleSize: 15)
+									
+									Toggle("account_settings_replace_plus_by_00_title", isOn: $accountSettingsViewModel.replacePlusBy00)
+										.default_text_style_700(styleSize: 15)
 								}
 								.padding(.vertical, 30)
 								.padding(.horizontal, 20)

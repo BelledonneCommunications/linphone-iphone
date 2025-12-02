@@ -46,9 +46,12 @@ class ConversationModel: ObservableObject, Identifiable {
 	@Published var isMuted: Bool
 	@Published var isEphemeral: Bool
 	@Published var encryptionEnabled: Bool
+	@Published var lastMessagePrefixText: String
 	@Published var lastMessageText: String
+	@Published var lastMessageIcon: String
 	@Published var lastMessageIsOutgoing: Bool
 	@Published var lastMessageState: Int
+	@Published var lastMessageInItalic: Bool
 	@Published var unreadMessagesCount: Int
 	@Published var avatarModel: ContactAvatarModel
 	
@@ -138,11 +141,17 @@ class ConversationModel: ObservableObject, Identifiable {
 		
 		self.lastMessage = nil
 		
+		self.lastMessagePrefixText = ""
+		
 		self.lastMessageText = ""
+		
+		self.lastMessageIcon = ""
 		
 		self.lastMessageIsOutgoing = false
 		
 		self.lastMessageState = 0
+		
+		self.lastMessageInItalic = false
 
 		self.unreadMessagesCount = chatRoom.unreadMessagesCount
 		
@@ -294,8 +303,10 @@ class ConversationModel: ObservableObject, Identifiable {
 				fromAddressFriend = nil
 			}
 			
-			var lastMessageTextTmp = (fromAddressFriend ?? "")
-			+ (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+			let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
+			var lastMessageTextTmp = (lastMessage!.contents.first(where: {$0.isText == true})?.utf8Text ?? (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name ?? ""))
+			var lastMessageIconTmp = ""
+			var lastMessageInItalicTmp = false
 			
 			if lastMessage!.contents.first != nil && lastMessage!.contents.first!.isIcalendar == true {
 				if let conferenceInfo = try? Factory.Instance.createConferenceInfoFromIcalendarContent(content: lastMessage!.contents.first!) {
@@ -308,8 +319,28 @@ class ConversationModel: ObservableObject, Identifiable {
 						} else if conferenceInfo.state == .Cancelled {
 							lastMessageTextTmp = String(localized: "message_meeting_invitation_cancelled_notification")
 						}
+						
+						lastMessageIconTmp = "calendar"
+						
+						lastMessageInItalicTmp = true
 					}
 				}
+			}
+			
+			if (lastMessage!.contents.first(where: {$0.isFile == true || $0.isFileTransfer == true})?.name != nil) {
+				lastMessageIconTmp = "file"
+			} else if lastMessage!.isReply {
+				lastMessageIconTmp = "reply"
+			} else if lastMessage!.isForward {
+				lastMessageIconTmp = "forward"
+			}
+			
+			if lastMessage!.isRetracted {
+				lastMessageTextTmp += lastMessage!.isOutgoing ? String(localized: "conversation_message_content_deleted_by_us_label") : String(localized: "conversation_message_content_deleted_label")
+				
+				lastMessageIconTmp = "trash"
+				
+				lastMessageInItalicTmp = true
 			}
 			
 			let lastMessageIsOutgoingTmp = lastMessage?.isOutgoing ?? false
@@ -319,13 +350,19 @@ class ConversationModel: ObservableObject, Identifiable {
 			let lastMessageStateTmp = lastMessage?.state.rawValue ?? 0
 			
             DispatchQueue.main.async {
+				self.lastMessagePrefixText = lastMessagePrefixTextTmp
+				
                 self.lastMessageText = lastMessageTextTmp
+				
+				self.lastMessageIcon = lastMessageIconTmp
                 
                 self.lastMessageIsOutgoing = lastMessageIsOutgoingTmp
                 
                 self.lastUpdateTime = lastUpdateTimeTmp
                 
                 self.lastMessageState = lastMessageStateTmp
+				
+				self.lastMessageInItalic = lastMessageInItalicTmp
             }
             
             getUnreadMessagesCount()

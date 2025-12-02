@@ -551,6 +551,12 @@ struct UIList: UIViewRepresentable {
 		}
 		
 		func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+			let eventLogMessage = parent.conversationViewModel.conversationMessagesSection[0].rows[indexPath.row]
+			
+			guard !eventLogMessage.message.isRetracted && eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage else {
+				return nil
+			}
+			
 			let archiveAction = UIContextualAction(style: .normal, title: "") { _, _, completionHandler in
                 self.parent.conversationViewModel.replyToMessage(index: indexPath.row, isMessageTextFocused: Binding(
                     get: { self.parent.isMessageTextFocused },

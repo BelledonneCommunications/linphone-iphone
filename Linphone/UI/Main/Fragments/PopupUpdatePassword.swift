@@ -105,7 +105,7 @@ struct PopupUpdatePassword: View {
 					updateAuthInfo()
 					isShowUpdatePasswordPopup = false
 				}, label: {
-					Text("dialog_ok")
+					Text("dialog_confirm")
 						.default_text_style_white_600(styleSize: 20)
 						.frame(height: 35)
 						.frame(maxWidth: .infinity)

@@ -105,14 +105,46 @@ struct ConversationRow: View {
 					.frame(maxWidth: .infinity, alignment: .leading)
 					.lineLimit(1)
 				
-				Text(conversation.lastMessageText)
-					.foregroundStyle(Color.grayMain2c400)
-					.if(conversation.unreadMessagesCount > 0) { view in
-						view.default_text_style_700(styleSize: 14)
+				HStack(spacing: 0) {
+					Text(conversation.lastMessagePrefixText)
+						.foregroundStyle(Color.grayMain2c400)
+						.if(conversation.unreadMessagesCount > 0) { view in
+							view.default_text_style_700(styleSize: 14)
+						}
+						.default_text_style(styleSize: 14)
+						.lineLimit(1)
+						.layoutPriority(1)
+					
+					if !conversation.lastMessageIcon.isEmpty {
+						Image(conversation.lastMessageIcon)
+							.resizable()
+							.frame(width: 16, height: 16)
+							.layoutPriority(0)
+							.padding(.trailing, 2)
 					}
-					.default_text_style(styleSize: 14)
-					.frame(maxWidth: .infinity, alignment: .leading)
-					.lineLimit(1)
+					
+					if conversation.lastMessageInItalic {
+						Text(conversation.lastMessageText)
+							.italic()
+							.if(conversation.unreadMessagesCount > 0) { view in
+								view.bold()
+							}
+							.foregroundStyle(Color.grayMain2c400)
+							.font(.system(size: 14))
+							.lineLimit(1)
+							.layoutPriority(-1)
+					} else {
+						Text(conversation.lastMessageText)
+							.foregroundStyle(Color.grayMain2c400)
+							.if(conversation.unreadMessagesCount > 0) { view in
+								view.default_text_style_700(styleSize: 14)
+							}
+							.default_text_style(styleSize: 14)
+							.lineLimit(1)
+							.layoutPriority(-1)
+					}
+				}
+				.frame(maxWidth: .infinity, alignment: .leading)
 				
 				Spacer()
 			}

@@ -64,6 +64,7 @@ struct ConversationFragment: View {
 	
 	@Binding var isShowConversationFragment: Bool
 	@Binding var isShowStartCallGroupPopup: Bool
+	@Binding var isShowDeleteMessagePopup: Bool
 	
 	@State private var selectedCategoryIndex = 0
 	
@@ -233,6 +234,8 @@ struct ConversationFragment: View {
 					if SharedMainViewModel.shared.displayedConversation != nil && (navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(SharedMainViewModel.shared.displayedConversation!.remoteSipUri)) {
 						conversationViewModel.resetDisplayedChatRoom()
 					}
+				} else {
+					conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)
 				}
 			}
 		}
@@ -460,6 +463,7 @@ struct ConversationFragment: View {
 							}
 					  	}
 						.onDisappear {
+							conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)
 							conversationViewModel.resetMessage()
 						}
 					} else {
@@ -555,6 +559,7 @@ struct ConversationFragment: View {
 								conversationViewModel.getMessages()
 							}
 							.onDisappear {
+								conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)
 								conversationViewModel.resetMessage()
 							}
 						}
@@ -610,6 +615,43 @@ struct ConversationFragment: View {
 									Button(action: {
 										withAnimation {
 											conversationViewModel.messageToReply = nil
+										}
+									}, label: {
+										Image("x")
+											.resizable()
+											.frame(width: 30, height: 30, alignment: .leading)
+											.padding(.all, 10)
+									})
+								}
+							}
+							.transition(.move(edge: .bottom))
+						} else if conversationViewModel.messageToEdit != nil {
+							ZStack(alignment: .top) {
+								HStack {
+									VStack {
+										Text("conversation_editing_message_title")
+											.default_text_style_300(styleSize: 15)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.padding(.bottom, 1)
+											.lineLimit(1)
+										
+										Text("\(conversationViewModel.messageToEdit!.message.text)")
+											.default_text_style_300(styleSize: 15)
+											.frame(maxWidth: .infinity, alignment: .leading)
+											.lineLimit(1)
+									}
+								}
+								.frame(maxWidth: .infinity)
+								.padding(.all, 20)
+								.background(Color.gray100)
+								
+								HStack {
+									Spacer()
+									
+									Button(action: {
+										messageText = ""
+										withAnimation {
+											conversationViewModel.messageToEdit = nil
 										}
 									}, label: {
 										Image("x")
@@ -847,9 +889,7 @@ struct ConversationFragment: View {
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
 											.onChange(of: messageText) { text in
-												if !text.isEmpty {
-													conversationViewModel.compose()
-												}
+												conversationViewModel.compose(stop: text.isEmpty)
 											}
 									} else {
 										ZStack(alignment: .leading) {
@@ -860,9 +900,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: 15)
 												.focused($isMessageTextFocused)
 												.onChange(of: messageText) { text in
-													if !text.isEmpty {
-														conversationViewModel.compose()
-													}
+													conversationViewModel.compose(stop: text.isEmpty)
 												}
 											
 											if messageText.isEmpty {
@@ -879,43 +917,66 @@ struct ConversationFragment: View {
 										}
 									}
 									
-									if messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
-										Button {
-											voiceRecordingInProgress = true
-										} label: {
-											Image("microphone")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(Color.grayMain2c500)
-												.frame(width: 28, height: 28, alignment: .leading)
-												.padding(.all, 6)
-												.padding(.top, 4)
+									if conversationViewModel.messageToEdit == nil {
+										if messageText.isEmpty && conversationViewModel.mediasToSend.isEmpty {
+											Button {
+												voiceRecordingInProgress = true
+											} label: {
+												Image("microphone")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.grayMain2c500)
+													.frame(width: 28, height: 28, alignment: .leading)
+													.padding(.all, 6)
+													.padding(.top, 4)
+											}
+										} else {
+											Button {
+												if conversationViewModel.displayedConversationHistorySize > 1 {
+													NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
+												}
+												
+												let messageTextTmp = self.messageText
+												messageText = " "
+												DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+													messageText = ""
+													isMessageTextFocused = true
+													
+													conversationViewModel.sendMessage(messageText: messageTextTmp)
+												}
+											} label: {
+												Image("paper-plane-tilt")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.orangeMain500)
+													.frame(width: 28, height: 28, alignment: .leading)
+													.padding(.all, 6)
+													.padding(.top, 4)
+													.rotationEffect(.degrees(45))
+											}
+											.padding(.trailing, 4)
 										}
 									} else {
 										Button {
-											if conversationViewModel.displayedConversationHistorySize > 1 {
-												NotificationCenter.default.post(name: .onScrollToBottom, object: nil)
-											}
-											
 											let messageTextTmp = self.messageText
-                                            messageText = " "
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                                                messageText = ""
-                                                isMessageTextFocused = true
-                                                
-                                                conversationViewModel.sendMessage(messageText: messageTextTmp)
-                                            }
+											messageText = " "
+											DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+												messageText = ""
+												isMessageTextFocused = true
+												
+												conversationViewModel.sendMessage(messageText: messageTextTmp)
+											}
 										} label: {
-											Image("paper-plane-tilt")
+											Image("pencil-simple")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.orangeMain500)
+												.foregroundStyle(messageText.isEmpty ? Color.gray300 : Color.orangeMain500)
 												.frame(width: 28, height: 28, alignment: .leading)
 												.padding(.all, 6)
 												.padding(.top, 4)
-												.rotationEffect(.degrees(45))
 										}
 										.padding(.trailing, 4)
+										.disabled(messageText.isEmpty)
 									}
 								}
 								.padding(.leading, 15)
@@ -1096,28 +1157,67 @@ struct ConversationFragment: View {
 											
 											Divider()
 										}
-									
-										Button {
-											let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
-											conversationViewModel.selectedMessage = nil
-											conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: Binding(
-                                                get: { isMessageTextFocused },
-                                                set: { isMessageTextFocused = $0 }
-                                            ))
-										} label: {
-											HStack {
-												Text("menu_reply_to_chat_message")
-													.default_text_style(styleSize: 15)
-												Spacer()
-												Image("reply")
-													.resizable()
-													.frame(width: 20, height: 20, alignment: .leading)
-											}
-											.padding(.vertical, 5)
-											.padding(.horizontal, 20)
-										}
 										
-										Divider()
+										if conversationViewModel.selectedMessage!.message.isOutgoing
+											&& !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly)
+											&& conversationViewModel.selectedMessage!.message.isEditable {
+											Button {
+												if let chatMessage = conversationViewModel.selectedMessage {
+													if voiceRecordingInProgress {
+														voiceRecordingInProgress = false
+													}
+													
+													messageText = chatMessage.message.text
+													conversationViewModel.selectedMessage = nil
+													conversationViewModel.editMessage(
+														chatMessage: chatMessage,
+														isMessageTextFocused: Binding(
+															get: { isMessageTextFocused },
+															set: { isMessageTextFocused = $0 }
+														)
+													)
+												}
+											} label: {
+												HStack {
+													Text("menu_edit_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("pencil-simple")
+														.renderingMode(.template)
+													 	.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
+											}
+											
+											Divider()
+										}
+									
+										if !conversationViewModel.selectedMessage!.message.isRetracted {
+											Button {
+												let indexMessage = conversationViewModel.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.id == conversationViewModel.selectedMessage!.message.id})
+												conversationViewModel.selectedMessage = nil
+												conversationViewModel.replyToMessage(index: indexMessage ?? 0, isMessageTextFocused: Binding(
+													get: { isMessageTextFocused },
+													set: { isMessageTextFocused = $0 }
+												))
+											} label: {
+												HStack {
+													Text("menu_reply_to_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("reply")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
+											}
+											
+											Divider()
+										}
 										
 										if !conversationViewModel.selectedMessage!.message.text.isEmpty {
 											Button {
@@ -1146,27 +1246,35 @@ struct ConversationFragment: View {
 											Divider()
 										}
 										
-										Button {
-											withAnimation {
-												isShowConversationForwardMessageFragment = true
+										if !conversationViewModel.selectedMessage!.message.isRetracted {
+											Button {
+												withAnimation {
+													isShowConversationForwardMessageFragment = true
+												}
+											} label: {
+												HStack {
+													Text("menu_forward_chat_message")
+														.default_text_style(styleSize: 15)
+													Spacer()
+													Image("forward")
+														.resizable()
+														.frame(width: 20, height: 20, alignment: .leading)
+												}
+												.padding(.vertical, 5)
+												.padding(.horizontal, 20)
 											}
-										} label: {
-											HStack {
-												Text("menu_forward_chat_message")
-													.default_text_style(styleSize: 15)
-												Spacer()
-												Image("forward")
-													.resizable()
-													.frame(width: 20, height: 20, alignment: .leading)
-											}
-											.padding(.vertical, 5)
-											.padding(.horizontal, 20)
+											
+											Divider()
 										}
 										
-										Divider()
-										
 										Button {
-											conversationViewModel.deleteMessage()
+											if conversationViewModel.selectedMessage!.message.isOutgoing
+												&& !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly)
+												&& conversationViewModel.selectedMessage!.message.isRetractable && !conversationViewModel.selectedMessage!.message.isRetracted {
+												isShowDeleteMessagePopup = true
+											} else {
+												conversationViewModel.deleteMessage()
+											}
 										} label: {
 											HStack {
 												Text("menu_delete_selected_item")
@@ -1211,11 +1319,18 @@ struct ConversationFragment: View {
 				}
 				.onAppear {
 					touchFeedback()
+					if isMessageTextFocused {
+						isMessageTextFocused = false
+					}
 				}
 				.onDisappear {
 					if conversationViewModel.selectedMessage != nil {
 						conversationViewModel.selectedMessage = nil
 					}
+				}.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DeleteMessageForMe"))) { _ in
+					conversationViewModel.deleteMessage()
+				}.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("DeleteMessageForEveryone"))) { _ in
+					conversationViewModel.deleteMessageForEveryone()
 				}
 			}
 			

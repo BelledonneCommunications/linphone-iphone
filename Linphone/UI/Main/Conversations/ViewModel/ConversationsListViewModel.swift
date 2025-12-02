@@ -89,16 +89,16 @@ class ConversationsListViewModel: ObservableObject {
 										fromAddressFriend = nil
 									}
 									
-									let lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
+									let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
 									
 									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 										DispatchQueue.main.async {
-											conversationModel.lastMessageText = lastMessageTextTmp
-											self.conversationsList[index].lastMessageText = lastMessageTextTmp
+											conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
+											self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
 										}
 									} else {
 										DispatchQueue.main.async {
-											conversationModel.lastMessageText = lastMessageTextTmp
+											conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 										}
 									}
 								}
@@ -148,16 +148,16 @@ class ConversationsListViewModel: ObservableObject {
 									fromAddressFriend = nil
 								}
 								
-								let lastMessageTextTmp = (fromAddressFriend ?? "") + (lastMessage.contents.first(where: { $0.isText })?.utf8Text ?? (lastMessage.contents.first(where: { $0.isFile || $0.isFileTransfer })?.name ?? ""))
+								let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
 								
 								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 									DispatchQueue.main.async {
-										conversationModel.lastMessageText = lastMessageTextTmp
-										self.conversationsList[index].lastMessageText = lastMessageTextTmp
+										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
+										self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
 									}
 								} else {
 									DispatchQueue.main.async {
-										conversationModel.lastMessageText = lastMessageTextTmp
+										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 									}
 								}
 							}
@@ -183,69 +183,76 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func addConversationDelegate() {
 		coreContext.doOnCoreQueue { core in
-			self.coreConversationDelegate = CoreDelegateStub(onMessagesReceived: { (core: Core, chatRoom: ChatRoom, _: [ChatMessage]) in
-                if let defaultAddress = core.defaultAccount?.contactAddress,
-                   let localAddress = chatRoom.localAddress,
-                   defaultAddress.weakEqual(address2: localAddress) {
-                    let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-                    let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
-                    model.getContentTextMessage(chatRoom: chatRoom)
-                    let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
-                    DispatchQueue.main.async {
-                        if index != nil {
-                            self.conversationsList.remove(at: index!)
-                        }
-                        self.conversationsList.insert(model, at: 0)
-                    }
-                    SharedMainViewModel.shared.updateUnreadMessagesCount()
-                }
-			}, onMessageSent: { (_: Core, chatRoom: ChatRoom, _: ChatMessage) in
-                if let defaultAddress = core.defaultAccount?.contactAddress,
-                   let localAddress = chatRoom.localAddress,
-                   defaultAddress.weakEqual(address2: localAddress) {
-                    let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-                    let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
-                    model.getContentTextMessage(chatRoom: chatRoom)
-                    let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
-                    if index != nil {
-                        self.conversationsList[index!].chatMessageRemoveDelegate()
-                    }
-                    DispatchQueue.main.async {
-                        if index != nil {
-                            self.conversationsList.remove(at: index!)
-                        }
-                        self.conversationsList.insert(model, at: 0)
-                    }
-                    SharedMainViewModel.shared.updateUnreadMessagesCount()
-                }
-			}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
-				let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-				let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
-				model.getContentTextMessage(chatRoom: chatRoom)
-				if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
-					DispatchQueue.main.async {
-						self.conversationsList.remove(at: index)
-						self.conversationsList.insert(model, at: index)
+			self.coreConversationDelegate = CoreDelegateStub(
+				onMessagesReceived: { (core: Core, chatRoom: ChatRoom, _: [ChatMessage]) in
+					if let defaultAddress = core.defaultAccount?.contactAddress,
+					   let localAddress = chatRoom.localAddress,
+					   defaultAddress.weakEqual(address2: localAddress) {
+						let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+						let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+						model.getContentTextMessage(chatRoom: chatRoom)
+						let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
+						DispatchQueue.main.async {
+							if index != nil {
+								self.conversationsList.remove(at: index!)
+							}
+							self.conversationsList.insert(model, at: 0)
+						}
+						SharedMainViewModel.shared.updateUnreadMessagesCount()
 					}
+				}, onMessageSent: { (_: Core, chatRoom: ChatRoom, _: ChatMessage) in
+					if let defaultAddress = core.defaultAccount?.contactAddress,
+					   let localAddress = chatRoom.localAddress,
+					   defaultAddress.weakEqual(address2: localAddress) {
+						let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+						let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+						model.getContentTextMessage(chatRoom: chatRoom)
+						let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
+						if index != nil {
+							self.conversationsList[index!].chatMessageRemoveDelegate()
+						}
+						DispatchQueue.main.async {
+							if index != nil {
+								self.conversationsList.remove(at: index!)
+							}
+							self.conversationsList.insert(model, at: 0)
+						}
+						SharedMainViewModel.shared.updateUnreadMessagesCount()
+					}
+				}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
+					let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+					let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+					model.getContentTextMessage(chatRoom: chatRoom)
+					if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
+						DispatchQueue.main.async {
+							self.conversationsList.remove(at: index)
+							self.conversationsList.insert(model, at: index)
+						}
+					}
+					SharedMainViewModel.shared.updateUnreadMessagesCount()
+				}, onChatRoomStateChanged: { (core: Core, chatroom: ChatRoom, state: ChatRoom.State) in
+					// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
+					if let defaultAddress = core.defaultAccount?.contactAddress,
+					   let localAddress = chatroom.localAddress,
+					   defaultAddress.weakEqual(address2: localAddress) {
+						if core.globalState == .On {
+							switch state {
+							case .Created:
+								self.addChatRoom(chatRoom: chatroom)
+							case .Deleted:
+								self.removeChatRoom(chatRoom: chatroom)
+							default:
+								break
+							}
+						}
+					}
+				}, onMessageRetracted: { (core: Core, chatRoom: ChatRoom, message: ChatMessage) in
+					let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
+					let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+					model.getContentTextMessage(chatRoom: chatRoom)
+					SharedMainViewModel.shared.updateUnreadMessagesCount()
 				}
-				SharedMainViewModel.shared.updateUnreadMessagesCount()
-			}, onChatRoomStateChanged: { (core: Core, chatroom: ChatRoom, state: ChatRoom.State) in
-				// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
-                if let defaultAddress = core.defaultAccount?.contactAddress,
-                   let localAddress = chatroom.localAddress,
-                   defaultAddress.weakEqual(address2: localAddress) {
-                    if core.globalState == .On {
-                        switch state {
-                        case .Created:
-                            self.addChatRoom(chatRoom: chatroom)
-                        case .Deleted:
-                            self.removeChatRoom(chatRoom: chatroom)
-                        default:
-                            break
-                        }
-                    }
-                }
-			})
+			)
 			core.addDelegate(delegate: self.coreConversationDelegate!)
 		}
 	}

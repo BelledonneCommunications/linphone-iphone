@@ -108,17 +108,21 @@ struct ParticipantsListFragment: View {
 				
 				if self.isShowPopup {
 					let contentPopup = Text(String(format: String(localized: "meeting_call_remove_participant_confirmation_message"), callViewModel.participantList[indexToRemove].name))
-					PopupView(isShowPopup: $isShowPopup,
-							  title: Text("meeting_call_remove_participant_confirmation_title"),
-							  content: contentPopup,
-							  titleFirstButton: Text("dialog_no"),
-							  actionFirstButton: {self.isShowPopup.toggle()},
-							  titleSecondButton: Text("dialog_yes"),
-							  actionSecondButton: {
-						callViewModel.removeParticipant(index: indexToRemove)
-						self.isShowPopup.toggle()
-						indexToRemove = -1
-					})
+					PopupView(
+						isShowPopup: $isShowPopup,
+						title: Text("meeting_call_remove_participant_confirmation_title"),
+						content: contentPopup,
+						titleFirstButton: nil,
+						actionFirstButton: {},
+						titleSecondButton: Text("dialog_yes"),
+						actionSecondButton: {
+							callViewModel.removeParticipant(index: indexToRemove)
+							self.isShowPopup.toggle()
+							indexToRemove = -1
+						},
+						titleThirdButton: Text("dialog_no"),
+						actionThirdButton: { self.isShowPopup.toggle() }
+					)
 					.background(.black.opacity(0.65))
 					.onTapGesture {
 						self.isShowPopup.toggle()

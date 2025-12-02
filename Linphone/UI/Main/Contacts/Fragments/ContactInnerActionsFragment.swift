@@ -156,7 +156,7 @@ struct ContactInnerActionsFragment: View {
 						.background(.white)
 						.onTapGesture {
 							CoreContext.shared.doOnCoreQueue { core in
-								let address = core.interpretUrl(url: contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: true)
+								let address = core.interpretUrl(url: contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core))
 								if address != nil {
 									TelecomManager.shared.doCallOrJoinConf(address: address!)
 								}

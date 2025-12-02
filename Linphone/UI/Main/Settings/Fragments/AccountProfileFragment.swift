@@ -606,15 +606,16 @@ struct AccountProfileFragment: View {
 				.background(Color.gray100)
 				
 				if self.isShowPopup {
-					PopupView(isShowPopup: $isShowPopup,
+					PopupView(
+						isShowPopup: $isShowPopup,
 							  title: Text("manage_account_international_prefix"),
 							  content: Text("manage_account_dialog_international_prefix_help_message"),
 							  titleFirstButton: nil,
 							  actionFirstButton: {},
-							  titleSecondButton: Text("dialog_ok"),
-							  actionSecondButton: {
-						self.isShowPopup.toggle()
-					}
+							  titleSecondButton: Text("dialog_confirm"),
+							  actionSecondButton: { self.isShowPopup.toggle() },
+							  titleThirdButton: nil,
+							  actionThirdButton: {}
 					)
 					.background(.black.opacity(0.65))
 					.onTapGesture {
@@ -635,10 +636,8 @@ struct AccountProfileFragment: View {
 						isShowPopup: $isShowLogoutPopup,
 						title: Text("manage_account_dialog_remove_account_title"),
 						content: contentPopup1 + contentPopup2,
-						titleFirstButton: Text("dialog_cancel"),
-						actionFirstButton: {
-							self.isShowLogoutPopup.toggle()
-						},
+						titleFirstButton: nil,
+						actionFirstButton: {},
 						titleSecondButton: Text("manage_account_delete"),
 						actionSecondButton: {
 							if accountProfileViewModel.accountModelIndex != nil {
@@ -650,7 +649,9 @@ struct AccountProfileFragment: View {
 									}
 								}
 							}
-						}
+						},
+						titleThirdButton: Text("dialog_cancel"),
+						actionThirdButton: { self.isShowLogoutPopup.toggle() }
 					)
 					.background(.black.opacity(0.65))
 					.onTapGesture {

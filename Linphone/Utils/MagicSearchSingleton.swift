@@ -39,7 +39,7 @@ final class MagicSearchSingleton: ObservableObject {
 	@Published var allContact = false
 	let allContactKey = "all_contact"
 	
-	private var domainDefaultAccount = ""
+	var domainDefaultAccount = ""
 	
 	var searchDelegate: MagicSearchDelegate?
     
@@ -48,6 +48,8 @@ final class MagicSearchSingleton: ObservableObject {
     let nativeAddressBookFriendList = "Native address-book"
     let linphoneAddressBookFriendList = "Linphone address-book"
     let tempRemoteAddressBookFriendList = "TempRemoteDirectoryContacts address-book"
+	
+	@Published var isLoading = false
 	
 	func destroyMagicSearch() {
 		magicSearch = nil
@@ -62,7 +64,7 @@ final class MagicSearchSingleton: ObservableObject {
 		}
 		
 		coreContext.doOnCoreQueue { core in
-			self.domainDefaultAccount = core.defaultAccount?.params?.domain ?? ""
+			self.domainDefaultAccount = (core.defaultAccount?.params?.domain?.contains("sip.linphone.org") == true) ? (core.defaultAccount?.params?.domain ?? "") : "*"
 			
 			self.magicSearch = try? core.createMagicSearch()
 			
@@ -170,7 +172,13 @@ final class MagicSearchSingleton: ObservableObject {
         lastSearchSuggestions: [SearchResult],
         addedAvatarListModel: [ContactAvatarModel]
     ) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async {			
+			if SharedMainViewModel.shared.displayedFriend != nil {
+				if let avatarModel = addedAvatarListModel.first(where: { $0.address == SharedMainViewModel.shared.displayedFriend?.address }) {
+					SharedMainViewModel.shared.displayedFriend = avatarModel
+				}
+			}
+			
             self.contactsManager.lastSearch = sortedLastSearch
             self.contactsManager.lastSearchSuggestions = lastSearchSuggestions
             
@@ -184,6 +192,8 @@ final class MagicSearchSingleton: ObservableObject {
             let workItem = DispatchWorkItem {
                 NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
             }
+			
+			self.isLoading = false
 
             self.contactLoadedDebounceWorkItem = workItem
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
@@ -192,6 +202,10 @@ final class MagicSearchSingleton: ObservableObject {
 	
 	func searchForContacts() {
 		coreContext.doOnCoreQueue { _ in
+			DispatchQueue.main.async {
+				self.isLoading = true
+			}
+			
 			var needResetCache = false
 			
 			if let oldFilter = self.previousFilter {

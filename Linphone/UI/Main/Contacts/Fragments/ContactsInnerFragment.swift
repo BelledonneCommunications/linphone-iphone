@@ -24,6 +24,7 @@ struct ContactsInnerFragment: View {
 	
 	@ObservedObject var sharedMainViewModel = SharedMainViewModel.shared
 	@ObservedObject var contactsManager = ContactsManager.shared
+	@ObservedObject var magicSearch = MagicSearchSingleton.shared
 	
 	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
 	
@@ -33,76 +34,84 @@ struct ContactsInnerFragment: View {
 	@Binding var text: String
 	
 	var body: some View {
-		VStack(alignment: .leading) {
-			if contactsManager.avatarListModel.contains(where: { $0.starred }) {
-				HStack(alignment: .center) {
-					Text("contacts_list_favourites_title")
-						.default_text_style_800(styleSize: 16)
-					
-					Spacer()
-					
-					Image(isFavoriteOpen ? "caret-up" : "caret-down")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.grayMain2c600)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-				.padding(.top, 10)
-				.padding(.horizontal, 16)
-				.background(.white)
-				.onTapGesture {
-					withAnimation {
-						isFavoriteOpen.toggle()
+		ZStack {
+			VStack(alignment: .leading) {
+				if contactsManager.avatarListModel.contains(where: { $0.starred }) {
+					HStack(alignment: .center) {
+						Text("contacts_list_favourites_title")
+							.default_text_style_800(styleSize: 16)
+						
+						Spacer()
+						
+						Image(isFavoriteOpen ? "caret-up" : "caret-down")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c600)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
 					}
-				}
-				
-				if isFavoriteOpen {
-					FavoriteContactsListFragment(showingSheet: $showingSheet)
-					.zIndex(-1)
-					.transition(.move(edge: .top))
-				}
-				
-				HStack(alignment: .center) {
-					Text("contacts_list_all_contacts_title")
-						.default_text_style_800(styleSize: 16)
-					
-					Spacer()
-				}
-				.padding(.top, 10)
-				.padding(.horizontal, 16)
-			}
-			
-			VStack {
-				List {
-					ContactsListFragment(showingSheet: $showingSheet, startCallFunc: {_ in })}
-				.safeAreaInset(edge: .top, content: {
-					Spacer()
-						.frame(height: 12)
-				})
-				.listStyle(.plain)
-				.if(sharedMainViewModel.cardDavFriendsListsCount > 0) { view in
-					view.refreshable {
-						contactsManager.refreshCardDavContacts()
-					}
-				}
-				.overlay(
-					VStack {
-						if contactsManager.avatarListModel.isEmpty {
-							Spacer()
-							Image("illus-belledonne")
-								.resizable()
-								.scaledToFit()
-								.clipped()
-								.padding(.all)
-							Text(!text.isEmpty ? "list_filter_no_result_found" : "contacts_list_empty")
-								.default_text_style_800(styleSize: 16)
-							Spacer()
-							Spacer()
+					.padding(.top, 10)
+					.padding(.horizontal, 16)
+					.background(.white)
+					.onTapGesture {
+						withAnimation {
+							isFavoriteOpen.toggle()
 						}
 					}
-						.padding(.all)
-				)
+					
+					if isFavoriteOpen {
+						FavoriteContactsListFragment(showingSheet: $showingSheet)
+							.zIndex(-1)
+							.transition(.move(edge: .top))
+					}
+					
+					HStack(alignment: .center) {
+						Text("contacts_list_all_contacts_title")
+							.default_text_style_800(styleSize: 16)
+						
+						Spacer()
+					}
+					.padding(.top, 10)
+					.padding(.horizontal, 16)
+				}
+				
+				VStack {
+					List {
+						ContactsListFragment(showingSheet: $showingSheet, startCallFunc: {_ in })}
+					.safeAreaInset(edge: .top, content: {
+						Spacer()
+							.frame(height: 12)
+					})
+					.listStyle(.plain)
+					.if(sharedMainViewModel.cardDavFriendsListsCount > 0) { view in
+						view.refreshable {
+							contactsManager.refreshCardDavContacts()
+						}
+					}
+					.overlay(
+						VStack {
+							if contactsManager.avatarListModel.isEmpty {
+								Spacer()
+								Image("illus-belledonne")
+									.resizable()
+									.scaledToFit()
+									.clipped()
+									.padding(.all)
+								Text(!text.isEmpty ? "list_filter_no_result_found" : "contacts_list_empty")
+									.default_text_style_800(styleSize: 16)
+								Spacer()
+								Spacer()
+							}
+						}
+							.padding(.all)
+					)
+				}
+			}
+			
+			if magicSearch.isLoading {
+				ProgressView()
+					.controlSize(.large)
+					.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
 			}
 		}
 		.navigationBarHidden(true)

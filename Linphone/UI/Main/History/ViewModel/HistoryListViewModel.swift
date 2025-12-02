@@ -45,7 +45,12 @@ class HistoryListViewModel: ObservableObject {
 	func computeCallLogsList() {
 		coreContext.doOnCoreQueue { core in
 			let account = core.defaultAccount
-			let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
+			
+			// Fetch all call logs if only one account to workaround no history issue
+			// TODO FIXME: remove workaround later
+			let logs = (core.accountList.count > 1)
+				? (account?.callLogs ?? core.callLogs)
+				: core.callLogs
 			
 			var callLogsBis: [HistoryModel] = []
 			var callLogsTmpBis: [HistoryModel] = []

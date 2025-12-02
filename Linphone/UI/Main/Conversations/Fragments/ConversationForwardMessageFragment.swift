@@ -141,50 +141,58 @@ struct ConversationForwardMessageFragment: View {
 						.padding(.vertical)
 						.padding(.horizontal)
 						
-						ScrollView {
-							if !conversationForwardMessageViewModel.conversationsList.isEmpty {
-								HStack(alignment: .center) {
-									Text("bottom_navigation_conversations_label")
-										.default_text_style_800(styleSize: 16)
+						ZStack {
+							ScrollView {
+								if !conversationForwardMessageViewModel.conversationsList.isEmpty {
+									HStack(alignment: .center) {
+										Text("bottom_navigation_conversations_label")
+											.default_text_style_800(styleSize: 16)
+										
+										Spacer()
+									}
+									.padding(.vertical, 10)
+									.padding(.horizontal, 16)
 									
-									Spacer()
+									conversationsList
 								}
-								.padding(.vertical, 10)
+								
+								if !ContactsManager.shared.lastSearch.isEmpty {
+									HStack(alignment: .center) {
+										Text("contacts_list_all_contacts_title")
+											.default_text_style_800(styleSize: 16)
+										
+										Spacer()
+									}
+									.padding(.vertical, 10)
+									.padding(.horizontal, 16)
+								}
+								
+								ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
+									withAnimation {
+										conversationForwardMessageViewModel.createOneToOneChatRoomWith(remote: addr)
+									}
+									
+								})
 								.padding(.horizontal, 16)
 								
-								conversationsList
+								if !contactsManager.lastSearchSuggestions.isEmpty {
+									HStack(alignment: .center) {
+										Text("generic_address_picker_suggestions_list_title")
+											.default_text_style_800(styleSize: 16)
+										
+										Spacer()
+									}
+									.padding(.vertical, 10)
+									.padding(.horizontal, 16)
+									
+									suggestionsList
+								}
 							}
 							
-							if !ContactsManager.shared.lastSearch.isEmpty {
-								HStack(alignment: .center) {
-									Text("contacts_list_all_contacts_title")
-										.default_text_style_800(styleSize: 16)
-									
-									Spacer()
-								}
-								.padding(.vertical, 10)
-								.padding(.horizontal, 16)
-							}
-							
-							ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
-								withAnimation {
-									conversationForwardMessageViewModel.createOneToOneChatRoomWith(remote: addr)
-								}
-								
-							})
-							.padding(.horizontal, 16)
-							
-							if !contactsManager.lastSearchSuggestions.isEmpty {
-								HStack(alignment: .center) {
-									Text("generic_address_picker_suggestions_list_title")
-										.default_text_style_800(styleSize: 16)
-									
-									Spacer()
-								}
-								.padding(.vertical, 10)
-								.padding(.horizontal, 16)
-								
-								suggestionsList
+							if magicSearch.isLoading {
+								ProgressView()
+									.controlSize(.large)
+									.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
 							}
 						}
 					}

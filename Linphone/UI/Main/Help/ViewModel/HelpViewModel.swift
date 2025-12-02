@@ -38,13 +38,20 @@ class HelpViewModel: ObservableObject {
 	private var coreDelegate: CoreDelegate?
 
 	init() {
-		let appName = Bundle.main.infoDictionary?["CFBundleName"] as? String
-		let versionTmp = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
-		let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+		let appGitVersion = APP_GIT_COMMIT
+		let appGitBranch = APP_GIT_BRANCH
+		let appGitTag = APP_GIT_TAG
+		let sdkGitVersion = linphonesw.sdkVersion
+		var sdkGitBranch = linphonesw.sdkBranch
 		
-		self.version = (versionTmp ?? "6.0.0")
+		if sdkGitBranch.hasPrefix("remotes/origin/") {
+			sdkGitBranch = String(sdkGitBranch.dropFirst("remotes/origin/".count))
+		}
 		
-		self.sdkVersion = Core.getVersion
+		self.appVersion = appGitTag
+		self.version = appGitTag + "-" + appGitVersion + "\n(\(appGitBranch))"
+		
+		self.sdkVersion = sdkGitVersion + "\n(\(sdkGitBranch))"
 		
 		if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
 		   let plist = NSDictionary(contentsOfFile: path) as? [String: Any],

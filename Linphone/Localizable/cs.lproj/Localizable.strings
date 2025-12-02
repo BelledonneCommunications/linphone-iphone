@@ -2,7 +2,7 @@
 "assistant_sip_account_transport_protocol" = "Transport";
 "contact_call_action" = "Volat";
 "conversation_action_call" = "Volat";
-"dialog_ok" = "OK";
+"dialog_confirm" = "Confirm";
 "drawer_menu_manage_account" = "Spravovat profil";
 "help_error_checking_version_toast_message" = "Během kontroly aktualizací nastala chyba";
 "settings_contacts_carddav_name_title" = "Zobrazené jméno";
@@ -474,9 +474,9 @@
 "message_copied_to_clipboard_toast" = "Zpráva zkopírována do schránky";
 "message_delivery_info_read_title" = "Přečteno";
 "message_delivery_info_received_title" = "Přijato";
-"message_meeting_invitation_cancelled_notification" = "📅 Schůzka byla zrušena";
-"message_meeting_invitation_notification" = "📅 Jste pozváni na schůzku";
-"message_meeting_invitation_updated_notification" = "📅 Schůzka byla aktualizována";
+"message_meeting_invitation_cancelled_notification" = "Schůzka byla zrušena";
+"message_meeting_invitation_notification" = "Jste pozváni na schůzku";
+"message_meeting_invitation_updated_notification" = "Schůzka byla aktualizována";
 "message_reactions_info_all_title" = "Reakce";
 "network_reachable_again" = "Síť je znovu dostupná";
 "menu_block_number" = "Blokovat číslo";

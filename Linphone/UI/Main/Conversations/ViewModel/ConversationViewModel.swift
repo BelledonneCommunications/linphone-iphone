@@ -93,6 +93,7 @@ class ConversationViewModel: ObservableObject {
 	@Published var selectedMessageToPlayVoiceRecording: EventLogMessage?
 	@Published var selectedMessage: EventLogMessage?
 	@Published var messageToReply: EventLogMessage?
+	@Published var messageToEdit: EventLogMessage?
 	
 	@Published var sheetCategories: [SheetCategory] = []
 	
@@ -171,7 +172,152 @@ class ConversationViewModel: ObservableObject {
 			self.getEventMessage(eventLog: eventLog)
 		}, onEphemeralMessageDeleted: {(_: ChatRoom, eventLog: EventLog) in
 			self.removeMessage(eventLog)
+		}, onMessageContentEdited: {(chatRoom: ChatRoom, message: ChatMessage) in
+			let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+			
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				displayedConversation.getContentTextMessage(chatRoom: displayedConversation.chatRoom)
+			}
+			
+			var attachmentNameList: String = ""
+			var attachmentList: [Attachment] = []
+			var contentText = ""
+			
+			if !message.contents.isEmpty {
+				message.contents.forEach { content in
+					if content.isText && content.name == nil {
+						contentText = content.utf8Text ?? ""
+					} else if content.name != nil && !content.name!.isEmpty {
+						if content.filePath == nil || content.filePath!.isEmpty {
+							let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+							
+							if path != nil {
+								let attachment =
+								Attachment(
+									id: UUID().uuidString,
+									name: content.name!,
+									url: path!,
+									type: .fileTransfer,
+									size: content.fileSize,
+									transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+								)
+								attachmentNameList += ", \(content.name!)"
+								attachmentList.append(attachment)
+							}
+						} else {
+							if content.type != "video" {
+								let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+								let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+								
+								var typeTmp: AttachmentType = .other
+								
+								switch content.type {
+								case "image":
+									typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+								case "audio":
+									typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+								case "application":
+									typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+								case "text":
+									typeTmp = .text
+								default:
+									typeTmp = .other
+								}
+								
+								if path != nil {
+									let attachment =
+									Attachment(
+										id: UUID().uuidString,
+										name: content.name!,
+										url: path!,
+										type: typeTmp,
+										duration: typeTmp == .voiceRecording ? content.fileDuration : 0,
+										size: content.fileSize,
+										transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+									)
+									attachmentNameList += ", \(content.name!)"
+									attachmentList.append(attachment)
+									if typeTmp != .voiceRecording {
+										DispatchQueue.main.async {
+											if !attachment.full.pathExtension.isEmpty {
+												self.attachments.append(attachment)
+											}
+										}
+									}
+								}
+							} else if content.type == "video" {
+								let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+								let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+								let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
+								
+								if path != nil && pathThumbnail != nil {
+									let attachment =
+									Attachment(
+										id: UUID().uuidString,
+										name: content.name!,
+										thumbnail: pathThumbnail!,
+										full: path!,
+										type: .video,
+										size: content.fileSize,
+										transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+									)
+									attachmentNameList += ", \(content.name!)"
+									attachmentList.append(attachment)
+									DispatchQueue.main.async {
+										if !attachment.full.pathExtension.isEmpty {
+											self.attachments.append(attachment)
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			if !attachmentNameList.isEmpty {
+				attachmentNameList = String(attachmentNameList.dropFirst(2))
+			}
+			
+			let indexReplyMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.replyMessage?.id == message.messageId})
+			
+			DispatchQueue.main.async {
+				if indexMessage != nil {
+					self.conversationMessagesSection[0].rows[indexMessage!].message.text = contentText
+					self.conversationMessagesSection[0].rows[indexMessage!].message.isEdited = true
+					self.conversationMessagesSection[0].rows[indexMessage!].message.attachments = attachmentList
+					self.conversationMessagesSection[0].rows[indexMessage!].message.attachmentsNames = attachmentNameList
+				}
+				
+				if indexReplyMessage != nil {
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.text = contentText
+				}
+			}
+		}, onMessageRetracted: {(chatRoom: ChatRoom, message: ChatMessage) in
+			let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId})
+			let indexReplyMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.replyMessage?.id == message.messageId})
+			
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				displayedConversation.getContentTextMessage(chatRoom: displayedConversation.chatRoom)
+			}
+													 
+			DispatchQueue.main.async {
+				if indexMessage != nil {
+					self.conversationMessagesSection[0].rows[indexMessage!].message.text = ""
+					self.conversationMessagesSection[0].rows[indexMessage!].message.isRetracted = true
+					self.conversationMessagesSection[0].rows[indexMessage!].message.attachments = []
+					self.conversationMessagesSection[0].rows[indexMessage!].message.attachmentsNames = ""
+				}
+				
+				if indexReplyMessage != nil {
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.text = ""
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.isRetracted = true
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.attachments = []
+					self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage?.attachmentsNames = ""
+				}
+			}
 		})
+		
 		self.chatRoomDelegateHolder = ChatRoomDelegateHolder(chatroom: chatRoom, delegate: chatRoomDelegate)
 	}
 	
@@ -544,6 +690,10 @@ class ConversationViewModel: ObservableObject {
 									id: UUID().uuidString,
 									status: nil,
 									isOutgoing: false,
+									isEditable: false,
+									isRetractable: false,
+									isEdited: false,
+									isRetracted: false,
 									dateReceived: 0,
 									address: "",
 									isFirstMessage: false,
@@ -704,6 +854,8 @@ class ConversationViewModel: ObservableObject {
 						
 						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 						
+						let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+						
 						var attachmentNameReplyList: String = ""
 						
 						chatMessage.replyMessage?.contents.forEach { content in
@@ -721,7 +873,11 @@ class ConversationViewModel: ObservableObject {
 							address: addressReplyCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: false,
 							text: contentReplyText,
-							isOutgoing: false,
+							isOutgoing: chatMessage.replyMessage!.isOutgoing,
+							isEditable: false,
+							isRetractable: false,
+							isEdited: false,
+							isRetracted: isReplyRetracted,
 							dateReceived: 0,
 							attachmentsNames: attachmentNameReplyList,
 							attachments: []
@@ -735,6 +891,10 @@ class ConversationViewModel: ObservableObject {
 								id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
 								status: statusTmp,
 								isOutgoing: chatMessage.isOutgoing,
+								isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+								isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
+								isEdited: chatMessage.isEdited,
+								isRetracted: chatMessage.isRetracted,
 								dateReceived: chatMessage.time,
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
@@ -788,6 +948,10 @@ class ConversationViewModel: ObservableObject {
 									id: UUID().uuidString,
 									status: nil,
 									isOutgoing: false,
+									isEditable: false,
+									isRetractable: false,
+									isEdited: false,
+									isRetracted: false,
 									dateReceived: 0,
 									address: "",
 									isFirstMessage: false,
@@ -947,6 +1111,8 @@ class ConversationViewModel: ObservableObject {
 						
 						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 						
+						let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+						
 						var attachmentNameReplyList: String = ""
 						
 						chatMessage.replyMessage?.contents.forEach { content in
@@ -964,7 +1130,11 @@ class ConversationViewModel: ObservableObject {
 							address: addressReplyCleaned?.asStringUriOnly() ?? "",
 							isFirstMessage: false,
 							text: contentReplyText,
-							isOutgoing: false,
+							isOutgoing: chatMessage.replyMessage!.isOutgoing,
+							isEditable: false,
+							isRetractable: false,
+							isEdited: false,
+							isRetracted: isReplyRetracted,
 							dateReceived: 0,
 							attachmentsNames: attachmentNameReplyList,
 							attachments: []
@@ -978,6 +1148,10 @@ class ConversationViewModel: ObservableObject {
 								id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
 								status: statusTmp,
 								isOutgoing: chatMessage.isOutgoing,
+								isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+								isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
+								isEdited: chatMessage.isEdited,
+								isRetracted: chatMessage.isRetracted,
 								dateReceived: chatMessage.time,
 								address: addressCleaned?.asStringUriOnly() ?? "",
 								isFirstMessage: isFirstMessageTmp,
@@ -1048,6 +1222,10 @@ class ConversationViewModel: ObservableObject {
 								id: UUID().uuidString,
 								status: nil,
 								isOutgoing: false,
+								isEditable: false,
+								isRetractable: false,
+								isEdited: false,
+								isRetracted: false,
 								dateReceived: 0,
 								address: "",
 								isFirstMessage: false,
@@ -1221,6 +1399,8 @@ class ConversationViewModel: ObservableObject {
 					
 					let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 					
+					let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+					
 					var attachmentNameReplyList: String = ""
 					
 					chatMessage.replyMessage?.contents.forEach { content in
@@ -1238,7 +1418,11 @@ class ConversationViewModel: ObservableObject {
 						address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
 						isFirstMessage: false,
 						text: contentReplyText,
-						isOutgoing: false,
+						isOutgoing: chatMessage.replyMessage!.isOutgoing,
+						isEditable: false,
+						isRetractable: false,
+						isEdited: false,
+						isRetracted: isReplyRetracted,
 						dateReceived: 0,
 						attachmentsNames: attachmentNameReplyList,
 						attachments: []
@@ -1253,6 +1437,10 @@ class ConversationViewModel: ObservableObject {
 							appData: chatMessage.appdata ?? "",
 							status: statusTmp,
 							isOutgoing: chatMessage.isOutgoing,
+							isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+							isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
+							isEdited: chatMessage.isEdited,
+							isRetracted: chatMessage.isRetracted,
 							dateReceived: chatMessage.time,
 							address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
 							isFirstMessage: isFirstMessageTmp,
@@ -1453,6 +1641,8 @@ class ConversationViewModel: ObservableObject {
 			
 			let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 			
+			let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+			
 			var attachmentNameReplyList: String = ""
 			
 			chatMessage.replyMessage?.contents.forEach { content in
@@ -1470,7 +1660,11 @@ class ConversationViewModel: ObservableObject {
 				address: addressReplyCleaned != nil ? addressReplyCleaned!.asStringUriOnly() : "",
 				isFirstMessage: false,
 				text: contentReplyText,
-				isOutgoing: false,
+				isOutgoing: chatMessage.replyMessage!.isOutgoing,
+				isEditable: false,
+				isRetractable: false,
+				isEdited: false,
+				isRetracted: isReplyRetracted,
 				dateReceived: 0,
 				attachmentsNames: attachmentNameReplyList,
 				attachments: []
@@ -1485,6 +1679,10 @@ class ConversationViewModel: ObservableObject {
 					appData: chatMessage.appdata ?? "",
 					status: statusTmp,
 					isOutgoing: chatMessage.isOutgoing,
+					isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+					isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
+					isEdited: chatMessage.isEdited,
+					isRetracted: chatMessage.isRetracted,
 					dateReceived: chatMessage.time,
 					address: addressCleaned != nil ? addressCleaned!.asStringUriOnly() : "",
 					isFirstMessage: isFirstMessageTmp,
@@ -1526,6 +1724,10 @@ class ConversationViewModel: ObservableObject {
 				id: UUID().uuidString,
 				status: nil,
 				isOutgoing: false,
+				isEditable: false,
+				isRetractable: false,
+				isEdited: false,
+				isRetracted: false,
 				dateReceived: 0,
 				address: "",
 				isFirstMessage: false,
@@ -1553,6 +1755,9 @@ class ConversationViewModel: ObservableObject {
 	}
 	
     func replyToMessage(index: Int, isMessageTextFocused: Binding<Bool>) {
+		if self.messageToEdit != nil {
+			self.messageToEdit = nil
+		}
 		coreContext.doOnCoreQueue { _ in
 			let messageToReplyTmp = self.conversationMessagesSection[0].rows[index]
             DispatchQueue.main.async {
@@ -1561,6 +1766,21 @@ class ConversationViewModel: ObservableObject {
                 }
                 isMessageTextFocused.wrappedValue = true
             }
+		}
+	}
+	
+	func editMessage(chatMessage: EventLogMessage, isMessageTextFocused: Binding<Bool>) {
+		if self.messageToReply != nil {
+			self.messageToReply = nil
+		}
+		coreContext.doOnCoreQueue { _ in
+			let messageToEditTmp = chatMessage
+			DispatchQueue.main.async {
+				withAnimation(.linear(duration: 0.15)) {
+					self.messageToEdit = messageToEditTmp
+				}
+				isMessageTextFocused.wrappedValue = true
+			}
 		}
 	}
 	
@@ -1619,6 +1839,10 @@ class ConversationViewModel: ObservableObject {
 											id: UUID().uuidString,
 											status: nil,
 											isOutgoing: false,
+											isEditable: false,
+											isRetractable: false,
+											isEdited: false,
+											isRetracted: false,
 											dateReceived: 0,
 											address: "",
 											isFirstMessage: false,
@@ -1778,6 +2002,8 @@ class ConversationViewModel: ObservableObject {
 								
 								let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
 								
+								let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+								
 								var attachmentNameReplyList: String = ""
 								
 								chatMessage.replyMessage?.contents.forEach { content in
@@ -1795,7 +2021,11 @@ class ConversationViewModel: ObservableObject {
 									address: addressReplyCleaned?.asStringUriOnly() ?? "",
 									isFirstMessage: false,
 									text: contentReplyText,
-									isOutgoing: false,
+									isOutgoing: chatMessage.replyMessage!.isOutgoing,
+									isEditable: false,
+									isRetractable: false,
+									isEdited: false,
+									isRetracted: isReplyRetracted,
 									dateReceived: 0,
 									attachmentsNames: attachmentNameReplyList,
 									attachments: []
@@ -1809,6 +2039,10 @@ class ConversationViewModel: ObservableObject {
 										id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
 										status: statusTmp,
 										isOutgoing: chatMessage.isOutgoing,
+										isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+										isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
+										isEdited: chatMessage.isEdited,
+										isRetracted: chatMessage.isRetracted,
 										dateReceived: chatMessage.time,
 										address: addressCleaned?.asStringUriOnly() ?? "",
 										isFirstMessage: isFirstMessageTmp,
@@ -1873,6 +2107,8 @@ class ConversationViewModel: ObservableObject {
 						if chatMessageToReply != nil {
 							message = try self.sharedMainViewModel.displayedConversation!.chatRoom.createReplyMessage(message: chatMessageToReply!)
 						}
+					} else if let chatMessage = self.messageToEdit?.eventModel.eventLog.chatMessage {
+						message = try self.sharedMainViewModel.displayedConversation!.chatRoom.createReplacesMessage(message: chatMessage)
 					} else {
 						message = try self.sharedMainViewModel.displayedConversation!.chatRoom.createEmptyMessage()
 					}
@@ -1948,12 +2184,14 @@ class ConversationViewModel: ObservableObject {
 					if message != nil && !message!.contents.isEmpty {
 						Log.info("[ConversationViewModel] Sending message")
 						message!.send()
+						self.sharedMainViewModel.displayedConversation!.chatRoom.stopComposing()
 					}
 					
 					Log.info("[ConversationViewModel] Message sent, re-setting defaults")
 					
 					DispatchQueue.main.async {
 						self.messageToReply = nil
+						self.messageToEdit = nil
 						withAnimation {
 							self.mediasToSend.removeAll()
 						}
@@ -2370,10 +2608,20 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func compose() {
+	func compose(stop: Bool, cachedConversation: ConversationModel? = nil) {
 		coreContext.doOnCoreQueue { _ in
-			if self.sharedMainViewModel.displayedConversation != nil {
-				self.sharedMainViewModel.displayedConversation!.chatRoom.compose()
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				if stop {
+					displayedConversation.chatRoom.stopComposing()
+				} else {
+					displayedConversation.chatRoom.composeTextMessage()
+				}
+			} else if let displayedConversation = cachedConversation {
+				if stop {
+					displayedConversation.chatRoom.stopComposing()
+				} else {
+					displayedConversation.chatRoom.composeTextMessage()
+				}
 			}
 		}
 	}
@@ -2672,12 +2920,34 @@ class ConversationViewModel: ObservableObject {
 			if let displayedConversation = self.sharedMainViewModel.displayedConversation,
 			   let selectedMessage = self.selectedMessage,
 			   let chatMessage = selectedMessage.eventModel.eventLog.chatMessage {
+				
+				let indexReplyMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.message.replyMessage?.id == chatMessage.messageId})
 				displayedConversation.chatRoom.deleteMessage(message: chatMessage)
+				
+				displayedConversation.getContentTextMessage(chatRoom: displayedConversation.chatRoom)
+				
 				DispatchQueue.main.async {
 					if let sectionIndex = self.conversationMessagesSection.firstIndex(where: { $0.chatRoomID == displayedConversation.id }),
 					   let rowIndex = self.conversationMessagesSection[sectionIndex].rows.firstIndex(of: selectedMessage) {
 						self.conversationMessagesSection[sectionIndex].rows.remove(at: rowIndex)
+						
+						if indexReplyMessage != nil {
+							self.conversationMessagesSection[0].rows[indexReplyMessage!].message.replyMessage = nil
+						}
 					}
+					self.selectedMessage = nil
+				}
+			}
+		}
+	}
+	
+	func deleteMessageForEveryone(){
+		coreContext.doOnCoreQueue { _ in
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation,
+			   let selectedMessage = self.selectedMessage,
+			   let chatMessage = selectedMessage.eventModel.eventLog.chatMessage {
+				displayedConversation.chatRoom.retractMessage(message: chatMessage)
+				DispatchQueue.main.async {
 					self.selectedMessage = nil
 				}
 			}

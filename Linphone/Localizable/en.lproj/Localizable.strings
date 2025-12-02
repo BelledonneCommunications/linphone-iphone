@@ -47,6 +47,8 @@
 "account_settings_im_encryption_mandatory_title" = "IM encryption mandatory";
 "account_settings_lime_server_url_title" = "E2E encryption keys server URL";
 "account_settings_mwi_uri_title" = "MWI server URI (Message Waiting Indicator)";
+"account_settings_apply_international_prefix_title" = "Format phone numbers using international prefix";
+"account_settings_replace_plus_by_00_title" = "Replace + by 00 when formatting phone numbers";
 "account_settings_nat_policy_title" = "NAT policy settings";
 "account_settings_outbound_proxy_title" = "Outbound proxy";
 "account_settings_push_notification_not_available_title" = "Push notifications aren't available!";
@@ -188,6 +190,7 @@
 "contacts_list_favourites_title" = "Favourites";
 "contacts_list_filter_popup_see_all" = "See all";
 "contacts_list_filter_popup_see_linphone_only" = "See %@ contacts";
+"contacts_list_filter_popup_see_sip_only" = "See SIP contacts";
 "conversation_action_call" = "Call";
 "conversation_action_configure_ephemeral_messages" = "Configure ephemeral messages";
 "conversation_action_delete" = "Delete conversation";
@@ -201,6 +204,13 @@
 "conversation_dialog_edit_subject" = "Edit conversation subject";
 "conversation_dialog_set_subject" = "Set conversation subject";
 "conversation_dialog_subject_hint" = "Conversation subject";
+"conversation_editing_message_title" = "Message being edited";
+"conversation_message_edited_label" = "Edited";
+"conversation_dialog_delete_chat_message_title" = "Delete this message?";
+"conversation_dialog_delete_locally_label" = "For me";
+"conversation_dialog_delete_for_everyone_label" = "For everyone";
+"conversation_message_content_deleted_label" = "This message has been deleted";
+"conversation_message_content_deleted_by_us_label" = "You have deleted this message";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
 "conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";
@@ -267,7 +277,7 @@
 "dialog_deny" = "Deny";
 "dialog_install" = "Install";
 "dialog_no" = "No";
-"dialog_ok" = "OK";
+"dialog_confirm" = "Confirm";
 "dialog_yes" = "Yes";
 "drawer_menu_account_connection_status_cleared" = "Disabled";
 "drawer_menu_account_connection_status_connected" = "Connected";
@@ -391,6 +401,7 @@
 "menu_delete_selected_item" = "Delete";
 "menu_forward_chat_message" = "Forward";
 "menu_invite" = "Invite";
+"menu_edit_chat_message" = "Edit";
 "menu_reply_to_chat_message" = "Reply";
 "menu_resend_chat_message" = "Re-send";
 "menu_see_existing_contact" = "See contact";
@@ -401,9 +412,9 @@
 "message_delivery_info_received_title" = "Received";
 "message_delivery_info_sent_title" = "Sent";
 "message_forwarded_label" = "Forwarded";
-"message_meeting_invitation_cancelled_notification" = "📅 Meeting has been cancelled";
-"message_meeting_invitation_notification" = "📅 You are invited to a meeting";
-"message_meeting_invitation_updated_notification" = "📅 Meeting has been updated";
+"message_meeting_invitation_cancelled_notification" = "Meeting has been cancelled";
+"message_meeting_invitation_notification" = "You are invited to a meeting";
+"message_meeting_invitation_updated_notification" = "Meeting has been updated";
 "message_reaction_click_to_remove_label" = "Click to remove";
 "message_reactions_info_all_title" = "Reactions";
 "network_not_reachable" = "You aren't connected to internet";

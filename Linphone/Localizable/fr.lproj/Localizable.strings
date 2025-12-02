@@ -47,6 +47,8 @@
 "account_settings_im_encryption_mandatory_title" = "Chiffrement obligatoire des conversations";
 "account_settings_lime_server_url_title" = "URL du serveur d'échange de clés de chiffrement";
 "account_settings_mwi_uri_title" = "URI du serveur MWI (Message Waiting Indicator)";
+"account_settings_apply_international_prefix_title" = "Formater les numéros en utilisant l'indicatif international";
+"account_settings_replace_plus_by_00_title" = "Remplacer + par 00 lors du formatage des numéros de téléphone";
 "account_settings_nat_policy_title" = "Paramètres de politique NAT";
 "account_settings_outbound_proxy_title" = "Serveur mandataire sortant";
 "account_settings_push_notification_not_available_title" = "Notifications push non disponibles";
@@ -188,6 +190,7 @@
 "contacts_list_favourites_title" = "Favoris";
 "contacts_list_filter_popup_see_all" = "Tous les contacts";
 "contacts_list_filter_popup_see_linphone_only" = "Contacts %@";
+"contacts_list_filter_popup_see_sip_only" = "Contacts SIP";
 "conversation_action_call" = "Appeler";
 "conversation_action_configure_ephemeral_messages" = "Configurer les messages éphémères";
 "conversation_action_delete" = "Supprimer la conversation";
@@ -201,6 +204,13 @@
 "conversation_dialog_edit_subject" = "Renommer la conversation";
 "conversation_dialog_set_subject" = "Nommer la conversation";
 "conversation_dialog_subject_hint" = "Nom de la conversation";
+"conversation_editing_message_title" = "Modification du message";
+"conversation_message_edited_label" = "Modifié";
+"conversation_dialog_delete_chat_message_title" = "Supprimer le message ?";
+"conversation_dialog_delete_locally_label" = "Pour moi";
+"conversation_dialog_delete_for_everyone_label" = "Pour tout le monde";
+"conversation_message_content_deleted_label" = "Le message a été supprimé";
+"conversation_message_content_deleted_by_us_label" = "Vous avez supprimé le message";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "Conversation chiffrée de bout en bout";
 "conversation_end_to_end_encrypted_event_subtitle" = "Les messages de cette conversation sont chiffrés de bout en bout. Seul votre correspondant peut les déchiffrer.";
@@ -267,7 +277,7 @@
 "dialog_deny" = "Refuser";
 "dialog_install" = "Installer";
 "dialog_no" = "Non";
-"dialog_ok" = "OK";
+"dialog_confirm" = "Confirmer";
 "dialog_yes" = "Oui";
 "drawer_menu_account_connection_status_cleared" = "Désactivé";
 "drawer_menu_account_connection_status_connected" = "Connecté";
@@ -391,6 +401,7 @@
 "menu_delete_selected_item" = "Supprimer";
 "menu_forward_chat_message" = "Transférer";
 "menu_invite" = "Inviter";
+"menu_edit_chat_message" = "Modifier";
 "menu_reply_to_chat_message" = "Répondre";
 "menu_resend_chat_message" = "Ré-envoyer";
 "menu_see_existing_contact" = "Voir le contact";
@@ -401,9 +412,9 @@
 "message_delivery_info_received_title" = "Reçu";
 "message_delivery_info_sent_title" = "Envoyé";
 "message_forwarded_label" = "Transféré";
-"message_meeting_invitation_cancelled_notification" = "📅 Réunion annulée";
-"message_meeting_invitation_notification" = "📅 Invitation à une réunion";
-"message_meeting_invitation_updated_notification" = "📅 Réunion mise à jour";
+"message_meeting_invitation_cancelled_notification" = "Réunion annulée";
+"message_meeting_invitation_notification" = "Invitation à une réunion";
+"message_meeting_invitation_updated_notification" = "Réunion mise à jour";
 "message_reaction_click_to_remove_label" = "Cliquez pour supprimer";
 "message_reactions_info_all_title" = "Réactions";
 "network_not_reachable" = "Vous n’êtes pas connecté à internet";

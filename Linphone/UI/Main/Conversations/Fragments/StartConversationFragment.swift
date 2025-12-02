@@ -170,34 +170,42 @@ struct StartConversationFragment: View {
 							)
 						}
 						
-						ScrollView {
-							if !ContactsManager.shared.lastSearch.isEmpty {
-								HStack(alignment: .center) {
-									Text("contacts_list_all_contacts_title")
-										.default_text_style_800(styleSize: 16)
-									
-									Spacer()
+						ZStack {
+							ScrollView {
+								if !ContactsManager.shared.lastSearch.isEmpty {
+									HStack(alignment: .center) {
+										Text("contacts_list_all_contacts_title")
+											.default_text_style_800(styleSize: 16)
+										
+										Spacer()
+									}
+									.padding(.vertical, 10)
+									.padding(.horizontal, 16)
 								}
-								.padding(.vertical, 10)
-								.padding(.horizontal, 16)
-							}
-							
-							ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
+								
+								ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
 									startConversationViewModel.createOneToOneChatRoomWith(remote: addr)
-							})
-							.padding(.horizontal, 16)
-							
-							if !contactsManager.lastSearchSuggestions.isEmpty {
-								HStack(alignment: .center) {
-									Text("generic_address_picker_suggestions_list_title")
-										.default_text_style_800(styleSize: 16)
-									
-									Spacer()
-								}
-								.padding(.vertical, 10)
+								})
 								.padding(.horizontal, 16)
 								
-								suggestionsList
+								if !contactsManager.lastSearchSuggestions.isEmpty {
+									HStack(alignment: .center) {
+										Text("generic_address_picker_suggestions_list_title")
+											.default_text_style_800(styleSize: 16)
+										
+										Spacer()
+									}
+									.padding(.vertical, 10)
+									.padding(.horizontal, 16)
+									
+									suggestionsList
+								}
+							}
+							
+							if magicSearch.isLoading {
+								ProgressView()
+									.controlSize(.large)
+									.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
 							}
 						}
 					}

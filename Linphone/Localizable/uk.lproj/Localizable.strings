@@ -377,7 +377,7 @@
 "conversation_ephemeral_messages_duration_one_week" = "1 тиждень";
 "conversation_ephemeral_messages_duration_three_days" = "3 доби";
 "conversation_ephemeral_messages_duration_one_day" = "1 доба";
-"dialog_ok" = "ОК";
+"dialog_confirm" = "ОК";
 "welcome_page_title" = "Ласкаво просимо";
 ": %@" = ": %@";
 "[https://sip.linphone.org](https://sip.linphone.org)" = "[https://sip.linphone.org](https://sip.linphone.org)";
@@ -456,9 +456,9 @@
 "message_delivery_info_read_title" = "Читати";
 "message_delivery_info_received_title" = "Отримано";
 "message_delivery_info_sent_title" = "Відправлено";
-"message_meeting_invitation_cancelled_notification" = "📅 Нараду скасовано";
-"message_meeting_invitation_notification" = "📅 Вас запрошено на нараду";
-"message_meeting_invitation_updated_notification" = "📅 Нараду оновлено";
+"message_meeting_invitation_cancelled_notification" = "Нараду скасовано";
+"message_meeting_invitation_notification" = "Вас запрошено на нараду";
+"message_meeting_invitation_updated_notification" = "Нараду оновлено";
 "message_reactions_info_all_title" = "Реакції";
 "network_reachable_again" = "Мережа знову доступна";
 "None" = "Жоден";

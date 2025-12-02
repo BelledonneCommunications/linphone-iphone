@@ -145,20 +145,21 @@ struct ProfileModeFragment: View {
 			}
 			
 			if self.isShowPopup {
-				PopupView(isShowPopup: $isShowPopup,
-						  title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"),
-						  content: Text(
-							isShowPopupForDefault
-							? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit."
-							+ "Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."
-							: "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit."
-							+ " Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."),
-						  titleFirstButton: nil,
-						  actionFirstButton: {},
-						  titleSecondButton: Text("dialog_close"),
-						  actionSecondButton: {
-					self.isShowPopup.toggle()
-				}
+				PopupView(
+					isShowPopup: $isShowPopup,
+					title: Text(isShowPopupForDefault ? "Default mode" :  "Interoperable mode"),
+					content: Text(
+						isShowPopupForDefault
+						? "Texte explicatif du default mode : lorem ipsum dolor sit amet, consectetur adipiscing elit."
+						+ "Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."
+						: "Texte explicatif du interoperable mode : lorem ipsum dolor sit amet, consectetur adipiscing elit."
+						+ " Etiam velit sapien, egestas sit amet dictum eget, condimentum a ligula."),
+					titleFirstButton: nil,
+					actionFirstButton: {},
+					titleSecondButton: nil,
+					actionSecondButton: {},
+					titleThirdButton: Text("dialog_close"),
+					actionThirdButton: { self.isShowPopup.toggle() }
 				)
 				.background(.black.opacity(0.65))
 				.onTapGesture {
