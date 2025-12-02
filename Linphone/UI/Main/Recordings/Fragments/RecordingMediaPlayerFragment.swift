@@ -27,8 +27,13 @@ struct RecordingMediaPlayerFragment: View {
 	
 	@State private var showShareSheet: Bool = false
 	@State private var showPicker: Bool = false
+	@State private var isSeeking: Bool = false
+	
+	@State private var lastValue: Double = -1.0
 	@State private var value: Double = 40.0
+	
 	@State private var timer: Timer?
+	
 	
 	init(recording: RecordingModel) {
 		_recordingMediaPlayerViewModel = StateObject(wrappedValue: RecordingMediaPlayerViewModel(recording: recording))
@@ -133,19 +138,41 @@ struct RecordingMediaPlayerFragment: View {
 							.frame(width: 50)
 							
 							let radius = geometry.size.height * 0.5
+							let barWidth = geometry.size.width - 120
 							ZStack(alignment: .leading) {
 								Rectangle()
 									.foregroundColor(Color.orangeMain100)
-									.frame(width: (geometry.size.width - 120), height: 5)
+									.frame(width: barWidth, height: 5)
 									.clipShape(RoundedRectangle(cornerRadius: radius))
-								
+
 								Rectangle()
 									.foregroundColor(Color.orangeMain500)
-									.frame(width: self.value * (geometry.size.width - 120) / 100, height: 5)
-									.animation(self.value > 0 ? .linear(duration: 0.1) : nil, value: self.value)
+									.frame(width: (self.value / 100) * barWidth, height: isSeeking ? 10 : 5)
 									.clipShape(RoundedRectangle(cornerRadius: radius))
 							}
-							.clipShape(RoundedRectangle(cornerRadius: radius))
+							.frame(width: barWidth, height: 20)
+							.contentShape(Rectangle())
+							.gesture(
+								DragGesture(minimumDistance: 0)
+									.onChanged { gesture in
+										isSeeking = true
+										
+										let x = max(0, min(barWidth, gesture.location.x))
+										let percent = x / barWidth * 100
+										self.value = percent
+									}
+									.onEnded { gesture in
+										let x = max(0, min(barWidth, gesture.location.x))
+										let percent = x / barWidth * 100
+										self.value = percent
+										
+										isSeeking = false
+										recordingMediaPlayerViewModel.seekTo(percent: percent)
+										
+										lastValue = percent
+									}
+							)
+
 							
 							Text(recordingMediaPlayerViewModel.recording.formattedDuration)
 								.default_text_style_white_600(styleSize: 18)
@@ -153,6 +180,7 @@ struct RecordingMediaPlayerFragment: View {
 								.lineLimit(1)
 								.frame(width: 70)
 						}
+						.padding(.bottom, 20)
 					}
 					.frame(maxWidth: .infinity, maxHeight: .infinity)
 					.background(.black)
@@ -184,25 +212,29 @@ struct RecordingMediaPlayerFragment: View {
 	private func playProgress() {
 		timer?.invalidate()
 		
-		var lastValue = -1.0
+		lastValue = -1.0
 		
 		value = recordingMediaPlayerViewModel.getPositionVoiceRecordPlayer()
 
 		timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
 			let current = recordingMediaPlayerViewModel.getPositionVoiceRecordPlayer()
-			
+
+			if isSeeking {
+				return
+			}
+
 			if !recordingMediaPlayerViewModel.isPlaying {
 				self.value = current
 				lastValue = current
 				return
 			}
-			
+
 			if current > lastValue {
 				self.value = current
 				lastValue = current
 				return
 			}
-			
+
 			recordingMediaPlayerViewModel.stopVoiceRecordPlayer()
 			self.timer?.invalidate()
 			self.value = 0

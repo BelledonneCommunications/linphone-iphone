@@ -87,6 +87,7 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
+		D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */; };
 		D71A0E192B485ADF0002C6CD /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71A0E182B485ADF0002C6CD /* ViewExtension.swift */; };
 		D71FCA812AE14CFC00D2E43E /* ContactsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */; };
 		D71FCA832AE14D6E00D2E43E /* ContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71FCA822AE14D6E00D2E43E /* ContactFragment.swift */; };
@@ -180,7 +181,6 @@
 		D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */; };
 		D7D1F5262EDD91B30034EEB0 /* RecordingMediaPlayerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1F5252EDD91B10034EEB0 /* RecordingMediaPlayerFragment.swift */; };
 		D7D1F5282EDD939E0034EEB0 /* RecordingMediaPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1F5272EDD939D0034EEB0 /* RecordingMediaPlayerViewModel.swift */; };
-		D7D1F5452EDDBBA70034EEB0 /* GeneratedGit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D1F5442EDDBBA70034EEB0 /* GeneratedGit.swift */; };
 		D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */; };
 		D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */; };
 		D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */; };
@@ -324,6 +324,7 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
+		D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedGit.swift; sourceTree = "<group>"; };
 		D71A0E182B485ADF0002C6CD /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		D71C266F2E819A0D001A7F92 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = Localizable/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D71FCA802AE14CFC00D2E43E /* ContactsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListFragment.swift; sourceTree = "<group>"; };
@@ -419,7 +420,6 @@
 		D7D1698B2AE66FA500109A5C /* MagicSearchSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicSearchSingleton.swift; sourceTree = "<group>"; };
 		D7D1F5252EDD91B10034EEB0 /* RecordingMediaPlayerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingMediaPlayerFragment.swift; sourceTree = "<group>"; };
 		D7D1F5272EDD939D0034EEB0 /* RecordingMediaPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingMediaPlayerViewModel.swift; sourceTree = "<group>"; };
-		D7D1F5442EDDBBA70034EEB0 /* GeneratedGit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedGit.swift; sourceTree = "<group>"; };
 		D7D24D0D2AC1B4E800C6F35B /* NotoSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Medium.ttf"; sourceTree = "<group>"; };
 		D7D24D0E2AC1B4E800C6F35B /* NotoSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Regular.ttf"; sourceTree = "<group>"; };
 		D7D24D0F2AC1B4E800C6F35B /* NotoSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Light.ttf"; sourceTree = "<group>"; };
@@ -674,7 +674,7 @@
 				D719ABBD2ABC67BF00B41C10 /* Preview Content */,
 				D7D24D0C2AC1B4C700C6F35B /* Fonts */,
 				D7ADF6012AFE5C7C00212231 /* Ressources */,
-				D7D1F5442EDDBBA70034EEB0 /* GeneratedGit.swift */,
+				D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */,
 			);
 			path = Linphone;
 			sourceTree = "<group>";
@@ -1371,6 +1371,7 @@
 				D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,
+				D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */,
 				D7D1F5282EDD939E0034EEB0 /* RecordingMediaPlayerViewModel.swift in Sources */,
 				D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */,
 				D717A10E2CEB772300849D92 /* ShareSheetController.swift in Sources */,
@@ -1419,7 +1420,6 @@
 				C628172E2C1C3A3600DBA646 /* AccountExtension.swift in Sources */,
 				66C491FF2B24D4AC00CEA16D /* FileUtils.swift in Sources */,
 				C62817322C1C400A00DBA646 /* StringExtension.swift in Sources */,
-				D7D1F5452EDDBBA70034EEB0 /* GeneratedGit.swift in Sources */,
 				D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */,
 				D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */,
 				D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */,

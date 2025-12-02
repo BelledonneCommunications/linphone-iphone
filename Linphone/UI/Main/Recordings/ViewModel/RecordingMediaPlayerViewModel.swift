@@ -101,4 +101,12 @@ class RecordingMediaPlayerViewModel: ObservableObject {
 			}
 		}
 	}
+	
+	func seekTo(percent: Double) {
+		coreContext.doOnCoreQueue { _ in
+			if self.vrpManager != nil {
+				self.vrpManager!.seekVoiceRecordPlayer(percent: percent)
+			}
+		}
+	}
 }

@@ -3051,6 +3051,21 @@ class VoiceRecordPlayerManager {
 		}
 	}
 	
+	func seekVoiceRecordPlayer(percent: Double) {
+		guard !isPlayerClosed(),
+			  let player = voiceRecordPlayer,
+			  player.duration > 0 else { return }
+		
+		let clamped = max(0, min(percent, 100))
+		
+		let ratio = clamped / 100.0
+		
+		let timeMs = Int(Double(player.duration) * ratio)
+
+		print("Seek voice record to \(clamped)% (\(timeMs) ms)")
+		try? player.seek(timeMs: timeMs)
+	}
+	
 	func getSpeakerSoundCard(core: Core) -> String? {
 		var speakerCard: String? = nil
 		var earpieceCard: String? = nil
