@@ -39,7 +39,7 @@ struct HistoryFragment: View {
 							isShowEditContactFragment: $isShowEditContactFragment,
 							isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 						)
-						.presentationDetents([.fraction(0.3)])
+						.presentationDetents([.fraction(0.4)])
 					}
 			} else {
 				HistoryListFragment(showingSheet: $showingSheet, text: $text)

@@ -29,6 +29,8 @@ class RecordingsListViewModel: ObservableObject {
 	@Published var fetchInProgress: Bool = true
 
 	@Published var focusSearchBarEvent: Bool? = nil
+	
+	var selectedRecording: RecordingModel?
 
 	private let legacyRecordRegex = try! NSRegularExpression(pattern: ".*/(.*)_(\\d{2}-\\d{2}-\\d{4}-\\d{2}-\\d{2}-\\d{2})\\..*")
 	

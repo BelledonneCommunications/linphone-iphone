@@ -406,6 +406,8 @@
 "menu_resend_chat_message" = "Re-send";
 "menu_see_existing_contact" = "See contact";
 "menu_show_imdn" = "Delivery status";
+"menu_export_selected_item" = "Download";
+"menu_share_selected_item" = "Share";
 "message_copied_to_clipboard_toast" = "Message copied into clipboard";
 "message_delivery_info_error_title" = "Error";
 "message_delivery_info_read_title" = "Read";
@@ -435,6 +437,10 @@
 "picker_categories" = "Categories";
 "qr_code_validated" = "QR code validated";
 "recordings_title" = "Recordings";
+"recordings_list_empty" = "No recording for the moment…";
+"recordings_list_empty" = "No recording for the moment…";
+"recordings_list_empty" = "No recording for the moment…";
+"recordings_list_empty" = "No recording for the moment…";
 "selected_participants_count" = "%@ selected participants";
 "settings_advanced_accept_early_media_title" = "Accept early media";
 "settings_advanced_allow_outgoing_early_media_title" = "Allow outgoing early media";

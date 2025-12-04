@@ -48,7 +48,7 @@ struct MeetingWaitingRoomFragment: View {
 					.sheet(isPresented: $audioRouteSheet, onDismiss: {
 						audioRouteSheet = false
 					}, content: {
-						innerBottomSheet().presentationDetents([.fraction(0.3)])
+						innerBottomSheet().presentationDetents([.fraction(0.4)])
 					})
 					.onAppear {
 						meetingWaitingRoomViewModel.enableAVAudioSession()

@@ -116,6 +116,7 @@
 		D734499B2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D734499A2BC694C900778C56 /* MeetingWaitingRoomViewModel.swift */; };
 		D737AEEF2DA011F2005C1280 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D737AEED2DA011F2005C1280 /* Localizable.strings */; };
 		D738ACEE2E857BF10039F7D1 /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D738ACED2E857BEF0039F7D1 /* KeyboardResponder.swift */; };
+		D73DD7D02EE184B200654313 /* RecordingsListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73DD7CF2EE184A500654313 /* RecordingsListBottomSheet.swift */; };
 		D7458F392E0BDCF4000C957A /* linphoneExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D7458F2F2E0BDCF4000C957A /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D748BF2C2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */; };
 		D748BF2E2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */; };
@@ -355,6 +356,7 @@
 		D737AEEE2DA011F2005C1280 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D737AEF02DA01203005C1280 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = Localizable/fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D738ACED2E857BEF0039F7D1 /* KeyboardResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
+		D73DD7CF2EE184A500654313 /* RecordingsListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsListBottomSheet.swift; sourceTree = "<group>"; };
 		D7458F2F2E0BDCF4000C957A /* linphoneExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = linphoneExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D748BF2B2ACD82D2004844EB /* ThirdPartySipAccountLoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountLoginFragment.swift; sourceTree = "<group>"; };
 		D748BF2D2ACD82E7004844EB /* ThirdPartySipAccountWarningFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartySipAccountWarningFragment.swift; sourceTree = "<group>"; };
@@ -922,6 +924,7 @@
 		D795F57B2EC5F8FF0022C17D /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D73DD7CF2EE184A500654313 /* RecordingsListBottomSheet.swift */,
 				D7D1F5252EDD91B10034EEB0 /* RecordingMediaPlayerFragment.swift */,
 				D795F57D2EC5F9480022C17D /* RecordingsListFragment.swift */,
 			);
@@ -1434,6 +1437,7 @@
 				66162A202BDFC2F900DCE913 /* AddParticipantsViewModel.swift in Sources */,
 				D732A91B2B061BD900DB42BA /* HistoryListBottomSheet.swift in Sources */,
 				D78E06302BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift in Sources */,
+				D73DD7D02EE184B200654313 /* RecordingsListBottomSheet.swift in Sources */,
 				66E56BC92BA4A6D7006CE56F /* MeetingsListViewModel.swift in Sources */,
 				D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */,
 				C67586AE2C09F23C002E77BF /* URLExtension.swift in Sources */,

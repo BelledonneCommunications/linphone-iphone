@@ -406,6 +406,8 @@
 "menu_resend_chat_message" = "Ré-envoyer";
 "menu_see_existing_contact" = "Voir le contact";
 "menu_show_imdn" = "Info de réception";
+"menu_export_selected_item" = "Télécharger";
+"menu_share_selected_item" = "Partager";
 "message_copied_to_clipboard_toast" = "Message copié dans le presse-papier";
 "message_delivery_info_error_title" = "En erreur";
 "message_delivery_info_read_title" = "Lu";
@@ -435,6 +437,7 @@
 "picker_categories" = "Catégories";
 "qr_code_validated" = "QR code validé";
 "recordings_title" = "Enregistrements";
+"recordings_list_empty" = "Aucun appel enregistré…";
 "selected_participants_count" = "%@ participants selectionnés";
 "settings_advanced_accept_early_media_title" = "Accepter l'early media";
 "settings_advanced_allow_outgoing_early_media_title" = "Autoriser l'early media pour les appels sortants";

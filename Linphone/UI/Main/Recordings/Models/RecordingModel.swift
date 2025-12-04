@@ -132,9 +132,9 @@ class RecordingModel: ObservableObject {
 		}
 	}
 	
-	func delete() async {
+	func delete() {
 		Log.info("\(RecordingModel.TAG) Deleting call recording \(filePath)")
-		//await FileUtils.deleteFile(path: filePath)
+        FileUtil.delete(path: filePath)
 	}
 	
 	func formattedDateTime(timestamp: Int64) -> String {
