@@ -149,6 +149,12 @@ struct RecordingMediaPlayerFragment: View {
 									.foregroundColor(Color.orangeMain500)
 									.frame(width: (self.value / 100) * barWidth, height: isSeeking ? 10 : 5)
 									.clipShape(RoundedRectangle(cornerRadius: radius))
+                                
+                                Circle()
+                                        .fill(Color.white)
+                                        .frame(width: 14, height: 14)
+                                        .shadow(radius: 2)
+                                        .offset(x: (self.value / 100) * barWidth - 7)
 							}
 							.frame(width: barWidth, height: 20)
 							.contentShape(Rectangle())
