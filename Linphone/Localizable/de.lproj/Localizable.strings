@@ -67,10 +67,10 @@
 "call_action_change_layout" = "Layout";
 "call_action_go_to_calls_list" = "Anrufliste";
 "call_action_hang_up" = "Auflegen";
-"call_action_pause_call" = "Pause";
+"call_action_pause_call" = "Halten";
 "call_action_record_call" = "Aufnahmen";
 "call_action_resume_call" = "Fortsetzen";
-"call_action_show_dialer" = "Wähler";
+"call_action_show_dialer" = "Tastatur";
 "call_action_show_messages" = "Nachrichten";
 "call_action_start_new_call" = "Neuer Anruf";
 "call_audio_device_type_earpiece" = "Ohrhörer";
@@ -358,7 +358,7 @@
 "sip_address_display_name" = "Anzeigename";
 "sip_address_domain" = "Domäne";
 "start" = "Start";
-"web_platform_register_email_url" = "TURN aktivieren";
+"web_platform_register_email_url" = "https://subscribe.linphone.org/register/email";
 "welcome_page_3_title" = "Open source";
 "welcome_page_title" = "Willkommen";
 "conversation_end_to_end_encrypted_event_subtitle" = "Nachrichten in dieser Gespr sind Ende-zu-Ende verschlüsselt. Nur Ihr Gesprächspartner kann sie entschlüsseln.";
@@ -429,8 +429,8 @@
 "calls_count_label" = "%@ Anrufe";
 "contact_video_call_action" = "Videoanruf";
 "contacts_list_filter_popup_see_linphone_only" = "%@ Kontakte siehen";
-"conversation_composing_label_multiple" = "%@ sind zusammengestellt…";
-"conversation_composing_label_single" = "%@ ist zusammengestellt…";
+"conversation_composing_label_multiple" = "%@ schreiben…";
+"conversation_composing_label_single" = "%@ schreibt…";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d Tage";
 "conversation_event_admin_set" = "%@ ist Administrator";
 "conversation_event_admin_unset" = "$@ ist nicht mehr Administrator";
@@ -440,7 +440,7 @@
 "conversation_event_subject_changed" = "neues Betreff: %@";
 "conversations_files_waiting_to_be_shared_single" = "1 Datei wartet auf Freigabe";
 "conversations_files_waiting_to_be_shared_multiple" = "%@ Dateien warten auf Freigabe";
-"conversation_info_participants_list_title" = "Gruppe Teilnehmer (%d)";
+"conversation_info_participants_list_title" = "Gruppenteilnehmer (%d)";
 "conversation_message_meeting_cancelled_label" = "Das Besprechung wurde abgesagt!";
 "conversation_one_to_one_hidden_subject" = "Dummy-Betreff";
 "conversation_reply_to_message_title" = "Antwort auf: ";
@@ -507,3 +507,5 @@
 "help_about_privacy_policy_subtitle" = "Welche Informationen Linphone sammelt und nutzt";
 "help_about_title" = "Über Linphone";
 "help_about_user_guide_title" = "Linphone Benutzerhandbuch";
+"help_about_open_source_licenses_title" = "GNU General Public License v3.0";
+"help_about_open_source_licenses_subtitle" = "© Belledonne Communications 2010-2024";

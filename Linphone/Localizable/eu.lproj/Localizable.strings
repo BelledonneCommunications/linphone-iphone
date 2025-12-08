@@ -1,1 +1,16 @@
-
+"next" = "Hurrengoa";
+"account_settings_dialog_invalid_password_hint" = "Pasahitza";
+"dialog_accept" = "Onartu";
+"dialog_deny" = "Ukatu";
+"or" = "edo";
+"password" = "Pasahitza";
+"phone_number" = "Telefono zenbakia";
+"settings_advanced_device_id" = "Gailuaren IDa";
+"settings_contacts_carddav_name_title" = "Erakusteko izena";
+"settings_contacts_carddav_password_title" = "Pasahitza";
+"settings_contacts_carddav_username_title" = "Erabiltzaile izena";
+"settings_contacts_ldap_password_title" = "Pasahitza";
+"sip_address_display_name" = "Erakusteko izena";
+"sip_address_domain" = "Domeinua";
+"start" = "Hasi";
+"username" = "Erabiltzaile izena";
