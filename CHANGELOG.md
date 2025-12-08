@@ -11,12 +11,17 @@ Group changes to describe their impact on the project, as follows:
 	Security to invite users to upgrade in case of vulnerabilities.
 	
 	
-## [6.1.0] - 2025-11-13
+## [6.1.0] - 2025-12-08
 
 ### Added
 - LDAP and CardDAV settings
 - Advanced settings in third-party SIP account login view
 - Phone number calls in contact details
+- Recording player
+- Recording list
+- Automatic Git commit, branch, and tag info for Help views
+- Message deletion feature
+- Message editing feature
 
 ### Changed
 - Launch Screen (Splash Screen)
@@ -25,6 +30,9 @@ Group changes to describe their impact on the project, as follows:
 - Disabled meetings view when audio/video conference factory address is missing
 - Moved disable_chat_feature to UI section
 - Updated configuration files
+- Updated last message text in conversation list
+- Updated PopupView UI
+- Display core call logs instead of account call logs when the user has only one account
 
 ### Fixed
 - International prefix reset in settings
@@ -33,6 +41,13 @@ Group changes to describe their impact on the project, as follows:
 - EditContactFragment view and “+” allowed in dialer
 - Dial plan selector and default dial plan
 - Encryption update when call state changes
+- Unread message counter update in onMessageRetracted
+- French translation of message_content_deleted
+- Stop composing when the user stops typing
+- Refresh presence info in history detail
+- Refresh displayed friend when the contacts list is updated
+- Prefix handling in interpretUrl when calling a phone number
+- SIP contacts filter
 
 
 ## [6.0.2] - 2025-09-26
