@@ -1,5 +1,7 @@
 import Foundation
 
-public let APP_GIT_BRANCH = "master"
-public let APP_GIT_COMMIT = "fe8432f12"
-public let APP_GIT_TAG = "6.1.0-alpha"
+public enum AppGitInfo {
+    public static let branch = "master"
+    public static let commit = "33b379285"
+    public static let tag = "6.1.0-alpha"
+}

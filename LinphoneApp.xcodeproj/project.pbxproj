@@ -1256,7 +1256,7 @@
 				D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
-				D7D1F5482EDDD8D30034EEB0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D73DD7FF2EE6FF6A00654313 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -1344,7 +1344,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/bash\n\nbranch=$(git rev-parse --abbrev-ref HEAD)\ncommit=$(git rev-parse --short HEAD)\ntag=$(git describe --tags --abbrev=0 2>/dev/null || echo \"no-tag\")\n\ncat <<EOF > \"$SRCROOT/Linphone/GeneratedGit.swift\"\nimport Foundation\n\npublic let APP_GIT_BRANCH = \"$branch\"\npublic let APP_GIT_COMMIT = \"$commit\"\npublic let APP_GIT_TAG = \"$tag\"\nEOF\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/bash\n\nbranch=$(git symbolic-ref --short HEAD 2>/dev/null || echo \"detached\")\ncommit=$(git rev-parse --short HEAD)\ntag=$(git describe --tags --exact-match 2>/dev/null || git describe --tags --abbrev=0 2>/dev/null || echo \"no-tag\")\n\ncat <<EOF > \"$SRCROOT/Linphone/GeneratedGit.swift\"\nimport Foundation\n\npublic enum AppGitInfo {\n    public static let branch = \"$branch\"\n    public static let commit = \"$commit\"\n    public static let tag = \"$tag\"\n}\nEOF\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2037,7 +2037,7 @@
 				kind = branch;
 			};
 		};
-		D7D1F5482EDDD8D30034EEB0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
+		D73DD7FF2EE6FF6A00654313 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git";
 			requirement = {

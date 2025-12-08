@@ -38,9 +38,9 @@ class HelpViewModel: ObservableObject {
 	private var coreDelegate: CoreDelegate?
 
 	init() {
-		let appGitVersion = APP_GIT_COMMIT
-		let appGitBranch = APP_GIT_BRANCH
-		let appGitTag = APP_GIT_TAG
+		let appGitVersion = AppGitInfo.commit
+		let appGitBranch = AppGitInfo.branch
+		let appGitTag = AppGitInfo.tag
 		let sdkGitVersion = linphonesw.sdkVersion
 		var sdkGitBranch = linphonesw.sdkBranch
 		
