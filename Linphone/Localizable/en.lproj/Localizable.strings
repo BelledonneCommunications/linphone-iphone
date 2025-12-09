@@ -419,6 +419,8 @@
 "message_meeting_invitation_updated_notification" = "Meeting has been updated";
 "message_reaction_click_to_remove_label" = "Click to remove";
 "message_reactions_info_all_title" = "Reactions";
+"mwi_messages_are_waiting_single" = "1 new voice message";
+"mwi_messages_are_waiting_multiple" = "%@ new voice messages";
 "network_not_reachable" = "You aren't connected to internet";
 "network_reachable_again" = "Network is now reachable again";
 "new_conversation_create_group" = "Create a group conversation";

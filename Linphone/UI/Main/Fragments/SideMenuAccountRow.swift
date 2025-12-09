@@ -90,15 +90,51 @@ struct SideMenuAccountRow: View {
 			Spacer()
 			
 			HStack {
+				if model.voicemailCount > 0 {
+					Button {
+						model.callVoicemailUri()
+					} label: {
+						ZStack(alignment: .top) {
+							VStack {
+								Spacer()
+								
+								Image("voicemail")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c500)
+									.frame(width: 22, height: 22)
+								
+								Spacer()
+							}
+							
+							Text(String(model.voicemailCount))
+								.foregroundStyle(Color.redDanger500)
+								.default_text_style_600(styleSize: 12)
+								.lineLimit(1)
+								.frame(maxWidth: .infinity, alignment: .trailing)
+								.padding(.top, 1)
+						}
+						.frame(width: 30, height: 30)
+					}
+					.highPriorityGesture(
+						TapGesture().onEnded {
+							model.callVoicemailUri()
+						}
+					)
+				}
+				
 				if model.notificationsCount > 0 && !CorePreferences.disableChatFeature {
-					Text(String(model.notificationsCount))
-						.foregroundStyle(.white)
-						.default_text_style(styleSize: 12)
-						.lineLimit(1)
-						.frame(width: 20, height: 20)
-						.background(Color.redDanger500)
-						.cornerRadius(50)
-						.frame(maxWidth: .infinity, alignment: .leading)
+					VStack {
+						Text(String(model.notificationsCount))
+							.foregroundStyle(.white)
+							.default_text_style(styleSize: 12)
+							.lineLimit(1)
+							.frame(width: 20, height: 20)
+							.background(Color.redDanger500)
+							.cornerRadius(50)
+					}
+					.frame(width: 30, height: 30)
+					.padding(.trailing, -8)
 				}
 				
 				Menu {
@@ -112,15 +148,18 @@ struct SideMenuAccountRow: View {
 						Label("drawer_menu_manage_account", systemImage: "arrow.right.circle")
 					}
 				} label: {
-					Image("dots-three-vertical")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundColor(Color.gray)
-						.scaledToFit()
-						.frame(height: 30)
+					VStack {
+						Image("dots-three-vertical")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundColor(Color.grayMain2c500)
+							.scaledToFit()
+							.frame(height: 25)
+					}
+					.frame(width: 30, height: 30)
 				}
 			}
-			.frame(width: 64, alignment: .trailing)
+			.frame(alignment: .trailing)
 			.padding(.top, 12)
 			.padding(.bottom, 12)
 		}

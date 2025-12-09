@@ -32,6 +32,8 @@ class AccountModel: ObservableObject {
 	@Published var registrationStateAssociatedUIColor: Color = .clear
 	@Published var isRegistrered: Bool = false
 	@Published var notificationsCount: Int = 0
+	@Published var showMwi: Bool = false
+	@Published var voicemailCount: Int = 0
 	@Published var isDefaultAccount: Bool = false
 	@Published var displayName: String = ""
 	@Published var address: String = ""
@@ -51,23 +53,46 @@ class AccountModel: ObservableObject {
 	
 	init(account: Account, core: Core) {
 		self.account = account
-        
-        self.computeNotificationsCount()
 		
-		accountDelegate = AccountDelegateStub(onRegistrationStateChanged: { (_: Account, _: RegistrationState, _: String) in
-			self.update()
-		})
+		self.computeNotificationsCount()
+		
+		accountDelegate = AccountDelegateStub(
+			onRegistrationStateChanged: { (_: Account, _: RegistrationState, _: String) in
+				self.update()
+			}, onMessageWaitingIndicationChanged: { (account: Account, mwi: MessageWaitingIndication) in
+				Log.info("\(AccountModel.TAG) Account \(account.params?.identityAddress?.asStringUriOnly() ?? "Error") has received a MWI NOTIFY. \(mwi.hasMessageWaiting() ? "Message(s) are waiting." : "No message is waiting.")")
+				let showMwiTmp = mwi.hasMessageWaiting()
+				var voicemailCountTmp = 0
+				for summary in mwi.summaries {
+					let contextClass = summary.contextClass
+					let nbNew = summary.nbNew
+					let nbNewUrgent = summary.nbNewUrgent
+					let nbOld = summary.nbOld
+					let nbOldUrgent = summary.nbOldUrgent
+					Log.info("\(AccountModel.TAG) [MWI] \(contextClass): new \(nbNew) urgent \(nbNewUrgent), old \(nbOld) urgent \(nbOldUrgent)")
+					
+					voicemailCountTmp = Int(nbNew)
+				}
+				
+				DispatchQueue.main.async {
+					self.showMwi = showMwiTmp
+					self.voicemailCount = voicemailCountTmp
+				}
+			}
+		)
 		account.addDelegate(delegate: accountDelegate!)
 		
-		coreDelegate = CoreDelegateStub(onCallStateChanged: { (_: Core, _: Call, _: Call.State, _: String) in
-			self.computeNotificationsCount()
-		}, onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
-			self.computeNotificationsCount()
-		}, onChatRoomRead: { (_: Core, _: ChatRoom) in
-			self.computeNotificationsCount()
-		}, onMessageRetracted: { (_: Core, _: ChatRoom, _: ChatMessage) in
-			self.computeNotificationsCount()
-		})
+		coreDelegate = CoreDelegateStub(
+			onCallStateChanged: { (_: Core, _: Call, _: Call.State, _: String) in
+				self.computeNotificationsCount()
+			}, onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
+				self.computeNotificationsCount()
+			}, onChatRoomRead: { (_: Core, _: ChatRoom) in
+				self.computeNotificationsCount()
+			}, onMessageRetracted: { (_: Core, _: ChatRoom, _: ChatMessage) in
+				self.computeNotificationsCount()
+			}
+		)
 		core.addDelegate(delegate: coreDelegate!)
 		
 		CoreContext.shared.doOnCoreQueue { _ in
@@ -310,6 +335,15 @@ class AccountModel: ObservableObject {
 		}
 		
 		self.isDefaultAccount = true
+	}
+	
+	func callVoicemailUri() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if let voicemail = self.account.params?.voicemailAddress {
+				Log.info("\(AccountModel.TAG) Calling voicemail address \(voicemail.asStringUriOnly())")
+				TelecomManager.shared.doCallOrJoinConf(address: voicemail)
+			}
+		}
 	}
 }
 

@@ -140,6 +140,54 @@ struct ContentView: View {
 					.background(Color.redDanger500)
 				}
 				
+				if sharedMainViewModel.waitingMessageCount > 0 && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
+					HStack {
+						Image("voicemail")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 26, height: 26)
+							.padding(.leading, 10)
+						
+						if sharedMainViewModel.waitingMessageCount > 1 {
+							Text(String(format: String(localized: "mwi_messages_are_waiting_multiple"), sharedMainViewModel.waitingMessageCount.description))
+								.default_text_style_white(styleSize: 16)
+						} else {
+							Text(String(localized: "mwi_messages_are_waiting_single"))
+								.default_text_style_white(styleSize: 16)
+						}
+						
+						Spacer()
+						
+						Button(
+							action: {
+								withAnimation {
+									sharedMainViewModel.waitingMessageCount = 0
+								}
+							}, label: {
+								Image("x")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 26, height: 26)
+									.padding(.trailing, 10)
+							}
+						)
+						
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 40)
+					.padding(.horizontal, 10)
+					.background(Color.gray)
+					.onTapGesture {
+						if let index = accountProfileViewModel.defaultAccountModelIndex,
+						   index < coreContext.accounts.count {
+                            sharedMainViewModel.waitingMessageCount = 0
+							coreContext.accounts[index].callVoicemailUri()
+						}
+					}
+				}
+				
 				if !sharedMainViewModel.fileUrlsToShare.isEmpty && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
 					HStack {
 						Image("share-network")

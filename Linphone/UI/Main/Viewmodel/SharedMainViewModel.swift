@@ -40,6 +40,7 @@ class SharedMainViewModel: ObservableObject {
 	@Published var dialPlansShortLabelList: [String] = []
 	
 	@Published var fileUrlsToShare: [String] = []
+	@Published var waitingMessageCount: Int = 0
 	
 	@Published var operationInProgress = false
     
