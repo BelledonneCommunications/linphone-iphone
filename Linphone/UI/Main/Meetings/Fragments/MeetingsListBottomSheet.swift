@@ -56,7 +56,7 @@ struct MeetingsListBottomSheet: View {
 			Button {
 				CoreContext.shared.doOnCoreQueue { core in
 					if let organizerUri = self.meetingsListViewModel.selectedMeetingToDelete?.confInfo.organizer {
-						if core.defaultAccount?.contactAddress?.weakEqual(address2: organizerUri) ?? false {
+						if core.defaultAccount?.params?.identityAddress?.weakEqual(address2: organizerUri) ?? false {
 							// If we are the organizer, display popup for sending
 							DispatchQueue.main.async {
 								self.isShowSendCancelMeetingNotificationPopup = true

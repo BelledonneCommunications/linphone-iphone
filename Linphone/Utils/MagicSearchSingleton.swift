@@ -101,7 +101,7 @@ final class MagicSearchSingleton: ObservableObject {
 					($0.address?.asStringUriOnly() ?? "") < ($1.address?.asStringUriOnly() ?? "")
 				})
 				
-				if let defaultAccount = core.defaultAccount, let contactAddress = defaultAccount.contactAddress {
+				if let defaultAccount = core.defaultAccount, let contactAddress = defaultAccount.params?.identityAddress {
 					lastSearchSuggestions.removeAll {
 						$0.address?.weakEqual(address2: contactAddress) ?? false
 					}

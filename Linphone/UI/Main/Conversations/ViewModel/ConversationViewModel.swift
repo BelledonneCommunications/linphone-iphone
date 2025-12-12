@@ -2516,7 +2516,7 @@ class ConversationViewModel: ObservableObject {
 						dispatchGroup.enter()
 						ContactAvatarModel.getAvatarModelFromAddress(address: chatMessageReaction.fromAddress!) { avatarResult in
 							if let account = core.defaultAccount,
-							   let contactAddress = account.contactAddress,
+							   let contactAddress = account.params?.identityAddress,
 							   contactAddress.asStringUriOnly().contains(avatarResult.address) {
 								
 								let innerSheetCat = InnerSheetCategory(

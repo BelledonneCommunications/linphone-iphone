@@ -69,8 +69,8 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					let confNameTmp = conf?.subject ?? "Conference"
 					var userNameTmp = ""
 					
-					let friend = core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil
-					? ContactsManager.shared.getFriendWithAddress(address: core.defaultAccount?.contactAddress)
+					let friend = core.defaultAccount != nil && core.defaultAccount!.params?.identityAddress != nil
+					? ContactsManager.shared.getFriendWithAddress(address: core.defaultAccount?.params?.identityAddress)
 					: nil
 					
 					let addressTmp = friend?.address?.asStringUriOnly() ?? ""
@@ -78,13 +78,13 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
 						userNameTmp = friend!.address!.displayName!
 					} else {
-						if core.defaultAccount != nil && core.defaultAccount!.contactAddress != nil {
-							if core.defaultAccount!.contactAddress!.displayName != nil {
-								userNameTmp = core.defaultAccount!.contactAddress!.displayName!
-							} else if core.defaultAccount!.contactAddress!.username != nil {
-								userNameTmp = core.defaultAccount!.contactAddress!.username!
+						if core.defaultAccount != nil && core.defaultAccount!.params?.identityAddress != nil {
+							if core.defaultAccount!.params?.identityAddress!.displayName != nil {
+								userNameTmp = core.defaultAccount!.params!.identityAddress!.displayName!
+							} else if core.defaultAccount!.params?.identityAddress!.username != nil {
+								userNameTmp = core.defaultAccount!.params!.identityAddress!.username!
 							} else {
-								userNameTmp = String(core.defaultAccount!.contactAddress!.asStringUriOnly().dropFirst(4))
+								userNameTmp = String(core.defaultAccount!.params!.identityAddress!.asStringUriOnly().dropFirst(4))
 							}
 						}
 					}
@@ -92,7 +92,7 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 					let avatarModelTmp = friend != nil
 					? ContactsManager.shared.avatarListModel.first(where: {
 						$0.friend!.name == friend!.name
-						&& $0.friend!.address!.asStringUriOnly() == core.defaultAccount!.contactAddress!.asStringUriOnly()
+						&& $0.friend!.address!.asStringUriOnly() == core.defaultAccount!.params?.identityAddress!.asStringUriOnly()
 					}) ?? ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
 					: ContactAvatarModel(friend: nil, name: userNameTmp, address: addressTmp, withPresence: false)
 					

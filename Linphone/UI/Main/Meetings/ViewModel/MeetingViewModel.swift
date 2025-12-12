@@ -357,7 +357,7 @@ class MeetingViewModel: ObservableObject {
 			let organizer = meeting.confInfo.organizer
 			var organizerFound = false
 			
-			if let myAddr = core.defaultAccount?.contactAddress {
+			if let myAddr = core.defaultAccount?.params?.identityAddress {
 				let isOrganizer = (organizer != nil) ? myAddr.weakEqual(address2: organizer!) : false
 				organizerFound = organizerFound || isOrganizer
 				ContactAvatarModel.getAvatarModelFromAddress(address: myAddr) { avatarResult in

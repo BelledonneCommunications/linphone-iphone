@@ -185,7 +185,7 @@ class ConversationsListViewModel: ObservableObject {
 		coreContext.doOnCoreQueue { core in
 			self.coreConversationDelegate = CoreDelegateStub(
 				onMessagesReceived: { (core: Core, chatRoom: ChatRoom, _: [ChatMessage]) in
-					if let defaultAddress = core.defaultAccount?.contactAddress,
+					if let defaultAddress = core.defaultAccount?.params?.identityAddress,
 					   let localAddress = chatRoom.localAddress,
 					   defaultAddress.weakEqual(address2: localAddress) {
 						let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
@@ -201,7 +201,7 @@ class ConversationsListViewModel: ObservableObject {
 						SharedMainViewModel.shared.updateUnreadMessagesCount()
 					}
 				}, onMessageSent: { (_: Core, chatRoom: ChatRoom, _: ChatMessage) in
-					if let defaultAddress = core.defaultAccount?.contactAddress,
+					if let defaultAddress = core.defaultAccount?.params?.identityAddress,
 					   let localAddress = chatRoom.localAddress,
 					   defaultAddress.weakEqual(address2: localAddress) {
 						let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
@@ -232,7 +232,7 @@ class ConversationsListViewModel: ObservableObject {
 					SharedMainViewModel.shared.updateUnreadMessagesCount()
 				}, onChatRoomStateChanged: { (core: Core, chatroom: ChatRoom, state: ChatRoom.State) in
 					// Log.info("[ConversationsListViewModel] Conversation [${LinphoneUtils.getChatRoomId(chatRoom)}] state changed [$state]")
-					if let defaultAddress = core.defaultAccount?.contactAddress,
+					if let defaultAddress = core.defaultAccount?.params?.identityAddress,
 					   let localAddress = chatroom.localAddress,
 					   defaultAddress.weakEqual(address2: localAddress) {
 						if core.globalState == .On {

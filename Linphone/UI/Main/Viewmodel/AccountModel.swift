@@ -121,7 +121,7 @@ class AccountModel: ObservableObject {
 		let address = account.params?.identityAddress?.asString()
 		
 		let displayNameTmp = account.params?.identityAddress?.displayName ?? displayName
-		let usernaneAvatarTmp = account.contactAddress?.username ?? displayName
+		let usernaneAvatarTmp = account.params?.identityAddress?.username ?? displayName
 		var photoAvatarModelTmp = ""
 		
 		let preferences = UserDefaults.standard
