@@ -433,6 +433,7 @@ class TelecomManager: ObservableObject {
 	func onCallStateChanged(core: Core, call: Call, state cstate: Call.State, message: String) {
 		let callLog = call.callLog
 		let callId = callLog?.callId ?? ""
+		
 		if !callInProgress && participantsInvited {
 			if let remoteAddress = call.remoteAddress {
 				let uuid = UUID()
@@ -621,6 +622,11 @@ class TelecomManager: ObservableObject {
 						
 						Log.info("CallKit: outgoing call started connecting with uuid \(uuid!) and callId \(callId)")
 						providerDelegate.reportOutgoingCallStartedConnecting(uuid: uuid!)
+					} else if callId != "" && cstate == .OutgoingInit {
+						if let uuidTmp = providerDelegate.uuids["\(callId)"] {
+							providerDelegate.uuids.removeValue(forKey: callId)
+							providerDelegate.uuids.updateValue(uuidTmp, forKey: "")
+						}
 					} else {
 						referedToCall = callId
 					}
