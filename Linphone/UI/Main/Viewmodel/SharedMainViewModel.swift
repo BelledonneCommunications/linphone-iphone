@@ -245,6 +245,11 @@ class SharedMainViewModel: ObservableObject {
 		}
 	}
 	
+	func updateConfigChanges() {
+		updateDisableChatFeature()
+		updateDisableMeetingFeature()
+	}
+	
 	func getCardDavFriendsListsCount() {
 		CoreContext.shared.doOnCoreQueue { core in
 			var list: [String] = []

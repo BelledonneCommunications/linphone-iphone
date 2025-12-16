@@ -335,6 +335,7 @@ class CoreContext: ObservableObject {
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
 				let themeMainColor = CorePreferences.themeMainColor
+				SharedMainViewModel.shared.updateConfigChanges()
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
 						var accountModels: [AccountModel] = []
