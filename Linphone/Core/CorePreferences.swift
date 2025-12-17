@@ -141,6 +141,15 @@ class CorePreferences {
 		}
 	}
 	
+	static var disableAddContact: Bool {
+		get {
+			return Config.get().getBool(section: "ui", key: "disable_add_contact", defaultValue: false)
+		}
+		set {
+			Config.get().setBool(section: "ui", key: "disable_add_contact", value: newValue)
+		}
+	}
+	
 	static var showFavoriteContacts: Bool {
 		get {
 			return Config.get().getBool(section: "ui", key: "show_favorites_contacts", defaultValue: true)

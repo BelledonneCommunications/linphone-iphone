@@ -70,7 +70,10 @@ struct HistoryContactFragment: View {
 					Spacer()
 					
 					Menu {
-						if !historyModel.isConf {
+						let disableAddContact = CorePreferences.disableAddContact
+						let isFriend = historyModel.isFriend == true
+						
+						if !historyModel.isConf && (!disableAddContact || (disableAddContact && isFriend)) {
 							Button {
 								isMenuOpen = false
 								

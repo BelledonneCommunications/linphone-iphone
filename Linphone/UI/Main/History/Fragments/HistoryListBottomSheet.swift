@@ -58,68 +58,74 @@ struct HistoryListBottomSheet: View {
 			}
 			
 			Spacer()
-			Button {
-				
-				if #available(iOS 16.0, *) {
-					if idiom != .pad {
-						showingSheet.toggle()
+			
+			let disableAddContact = CorePreferences.disableAddContact
+			let isFriend = historyListViewModel.selectedCall?.isFriend == true
+
+			if !disableAddContact || (disableAddContact && isFriend) {
+				Button {
+					
+					if #available(iOS 16.0, *) {
+						if idiom != .pad {
+							showingSheet.toggle()
+						} else {
+							showingSheet.toggle()
+							dismiss()
+						}
 					} else {
 						showingSheet.toggle()
 						dismiss()
 					}
-				} else {
-					showingSheet.toggle()
-					dismiss()
-				}
-				
-				sharedMainViewModel.changeIndexView(indexViewInt: 0)
-				
-				if let selectedCall = historyListViewModel.selectedCall, selectedCall.isFriend {
-					let friendIndex = contactsManager.avatarListModel.first(where: {$0.addresses.contains(where: {$0 == selectedCall.address})})
-					if friendIndex != nil {
+					
+					sharedMainViewModel.changeIndexView(indexViewInt: 0)
+					
+					if let selectedCall = historyListViewModel.selectedCall, selectedCall.isFriend {
+						let friendIndex = contactsManager.avatarListModel.first(where: {$0.addresses.contains(where: {$0 == selectedCall.address})})
+						if friendIndex != nil {
+							withAnimation {
+								SharedMainViewModel.shared.displayedFriend = friendIndex
+							}
+						}
+					} else if let selectedCall = historyListViewModel.selectedCall {
 						withAnimation {
-							SharedMainViewModel.shared.displayedFriend = friendIndex
+							isShowEditContactFragment.toggle()
+							isShowEditContactFragmentAddress = String(selectedCall.address.dropFirst(4))
 						}
 					}
-				} else if let selectedCall = historyListViewModel.selectedCall {
-					withAnimation {
-						isShowEditContactFragment.toggle()
-						isShowEditContactFragmentAddress = String(selectedCall.address.dropFirst(4))
+				} label: {
+					HStack {
+						if let selectedCall = historyListViewModel.selectedCall, selectedCall.isFriend {
+							Image("user-circle")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.all, 10)
+							Text("menu_see_existing_contact")
+								.default_text_style(styleSize: 16)
+							Spacer()
+						} else {
+							Image("plus-circle")
+								.renderingMode(.template)
+								.resizable()
+								.foregroundStyle(Color.grayMain2c500)
+								.frame(width: 25, height: 25, alignment: .leading)
+								.padding(.all, 10)
+							Text("menu_add_address_to_contacts")
+								.default_text_style(styleSize: 16)
+							Spacer()
+						}
 					}
+					.frame(maxHeight: .infinity)
 				}
-			} label: {
-				HStack {
-					if let selectedCall = historyListViewModel.selectedCall, selectedCall.isFriend {
-						Image("user-circle")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.padding(.all, 10)
-						Text("menu_see_existing_contact")
-						.default_text_style(styleSize: 16)
-						Spacer()
-					} else {
-						Image("plus-circle")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.grayMain2c500)
-							.frame(width: 25, height: 25, alignment: .leading)
-							.padding(.all, 10)
-						Text("menu_add_address_to_contacts")
-						.default_text_style(styleSize: 16)
-						Spacer()
-					}
+				.padding(.horizontal, 30)
+				.background(Color.gray100)
+				
+				VStack {
+					Divider()
 				}
-				.frame(maxHeight: .infinity)
+				.frame(maxWidth: .infinity)
 			}
-			.padding(.horizontal, 30)
-			.background(Color.gray100)
-			
-			VStack {
-				Divider()
-			}
-			.frame(maxWidth: .infinity)
 			
 			Button {
 				if historyListViewModel.selectedCall != nil && historyListViewModel.selectedCall!.isOutgoing {

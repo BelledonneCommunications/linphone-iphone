@@ -353,59 +353,64 @@ struct ConversationInfoFragment: View {
 														
 														if conversationViewModel.myParticipantConversationModel != nil && conversationViewModel.myParticipantConversationModel!.address != participantConversationModel.address {
 															Menu {
-																Button(
-																	action: {
-																		let addressConv = participantConversationModel.address
-																		
-																		let friendIndex = contactsManager.avatarListModel.first(
-																			where: {$0.addresses.contains(where: {$0 == addressConv})})
-																		
-																		SharedMainViewModel.shared.displayedCall = nil
-																		SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
-																		
-																		if friendIndex != nil {
-																			withAnimation {
-																				SharedMainViewModel.shared.displayedFriend = friendIndex
-																			}
-																		} else {
-																			withAnimation {
-																				isShowEditContactFragment.toggle()
-																				isShowEditContactFragmentAddress = String(participantConversationModel.address.dropFirst(4))
-																			}
-																		}
-																	},
-																	label: {
-																		HStack {
+																let addressConv = participantConversationModel.address
+																			
+																let friendIndex = contactsManager.lastSearch.firstIndex(
+																				where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+																
+																let disableAddContact = CorePreferences.disableAddContact
+																
+																if (!disableAddContact || (disableAddContact && friendIndex != nil)) {
+																	Button(
+																		action: {
 																			let addressConv = participantConversationModel.address
 																			
-																			let friendIndex = contactsManager.lastSearch.firstIndex(
-																				where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+																			let friendIndex = contactsManager.avatarListModel.first(
+																				where: {$0.addresses.contains(where: {$0 == addressConv})})
+																			
+																			SharedMainViewModel.shared.displayedCall = nil
+																			SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+																			
 																			if friendIndex != nil {
-																				Image("address-book")
-																					.renderingMode(.template)
-																					.resizable()
-																					.foregroundStyle(Color.grayMain2c600)
-																					.frame(width: 25, height: 25)
-																				
-																				Text("conversation_info_menu_go_to_contact")
-																					.default_text_style(styleSize: 16)
-																					.frame(maxWidth: .infinity, alignment: .leading)
-																					.lineLimit(1)
+																				withAnimation {
+																					SharedMainViewModel.shared.displayedFriend = friendIndex
+																				}
 																			} else {
-																				Image("user-plus")
-																					.renderingMode(.template)
-																					.resizable()
-																					.foregroundStyle(Color.grayMain2c600)
-																					.frame(width: 25, height: 25)
-																				
-																				Text("conversation_info_menu_add_to_contacts")
-																					.default_text_style(styleSize: 16)
-																					.frame(maxWidth: .infinity, alignment: .leading)
-																					.lineLimit(1)
+																				withAnimation {
+																					isShowEditContactFragment.toggle()
+																					isShowEditContactFragmentAddress = String(participantConversationModel.address.dropFirst(4))
+																				}
+																			}
+																		},
+																		label: {
+																			HStack {
+																				if friendIndex != nil {
+																					Image("address-book")
+																						.renderingMode(.template)
+																						.resizable()
+																						.foregroundStyle(Color.grayMain2c600)
+																						.frame(width: 25, height: 25)
+																					
+																					Text("conversation_info_menu_go_to_contact")
+																						.default_text_style(styleSize: 16)
+																						.frame(maxWidth: .infinity, alignment: .leading)
+																						.lineLimit(1)
+																				} else {
+																					Image("user-plus")
+																						.renderingMode(.template)
+																						.resizable()
+																						.foregroundStyle(Color.grayMain2c600)
+																						.frame(width: 25, height: 25)
+																					
+																					Text("conversation_info_menu_add_to_contacts")
+																						.default_text_style(styleSize: 16)
+																						.frame(maxWidth: .infinity, alignment: .leading)
+																						.lineLimit(1)
+																				}
 																			}
 																		}
-																	}
-																)
+																	)
+																}
 																
 																if conversationViewModel.isUserAdmin {
 																	let participantConversationModelIsAdmin = conversationViewModel.participantConversationModelAdmin.first(
@@ -527,7 +532,14 @@ struct ConversationInfoFragment: View {
 									
 									VStack(spacing: 0) {
 										if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
-											if !SharedMainViewModel.shared.displayedConversation!.isGroup {
+											let addressConv = conversationViewModel.participantConversationModel.first?.address ?? ""
+											
+											let friendIndex = contactsManager.lastSearch.firstIndex(
+												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
+											
+											let disableAddContact = CorePreferences.disableAddContact
+											
+											if !SharedMainViewModel.shared.displayedConversation!.isGroup && (!disableAddContact || (disableAddContact && friendIndex != nil)) {
 												Button(
 													action: {
 														if SharedMainViewModel.shared.displayedConversation != nil {
@@ -555,10 +567,6 @@ struct ConversationInfoFragment: View {
 													},
 													label: {
 														HStack {
-															let addressConv = conversationViewModel.participantConversationModel.first?.address ?? ""
-															
-															let friendIndex = contactsManager.lastSearch.firstIndex(
-																where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 															if friendIndex != nil {
 																Image("address-book")
 																 .renderingMode(.template)
