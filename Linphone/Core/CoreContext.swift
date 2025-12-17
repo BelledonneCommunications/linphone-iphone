@@ -248,11 +248,6 @@ class CoreContext: ObservableObject {
 						}
 					}
 					
-					// TODO: Temporary workaround until SDK fixs
-					if CorePreferences.defaultDomain == "" {
-						CorePreferences.defaultDomain = core.defaultAccount?.params?.domain ?? ""
-					}
-					
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {	$0(core) }
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					

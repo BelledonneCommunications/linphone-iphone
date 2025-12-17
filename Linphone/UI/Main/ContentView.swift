@@ -594,7 +594,7 @@ struct ContentView: View {
 																magicSearch.searchForContacts()
 															} label: {
 																HStack {
-																	Text(magicSearch.domainDefaultAccount == "*" ? String(localized: "contacts_list_filter_popup_see_sip_only") : String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
+																	Text(!magicSearch.linphoneDomain ? String(localized: "contacts_list_filter_popup_see_sip_only") : String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
 																	Spacer()
 																	if !magicSearch.allContact {
 																		Image("green-check")
