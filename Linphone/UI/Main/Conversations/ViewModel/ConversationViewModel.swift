@@ -366,6 +366,13 @@ class ConversationViewModel: ObservableObject {
 			
 			self.coreContext.doOnCoreQueue { _ in
 				let chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, msgState: ChatMessage.State) in
+					if msgState == .Queued || msgState == .PendingDelivery {
+						if let eventLog = message.eventLog {
+							self.getNewMessages(eventLogs: [eventLog])
+						}
+						return
+					}
+					
 					var statusTmp: Message.Status?
 					switch message.state {
 					case .InProgress:
@@ -536,6 +543,8 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 				})
+				
+				self.chatMessageDelegateHolders.removeAll()
 				
 				self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 			}
@@ -2181,9 +2190,12 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					
-					if message != nil && !message!.contents.isEmpty {
+					if let message = message , !message.contents.isEmpty {
 						Log.info("[ConversationViewModel] Sending message")
-						message!.send()
+						
+						self.addChatMessageDelegate(message: message)
+						message.send()
+						
 						self.sharedMainViewModel.displayedConversation!.chatRoom.stopComposing()
 					}
 					
