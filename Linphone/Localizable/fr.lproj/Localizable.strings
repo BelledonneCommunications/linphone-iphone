@@ -534,6 +534,8 @@
 "uri_handler_config_success_toast" = "Configuration appliquée avec succè";
 "username" = "Nom d’utilisateur";
 "username_error" = "Erreur dans le nom d'utilisateur";
+"Voicemail" = "Messagerie vocale";
+"New message" = "Nouveau message";
 "web_platform_forgotten_password_url" = "https://subscribe.linphone.org/";
 "web_platform_register_email_url" = "https://subscribe.linphone.org/register/email";
 "website_contact_url" = "https://linphone.org/contact";

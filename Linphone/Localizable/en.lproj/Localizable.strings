@@ -537,6 +537,8 @@
 "uri_handler_config_success_toast" = "Configuration successfully applied";
 "username" = "Username";
 "username_error" = "Username error";
+"Voicemail" = "Voicemail";
+"New message" = "New message";
 "web_platform_forgotten_password_url" = "https://subscribe.linphone.org/";
 "web_platform_register_email_url" = "https://subscribe.linphone.org/register/email";
 "website_contact_url" = "https://linphone.org/contact";

@@ -97,6 +97,13 @@ class NotificationService: UNNotificationServiceExtension {
 		*/
         
 		if let bestAttemptContent = bestAttemptContent {
+			if let aps = request.content.userInfo["aps"] as? [String: Any], let alert = aps["alert"] as? [String: Any], let locKey = alert["loc-key"] as? String, locKey == "MWI_NOTIFY_STR" {
+				bestAttemptContent.title = String(localized: "Voicemail")
+				bestAttemptContent.body = String(localized: "New message")
+				contentHandler(bestAttemptContent)
+				return
+			}
+
 			createCore()
 			if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
 				Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
