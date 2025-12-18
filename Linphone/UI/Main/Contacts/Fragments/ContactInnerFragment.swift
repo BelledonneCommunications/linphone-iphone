@@ -225,45 +225,47 @@ struct ContactInnerFragment: View {
                                     
 									Spacer()
 									
-									Button(action: {
-										CoreContext.shared.doOnCoreQueue { core in
-											if contactAvatarModel.addresses.count == 1 {
-												do {
-													let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
-													telecomManager.doCallOrJoinConf(address: address, isVideo: true)
-												} catch {
-													Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
-												}
-											} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
-												if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
-													telecomManager.doCallOrJoinConf(address: address, isVideo: true)
-												}
-											} else {
-												DispatchQueue.main.async {
-													isShowSipAddressesPopupType = 2
-													isShowSipAddressesPopup = true
+									if !SharedMainViewModel.shared.disableVideoCall {
+										Button(action: {
+											CoreContext.shared.doOnCoreQueue { core in
+												if contactAvatarModel.addresses.count == 1 {
+													do {
+														let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+														telecomManager.doCallOrJoinConf(address: address, isVideo: true)
+													} catch {
+														Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
+													}
+												} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+													if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+														telecomManager.doCallOrJoinConf(address: address, isVideo: true)
+													}
+												} else {
+													DispatchQueue.main.async {
+														isShowSipAddressesPopupType = 2
+														isShowSipAddressesPopup = true
+													}
 												}
 											}
-										}
-									}, label: {
-										VStack {
-											HStack(alignment: .center) {
-												Image("video-camera")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
-													.frame(width: 25, height: 25)
+										}, label: {
+											VStack {
+												HStack(alignment: .center) {
+													Image("video-camera")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+												}
+												.padding(16)
+												.background(Color.grayMain2c200)
+												.cornerRadius(40)
+												
+												Text("contact_video_call_action")
+													.default_text_style(styleSize: 14)
 											}
-											.padding(16)
-											.background(Color.grayMain2c200)
-											.cornerRadius(40)
-											
-											Text("contact_video_call_action")
-												.default_text_style(styleSize: 14)
-										}
-									})
-									
-									Spacer()
+										})
+										
+										Spacer()
+									}
 								}
 								.padding(.top, 20)
 								.frame(maxWidth: .infinity)

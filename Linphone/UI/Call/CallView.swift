@@ -1956,36 +1956,38 @@ struct CallView: View {
                 
                 Spacer()
 				
-				ZStack {
-					Button {
-						if optionsChangeLayout == 3 {
-							optionsChangeLayout = 2
-							callViewModel.toggleVideoMode(isAudioOnlyMode: false)
-						} else {
-							callViewModel.displayMyVideo()
+				if !SharedMainViewModel.shared.disableVideoCall {
+					ZStack {
+						Button {
+							if optionsChangeLayout == 3 {
+								optionsChangeLayout = 2
+								callViewModel.toggleVideoMode(isAudioOnlyMode: false)
+							} else {
+								callViewModel.displayMyVideo()
+							}
+						} label: {
+							HStack {
+								Image(callViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
 						}
-					} label: {
-						HStack {
-							Image(callViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(.white)
-								.frame(width: 32, height: 32)
+						.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+						.frame(width: buttonSize, height: buttonSize)
+						.background(Color.gray500)
+						.cornerRadius(40)
+						.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote || telecomManager.outgoingCallStarted || optionsChangeLayout == 3)
+						
+						if callViewModel.isPaused || telecomManager.isPausedByRemote || telecomManager.outgoingCallStarted || optionsChangeLayout == 3 {
+							Color.gray600.opacity(0.8)
+								.cornerRadius(40)
+								.allowsHitTesting(false)
 						}
 					}
-					.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
 					.frame(width: buttonSize, height: buttonSize)
-					.background(Color.gray500)
-					.cornerRadius(40)
-					.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote || telecomManager.outgoingCallStarted || optionsChangeLayout == 3)
-					
-					if callViewModel.isPaused || telecomManager.isPausedByRemote || telecomManager.outgoingCallStarted || optionsChangeLayout == 3 {
-						Color.gray600.opacity(0.8)
-							.cornerRadius(40)
-							.allowsHitTesting(false)
-					}
 				}
-				.frame(width: buttonSize, height: buttonSize)
 				
                 Button {
                     callViewModel.toggleMuteMicrophone()

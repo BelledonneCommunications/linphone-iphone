@@ -266,23 +266,25 @@ struct MeetingWaitingRoomFragment: View {
 				HStack {
 					Spacer()
 					
-					Button {
-						!meetingWaitingRoomViewModel.videoDisplayed
-						? meetingWaitingRoomViewModel.enableVideoPreview() : meetingWaitingRoomViewModel.disableVideoPreview()
-					} label: {
-						HStack {
-							Image(meetingWaitingRoomViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(.white)
-								.frame(width: 32, height: 32)
+					if !SharedMainViewModel.shared.disableVideoCall {
+						Button {
+							!meetingWaitingRoomViewModel.videoDisplayed
+							? meetingWaitingRoomViewModel.enableVideoPreview() : meetingWaitingRoomViewModel.disableVideoPreview()
+						} label: {
+							HStack {
+								Image(meetingWaitingRoomViewModel.videoDisplayed ? "video-camera" : "video-camera-slash")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 32, height: 32)
+							}
 						}
+						.buttonStyle(PressedButtonStyle(buttonSize: 60))
+						.frame(width: 60, height: 60)
+						.background(Color.gray500)
+						.cornerRadius(40)
+						.padding(.horizontal, 5)
 					}
-					.buttonStyle(PressedButtonStyle(buttonSize: 60))
-					.frame(width: 60, height: 60)
-					.background(Color.gray500)
-					.cornerRadius(40)
-					.padding(.horizontal, 5)
 					
 					Button {
 						meetingWaitingRoomViewModel.toggleMuteMicrophone()
