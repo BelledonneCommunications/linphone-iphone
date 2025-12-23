@@ -366,15 +366,12 @@ class ConversationViewModel: ObservableObject {
 			
 			self.coreContext.doOnCoreQueue { _ in
 				let chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, msgState: ChatMessage.State) in
-					// TODO: Wait for SDK fix
-					/*
 					if msgState == .Queued || msgState == .PendingDelivery {
 						if let eventLog = message.eventLog {
 							self.getNewMessages(eventLogs: [eventLog])
 						}
 						return
 					}
-					*/
 					var statusTmp: Message.Status?
 					switch message.state {
 					case .InProgress:
