@@ -149,6 +149,8 @@
 		D78E062C2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */; };
 		D78E062E2BEA69F400CE3783 /* AudioRouteBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062D2BEA69F400CE3783 /* AudioRouteBottomSheet.swift */; };
 		D78E06302BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062F2BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift */; };
+		D792F15A2F02BCC2002E3225 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D792F1592F02BCC2002E3225 /* Intents.framework */; };
+		D792F1612F02BCC2002E3225 /* intentsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D792F1582F02BCC2002E3225 /* intentsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D795F57E2EC5F9500022C17D /* RecordingsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D795F57D2EC5F9480022C17D /* RecordingsListFragment.swift */; };
 		D795F5802EC5F9660022C17D /* RecordingsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D795F57F2EC5F95B0022C17D /* RecordingsListViewModel.swift */; };
 		D795F5832EC6133C0022C17D /* RecordingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D795F5822EC6133A0022C17D /* RecordingModel.swift */; };
@@ -231,6 +233,13 @@
 			remoteGlobalIDString = D7458F2E2E0BDCF4000C957A;
 			remoteInfo = linphoneExtension;
 		};
+		D792F15F2F02BCC2002E3225 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D719ABAB2ABC67BF00B41C10 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D792F1572F02BCC2002E3225;
+			remoteInfo = intentsExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -241,6 +250,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				660AAF7F2B839272004C0FA6 /* msgNotificationService.appex in Embed Foundation Extensions */,
+				D792F1612F02BCC2002E3225 /* intentsExtension.appex in Embed Foundation Extensions */,
 				D7458F392E0BDCF4000C957A /* linphoneExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -397,6 +407,8 @@
 		D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStatisticsSheetBottomSheet.swift; sourceTree = "<group>"; };
 		D78E062D2BEA69F400CE3783 /* AudioRouteBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteBottomSheet.swift; sourceTree = "<group>"; };
 		D78E062F2BEA6A4A00CE3783 /* ChangeLayoutBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeLayoutBottomSheet.swift; sourceTree = "<group>"; };
+		D792F1582F02BCC2002E3225 /* intentsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = intentsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D792F1592F02BCC2002E3225 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		D795F57D2EC5F9480022C17D /* RecordingsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsListFragment.swift; sourceTree = "<group>"; };
 		D795F57F2EC5F95B0022C17D /* RecordingsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsListViewModel.swift; sourceTree = "<group>"; };
 		D795F5822EC6133A0022C17D /* RecordingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingModel.swift; sourceTree = "<group>"; };
@@ -469,10 +481,18 @@
 			);
 			target = D7458F2E2E0BDCF4000C957A /* linphoneExtension */;
 		};
+		D792F1642F02BCC2002E3225 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D792F1572F02BCC2002E3225 /* intentsExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D7458F302E0BDCF4000C957A /* linphoneExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D7458F3C2E0BDCF4000C957A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = linphoneExtension; sourceTree = "<group>"; };
+		D792F15B2F02BCC2002E3225 /* intentsExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D792F1642F02BCC2002E3225 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = intentsExtension; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -502,6 +522,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D792F1552F02BCC2002E3225 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D792F15A2F02BCC2002E3225 /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,6 +680,7 @@
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				660AAF7C2B839272004C0FA6 /* msgNotificationService */,
 				D7458F302E0BDCF4000C957A /* linphoneExtension */,
+				D792F15B2F02BCC2002E3225 /* intentsExtension */,
 				D7DF8BE52E2104DC003A3BC7 /* Frameworks */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
 			);
@@ -663,6 +692,7 @@
 				D719ABB32ABC67BF00B41C10 /* LinphoneApp.app */,
 				660AAF7B2B839271004C0FA6 /* msgNotificationService.appex */,
 				D7458F2F2E0BDCF4000C957A /* linphoneExtension.appex */,
+				D792F1582F02BCC2002E3225 /* intentsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1137,6 +1167,7 @@
 		D7DF8BE52E2104DC003A3BC7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D792F1592F02BCC2002E3225 /* Intents.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1177,6 +1208,7 @@
 			dependencies = (
 				660AAF7E2B839272004C0FA6 /* PBXTargetDependency */,
 				D7458F382E0BDCF4000C957A /* PBXTargetDependency */,
+				D792F1602F02BCC2002E3225 /* PBXTargetDependency */,
 			);
 			name = LinphoneApp;
 			productName = Linphone;
@@ -1205,6 +1237,28 @@
 			productReference = D7458F2F2E0BDCF4000C957A /* linphoneExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		D792F1572F02BCC2002E3225 /* intentsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D792F1652F02BCC2002E3225 /* Build configuration list for PBXNativeTarget "intentsExtension" */;
+			buildPhases = (
+				D792F1542F02BCC2002E3225 /* Sources */,
+				D792F1552F02BCC2002E3225 /* Frameworks */,
+				D792F1562F02BCC2002E3225 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D792F15B2F02BCC2002E3225 /* intentsExtension */,
+			);
+			name = intentsExtension;
+			packageProductDependencies = (
+			);
+			productName = intentsExtension;
+			productReference = D792F1582F02BCC2002E3225 /* intentsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1212,7 +1266,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					660AAF7A2B839271004C0FA6 = {
@@ -1224,6 +1278,9 @@
 					};
 					D7458F2E2E0BDCF4000C957A = {
 						CreatedOnToolsVersion = 16.4;
+					};
+					D792F1572F02BCC2002E3225 = {
+						CreatedOnToolsVersion = 26.2;
 					};
 				};
 			};
@@ -1265,6 +1322,7 @@
 				D719ABB22ABC67BF00B41C10 /* LinphoneApp */,
 				660AAF7A2B839271004C0FA6 /* msgNotificationService */,
 				D7458F2E2E0BDCF4000C957A /* linphoneExtension */,
+				D792F1572F02BCC2002E3225 /* intentsExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1303,6 +1361,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D7458F2D2E0BDCF4000C957A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D792F1562F02BCC2002E3225 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1549,6 +1614,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D792F1542F02BCC2002E3225 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1561,6 +1633,11 @@
 			isa = PBXTargetDependency;
 			target = D7458F2E2E0BDCF4000C957A /* linphoneExtension */;
 			targetProxy = D7458F372E0BDCF4000C957A /* PBXContainerItemProxy */;
+		};
+		D792F1602F02BCC2002E3225 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D792F1572F02BCC2002E3225 /* intentsExtension */;
+			targetProxy = D792F15F2F02BCC2002E3225 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1987,6 +2064,78 @@
 			};
 			name = Release;
 		};
+		D792F1622F02BCC2002E3225 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = intentsExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = intentsExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.intentsExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D792F1632F02BCC2002E3225 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = intentsExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = intentsExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.intentsExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2022,6 +2171,15 @@
 			buildConfigurations = (
 				D7458F3A2E0BDCF4000C957A /* Debug */,
 				D7458F3B2E0BDCF4000C957A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D792F1652F02BCC2002E3225 /* Build configuration list for PBXNativeTarget "intentsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D792F1622F02BCC2002E3225 /* Debug */,
+				D792F1632F02BCC2002E3225 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

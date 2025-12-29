@@ -20,6 +20,7 @@
 import SwiftUI
 import linphonesw
 import UserNotifications
+import Intents
 
 let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
 var displayedChatroomPeerAddr: String?
@@ -108,7 +109,28 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 				}
 			}
 		}
-			
+	}
+	
+	func application(_ application: UIApplication,
+					 continue userActivity: NSUserActivity,
+					 restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+		
+		guard let interaction = userActivity.interaction,
+			  let intent = interaction.intent as? INStartCallIntent,
+			  let person = intent.contacts?.first,
+			  let number = person.personHandle?.value else { return false }
+
+		let isVideo = intent.callCapability == .videoCall
+		
+		Log.info("[AppDelegate][INStartCallIntent] Generic call intent received for number: \(number) isVideo: \(isVideo)")
+
+		CoreContext.shared.performActionOnCoreQueueWhenCoreIsStarted { core in
+			if let address = core.interpretUrl(url: number, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+				TelecomManager.shared.doCallOrJoinConf(address: address, isVideo: isVideo)
+			}
+		}
+		
+		return true
 	}
 	
 	func applicationWillTerminate(_ application: UIApplication) {
@@ -238,6 +260,22 @@ struct RootView: View {
 				URIHandler.handleURL(url: url)
 			} else {
 				pendingURL = url
+			}
+		}
+		.onContinueUserActivity("INStartCallIntent") { activity in
+			guard let interaction = activity.interaction,
+				  let intent = interaction.intent as? INStartCallIntent,
+				  let person = intent.contacts?.first,
+				  let number = person.personHandle?.value else { return }
+			
+			let isVideo = intent.callCapability == .videoCall
+			
+			Log.info("[INStartCallIntent] Generic call intent received for number: \(number) isVideo: \(isVideo)")
+			
+			coreContext.performActionOnCoreQueueWhenCoreIsStarted { core in
+				if let address = core.interpretUrl(url: number, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+					telecomManager.doCallOrJoinConf(address: address, isVideo: isVideo)
+				}
 			}
 		}
 	}
