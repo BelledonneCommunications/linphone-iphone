@@ -20,6 +20,7 @@
 import Foundation
 import linphonesw
 import Combine
+import SwiftUI
 
 class URIHandler {
 	
@@ -28,6 +29,7 @@ class URIHandler {
 	private static let secureCallSchemes = ["sips", "sips-linphone", "linphone-sips"]
 	private static let configurationSchemes = ["linphone-config"]
 	private static let sharedExtensionSchemes = ["linphone-message"]
+	private static let mentionSchemes = ["linphone-mention"]
 
 	private static var uriHandlerCoreDelegate: CoreDelegateStub?
 	
@@ -66,6 +68,8 @@ class URIHandler {
 				initiateConfiguration(url: url)
 			} else if sharedExtensionSchemes.contains(scheme) {
 				processReceivedFiles(url: url)
+			} else if mentionSchemes.contains(scheme) {
+				openContact(url: url)
 			} else if scheme == SingleSignOnManager.shared.ssoRedirectUri.scheme {
 				continueSSO(url: url)
 			} else {
@@ -129,6 +133,28 @@ class URIHandler {
 		}
 		
 		SharedMainViewModel.shared.changeIndexView(indexViewInt: 2)
+	}
+	
+	private static func openContact(url: URL) {
+		Log.info("[URIHandler] open contact from URL: \(url.resourceSpecifier)")
+		
+		var urlString = url.resourceSpecifier
+		if urlString.starts(with: "//") {
+			urlString = String(urlString.dropFirst(2))
+		}
+		
+		print("[URIHandler] urlStringurlString : \(urlString)")
+		
+		let friendIndex = ContactsManager.shared.avatarListModel.first(
+			where: {$0.addresses.contains(where: {$0 == urlString})})
+		
+		if friendIndex != nil {
+			SharedMainViewModel.shared.displayedConversation = nil
+			SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
+			withAnimation {
+				SharedMainViewModel.shared.displayedFriend = friendIndex
+			}
+		}
 	}
 	
 	private static func continueSSO(url: URL) {

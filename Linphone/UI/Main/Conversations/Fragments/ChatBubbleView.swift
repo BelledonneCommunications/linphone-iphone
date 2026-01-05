@@ -179,7 +179,7 @@ struct ChatBubbleView: View {
 												}
 												
 												if !eventLogMessage.message.text.isEmpty {
-													DynamicLinkText(text: eventLogMessage.message.text)
+													DynamicLinkText(text: eventLogMessage.message.text, participantConversationModel: conversationViewModel.participantConversationModel)
 												} else if eventLogMessage.message.isRetracted {
 													Text(eventLogMessage.message.isOutgoing ? "conversation_message_content_deleted_by_us_label" : "conversation_message_content_deleted_label")
 														.italic()
@@ -946,41 +946,80 @@ struct ChatBubbleView: View {
 
 struct DynamicLinkText: View {
 	let text: String
+	let participantConversationModel: [ContactAvatarModel]
 	
 	var body: some View {
-		let components = text.components(separatedBy: " ")
-		
-		Text(makeAttributedString(from: components))
+		Text(makeAttributedString(from: text))
 			.fixedSize(horizontal: false, vertical: true)
 			.multilineTextAlignment(.leading)
 			.lineLimit(nil)
-			.foregroundStyle(Color.grayMain2c700)
 			.default_text_style(styleSize: 14)
 	}
 	
-	// Function to create an AttributedString with clickable links
-	private func makeAttributedString(from components: [String]) -> AttributedString {
-		var result = AttributedString("")
-		for (index, component) in components.enumerated() {
-			if let url = URL(string: component.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""),
-			   url.scheme == "http" || url.scheme == "https" {
-				var attributedText = AttributedString(component)
-				attributedText.link = url
-				attributedText.foregroundColor = .blue
-				attributedText.underlineStyle = .single
-				result.append(attributedText)
+	private func makeAttributedString(from text: String) -> AttributedString {
+		var result = AttributedString()
+		var currentWord = ""
+		
+		for char in text {
+			if char == " " || char == "\n" {
+				appendWord(currentWord, to: &result)
+				result.append(AttributedString(String(char)))
+				currentWord = ""
 			} else {
-				result.append(AttributedString(component))
-			}
-			
-			// Add space between words except for the last one
-			if index < components.count - 1 {
-				result.append(AttributedString(" "))
+				currentWord.append(char)
 			}
 		}
+		
+		appendWord(currentWord, to: &result)
 		return result
 	}
+	
+	private func appendWord(_ word: String, to result: inout AttributedString) {
+		guard !word.isEmpty else { return }
+		
+		// URL
+		if
+			let encoded = word.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+			let url = URL(string: encoded),
+			["http", "https"].contains(url.scheme)
+		{
+			var link = AttributedString(word)
+			link.link = url
+			link.foregroundColor = .blue
+			link.underlineStyle = .single
+			result.append(link)
+			return
+		}
+		
+		// Mention
+		if isMention(word),
+		   let participant = participantConversationModel.first(where: {($0.address.dropFirst(4).split(separator: "@").first ?? "") == word.dropFirst()}),
+		   let mentionURL = URL(string: "linphone-mention://\(participant.address)")
+		{
+			var mention = AttributedString("@" + participant.name)
+			mention.link = mentionURL
+			mention.foregroundColor = Color.orangeMain500
+			mention.font = .system(size: 14, weight: .semibold)
+			result.append(mention)
+			return
+		}
+		
+		// Text
+		var normal = AttributedString(word)
+		normal.foregroundColor = Color.grayMain2c700
+		result.append(normal)
+	}
+	
+	private func isMention(_ word: String) -> Bool {
+		guard word.first == "@", word.count > 1 else { return false }
+		
+		let username = word.dropFirst()
+		return username.allSatisfy {
+			$0.isLetter || $0.isNumber || $0 == "." || $0 == "_"
+		}
+	}
 }
+
 
 enum URLType {
 	case name(String) // local file name of gif

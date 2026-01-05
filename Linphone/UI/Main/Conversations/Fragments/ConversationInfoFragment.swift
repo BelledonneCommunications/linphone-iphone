@@ -368,7 +368,6 @@ struct ConversationInfoFragment: View {
 																			let friendIndex = contactsManager.avatarListModel.first(
 																				where: {$0.addresses.contains(where: {$0 == addressConv})})
 																			
-																			SharedMainViewModel.shared.displayedCall = nil
 																			SharedMainViewModel.shared.changeIndexView(indexViewInt: 0)
 																			
 																			if friendIndex != nil {
@@ -381,6 +380,8 @@ struct ConversationInfoFragment: View {
 																					isShowEditContactFragmentAddress = String(participantConversationModel.address.dropFirst(4))
 																				}
 																			}
+																			
+																			SharedMainViewModel.shared.displayedConversation = nil
 																		},
 																		label: {
 																			HStack {
