@@ -258,6 +258,8 @@
 "conversation_message_meeting_cancelled_label" = "Meeting has been cancelled!";
 "conversation_message_meeting_updated_label" = "Meeting has been updated";
 "conversation_one_to_one_hidden_subject" = "Dummy subject";
+"conversation_participants_list_empty" = "No participants found";
+"conversation_participants_list_header" = "Participants";
 "conversation_reply_to_message_title" = "Replying to: ";
 "conversation_text_field_hint" = "Say something…";
 "conversations_list_empty" = "No conversation for the moment…";

@@ -89,6 +89,20 @@ struct ConversationFragment: View {
 	
 	@State private var isImdnOrReactionsSheetVisible = false
 	
+	@State var mentionIsOpen: Bool = false
+	@State var mentionQuery: String = ""
+	
+	private let rowHeight: CGFloat = 60
+	private let maxVisibleRows: CGFloat = 3.5
+	
+	private var filteredParticipants: [ContactAvatarModel] {
+		conversationViewModel.participantConversationModel.filter {
+			mentionQuery.isEmpty
+			|| $0.name.localizedCaseInsensitiveContains(mentionQuery)
+			|| String($0.address.dropFirst(4).split(separator: "@").first ?? "").localizedCaseInsensitiveContains(mentionQuery)
+		}
+	}
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -863,6 +877,72 @@ struct ConversationFragment: View {
 							.transition(.move(edge: .bottom))
 						}
 						
+						if mentionIsOpen && SharedMainViewModel.shared.displayedConversation!.isGroup {
+							ZStack(alignment: .top) {
+								ScrollView {
+									LazyVStack(alignment: .leading, spacing: 0) {
+										Text("conversation_participants_list_header")
+											.default_text_style_300(styleSize: 12)
+											.lineLimit(1)
+											.frame(height: 14)
+											.padding(.vertical, 8)
+											.padding(.horizontal, 10)
+										
+											if filteredParticipants.isEmpty {
+												VStack {
+													Text("conversation_participants_list_empty")
+														.default_text_style_800(styleSize: 16)
+														.frame(maxWidth: .infinity, alignment: .center)
+												}
+												.frame(height: rowHeight)
+											}
+										ForEach(filteredParticipants, id: \.id) { participant in
+											Button {
+												messageText = String(messageText.dropLast(mentionQuery.count))
+												messageText.append((participant.address.dropFirst(4).split(separator: "@").first ?? "") + " ")
+											} label: {
+												HStack {
+													Avatar(contactAvatarModel: participant, avatarSize: 40)
+
+													Text(participant.name)
+														.default_text_style(styleSize: 16)
+														.lineLimit(1)
+
+													Spacer()
+												}
+												.frame(maxWidth: .infinity)
+												.background(Color.gray100)
+												.padding(.horizontal)
+											}
+											.frame(height: rowHeight)
+											.buttonStyle(.plain)
+										}
+									}
+								}
+								.frame(
+									height: filteredParticipants.isEmpty ? rowHeight + 30 : min(
+										(CGFloat(filteredParticipants.count) * rowHeight) + 30,
+										(rowHeight * maxVisibleRows) + 30
+									)
+								)
+								.clipped()
+								.background(Color.gray100)
+
+								HStack {
+									Spacer()
+									Button {
+										withAnimation { mentionIsOpen = false }
+									} label: {
+										Image("x")
+											.resizable()
+											.frame(width: 24, height: 24)
+											.padding(10)
+									}
+								}
+							}
+							.transition(.move(edge: .bottom))
+						}
+						
 						HStack(spacing: 0) {
 							if !voiceRecordingInProgress {
 								Button {
@@ -889,6 +969,7 @@ struct ConversationFragment: View {
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
 											.onChange(of: messageText) { text in
+												self.updateMentionState(from: text)
 												conversationViewModel.compose(stop: text.isEmpty)
 											}
 									} else {
@@ -1378,6 +1459,41 @@ struct ConversationFragment: View {
 			}
 		}
 	}
+	
+	func updateMentionState(from text: String) {
+		guard let atIndex = text.lastIndex(of: "@") else {
+			closeMention()
+			return
+		}
+		
+		if atIndex > text.startIndex {
+			let before = text[text.index(before: atIndex)]
+			if before != " " && before != "\n" {
+				closeMention()
+				return
+			}
+		}
+		
+		let query = String(text[text.index(after: atIndex)...])
+		
+		if query.contains(" ") || query.contains("\n") {
+			closeMention()
+			return
+		}
+		
+		withAnimation {
+			mentionQuery = query
+			mentionIsOpen = true
+		}
+	}
+
+	func closeMention() {
+		withAnimation {
+			mentionIsOpen = false
+			mentionQuery = ""
+		}
+	}
+	
 	// swiftlint:enable cyclomatic_complexity
 	// swiftlint:enable function_body_length
 }

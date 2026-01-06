@@ -258,6 +258,8 @@
 "conversation_message_meeting_cancelled_label" = "La réunion a été annulée";
 "conversation_message_meeting_updated_label" = "La réunion a été mise à jour";
 "conversation_one_to_one_hidden_subject" = "Dummy subject";
+"conversation_participants_list_empty" = "Aucun participant trouvé";
+"conversation_participants_list_header" = "Participants";
 "conversation_reply_to_message_title" = "En réponse à : ";
 "conversation_text_field_hint" = "Dites quelque chose…";
 "conversations_list_empty" = "Aucune conversation pour le moment…";
