@@ -251,8 +251,11 @@
 "conversation_info_participant_is_admin_label" = "Administrateur";
 "conversation_info_participants_list_title" = "Participants (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé.";
-"conversation_menu_configure_ephemeral_messages" = "Messages éphémères";
+"conversation_menu_search_in_messages" = "Chercher";
 "conversation_menu_go_to_info" = "Informations";
+"conversation_menu_configure_ephemeral_messages" = "Messages éphémères";
+"conversation_menu_media_files" = "Médias";
+"conversation_menu_documents_files" = "Documents";
 "conversation_message_forward_cancelled_toast" = "Transfert annulé";
 "conversation_message_forwarded_toast" = "Message transféré";
 "conversation_message_meeting_cancelled_label" = "La réunion a été annulée";
@@ -261,6 +264,8 @@
 "conversation_participants_list_empty" = "Aucun participant trouvé";
 "conversation_participants_list_header" = "Participants";
 "conversation_reply_to_message_title" = "En réponse à : ";
+"conversation_search_no_match_found" = "Aucun résultat trouvé";
+"conversation_search_results_limit_reached_label" = "Nombre maximal de résultats atteint, affinez votre recherche";
 "conversation_text_field_hint" = "Dites quelque chose…";
 "conversations_list_empty" = "Aucune conversation pour le moment…";
 "conversation_take_picture_label" = "Prendre une photo";

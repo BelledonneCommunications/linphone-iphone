@@ -251,8 +251,11 @@
 "conversation_info_participant_is_admin_label" = "Admin";
 "conversation_info_participants_list_title" = "Group members (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Can't create conversation with a participant not on the same domain due to security restrictions!";
-"conversation_menu_configure_ephemeral_messages" = "Ephemeral messages";
+"conversation_menu_search_in_messages" = "Search";
 "conversation_menu_go_to_info" = "Conversation info";
+"conversation_menu_configure_ephemeral_messages" = "Ephemeral messages";
+"conversation_menu_media_files" = "Media";
+"conversation_menu_documents_files" = "Documents";
 "conversation_message_forward_cancelled_toast" = "Message forward was cancelled";
 "conversation_message_forwarded_toast" = "Message was forwarded";
 "conversation_message_meeting_cancelled_label" = "Meeting has been cancelled!";
@@ -261,6 +264,8 @@
 "conversation_participants_list_empty" = "No participants found";
 "conversation_participants_list_header" = "Participants";
 "conversation_reply_to_message_title" = "Replying to: ";
+"conversation_search_no_match_found" = "No matching result found";
+"conversation_search_results_limit_reached_label" = "Search results limit reached, refine your search";
 "conversation_text_field_hint" = "Say something…";
 "conversations_list_empty" = "No conversation for the moment…";
 "conversation_take_picture_label" = "Take picture";

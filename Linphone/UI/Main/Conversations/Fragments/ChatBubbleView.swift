@@ -151,7 +151,8 @@ struct ChatBubbleView: View {
 											.clipShape(RoundedRectangle(cornerRadius: 1))
 											.roundedCorner(
 												16,
-												corners: eventLogMessage.message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
+												corners: eventLogMessage.message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight],
+												stroke: eventLogMessage.message.id == conversationViewModel.highlightedMessageID
 											)
 										}
 										.onTapGesture {
@@ -179,7 +180,12 @@ struct ChatBubbleView: View {
 												}
 												
 												if !eventLogMessage.message.text.isEmpty {
-													DynamicLinkText(text: eventLogMessage.message.text, participantConversationModel: conversationViewModel.participantConversationModel)
+													DynamicLinkText(
+														text: eventLogMessage.message.text,
+														isMessageId: eventLogMessage.message.id == conversationViewModel.highlightedMessageID,
+														searchText: conversationViewModel.searchText,
+														participantConversationModel: conversationViewModel.participantConversationModel
+													)
 												} else if eventLogMessage.message.isRetracted {
 													Text(eventLogMessage.message.isOutgoing ? "conversation_message_content_deleted_by_us_label" : "conversation_message_content_deleted_label")
 														.italic()
@@ -415,7 +421,9 @@ struct ChatBubbleView: View {
 											.roundedCorner(
 												16,
 												corners: eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
-													(!eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]))
+													(!eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]),
+												stroke: eventLogMessage.message.id == conversationViewModel.highlightedMessageID
+											)
 											
 											if !eventLogMessage.message.reactions.isEmpty {
 												HStack {
@@ -946,6 +954,8 @@ struct ChatBubbleView: View {
 
 struct DynamicLinkText: View {
 	let text: String
+	let isMessageId: Bool
+	let searchText: String
 	let participantConversationModel: [ContactAvatarModel]
 	
 	var body: some View {
@@ -955,6 +965,8 @@ struct DynamicLinkText: View {
 			.lineLimit(nil)
 			.default_text_style(styleSize: 14)
 	}
+	
+	// MARK: - Builder
 	
 	private func makeAttributedString(from text: String) -> AttributedString {
 		var result = AttributedString()
@@ -971,8 +983,13 @@ struct DynamicLinkText: View {
 		}
 		
 		appendWord(currentWord, to: &result)
+		
+		highlightSearch(in: &result, originalText: text)
+		
 		return result
 	}
+	
+	// MARK: - Word handling
 	
 	private func appendWord(_ word: String, to result: inout AttributedString) {
 		guard !word.isEmpty else { return }
@@ -981,7 +998,7 @@ struct DynamicLinkText: View {
 		if
 			let encoded = word.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
 			let url = URL(string: encoded),
-			["http", "https"].contains(url.scheme)
+			["http", "https", "sip", "sips"].contains(url.scheme)
 		{
 			var link = AttributedString(word)
 			link.link = url
@@ -993,13 +1010,15 @@ struct DynamicLinkText: View {
 		
 		// Mention
 		if isMention(word),
-		   let participant = participantConversationModel.first(where: {($0.address.dropFirst(4).split(separator: "@").first ?? "") == word.dropFirst()}),
+		   let participant = participantConversationModel.first(
+				where: { ($0.address.dropFirst(4).split(separator: "@").first ?? "") == word.dropFirst() }
+		   ),
 		   let mentionURL = URL(string: "linphone-mention://\(participant.address)")
 		{
 			var mention = AttributedString("@" + participant.name)
 			mention.link = mentionURL
 			mention.foregroundColor = Color.orangeMain500
-			mention.font = .system(size: 14, weight: .semibold)
+			mention.font = .system(size: 14)
 			result.append(mention)
 			return
 		}
@@ -1010,6 +1029,40 @@ struct DynamicLinkText: View {
 		result.append(normal)
 	}
 	
+	// MARK: - Highlight global
+	
+	private func highlightSearch(
+		in attributed: inout AttributedString,
+		originalText: String
+	) {
+		guard !searchText.isEmpty && isMessageId else { return }
+		
+		let base = originalText.folding(
+			options: [.caseInsensitive, .diacriticInsensitive],
+			locale: .current
+		)
+		
+		let search = searchText.folding(
+			options: [.caseInsensitive, .diacriticInsensitive],
+			locale: .current
+		)
+		
+		var searchRange = base.startIndex..<base.endIndex
+		
+		while let found = base.range(of: search, range: searchRange) {
+			guard
+				let start = AttributedString.Index(found.lowerBound, within: attributed),
+				let end = AttributedString.Index(found.upperBound, within: attributed)
+			else { break }
+			
+			attributed[start..<end].font = .system(size: 14, weight: .bold)
+			
+			searchRange = found.upperBound..<base.endIndex
+		}
+	}
+	
+	// MARK: - Mention validation
+	
 	private func isMention(_ word: String) -> Bool {
 		guard word.first == "@", word.count > 1 else { return false }
 		
@@ -1019,7 +1072,6 @@ struct DynamicLinkText: View {
 		}
 	}
 }
-
 
 enum URLType {
 	case name(String) // local file name of gif
@@ -1096,8 +1148,12 @@ struct RoundedCorner: Shape {
 }
 
 extension View {
-	func roundedCorner(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+	func roundedCorner(_ radius: CGFloat, corners: UIRectCorner, stroke: Bool? = false) -> some View {
 		clipShape(RoundedCorner(radius: radius, corners: corners) )
+			.overlay(
+				RoundedCorner(radius: radius, corners: corners)
+					.stroke(Color.orangeMain500, lineWidth: (stroke ?? false) ? 1 : 0)
+			)
 	}
 }
 

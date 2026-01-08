@@ -41,6 +41,7 @@ struct ConversationFragment: View {
 	@State var isMenuOpen = false
 	@State private var isMuted: Bool = false
 	
+	@FocusState var isSearchTextFocused: Bool
 	@FocusState var isMessageTextFocused: Bool
 	
 	@State var offset: CGPoint = .zero
@@ -81,11 +82,13 @@ struct ConversationFragment: View {
 	@Binding var isShowConversationInfoPopup: Bool
 	@Binding var conversationInfoPopupText: String
 	
+	@State var searchText: String = ""
 	@State var messageText: String = ""
 	
 	@State private var chosen: String?
  	@State private var showPicker = false
 	@State private var isSheetVisible = false
+	@State private var isSearchVisible = false
 	
 	@State private var isImdnOrReactionsSheetVisible = false
 	
@@ -292,122 +295,105 @@ struct ConversationFragment: View {
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 0)
 					
-					HStack {
-						if (!(orientation == .landscapeLeft || orientation == .landscapeRight
-							  || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)) || isShowConversationFragment {
-							Image("caret-left")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.orangeMain500)
-								.frame(width: 25, height: 25, alignment: .leading)
-								.padding(.all, 10)
-								.padding(.top, 4)
-								.padding(.leading, -10)
-								.onTapGesture {
-									withAnimation {
-										if isShowConversationFragment {
-											isShowConversationFragment = false
-										}
-										SharedMainViewModel.shared.displayedConversation = nil
-									}
-								}
-						}
-						
-                        Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation?.avatarModel ?? cachedConversation!.avatarModel, avatarSize: 50)
-							.padding(.top, 4)
-						
-						VStack(spacing: 1) {
-                            Text(SharedMainViewModel.shared.displayedConversation?.subject ?? cachedConversation!.subject)
-								.default_text_style(styleSize: 16)
-								.frame(maxWidth: .infinity, alignment: .leading)
-								.padding(.top, 4)
-								.lineLimit(1)
-							
-							if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
-								HStack {
-									if isMuted {
-										Image("bell-slash")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.orangeMain500)
-											.frame(width: 16, height: 16, alignment: .trailing)
-									}
-									
-									if conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
-										Image("clock-countdown")
-											.renderingMode(.template)
-											.resizable()
-											.foregroundStyle(Color.orangeMain500)
-											.frame(width: 16, height: 16, alignment: .trailing)
-										
-										Text(conversationViewModel.ephemeralTime)
-											.default_text_style(styleSize: 12)
-											.padding(.leading, -2)
-											.frame(maxWidth: .infinity, alignment: .leading)
-											.lineLimit(1)
-									}
-									
-									Spacer()
-								}
-							}
-						}
-						.background(.white)
-						.onTapGesture {
-							withAnimation {
-								isShowInfoConversationFragment = true
-							}
-						}
-						.padding(.vertical, 10)
-						
-						Spacer()
-						
-                        if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
-							Button {
-								if SharedMainViewModel.shared.displayedConversation!.isGroup {
-									isShowStartCallGroupPopup.toggle()
-								} else {
-									SharedMainViewModel.shared.displayedConversation!.call()
-								}
-							} label: {
-								Image("phone")
+					if !isSearchVisible {
+						HStack {
+							if (!(orientation == .landscapeLeft || orientation == .landscapeRight
+								  || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)) || isShowConversationFragment {
+								Image("caret-left")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.foregroundStyle(Color.orangeMain500)
 									.frame(width: 25, height: 25, alignment: .leading)
 									.padding(.all, 10)
 									.padding(.top, 4)
+									.padding(.leading, -10)
+									.onTapGesture {
+										withAnimation {
+											if isShowConversationFragment {
+												isShowConversationFragment = false
+											}
+											SharedMainViewModel.shared.displayedConversation = nil
+										}
+									}
 							}
-						}
-						
-						Menu {
-							Button {
-								isMenuOpen = false
+							
+							Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation?.avatarModel ?? cachedConversation!.avatarModel, avatarSize: 50)
+								.padding(.top, 4)
+							
+							VStack(spacing: 1) {
+								Text(SharedMainViewModel.shared.displayedConversation?.subject ?? cachedConversation!.subject)
+									.default_text_style(styleSize: 16)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.padding(.top, 4)
+									.lineLimit(1)
+								
+								if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
+									HStack {
+										if isMuted {
+											Image("bell-slash")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.orangeMain500)
+												.frame(width: 16, height: 16, alignment: .trailing)
+										}
+										
+										if conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
+											Image("clock-countdown")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.orangeMain500)
+												.frame(width: 16, height: 16, alignment: .trailing)
+											
+											Text(conversationViewModel.ephemeralTime)
+												.default_text_style(styleSize: 12)
+												.padding(.leading, -2)
+												.frame(maxWidth: .infinity, alignment: .leading)
+												.lineLimit(1)
+										}
+										
+										Spacer()
+									}
+								}
+							}
+							.background(.white)
+							.onTapGesture {
 								withAnimation {
 									isShowInfoConversationFragment = true
 								}
-							} label: {
-								HStack {
-									Text("conversation_menu_go_to_info")
-									Spacer()
-									Image("info")
+							}
+							.padding(.vertical, 10)
+							
+							Spacer()
+							
+							if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
+								Button {
+									if SharedMainViewModel.shared.displayedConversation!.isGroup {
+										isShowStartCallGroupPopup.toggle()
+									} else {
+										SharedMainViewModel.shared.displayedConversation!.call()
+									}
+								} label: {
+									Image("phone")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25, alignment: .leading)
 										.padding(.all, 10)
+										.padding(.top, 4)
 								}
 							}
 							
-                            if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
+							Menu {
 								Button {
 									isMenuOpen = false
-									SharedMainViewModel.shared.displayedConversation!.toggleMute()
-									isMuted = !isMuted
+									withAnimation {
+										isShowInfoConversationFragment = true
+									}
 								} label: {
 									HStack {
-										Text(isMuted ? "conversation_action_unmute" : "conversation_action_mute")
+										Text("conversation_menu_go_to_info")
 										Spacer()
-										Image(isMuted ? "bell-simple" : "bell-simple-slash")
+										Image("info")
 											.renderingMode(.template)
 											.resizable()
 											.foregroundStyle(Color.grayMain2c500)
@@ -419,13 +405,14 @@ struct ConversationFragment: View {
 								Button {
 									isMenuOpen = false
 									withAnimation {
-										isShowEphemeralFragment = true
+										isSearchVisible = true
 									}
+									isSearchTextFocused = true
 								} label: {
 									HStack {
-										Text("conversation_menu_configure_ephemeral_messages")
+										Text("conversation_menu_search_in_messages")
 										Spacer()
-										Image("clock-countdown")
+										Image("magnifying-glass")
 											.renderingMode(.template)
 											.resizable()
 											.foregroundStyle(Color.grayMain2c500)
@@ -433,29 +420,128 @@ struct ConversationFragment: View {
 											.padding(.all, 10)
 									}
 								}
+								
+								if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
+									Button {
+										isMenuOpen = false
+										SharedMainViewModel.shared.displayedConversation!.toggleMute()
+										isMuted = !isMuted
+									} label: {
+										HStack {
+											Text(isMuted ? "conversation_action_unmute" : "conversation_action_mute")
+											Spacer()
+											Image(isMuted ? "bell-simple" : "bell-simple-slash")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+									}
+									
+									Button {
+										isMenuOpen = false
+										withAnimation {
+											isShowEphemeralFragment = true
+										}
+									} label: {
+										HStack {
+											Text("conversation_menu_configure_ephemeral_messages")
+											Spacer()
+											Image("clock-countdown")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+									}
+								}
+							} label: {
+								Image("dots-three-vertical")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(Color.grayMain2c500)
+									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
+									.padding(.top, 4)
+									.onChange(of: isMuted) { _ in }
+									.onAppear {
+										isMuted = SharedMainViewModel.shared.displayedConversation!.isMuted
+									}
 							}
-						} label: {
-							Image("dots-three-vertical")
+							.onTapGesture {
+								isMenuOpen = true
+							}
+						}
+						.frame(maxWidth: .infinity)
+						.frame(height: 50)
+						.padding(.horizontal)
+						.padding(.bottom, 4)
+						.background(.white)
+					} else {
+						HStack {
+							Image("caret-left")
 								.renderingMode(.template)
 								.resizable()
 								.foregroundStyle(Color.grayMain2c500)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 								.padding(.top, 4)
-								.onChange(of: isMuted) { _ in }
-								.onAppear {
-									isMuted = SharedMainViewModel.shared.displayedConversation!.isMuted
+								.padding(.leading, -10)
+								.onTapGesture {
+									searchText = ""
+									conversationViewModel.searchText = ""
+									conversationViewModel.latestMatch = nil
+									conversationViewModel.canSearchDown = false
+									conversationViewModel.highlightedMessageID = nil
+									withAnimation {
+										isSearchVisible = false
+									}
 								}
+							
+							TextField("conversation_menu_search_in_messages", text: $searchText)
+								.default_text_style(styleSize: 15)
+								.focused($isSearchTextFocused)
+								.padding(.vertical, 5)
+								.submitLabel(.search)
+								.onSubmit {
+									conversationViewModel.searchChatMessage(direction: .Up, textToSearch: searchText)
+								}
+							
+							Button {
+								conversationViewModel.searchChatMessage(direction: .Up, textToSearch: searchText)
+							} label: {
+								Image("caret-up")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(searchText.isEmpty ? Color.grayMain2c300 : Color.grayMain2c500)
+									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
+									.padding(.top, 4)
+							}
+							.disabled(searchText.isEmpty)
+							
+							Button {
+								conversationViewModel.searchChatMessage(direction: .Down, textToSearch: searchText)
+							} label: {
+								Image("caret-down")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle((searchText.isEmpty || !conversationViewModel.canSearchDown) ? Color.grayMain2c300 : Color.grayMain2c500)
+									.frame(width: 25, height: 25, alignment: .leading)
+									.padding(.all, 10)
+									.padding(.top, 4)
+							}
+							.disabled(searchText.isEmpty || !conversationViewModel.canSearchDown)
+							
 						}
-						.onTapGesture {
-							isMenuOpen = true
-						}
+						.frame(maxWidth: .infinity)
+						.frame(height: 50)
+						.padding(.horizontal)
+						.padding(.bottom, 4)
+						.background(.white)
 					}
-					.frame(maxWidth: .infinity)
-					.frame(height: 50)
-					.padding(.horizontal)
-					.padding(.bottom, 4)
-					.background(.white)
 					
 					if #available(iOS 16.0, *) {
 						ZStack(alignment: .bottomTrailing) {
@@ -593,7 +679,7 @@ struct ConversationFragment: View {
 						.transition(.move(edge: .bottom))
 					}
 					
-                    if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
+                    if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) && !isSearchVisible {
 						if conversationViewModel.messageToReply != nil {
 							ZStack(alignment: .top) {
 								HStack {

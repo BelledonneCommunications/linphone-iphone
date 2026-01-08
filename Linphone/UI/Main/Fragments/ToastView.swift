@@ -27,7 +27,13 @@ struct ToastView: View {
 		VStack {
 			if toastViewModel.displayToast {
 				HStack {
-					if toastViewModel.toastMessage.contains("toast_call_transfer") {
+					if toastViewModel.toastMessage.contains("Failed_search") {
+						Image("magnifying-glass")
+							.resizable()
+							.renderingMode(.template)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.foregroundStyle(Color.redDanger500)
+					} else if toastViewModel.toastMessage.contains("toast_call_transfer") {
 						Image("phone-transfer")
 							.resizable()
 							.renderingMode(.template)
@@ -316,6 +322,20 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Failed_search_no_match_found":
+						Text("conversation_search_no_match_found")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Failed_search_results_limit_reached":
+						Text("conversation_search_results_limit_reached_label")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_settings_contacts_carddav_sync_successful_toast":
 						Text("settings_contacts_carddav_sync_successful_toast")
 							.multilineTextAlignment(.center)
@@ -364,6 +384,7 @@ struct ToastView: View {
 					}
 				}
 				.onAppear {
+					print("toastMessagetoastMessage 00 \(toastViewModel.toastMessage) \(toastViewModel.displayToast)")
 					if !toastViewModel.toastMessage.contains("is recording") {
 						DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 							withAnimation {
