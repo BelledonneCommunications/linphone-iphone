@@ -163,8 +163,6 @@ class CoreContext: ObservableObject {
 			let userAgent = "LinphoneiOS/\(appGitTag) (\(UIDevice.current.localizedModel.replacingOccurrences(of: "'", with: ""))) LinphoneSDK"
 			self.mCore.setUserAgent(name: userAgent, version: self.coreVersion)
 			
-			self.mCore.videoCaptureEnabled = true
-			self.mCore.videoDisplayEnabled = true
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
 			
