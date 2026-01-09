@@ -1507,6 +1507,8 @@ struct ContentView: View {
 				}
 			}
 			.onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ContactLoaded"))) { _ in
+				callViewModel.resetCallView()
+				
 				if let conversationsListVM = conversationsListViewModel {
 					conversationsListVM.updateChatRoomsList()
 				}

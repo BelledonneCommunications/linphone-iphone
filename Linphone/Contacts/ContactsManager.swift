@@ -424,18 +424,19 @@ final class ContactsManager: ObservableObject {
 		var friend: Friend?
 		
 		if let friendList = self.friendList {
-			friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+			friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
 		}
+		
 		if friend == nil, let linphoneFriendList = self.linphoneFriendList {
-			friend = linphoneFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+			friend = linphoneFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
         }
         if friend == nil, let tempRemoteFriendList = self.tempRemoteFriendList {
-            friend = tempRemoteFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+            friend = tempRemoteFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
         }
 		
 		CoreContext.shared.mCore.friendsLists.forEach { friendList in
 			if friendList.type == .CardDAV {
-				friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) })
+				friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
 			}
 		}
 		
