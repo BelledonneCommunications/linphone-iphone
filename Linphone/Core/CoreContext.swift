@@ -59,6 +59,8 @@ class CoreContext: ObservableObject {
 	
 	var digestAuthInfoPendingPasswordUpdate: AuthInfo?
 	
+	@Published var reloadID = UUID()
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -337,6 +339,7 @@ class CoreContext: ObservableObject {
 						}
 						self.accounts = accountModels
 						ThemeManager.shared.applyTheme(named: themeMainColor)
+						self.reloadID = UUID()
 					}
 				}
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in

@@ -1586,6 +1586,7 @@ struct ContentView: View {
 				}
 			}
 		}
+		.id(coreContext.reloadID)
 	}
 	
 	func openMenu() {
