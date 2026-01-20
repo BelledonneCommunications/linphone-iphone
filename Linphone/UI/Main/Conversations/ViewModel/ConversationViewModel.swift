@@ -107,6 +107,7 @@ class ConversationViewModel: ObservableObject {
 	@Published var isSwiping = false
 	
 	@Published var searchText = ""
+	@Published var targetIndex: Int = -1
 	@Published var canSearchDown = false
 	@Published var searchInProgress = false
 	@Published var highlightedMessageID: String?
@@ -2975,65 +2976,66 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func searchChatMessage(direction: SearchDirection, textToSearch: String) {
+		let textToSearch = textToSearch.trimmingCharacters(in: .whitespacesAndNewlines)
 		if let displayedConversation = self.sharedMainViewModel.displayedConversation {
-			searchInProgress = true
-			
-			if let match = displayedConversation.chatRoom.searchChatMessageByText(text: textToSearch, from: latestMatch?.eventModel.eventLog ?? nil, direction: direction) {
-				
-				Log.info("\(ConversationViewModel.TAG) Found result \(match.chatMessage?.messageId ?? "No message id") while looking up for message with text \(textToSearch) in direction \(direction) starting from message \(latestMatch?.eventModel.eventLog.chatMessage?.messageId ?? "No message id")"
-				)
-				
-				if let sectionIndex = conversationMessagesSection.firstIndex(where: {
-					$0.chatRoomID == displayedConversation.id
-				}),
-				   let rowIndex = conversationMessagesSection[sectionIndex].rows.firstIndex(where: {
-					   $0.eventModel.eventLogId == match.chatMessage?.messageId
-				   }) {
-					latestMatch = conversationMessagesSection[sectionIndex].rows[rowIndex]
+			CoreContext.shared.doOnCoreQueue { core in
+				if let match = displayedConversation.chatRoom.searchChatMessageByText(text: textToSearch, from: self.latestMatch?.eventModel.eventLog ?? nil, direction: direction) {
 					
-					Log.info("\(ConversationViewModel.TAG) Found result is already in history, no need to load more history")
+					Log.info("\(ConversationViewModel.TAG) Found result \(match.chatMessage?.messageId ?? "No message id") while looking up for message with text \(textToSearch) in direction \(direction) starting from message \(self.latestMatch?.eventModel.eventLog.chatMessage?.messageId ?? "No message id")"
+					)
 					
-					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-						self.searchText = textToSearch
-						self.highlightedMessageID = match.chatMessage?.messageId
-						
-						NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": rowIndex, "animated": true])
-					}
-					print("searchChatMessageAAA 00 \(sectionIndex) \(rowIndex) \(latestMatch?.message.text ?? "No text")")
-					
-					searchInProgress = false
-				} else {
-					Log.info("\(ConversationViewModel.TAG) Found result isn't in currently loaded history, loading missing events")
-					loadMessagesUpTo(targetEvent: match, textToSearch: textToSearch)
-					print("searchChatMessageAAA 11")
-				}
-				
-				canSearchDown = true
-			} else {
-				Log.info("\(ConversationViewModel.TAG) No match found while looking up for message with text \(textToSearch) in direction \(direction) starting from message \(latestMatch?.eventModel.eventLog.chatMessage?.messageId ?? "No message id")"
-				)
-				searchInProgress = false
-				if latestMatch == nil {
-					print("searchChatMessageAAA 22")
-					DispatchQueue.main.async {
-						ToastViewModel.shared.show("Failed_search_no_match_found")
-					}
-				} else {
-					print("searchChatMessageAAA 33")
-					// Scroll to last matching event anyway, user may have scrolled away
-					if let sectionIndex = conversationMessagesSection.firstIndex(where: {
+					if let sectionIndex = self.conversationMessagesSection.firstIndex(where: {
 						$0.chatRoomID == displayedConversation.id
-					}), let latestMatchTmp = latestMatch,
-					   let rowIndex = conversationMessagesSection[sectionIndex].rows.firstIndex(of: latestMatchTmp) {
+					}),
+					   let rowIndex = self.conversationMessagesSection[sectionIndex].rows.firstIndex(where: {
+						   $0.eventModel.eventLogId == match.chatMessage?.messageId
+					   }) {
+						self.latestMatch = self.conversationMessagesSection[sectionIndex].rows[rowIndex]
+						
+						Log.info("\(ConversationViewModel.TAG) Found result is already in history, no need to load more history")
+						
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 							self.searchText = textToSearch
-							self.highlightedMessageID = latestMatchTmp.message.id
+							self.highlightedMessageID = match.chatMessage?.messageId
+							
 							NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": rowIndex, "animated": true])
 						}
-						print("searchChatMessageAAA 33Bis")
+						
+						DispatchQueue.main.async {
+							self.canSearchDown = true
+						}
+					} else {
+						DispatchQueue.main.async {
+							self.searchInProgress = true
+							self.canSearchDown = true
+						}
+						
+						Log.info("\(ConversationViewModel.TAG) Found result isn't in currently loaded history, loading missing events")
+						self.loadMessagesUpTo(targetEvent: match, textToSearch: textToSearch)
 					}
-					DispatchQueue.main.async {
-						ToastViewModel.shared.show("Failed_search_results_limit_reached")
+				} else {
+					Log.info("\(ConversationViewModel.TAG) No match found while looking up for message with text \(textToSearch) in direction \(direction) starting from message \(self.latestMatch?.eventModel.eventLog.chatMessage?.messageId ?? "No message id")"
+					)
+					
+					if self.latestMatch == nil {
+						DispatchQueue.main.async {
+							ToastViewModel.shared.show("Failed_search_no_match_found")
+						}
+					} else {
+						// Scroll to last matching event anyway, user may have scrolled away
+						if let sectionIndex = self.conversationMessagesSection.firstIndex(where: {
+							$0.chatRoomID == displayedConversation.id
+						}), let latestMatchTmp = self.latestMatch,
+						   let rowIndex = self.conversationMessagesSection[sectionIndex].rows.firstIndex(of: latestMatchTmp) {
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								self.searchText = textToSearch
+								self.highlightedMessageID = latestMatchTmp.message.id
+								NotificationCenter.default.post(name: NSNotification.Name(rawValue: "onScrollToIndex"), object: nil, userInfo: ["index": rowIndex, "animated": true])
+							}
+						}
+						DispatchQueue.main.async {
+							ToastViewModel.shared.show("Failed_search_results_limit_reached")
+						}
 					}
 				}
 			}
@@ -3041,72 +3043,104 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	private func loadMessagesUpTo(targetEvent: EventLog, textToSearch: String) {
-			if self.conversationMessagesSection[0].rows.last != nil {
-				let firstEventLog = self.sharedMainViewModel.displayedConversation?.chatRoom.getHistoryRangeEvents(
-					begin: self.conversationMessagesSection[0].rows.count - 1,
-					end: self.conversationMessagesSection[0].rows.count
+		if self.conversationMessagesSection[0].rows.last != nil {
+			let firstEventLog = self.sharedMainViewModel.displayedConversation?.chatRoom.getHistoryRangeEvents(
+				begin: self.conversationMessagesSection[0].rows.count - 1,
+				end: self.conversationMessagesSection[0].rows.count
+			)
+			
+			if let chatMessageTmp = targetEvent.chatMessage {
+				let lastEventLog = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: chatMessageTmp.messageId)
+				
+				var historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeBetween(
+					firstEvent: firstEventLog!.first,
+					lastEvent: lastEventLog,
+					filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
 				)
 				
-				if let chatMessageTmp = targetEvent.chatMessage {
-					let lastEventLog = self.sharedMainViewModel.displayedConversation!.chatRoom.findEventLog(messageId: chatMessageTmp.messageId)
+				let historyEventsAfter = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(
+					begin: self.conversationMessagesSection[0].rows.count + historyEvents.count + 1,
+					end: self.conversationMessagesSection[0].rows.count + historyEvents.count + 30
+				)
+				
+				if lastEventLog != nil {
+					historyEvents.insert(lastEventLog!, at: 0)
+				}
+				
+				historyEvents.insert(contentsOf: historyEventsAfter, at: 0)
+				
+				var conversationMessagesTmp: [EventLogMessage] = []
+				
+				historyEvents.enumerated().reversed().forEach { index, eventLog in
+					var attachmentNameList: String = ""
+					var attachmentList: [Attachment] = []
+					var contentText = ""
 					
-					var historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeBetween(
-						firstEvent: firstEventLog!.first,
-						lastEvent: lastEventLog,
-						filters: UInt(ChatRoom.HistoryFilter([.ChatMessage, .InfoNoDevice]).rawValue)
-					)
-					
-					let historyEventsAfter = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(
-						begin: self.conversationMessagesSection[0].rows.count + historyEvents.count + 1,
-						end: self.conversationMessagesSection[0].rows.count + historyEvents.count + 30
-					)
-					
-					if lastEventLog != nil {
-						historyEvents.insert(lastEventLog!, at: 0)
+					guard let chatMessage = eventLog.chatMessage else {
+						conversationMessagesTmp.insert(
+							EventLogMessage(
+								eventModel: EventModel(eventLog: eventLog),
+								message: Message(
+									id: UUID().uuidString,
+									status: nil,
+									isOutgoing: false,
+									isEditable: false,
+									isRetractable: false,
+									isEdited: false,
+									isRetracted: false,
+									dateReceived: 0,
+									address: "",
+									isFirstMessage: false,
+									text: "",
+									attachments: [],
+									ownReaction: "",
+									reactions: []
+								)
+							), at: 0
+						)
+						return
 					}
 					
-					historyEvents.insert(contentsOf: historyEventsAfter, at: 0)
-					
-					var conversationMessagesTmp: [EventLogMessage] = []
-					
-					historyEvents.enumerated().reversed().forEach { index, eventLog in
-						var attachmentNameList: String = ""
-						var attachmentList: [Attachment] = []
-						var contentText = ""
-						
-						guard let chatMessage = eventLog.chatMessage else {
-							conversationMessagesTmp.insert(
-								EventLogMessage(
-									eventModel: EventModel(eventLog: eventLog),
-									message: Message(
-										id: UUID().uuidString,
-										status: nil,
-										isOutgoing: false,
-										isEditable: false,
-										isRetractable: false,
-										isEdited: false,
-										isRetracted: false,
-										dateReceived: 0,
-										address: "",
-										isFirstMessage: false,
-										text: "",
-										attachments: [],
-										ownReaction: "",
-										reactions: []
-									)
-								), at: 0
-							)
-							return
-						}
-						
-						if !chatMessage.contents.isEmpty {
-							chatMessage.contents.forEach { content in
-								if content.isText && content.name == nil {
-									contentText = content.utf8Text ?? ""
-								} else if content.name != nil && !content.name!.isEmpty {
-									if content.filePath == nil || content.filePath!.isEmpty {
-										// self.downloadContent(chatMessage: chatMessage, content: content)
-										let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+					if !chatMessage.contents.isEmpty {
+						chatMessage.contents.forEach { content in
+							if content.isText && content.name == nil {
+								contentText = content.utf8Text ?? ""
+							} else if content.name != nil && !content.name!.isEmpty {
+								if content.filePath == nil || content.filePath!.isEmpty {
+									// self.downloadContent(chatMessage: chatMessage, content: content)
+									let path = URL(string: self.getNewFilePath(name: content.name ?? ""))
+									
+									if path != nil {
+										let attachment =
+										Attachment(
+											id: UUID().uuidString,
+											name: content.name!,
+											url: path!,
+											type: .fileTransfer,
+											size: content.fileSize,
+											transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+										)
+										attachmentNameList += ", \(content.name!)"
+										attachmentList.append(attachment)
+									}
+								} else {
+									if content.type != "video" {
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+										var typeTmp: AttachmentType = .other
+										
+										switch content.type {
+										case "image":
+											typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
+										case "audio":
+											typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
+										case "application":
+											typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
+										case "text":
+											typeTmp = .text
+										default:
+											typeTmp = .other
+										}
 										
 										if path != nil {
 											let attachment =
@@ -3114,71 +3148,14 @@ class ConversationViewModel: ObservableObject {
 												id: UUID().uuidString,
 												name: content.name!,
 												url: path!,
-												type: .fileTransfer,
+												type: typeTmp,
+												duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
 												size: content.fileSize,
 												transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
 											)
 											attachmentNameList += ", \(content.name!)"
 											attachmentList.append(attachment)
-										}
-									} else {
-										if content.type != "video" {
-											let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
-											let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-											var typeTmp: AttachmentType = .other
-											
-											switch content.type {
-											case "image":
-												typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
-											case "audio":
-												typeTmp = content.isVoiceRecording ? .voiceRecording : .audio
-											case "application":
-												typeTmp = content.subtype.lowercased() == "pdf" ? .pdf : .other
-											case "text":
-												typeTmp = .text
-											default:
-												typeTmp = .other
-											}
-											
-											if path != nil {
-												let attachment =
-												Attachment(
-													id: UUID().uuidString,
-													name: content.name!,
-													url: path!,
-													type: typeTmp,
-													duration: typeTmp == . voiceRecording ? content.fileDuration : 0,
-													size: content.fileSize,
-													transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
-												)
-												attachmentNameList += ", \(content.name!)"
-												attachmentList.append(attachment)
-												if typeTmp != .voiceRecording {
-													DispatchQueue.main.async {
-														if !attachment.full.pathExtension.isEmpty {
-															self.attachments.append(attachment)
-														}
-													}
-												}
-											}
-										} else if content.type == "video" {
-											let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
-											let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-											let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
-											
-											if path != nil && pathThumbnail != nil {
-												let attachment =
-												Attachment(
-													id: UUID().uuidString,
-													name: content.name!,
-													thumbnail: pathThumbnail!,
-													full: path!,
-													type: .video,
-													size: content.fileSize,
-													transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
-												)
-												attachmentNameList += ", \(content.name!)"
-												attachmentList.append(attachment)
+											if typeTmp != .voiceRecording {
 												DispatchQueue.main.async {
 													if !attachment.full.pathExtension.isEmpty {
 														self.attachments.append(attachment)
@@ -3186,148 +3163,185 @@ class ConversationViewModel: ObservableObject {
 												}
 											}
 										}
+									} else if content.type == "video" {
+										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+										let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
+										
+										if path != nil && pathThumbnail != nil {
+											let attachment =
+											Attachment(
+												id: UUID().uuidString,
+												name: content.name!,
+												thumbnail: pathThumbnail!,
+												full: path!,
+												type: .video,
+												size: content.fileSize,
+												transferProgressIndication: content.filePath != nil && !content.filePath!.isEmpty ? 100 : -1
+											)
+											attachmentNameList += ", \(content.name!)"
+											attachmentList.append(attachment)
+											DispatchQueue.main.async {
+												if !attachment.full.pathExtension.isEmpty {
+													self.attachments.append(attachment)
+												}
+											}
+										}
 									}
 								}
 							}
 						}
-						
-						let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
-						addressPrecCleaned?.clean()
-						
-						let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
-						addressNextCleaned?.clean()
-						
-						let addressCleaned = chatMessage.fromAddress?.clone()
-						addressCleaned?.clean()
-						
-						if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
-							self.addParticipantConversationModel(address: addressCleaned!)
-						}
-						
-						let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
-						let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
-						
-						let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
-						
-						var statusTmp: Message.Status? = .sending
-						switch chatMessage.state {
-						case .InProgress:
-							statusTmp = .sending
-						case .Delivered:
-							statusTmp = .sent
-						case .DeliveredToUser:
-							statusTmp = .received
-						case .Displayed:
-							statusTmp = .read
-						case .NotDelivered:
-							statusTmp = .error
-						default:
-							statusTmp = .sending
-						}
-						
-						var reactionsTmp: [String] = []
-						chatMessage.reactions.forEach({ chatMessageReaction in
-							reactionsTmp.append(chatMessageReaction.body)
-						})
-						
-						if !attachmentNameList.isEmpty {
-							attachmentNameList = String(attachmentNameList.dropFirst(2))
-						}
-						
-						var replyMessageTmp: ReplyMessage?
-						if chatMessage.replyMessage != nil {
-							let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
-							addressReplyCleaned?.clean()
-							
-							if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
-								self.addParticipantConversationModel(address: addressReplyCleaned!)
-							}
-							
-							let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
-							
-							let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
-							
-							var attachmentNameReplyList: String = ""
-							
-							chatMessage.replyMessage?.contents.forEach { content in
-								if !content.isText {
-									attachmentNameReplyList += ", \(content.name!)"
-								}
-							}
-							
-							if !attachmentNameReplyList.isEmpty {
-								attachmentNameReplyList = String(attachmentNameReplyList.dropFirst(2))
-							}
-							
-							replyMessageTmp = ReplyMessage(
-								id: chatMessage.replyMessage!.messageId,
-								address: addressReplyCleaned?.asStringUriOnly() ?? "",
-								isFirstMessage: false,
-								text: contentReplyText,
-								isOutgoing: chatMessage.replyMessage!.isOutgoing,
-								isEditable: false,
-								isRetractable: false,
-								isEdited: false,
-								isRetracted: isReplyRetracted,
-								dateReceived: 0,
-								attachmentsNames: attachmentNameReplyList,
-								attachments: []
-							)
-						}
-						
-						conversationMessagesTmp.insert(
-							EventLogMessage(
-								eventModel: EventModel(eventLog: eventLog),
-								message: Message(
-									id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
-									status: statusTmp,
-									isOutgoing: chatMessage.isOutgoing,
-									isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
-									isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
-									isEdited: chatMessage.isEdited,
-									isRetracted: chatMessage.isRetracted,
-									dateReceived: chatMessage.time,
-									address: addressCleaned?.asStringUriOnly() ?? "",
-									isFirstMessage: isFirstMessageTmp,
-									text: contentText,
-									attachmentsNames: attachmentNameList,
-									attachments: attachmentList,
-									replyMessage: replyMessageTmp,
-									isForward: chatMessage.isForward,
-									ownReaction: chatMessage.ownReaction?.body ?? "",
-									reactions: reactionsTmp,
-									isEphemeral: chatMessage.isEphemeral,
-									ephemeralExpireTime: chatMessage.ephemeralExpireTime,
-									ephemeralLifetime: chatMessage.ephemeralLifetime,
-									isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
-									messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
-								)
-							), at: 0
-						)
-						
-						self.addChatMessageDelegate(message: chatMessage)
 					}
 					
-					if !conversationMessagesTmp.isEmpty {
-						DispatchQueue.main.async {
-							if self.conversationMessagesSection[0].rows.last?.message.address == conversationMessagesTmp.last?.message.address {
-								self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].message.isFirstMessage = false
-							}
-							self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
-							
-							self.searchText = textToSearch
-							self.highlightedMessageID = targetEvent.chatMessage?.messageId
-							self.latestMatch = self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - historyEventsAfter.count - 1]
-							
-							NotificationCenter.default.post(
-								name: NSNotification.Name(rawValue: "onScrollToIndex"),
-								object: nil,
-								userInfo: ["index": self.conversationMessagesSection[0].rows.count - historyEventsAfter.count - 1, "animated": true]
-							)
+					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
+					addressPrecCleaned?.clean()
+					
+					let addressNextCleaned = index <= historyEvents.count - 2
+					? historyEvents[index + 1].chatMessage?.fromAddress?.clone()
+					: self.conversationMessagesSection[0].rows.last?.eventModel.eventLog.chatMessage?.fromAddress?.clone()
+					addressNextCleaned?.clean()
+					
+					let addressCleaned = chatMessage.fromAddress?.clone()
+					addressCleaned?.clean()
+					
+					if addressCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressCleaned!.asStringUriOnly()}) == nil {
+						self.addParticipantConversationModel(address: addressCleaned!)
+					}
+					
+					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
+					let isFirstMessageOutgoingTmp = addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly()
+					
+					let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
+					
+					var statusTmp: Message.Status? = .sending
+					switch chatMessage.state {
+					case .InProgress:
+						statusTmp = .sending
+					case .Delivered:
+						statusTmp = .sent
+					case .DeliveredToUser:
+						statusTmp = .received
+					case .Displayed:
+						statusTmp = .read
+					case .NotDelivered:
+						statusTmp = .error
+					default:
+						statusTmp = .sending
+					}
+					
+					var reactionsTmp: [String] = []
+					chatMessage.reactions.forEach({ chatMessageReaction in
+						reactionsTmp.append(chatMessageReaction.body)
+					})
+					
+					if !attachmentNameList.isEmpty {
+						attachmentNameList = String(attachmentNameList.dropFirst(2))
+					}
+					
+					var replyMessageTmp: ReplyMessage?
+					if chatMessage.replyMessage != nil {
+						let addressReplyCleaned = chatMessage.replyMessage?.fromAddress?.clone()
+						addressReplyCleaned?.clean()
+						
+						if addressReplyCleaned != nil && self.participantConversationModel.first(where: {$0.address == addressReplyCleaned!.asStringUriOnly()}) == nil {
+							self.addParticipantConversationModel(address: addressReplyCleaned!)
 						}
+						
+						let contentReplyText = chatMessage.replyMessage?.utf8Text ?? ""
+						
+						let isReplyRetracted = chatMessage.replyMessage?.isRetracted ?? false
+						
+						var attachmentNameReplyList: String = ""
+						
+						chatMessage.replyMessage?.contents.forEach { content in
+							if !content.isText {
+								attachmentNameReplyList += ", \(content.name!)"
+							}
+						}
+						
+						if !attachmentNameReplyList.isEmpty {
+							attachmentNameReplyList = String(attachmentNameReplyList.dropFirst(2))
+						}
+						
+						replyMessageTmp = ReplyMessage(
+							id: chatMessage.replyMessage!.messageId,
+							address: addressReplyCleaned?.asStringUriOnly() ?? "",
+							isFirstMessage: false,
+							text: contentReplyText,
+							isOutgoing: chatMessage.replyMessage!.isOutgoing,
+							isEditable: false,
+							isRetractable: false,
+							isEdited: false,
+							isRetracted: isReplyRetracted,
+							dateReceived: 0,
+							attachmentsNames: attachmentNameReplyList,
+							attachments: []
+						)
+					}
+					
+					conversationMessagesTmp.insert(
+						EventLogMessage(
+							eventModel: EventModel(eventLog: eventLog),
+							message: Message(
+								id: !chatMessage.messageId.isEmpty ? chatMessage.messageId : UUID().uuidString,
+								status: statusTmp,
+								isOutgoing: chatMessage.isOutgoing,
+								isEditable: chatMessage.isOutgoing ? chatMessage.isEditable : false,
+								isRetractable: chatMessage.isOutgoing ? chatMessage.isRetractable : false,
+								isEdited: chatMessage.isEdited,
+								isRetracted: chatMessage.isRetracted,
+								dateReceived: chatMessage.time,
+								address: addressCleaned?.asStringUriOnly() ?? "",
+								isFirstMessage: isFirstMessageTmp,
+								text: contentText,
+								attachmentsNames: attachmentNameList,
+								attachments: attachmentList,
+								replyMessage: replyMessageTmp,
+								isForward: chatMessage.isForward,
+								ownReaction: chatMessage.ownReaction?.body ?? "",
+								reactions: reactionsTmp,
+								isEphemeral: chatMessage.isEphemeral,
+								ephemeralExpireTime: chatMessage.ephemeralExpireTime,
+								ephemeralLifetime: chatMessage.ephemeralLifetime,
+								isIcalendar: chatMessage.contents.first?.isIcalendar ?? false,
+								messageConferenceInfo: chatMessage.contents.first != nil && chatMessage.contents.first!.isIcalendar == true ? self.parseConferenceInvite(content: chatMessage.contents.first!) : nil
+							)
+						), at: 0
+					)
+					
+					self.addChatMessageDelegate(message: chatMessage)
+				}
+				
+				DispatchQueue.main.async {
+					self.searchInProgress = false
+					
+					
+					guard !conversationMessagesTmp.isEmpty else { return }
+					
+					if let lastRow = self.conversationMessagesSection[0].rows.last,
+					   lastRow.message.address == conversationMessagesTmp.last?.message.address {
+						self.conversationMessagesSection[0].rows[self.conversationMessagesSection[0].rows.count - 1].message.isFirstMessage = false
+					}
+					
+					self.conversationMessagesSection[0].rows.append(contentsOf: conversationMessagesTmp.reversed())
+					
+					if self.conversationMessagesSection[0].rows.count > historyEventsAfter.count {
+						self.targetIndex = self.conversationMessagesSection[0].rows.count - historyEventsAfter.count - 1
+						self.searchText = textToSearch
+						self.highlightedMessageID = targetEvent.chatMessage?.messageId
+						self.latestMatch = self.conversationMessagesSection[0].rows[self.targetIndex]
 					}
 				}
+			} else {
+				DispatchQueue.main.async {
+					self.searchInProgress = false
+				}
 			}
+		} else {
+			DispatchQueue.main.async {
+				self.searchInProgress = false
+			}
+		}
 	}
 }
 // swiftlint:enable line_length

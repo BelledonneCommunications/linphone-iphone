@@ -1542,6 +1542,22 @@ struct ConversationFragment: View {
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
 			}
+			
+			if conversationViewModel.searchInProgress {
+				PopupLoadingView()
+					.background(.black.opacity(0.65))
+					.onDisappear {
+						if conversationViewModel.targetIndex >= 0 {
+							NotificationCenter.default.post(
+								name: NSNotification.Name("onScrollToIndex"),
+								object: nil,
+								userInfo: ["index": conversationViewModel.targetIndex, "animated": true]
+							)
+							
+							conversationViewModel.targetIndex = -1
+						}
+					}
+			}
 		}
 	}
 	
