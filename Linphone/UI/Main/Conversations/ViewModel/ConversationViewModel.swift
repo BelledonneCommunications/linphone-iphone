@@ -3013,8 +3013,9 @@ class ConversationViewModel: ObservableObject {
 				searchInProgress = false
 				if latestMatch == nil {
 					print("searchChatMessageAAA 22")
-					ToastViewModel.shared.toastMessage = "Failed_search_no_match_found"
-					ToastViewModel.shared.displayToast = true
+					DispatchQueue.main.async {
+						ToastViewModel.shared.show("Failed_search_no_match_found")
+					}
 				} else {
 					print("searchChatMessageAAA 33")
 					// Scroll to last matching event anyway, user may have scrolled away
@@ -3029,8 +3030,9 @@ class ConversationViewModel: ObservableObject {
 						}
 						print("searchChatMessageAAA 33Bis")
 					}
-					ToastViewModel.shared.toastMessage = "Failed_search_results_limit_reached"
-					ToastViewModel.shared.displayToast = true
+					DispatchQueue.main.async {
+						ToastViewModel.shared.show("Failed_search_results_limit_reached")
+					}
 				}
 			}
 		}

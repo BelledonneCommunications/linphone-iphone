@@ -199,8 +199,7 @@ struct MeetingFragment: View {
 								)
 								
 								DispatchQueue.main.async {
-									ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
-									ToastViewModel.shared.displayToast = true
+									ToastViewModel.shared.show("Success_address_copied_into_clipboard")
 								}
 							}, label: {
 								HStack {

@@ -128,8 +128,7 @@ class CardDavViewModel: ObservableObject {
 					NotificationCenter.default.post(name: NSNotification.Name("ContactLoaded"), object: nil)
 					self.cardDavServerOperationSuccessful = true
 					
-					ToastViewModel.shared.toastMessage = "Success_settings_contacts_carddav_deleted_toast"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Success_settings_contacts_carddav_deleted_toast")
 				}
 			}
 		}
@@ -227,8 +226,7 @@ class CardDavViewModel: ObservableObject {
 						DispatchQueue.main.async {
 							self.cardDavServerOperationInProgress = false
 							
-							ToastViewModel.shared.toastMessage = "Success_settings_contacts_carddav_sync_successful_toast"
-							ToastViewModel.shared.displayToast = true
+							ToastViewModel.shared.show("Success_settings_contacts_carddav_sync_successful_toast")
 						}
 						
 						let name = self.displayName
@@ -256,8 +254,7 @@ class CardDavViewModel: ObservableObject {
 						DispatchQueue.main.async {
 							self.cardDavServerOperationInProgress = false
 							
-							ToastViewModel.shared.toastMessage = "settings_contacts_carddav_sync_error_toast"
-							ToastViewModel.shared.displayToast = true
+							ToastViewModel.shared.show("settings_contacts_carddav_sync_error_toast")
 						}
 						if !self.isEdit {
 							Log.error("\(CardDavViewModel.TAG) Synchronization failed, removing Friend list from Core")

@@ -240,8 +240,7 @@ class ConversationModel: ObservableObject, Identifiable {
 			} else if state == .CreationFailed {
 				Log.error("\(ConversationModel.TAG) Failed to create group call!")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Failed_to_create_group_call_error")
 				}
 			}
 		})

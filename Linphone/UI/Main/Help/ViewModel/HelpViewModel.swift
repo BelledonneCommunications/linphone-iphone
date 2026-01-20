@@ -92,14 +92,12 @@ class HelpViewModel: ObservableObject {
 					case .UpToDate:
 						Log.info("\(self.TAG): This version is up-to-date")
 						DispatchQueue.main.async {
-							ToastViewModel.shared.toastMessage = "Success_version_up_to_date"
-							ToastViewModel.shared.displayToast = true
+							ToastViewModel.shared.show("Success_version_up_to_date")
 						}
 					default:
 						Log.info("\(self.TAG): Can't check for update, an error happened [\(result)]")
 						DispatchQueue.main.async {
-							ToastViewModel.shared.toastMessage = "Error"
-							ToastViewModel.shared.displayToast = true
+							ToastViewModel.shared.show("Error")
 						}
 					}
 				}
@@ -142,8 +140,7 @@ class HelpViewModel: ObservableObject {
 			Core.resetLogCollection()
 			Log.info("\(self.TAG) Debug logs have been cleaned")
 			DispatchQueue.main.async {
-				ToastViewModel.shared.toastMessage = "Success_clear_logs"
-				ToastViewModel.shared.displayToast = true
+				ToastViewModel.shared.show("Success_clear_logs")
 			}
 		}
 	}

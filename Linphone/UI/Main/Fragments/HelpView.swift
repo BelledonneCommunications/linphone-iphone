@@ -32,8 +32,7 @@ class HelpView { // TODO (basic debug moved here until halp view is implemented)
 		CoreContext.shared.doOnCoreQueue { _ in
 			Core.resetLogCollection()
 			DispatchQueue.main.async {
-				ToastViewModel.shared.toastMessage = "help_troubleshooting_debug_logs_cleaned_toast_message"
-				ToastViewModel.shared.displayToast = true
+				ToastViewModel.shared.show("help_troubleshooting_debug_logs_cleaned_toast_message")
 			}
 		}
 	}

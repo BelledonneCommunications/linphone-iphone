@@ -19,13 +19,39 @@
 
 import Foundation
 
-class ToastViewModel: ObservableObject {
+@MainActor
+final class ToastViewModel: ObservableObject {
 	
 	static let shared = ToastViewModel()
 	
-	var toastMessage: String = ""
-	@Published var displayToast = false
+	@Published var toast: ToastData?
 	
-	private init() {
+	private var hideWorkItem: DispatchWorkItem?
+	
+	private init() {}
+	
+	func show(_ message: String, duration: TimeInterval = 2.0) {
+		hideWorkItem?.cancel()
+		
+		toast = ToastData(message: message)
+		
+		let workItem = DispatchWorkItem { [weak self] in
+			self?.toast = nil
+		}
+		hideWorkItem = workItem
+		
+		if !message.contains("is recording") {
+			DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: workItem)
+		}
 	}
+	
+	func hide() {
+		hideWorkItem?.cancel()
+		toast = nil
+	}
+}
+
+struct ToastData: Identifiable, Equatable {
+	let id = UUID()
+	let message: String
 }

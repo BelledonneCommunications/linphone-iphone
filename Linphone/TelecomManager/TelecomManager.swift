@@ -493,38 +493,36 @@ class TelecomManager: ObservableObject {
 			
 			let isRecordingByRemoteTmp = call.remoteParams?.isRecording ?? false
 			
-			if isRecordingByRemoteTmp && ToastViewModel.shared.toastMessage.isEmpty {
-				
-				var displayName = ""
-				let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress!)
-				if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
-					displayName = friend!.address!.displayName!
-				} else {
-					if call.remoteAddress!.displayName != nil {
-						displayName = call.remoteAddress!.displayName!
-					} else if call.remoteAddress!.username != nil {
-						displayName = call.remoteAddress!.username!
-					} else {
-						displayName = String(call.remoteAddress!.asStringUriOnly().dropFirst(4))
-					}
-				}
-				
-				DispatchQueue.main.async {
-					self.isRecordingByRemote = isRecordingByRemoteTmp
-					ToastViewModel.shared.toastMessage = "\(displayName) is recording"
-					ToastViewModel.shared.displayToast = true
-				}
-				
-				Log.info("[Call] Call is recording by \(call.remoteAddress!.asStringUriOnly())")
+			let displayName: String
+			let friend = ContactsManager.shared.getFriendWithAddress(address: call.remoteAddress)
+			
+			if let name = friend?.address?.displayName {
+				displayName = name
+			} else if let name = call.remoteAddress?.displayName {
+				displayName = name
+			} else if let username = call.remoteAddress?.username {
+				displayName = username
+			} else if let uri = call.remoteAddress?.asStringUriOnly() {
+				displayName = String(uri.dropFirst(4))
+			} else {
+				displayName = "Unknown"
 			}
 			
-			if !isRecordingByRemoteTmp && ToastViewModel.shared.toastMessage.contains("is recording") {
-				DispatchQueue.main.async {
-					self.isRecordingByRemote = isRecordingByRemoteTmp
-					ToastViewModel.shared.toastMessage = ""
-					ToastViewModel.shared.displayToast = false
+			DispatchQueue.main.async {
+				self.isRecordingByRemote = isRecordingByRemoteTmp
+				
+				if isRecordingByRemoteTmp {
+					ToastViewModel.shared.show("\(displayName) is recording")
+				} else if let toast = ToastViewModel.shared.toast,
+						  toast.message.contains("is recording") {
+					ToastViewModel.shared.hide()
 				}
-				Log.info("[Call] Recording is stopped by \(call.remoteAddress!.asStringUriOnly())")
+			}
+			
+			if isRecordingByRemoteTmp {
+				Log.info("[Call] Call is recording by \(call.remoteAddress?.asStringUriOnly() ?? "")")
+			} else {
+				Log.info("[Call] Recording is stopped by \(call.remoteAddress?.asStringUriOnly() ?? "")")
 			}
 			
 			if cstate == Call.State.PausedByRemote {

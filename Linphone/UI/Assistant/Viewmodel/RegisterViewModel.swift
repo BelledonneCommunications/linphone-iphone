@@ -168,8 +168,7 @@ class RegisterViewModel: ObservableObject {
 				
 				if !errorMessage.isEmpty {
 					DispatchQueue.main.async {
-						ToastViewModel.shared.toastMessage = "Error: \(errorMessage)"
-						ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.show("Error: \(errorMessage)")
 					}
 				}
 				
@@ -341,8 +340,7 @@ class RegisterViewModel: ObservableObject {
 		DispatchQueue.main.async {
 			self.createInProgress = false
 			
-			ToastViewModel.shared.toastMessage = "Failed_push_notification_not_received_error"
-			ToastViewModel.shared.displayToast = true
+			ToastViewModel.shared.show("Failed_push_notification_not_received_error")
 		}
 	}
 	
@@ -430,8 +428,7 @@ class RegisterViewModel: ObservableObject {
 				Log.error("\(RegisterViewModel.TAG) Account manager services hasn't been initialized!")
 				
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Failed_account_register_unexpected_error"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Failed_account_register_unexpected_error")
 				}
 			}
 		}

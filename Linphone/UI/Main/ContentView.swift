@@ -1198,8 +1198,7 @@ struct ContentView: View {
 								self.isShowDeleteAllHistoryPopup.toggle()
 								sharedMainViewModel.displayedCall = nil
 								
-								ToastViewModel.shared.toastMessage = "Success_remove_call_logs"
-								ToastViewModel.shared.displayToast.toggle()
+								ToastViewModel.shared.show("Success_remove_call_logs")
 							},
 							titleThirdButton: Text("dialog_cancel"),
 							actionThirdButton: {

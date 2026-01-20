@@ -139,8 +139,7 @@ class StartCallViewModel: ObservableObject {
 			} else if state == .CreationFailed {
 				Log.error("\(StartCallViewModel.TAG) Failed to create group call!")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Failed_to_create_group_call_error"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Failed_to_create_group_call_error")
 					self.operationInProgress = false
 				}
 			}

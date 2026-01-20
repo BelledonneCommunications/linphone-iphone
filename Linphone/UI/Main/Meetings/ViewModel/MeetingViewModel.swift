@@ -201,8 +201,7 @@ class MeetingViewModel: ObservableObject {
 				DispatchQueue.main.async {
 					self.operationInProgress = false
 					self.errorMsg = (SharedMainViewModel.shared.displayedMeeting != nil) ? "Could not edit conference" : "Could not create conference"
-					ToastViewModel.shared.toastMessage = (SharedMainViewModel.shared.displayedMeeting != nil) ? "meeting_failed_to_edit_toast" : "meeting_failed_to_schedule_toast"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show((SharedMainViewModel.shared.displayedMeeting != nil) ? "meeting_failed_to_edit_toast" : "meeting_failed_to_schedule_toast")
 				}
 			} else if state == ConferenceScheduler.State.Ready {
 				if let confInfo = scheduler.info, let conferenceAddress = confInfo.uri {
@@ -210,8 +209,7 @@ class MeetingViewModel: ObservableObject {
 				}
 				
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "Success_meeting_info_created_toast"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Success_meeting_info_created_toast")
 				}
 				
 				if SharedMainViewModel.shared.displayedMeeting != nil {
@@ -243,8 +241,7 @@ class MeetingViewModel: ObservableObject {
 			} else if failedInvitations.count == self.participants.count {
 				Log.error("\(MeetingViewModel.TAG) No invitation sent!")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "meeting_failed_to_send_invites_toast"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("meeting_failed_to_send_invites_toast")
 				}
 			} else {
 				var failInvList = ""
@@ -256,8 +253,7 @@ class MeetingViewModel: ObservableObject {
 				}
 				Log.warn("\(MeetingViewModel.TAG) \(failedInvitations.count) invitations couldn't have been sent to: \(failInvList)")
 				DispatchQueue.main.async {
-					ToastViewModel.shared.toastMessage = "meeting_failed_to_send_part_of_invites_toast"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("meeting_failed_to_send_part_of_invites_toast")
 				}
 			}
 			
@@ -273,16 +269,14 @@ class MeetingViewModel: ObservableObject {
 		guard !subject.isEmpty && !participants.isEmpty else {
 			Log.error("\(MeetingViewModel.TAG) Either no subject was set or no participant was selected, can't schedule meeting.")
 			DispatchQueue.main.async {
-				ToastViewModel.shared.toastMessage = "Failed_no_subject_or_participant"
-				ToastViewModel.shared.displayToast = true
+				ToastViewModel.shared.show("Failed_no_subject_or_participant")
 			}
 			return
 		}
 		
 		guard CoreContext.shared.networkStatusIsConnected else {
 			DispatchQueue.main.async {
-				ToastViewModel.shared.toastMessage = "Unavailable_network"
-				ToastViewModel.shared.displayToast = true
+				ToastViewModel.shared.show("Unavailable_network")
 			}
 			return
 		}
@@ -427,12 +421,10 @@ class MeetingViewModel: ObservableObject {
 				do {
 					try self.eventStore.save(event, span: .thisEvent)
 					Log.info("\(MeetingViewModel.TAG) Meeting '\(self.subject)' added to calendar")
-					ToastViewModel.shared.toastMessage = "Meeting_added_to_calendar"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Meeting_added_to_calendar")
 				} catch let error as NSError {
 					Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error)")
-					ToastViewModel.shared.toastMessage = "Error: \(error)"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Error: \(error)")
 				}
 			} else {
 				Log.error("\(MeetingViewModel.TAG) Failed to add meeting to calendar: \(error?.localizedDescription ?? "")")

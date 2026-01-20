@@ -974,8 +974,7 @@ class CallViewModel: ObservableObject {
 						self.isNotEncrypted = false
 						
 						if isDeviceTrusted && withToast {
-							ToastViewModel.shared.toastMessage = "Info_call_securised"
-							ToastViewModel.shared.displayToast = true
+							ToastViewModel.shared.show("Info_call_securised")
 						}
 					}
 					
@@ -1058,8 +1057,9 @@ class CallViewModel: ObservableObject {
 						try callToTransferTo!.transferToAnother(dest: self.currentCall!)
 						Log.info("[CallViewModel] Attended transfer is successful")
 					} catch _ {
-						ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
-						ToastViewModel.shared.displayToast = true
+						DispatchQueue.main.async {
+							ToastViewModel.shared.show("Failed_toast_call_transfer_failed")
+						}
 						
 						Log.error("[CallViewModel] Failed to make attended transfer!")
 					}
@@ -1078,9 +1078,9 @@ class CallViewModel: ObservableObject {
 				try self.currentCall!.transferTo(referTo: toAddress)
 				Log.info("[CallViewModel] Blind call transfer is successful")
 			} catch _ {
-				ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
-				ToastViewModel.shared.displayToast = true
-				
+				DispatchQueue.main.async {
+					ToastViewModel.shared.show("Failed_toast_call_transfer_failed")
+				}
 				Log.error("[CallViewModel] Failed to make blind call transfer!")
 			}
 		}
@@ -1275,8 +1275,7 @@ class CallViewModel: ObservableObject {
 					)
 					DispatchQueue.main.async {
 						self.operationInProgress = false
-						ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-						ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.show("Failed_to_create_conversation_error")
 					}
 				}
 			}
@@ -1366,8 +1365,7 @@ class CallViewModel: ObservableObject {
 				self.chatRoomDelegate = nil
 				DispatchQueue.main.async {
 					self.operationInProgress = false
-					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Failed_to_create_conversation_error")
 				}
 			}
 		}, onConferenceJoined: { (chatRoom: ChatRoom, _: EventLog) in
@@ -1401,8 +1399,7 @@ class CallViewModel: ObservableObject {
 				self.chatRoomDelegate = nil
 				DispatchQueue.main.async {
 					self.operationInProgress = false
-					ToastViewModel.shared.toastMessage = "Failed_to_create_conversation_error"
-					ToastViewModel.shared.displayToast = true
+					ToastViewModel.shared.show("Failed_to_create_conversation_error")
 				}
 			}
 		})

@@ -109,8 +109,7 @@ struct DebugFragment: View {
 									helpViewModel.version,
 									forPasteboardType: UTType.plainText.identifier
 								)
-								ToastViewModel.shared.toastMessage = "Success_text_copied_into_clipboard"
-							   	ToastViewModel.shared.displayToast = true
+								ToastViewModel.shared.show("Success_text_copied_into_clipboard")
 							} label: {
 								HStack {
 									Image("app-store-logo")
@@ -145,8 +144,7 @@ struct DebugFragment: View {
 									helpViewModel.sdkVersion,
 									forPasteboardType: UTType.plainText.identifier
 								)
-								ToastViewModel.shared.toastMessage = "Success_text_copied_into_clipboard"
-								ToastViewModel.shared.displayToast = true
+								ToastViewModel.shared.show("Success_text_copied_into_clipboard")
 							} label: {
 								HStack {
 									Image("package")

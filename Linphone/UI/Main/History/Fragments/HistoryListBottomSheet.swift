@@ -152,8 +152,7 @@ struct HistoryListBottomSheet: View {
 					dismiss()
 				}
 				
-				ToastViewModel.shared.toastMessage = "Success_address_copied_into_clipboard"
-				ToastViewModel.shared.displayToast.toggle()
+				ToastViewModel.shared.show("Success_address_copied_into_clipboard")
 				
 			} label: {
 				HStack {

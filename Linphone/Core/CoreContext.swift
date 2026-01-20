@@ -106,12 +106,11 @@ class CoreContext: ObservableObject {
 				DispatchQueue.main.async {
 					if isConnected {
 						Log.info("Network is now satisfied")
-						ToastViewModel.shared.toastMessage = "Success_toast_network_connected"
+						ToastViewModel.shared.show("Success_toast_network_connected")
 					} else {
 						Log.error("Network is now \(path.status)")
-						ToastViewModel.shared.toastMessage = "Unavailable_network"
+						ToastViewModel.shared.show("Unavailable_network")
 					}
-					ToastViewModel.shared.displayToast = true
 				}
 				self.networkStatusIsConnected = isConnected
 			}
@@ -317,14 +316,11 @@ class CoreContext: ObservableObject {
 				Log.info("[CoreContext] Transferred call \(transferred.remoteAddress!.asStringUriOnly()) state changed \(callState)")
 				DispatchQueue.main.async {
 					if callState == Call.State.Connected {
-						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_successful"
-						ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.show("Success_toast_call_transfer_successful")
 					} else if callState == Call.State.OutgoingProgress {
-						ToastViewModel.shared.toastMessage = "Success_toast_call_transfer_in_progress"
-						ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.show("Success_toast_call_transfer_in_progress")
 					} else if callState == Call.State.End || callState == Call.State.Error {
-						ToastViewModel.shared.toastMessage = "Failed_toast_call_transfer_failed"
-						ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.show("Failed_toast_call_transfer_failed")
 					}
 				}
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
@@ -345,8 +341,7 @@ class CoreContext: ObservableObject {
 				if info.starts(with: "https") {
 					DispatchQueue.main.async {
 						UIPasteboard.general.setValue(info, forPasteboardType: UTType.plainText.identifier)
-						ToastViewModel.shared.toastMessage = "Success_send_logs"
-						ToastViewModel.shared.displayToast = true
+						ToastViewModel.shared.show("Success_send_logs")
 					}
 				}
 			}, onAccountRegistrationStateChanged: { (core: Core, account: Account, state: RegistrationState, message: String) in
@@ -396,8 +391,7 @@ class CoreContext: ObservableObject {
 						self.loggedIn = false
 						if self.networkStatusIsConnected {
 							// If network is disconnected, a toast message with key "Unavailable_network" should already be displayed
-							ToastViewModel.shared.toastMessage = "Registration_failed"
-							ToastViewModel.shared.displayToast = true
+							ToastViewModel.shared.show("Registration_failed")
 						}
 						
 					}

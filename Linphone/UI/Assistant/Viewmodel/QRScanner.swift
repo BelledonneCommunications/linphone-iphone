@@ -75,15 +75,18 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 							core.stop()
 							try? core.start()
 						}
-						ToastViewModel.shared.toastMessage = "Success_qr_code_validated"
-						ToastViewModel.shared.displayToast = true
+						DispatchQueue.main.async {
+							ToastViewModel.shared.show("Success_qr_code_validated")
+						}
 					} else {
-						ToastViewModel.shared.toastMessage = "Invalide URI"
-						ToastViewModel.shared.displayToast.toggle()
+						DispatchQueue.main.async {
+							ToastViewModel.shared.show("Invalide URI")
+						}
 					}
 				} else {
-					ToastViewModel.shared.toastMessage = "Invalide URI"
-					ToastViewModel.shared.displayToast.toggle()
+					DispatchQueue.main.async {
+						ToastViewModel.shared.show("Invalide URI")
+					}
 				}
 			}
 		}

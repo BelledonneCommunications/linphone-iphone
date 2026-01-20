@@ -1393,8 +1393,7 @@ struct ConversationFragment: View {
 													forPasteboardType: UTType.plainText.identifier
 												)
 												
-												ToastViewModel.shared.toastMessage = "Success_message_copied_into_clipboard"
-												ToastViewModel.shared.displayToast = true
+												ToastViewModel.shared.show("Success_message_copied_into_clipboard")
 												
 												conversationViewModel.selectedMessage = nil
 											} label: {
