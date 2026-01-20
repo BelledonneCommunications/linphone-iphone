@@ -1075,7 +1075,9 @@ class ConversationViewModel: ObservableObject {
 					let addressPrecCleaned = index > 0 ? historyEvents[index - 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
 					addressPrecCleaned?.clean()
 					
-					let addressNextCleaned = index <= historyEvents.count - 2 ? historyEvents[index + 1].chatMessage?.fromAddress?.clone() : chatMessage.fromAddress?.clone()
+					let addressNextCleaned = index <= historyEvents.count - 2
+					? historyEvents[index + 1].chatMessage?.fromAddress?.clone()
+					: self.conversationMessagesSection[0].rows.last?.eventModel.eventLog.chatMessage?.fromAddress?.clone()
 					addressNextCleaned?.clean()
 					
 					let addressCleaned = chatMessage.fromAddress?.clone()
@@ -1086,7 +1088,7 @@ class ConversationViewModel: ObservableObject {
 					}
 					
 					let isFirstMessageIncomingTmp = index > 0 ? addressPrecCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
-					let isFirstMessageOutgoingTmp = index <= historyEvents.count - 2 ? addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly() : true
+					let isFirstMessageOutgoingTmp = addressNextCleaned?.asStringUriOnly() != addressCleaned?.asStringUriOnly()
 					
 					let isFirstMessageTmp = chatMessage.isOutgoing ? isFirstMessageOutgoingTmp : isFirstMessageIncomingTmp
 					
