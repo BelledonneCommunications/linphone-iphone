@@ -178,7 +178,9 @@ class CallViewModel: ObservableObject {
 					let friend = ContactsManager.shared.getFriendWithAddress(address: self.currentCall!.remoteAddress)
 					if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
 						displayNameTmp = friend!.address!.displayName!
-					} else {
+					}  else if friend != nil && friend?.name != nil {
+						displayNameTmp = friend?.name ?? "No name"
+					}  else {
 						if self.currentCall!.remoteAddress!.displayName != nil {
 							displayNameTmp = self.currentCall!.remoteAddress!.displayName!
 						} else if self.currentCall!.remoteAddress!.username != nil && displayNameTmp.isEmpty {

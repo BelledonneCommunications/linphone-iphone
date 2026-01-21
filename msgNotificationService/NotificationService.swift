@@ -87,8 +87,9 @@ class NotificationService: UNNotificationServiceExtension {
 		bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
 		
 		LoggingService.Instance.logLevel = LogLevel.Debug
-		Factory.Instance.logCollectionPath = Factory.Instance.getConfigDir(context: nil)
+		Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String))
 		Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
+		
 		Log.info("[msgNotificationService] start msgNotificationService extension")
 		/*
 		if (VFSUtil.vfsEnabled(groupName: Config.appGroupName) && !VFSUtil.activateVFS()) {

@@ -59,6 +59,8 @@ class CoreContext: ObservableObject {
 	
 	var digestAuthInfoPendingPasswordUpdate: AuthInfo?
 	
+	@Published var reloadID = UUID()
+	
 	private init() {
 		do {
 			try initialiseCore()
@@ -120,7 +122,7 @@ class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			Factory.Instance.logCollectionPath = Factory.Instance.getConfigDir(context: nil)
+			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
 			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
@@ -162,8 +164,6 @@ class CoreContext: ObservableObject {
 			let userAgent = "LinphoneiOS/\(appGitTag) (\(UIDevice.current.localizedModel.replacingOccurrences(of: "'", with: ""))) LinphoneSDK"
 			self.mCore.setUserAgent(name: userAgent, version: self.coreVersion)
 			
-			self.mCore.videoCaptureEnabled = true
-			self.mCore.videoDisplayEnabled = true
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
 			
@@ -335,6 +335,7 @@ class CoreContext: ObservableObject {
 						}
 						self.accounts = accountModels
 						ThemeManager.shared.applyTheme(named: themeMainColor)
+						self.reloadID = UUID()
 					}
 				}
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in

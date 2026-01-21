@@ -37,7 +37,7 @@ class Log: LoggingServiceDelegate {
 
 	private init() {
 		service.domain = Bundle.main.bundleIdentifier!
-		Core.setLogCollectionPath(path: Factory.Instance.getDownloadDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String)))
+		Core.setLogCollectionPath(path: Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String)))
 		Core.enableLogCollection(state: LogCollectionState.Enabled)
 		setMask()
 		LoggingService.Instance.addDelegate(delegate: self)
