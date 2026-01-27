@@ -545,7 +545,7 @@ struct EditContactFragment: View {
 					prefix: prefix,
 					contact: newContact,
 					existingFriend: existingFriend,
-					linphoneFriend: CorePreferences.friendListInWhichStoreNewlyCreatedFriends
+					linphoneFriend: AppServices.corePreferences.friendListInWhichStoreNewlyCreatedFriends
 				)
 			}
 		}

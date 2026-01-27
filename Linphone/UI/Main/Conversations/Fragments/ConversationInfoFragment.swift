@@ -104,7 +104,7 @@ struct ConversationInfoFragment: View {
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
 											
-											if !CorePreferences.hideSipAddresses {
+											if !AppServices.corePreferences.hideSipAddresses {
 												Text(conversationViewModel.participantConversationModel.first?.address ?? "")
 													.foregroundStyle(Color.grayMain2c700)
 													.multilineTextAlignment(.center)
@@ -358,7 +358,7 @@ struct ConversationInfoFragment: View {
 																let friendIndex = contactsManager.lastSearch.firstIndex(
 																				where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 																
-																let disableAddContact = CorePreferences.disableAddContact
+																let disableAddContact = AppServices.corePreferences.disableAddContact
 																
 																if (!disableAddContact || (disableAddContact && friendIndex != nil)) {
 																	Button(
@@ -538,7 +538,7 @@ struct ConversationInfoFragment: View {
 											let friendIndex = contactsManager.lastSearch.firstIndex(
 												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 											
-											let disableAddContact = CorePreferences.disableAddContact
+											let disableAddContact = AppServices.corePreferences.disableAddContact
 											
 											if !SharedMainViewModel.shared.displayedConversation!.isGroup && (!disableAddContact || (disableAddContact && friendIndex != nil)) {
 												Button(

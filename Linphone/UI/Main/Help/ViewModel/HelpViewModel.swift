@@ -118,7 +118,7 @@ class HelpViewModel: ObservableObject {
 	func toggleLogcat() {
 		let newValue = !self.logcat
 		CoreContext.shared.doOnCoreQueue { core in
-			CorePreferences.printLogsInLogcat = newValue
+			AppServices.corePreferences.printLogsInLogcat = newValue
 			Factory.Instance.enableLogcatLogs(newValue)
 			self.logcat = newValue
 		}

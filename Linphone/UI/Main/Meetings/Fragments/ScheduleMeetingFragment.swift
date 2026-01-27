@@ -301,7 +301,7 @@ struct ScheduleMeetingFragment: View {
 							}
 						}
 						
-						if !CorePreferences.disableChatFeature {
+						if !AppServices.corePreferences.disableChatFeature {
 							Rectangle()
 								.foregroundStyle(.clear)
 								.frame(height: 1)

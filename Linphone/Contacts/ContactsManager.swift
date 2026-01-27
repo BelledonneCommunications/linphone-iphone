@@ -252,19 +252,19 @@ final class ContactsManager: ObservableObject {
 			return
 		}
 		
-		let base64Tmp = existingFriend?.friendList?.type == .CardDAV || linphoneAddressBookFriendList != CorePreferences.friendListInWhichStoreNewlyCreatedFriends
+		let base64Tmp = existingFriend?.friendList?.type == .CardDAV || linphoneAddressBookFriendList != AppServices.corePreferences.friendListInWhichStoreNewlyCreatedFriends
 		
 		awaitDataWrite(data: data, name: name, prefix: prefix, base64: base64Tmp) { result in
 			if existingFriend?.friendList?.type != .CardDAV
 				|| (existingFriend?.friendList?.type == .CardDAV && linphoneFriend == self.linphoneAddressBookFriendList)
-				|| (editingFriend && linphoneFriend == CorePreferences.friendListInWhichStoreNewlyCreatedFriends) {
+				|| (editingFriend && linphoneFriend == AppServices.corePreferences.friendListInWhichStoreNewlyCreatedFriends) {
 				self.saveFriend(result: result, contact: contact, existingFriend: existingFriend) { resultFriend in
 					self.coreContext.doOnCoreQueue { core in
 						if let friend = resultFriend {
 							if linphoneFriend != self.nativeAddressBookFriendList && existingFriend == nil {
 								if let linphoneFL = self.linphoneFriendList, linphoneFriend == linphoneFL.displayName {
 									_ = linphoneFL.addFriend(linphoneFriend: friend)
-								} else if let linphoneFL = core.friendsLists.first(where: { $0.type == .CardDAV && $0.displayName == CorePreferences.friendListInWhichStoreNewlyCreatedFriends }) {
+								} else if let linphoneFL = core.friendsLists.first(where: { $0.type == .CardDAV && $0.displayName == AppServices.corePreferences.friendListInWhichStoreNewlyCreatedFriends }) {
 									if linphoneFL.type == .CardDAV {
 										_ = linphoneFL.addFriend(linphoneFriend: friend)
 									}
@@ -337,7 +337,7 @@ final class ContactsManager: ObservableObject {
 				}
 				
 				// Set photo
-				friend.photo = (friend.friendList?.type != .CardDAV && self.linphoneAddressBookFriendList == CorePreferences.friendListInWhichStoreNewlyCreatedFriends ? "file:/" : "") + result
+				friend.photo = (friend.friendList?.type != .CardDAV && self.linphoneAddressBookFriendList == AppServices.corePreferences.friendListInWhichStoreNewlyCreatedFriends ? "file:/" : "") + result
 				
 				// Linphone subscription settings
 				try friend.setSubscribesenabled(newValue: false)

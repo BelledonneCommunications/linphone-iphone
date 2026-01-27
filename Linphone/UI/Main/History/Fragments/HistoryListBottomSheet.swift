@@ -59,7 +59,7 @@ struct HistoryListBottomSheet: View {
 			
 			Spacer()
 			
-			let disableAddContact = CorePreferences.disableAddContact
+			let disableAddContact = AppServices.corePreferences.disableAddContact
 			let isFriend = historyListViewModel.selectedCall?.isFriend == true
 
 			if !disableAddContact || (disableAddContact && isFriend) {

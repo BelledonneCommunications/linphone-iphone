@@ -23,6 +23,8 @@ import UniformTypeIdentifiers
 
 class FileUtil: NSObject {
 	
+	let appGroupName = "group.org.linphone.phone.msgNotification"
+	
 	public enum MimeType {
 		case plainText
 		case pdf
@@ -77,7 +79,7 @@ class FileUtil: NSObject {
 	}
 	
 	public class func sharedContainerUrl() -> URL {
-		return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)!
+		return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.msgNotification")!
 	}
 	
 	public class func ensureDirectoryExists(path: String) {

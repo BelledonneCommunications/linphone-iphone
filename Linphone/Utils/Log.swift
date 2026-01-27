@@ -34,10 +34,11 @@ class Log: LoggingServiceDelegate {
 		
 	var debugEnabled = true // Todo : bind to app parameters
 	var service = LoggingService.Instance
+	let appGroupName = "group.org.linphone.phone.msgNotification"
 
 	private init() {
 		service.domain = Bundle.main.bundleIdentifier!
-		Core.setLogCollectionPath(path: Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String)))
+		Core.setLogCollectionPath(path: Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (appGroupName as NSString).utf8String)))
 		Core.enableLogCollection(state: LogCollectionState.Enabled)
 		setMask()
 		LoggingService.Instance.addDelegate(delegate: self)

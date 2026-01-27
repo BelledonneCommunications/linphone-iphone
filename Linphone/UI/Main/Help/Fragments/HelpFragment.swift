@@ -73,7 +73,7 @@ struct HelpFragment: View {
 					ScrollView {
 						VStack(spacing: 0) {
 							VStack(spacing: 20) {
-								if let urlString = CorePreferences.themeAboutPictureUrl,
+								if let urlString = AppServices.corePreferences.themeAboutPictureUrl,
 								   let url = URL(string: urlString) {
 									AsyncImage(url: url) { phase in
 										switch phase {

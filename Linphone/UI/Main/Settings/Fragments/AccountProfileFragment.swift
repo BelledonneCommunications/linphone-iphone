@@ -270,7 +270,7 @@ struct AccountProfileFragment: View {
 										if accountModel.avatarModel != nil {
 											VStack(spacing: 0) {
 												VStack(spacing: 30) {
-													if !CorePreferences.hideSipAddresses {
+													if !AppServices.corePreferences.hideSipAddresses {
 														HStack {
 															Text(String(localized: "sip_address") + ":")
 																.default_text_style_700(styleSize: 15)

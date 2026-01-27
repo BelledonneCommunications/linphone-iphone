@@ -165,7 +165,7 @@ class URIHandler {
 	}
 	
 	private static func autoRemoteProvisioningOnConfigUriHandler() -> Bool {
-		return Config.get().getBool(section: "app", key: "auto_apply_provisioning_config_uri_handler", defaultValue: true)
+		return AppServices.config.getBool(section: "app", key: "auto_apply_provisioning_config_uri_handler", defaultValue: true)
 	}
 	
 	private static func toast(_ message: String) {

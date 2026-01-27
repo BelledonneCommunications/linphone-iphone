@@ -70,7 +70,7 @@ struct HistoryContactFragment: View {
 					Spacer()
 					
 					Menu {
-						let disableAddContact = CorePreferences.disableAddContact
+						let disableAddContact = AppServices.corePreferences.disableAddContact
 						let isFriend = historyModel.isFriend == true
 						
 						if !historyModel.isConf && (!disableAddContact || (disableAddContact && isFriend)) {
@@ -189,7 +189,7 @@ struct HistoryContactFragment: View {
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
 									
-									if !CorePreferences.hideSipAddresses {
+									if !AppServices.corePreferences.hideSipAddresses {
 										Text(historyModel.address)
 											.foregroundStyle(Color.grayMain2c700)
 											.multilineTextAlignment(.center)
@@ -258,7 +258,7 @@ struct HistoryContactFragment: View {
 										}
 									})
                                     
-                                    if !CorePreferences.disableChatFeature {
+                                    if !AppServices.corePreferences.disableChatFeature {
                                         Spacer()
                                         
                                         Button(action: {

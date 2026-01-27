@@ -179,7 +179,7 @@ class StartConversationViewModel: ObservableObject {
 				guard let chatParams = params.chatParams else { return }
 				chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
 				
-				let sameDomain = remote.domain == CorePreferences.defaultDomain && remote.domain == account!.params?.domain
+				let sameDomain = remote.domain == AppServices.corePreferences.defaultDomain && remote.domain == account!.params?.domain
 				if account!.params != nil && (account!.params!.instantMessagingEncryptionMandatory && sameDomain) {
 					Log.info("\(StartConversationViewModel.TAG) Account is in secure mode & domain matches, creating an E2E encrypted conversation")
 					chatParams.backend = ChatRoom.Backend.FlexisipChat

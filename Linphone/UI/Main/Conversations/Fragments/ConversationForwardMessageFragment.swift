@@ -283,7 +283,7 @@ struct ConversationForwardMessageFragment: View {
 				HStack {
 					if index < contactsManager.lastSearchSuggestions.count
 						&& contactsManager.lastSearchSuggestions[index].address != nil {
-						if contactsManager.lastSearchSuggestions[index].address!.domain != CorePreferences.defaultDomain {
+						if contactsManager.lastSearchSuggestions[index].address!.domain != AppServices.corePreferences.defaultDomain {
 							Image(uiImage: contactsManager.textToImage(
 								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
 								lastName: ""))

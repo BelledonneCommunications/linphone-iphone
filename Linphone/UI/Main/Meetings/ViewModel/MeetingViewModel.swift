@@ -221,7 +221,7 @@ class MeetingViewModel: ObservableObject {
 					}
 				}
                 
-				if self.sendInvitations && !CorePreferences.disableChatFeature {
+				if self.sendInvitations && !AppServices.corePreferences.disableChatFeature {
 					Log.info("\(MeetingViewModel.TAG) User asked for invitations to be sent, let's do it")
 					self.sendIcsInvitation(core: core)
 				} else {

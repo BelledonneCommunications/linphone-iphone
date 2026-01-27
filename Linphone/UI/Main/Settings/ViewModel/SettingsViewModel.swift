@@ -73,11 +73,11 @@ class SettingsViewModel: ObservableObject {
 	init() {
 		CoreContext.shared.doOnCoreQueue { core in
 			
-			let enableVfsTmp = CorePreferences.vfsEnabled
+			let enableVfsTmp = AppServices.corePreferences.vfsEnabled
 			
 			let adaptiveRateControlTmp = core.adaptiveRateControlEnabled
 			let enableVideoTmp = core.videoEnabled
-			let autoRecordTmp = CorePreferences.automaticallyStartCallRecording
+			let autoRecordTmp = AppServices.corePreferences.automaticallyStartCallRecording
 			
 			let autoDownloadTmp = core.maxSizeForAutoDownloadIncomingFiles == 0
 			
@@ -100,9 +100,9 @@ class SettingsViewModel: ObservableObject {
 				mediaEncryptionTmp = "DTLS"
 			}
 			let mediaEncryptionMandatoryTmp = core.isMediaEncryptionMandatory
-			let acceptEarlyMediaTmp = CorePreferences.acceptEarlyMedia
-			let allowOutgoingEarlyMediaTmp = CorePreferences.allowOutgoingEarlyMedia
-			let deviceIdTmp = CorePreferences.deviceName
+			let acceptEarlyMediaTmp = AppServices.corePreferences.acceptEarlyMedia
+			let allowOutgoingEarlyMediaTmp = AppServices.corePreferences.allowOutgoingEarlyMedia
+			let deviceIdTmp = AppServices.corePreferences.deviceName
 			let fileSharingServerUrlTmp = core.fileTransferServer
    			let remoteProvisioningUrlTmp = core.provisioningUri
 			
@@ -342,8 +342,8 @@ class SettingsViewModel: ObservableObject {
 	
 	func saveChangesWhenLeaving() {
 		CoreContext.shared.doOnCoreQueue { core in
-			if CorePreferences.vfsEnabled != self.enableVfs {
-				CorePreferences.vfsEnabled = self.enableVfs
+			if AppServices.corePreferences.vfsEnabled != self.enableVfs {
+				AppServices.corePreferences.vfsEnabled = self.enableVfs
 			}
 			
 			if core.adaptiveRateControlEnabled != self.adaptiveRateControl {
@@ -355,8 +355,8 @@ class SettingsViewModel: ObservableObject {
 				core.videoDisplayEnabled = self.enableVideo
 			}
 			
-			if CorePreferences.automaticallyStartCallRecording != self.autoRecord {
-				CorePreferences.automaticallyStartCallRecording = self.autoRecord
+			if AppServices.corePreferences.automaticallyStartCallRecording != self.autoRecord {
+				AppServices.corePreferences.automaticallyStartCallRecording = self.autoRecord
 			}
 			
 			if (core.maxSizeForAutoDownloadIncomingFiles == 0) != self.autoDownload {
@@ -402,16 +402,16 @@ class SettingsViewModel: ObservableObject {
 				core.mediaEncryptionMandatory = self.mediaEncryptionMandatory
 			}
 			
-			if CorePreferences.acceptEarlyMedia != self.acceptEarlyMedia {
-				CorePreferences.acceptEarlyMedia = self.acceptEarlyMedia
+			if AppServices.corePreferences.acceptEarlyMedia != self.acceptEarlyMedia {
+				AppServices.corePreferences.acceptEarlyMedia = self.acceptEarlyMedia
 			}
 			
-			if CorePreferences.allowOutgoingEarlyMedia != self.allowOutgoingEarlyMedia {
-				CorePreferences.allowOutgoingEarlyMedia = self.allowOutgoingEarlyMedia
+			if AppServices.corePreferences.allowOutgoingEarlyMedia != self.allowOutgoingEarlyMedia {
+				AppServices.corePreferences.allowOutgoingEarlyMedia = self.allowOutgoingEarlyMedia
 			}
 			
-			if CorePreferences.deviceName != self.deviceId {
-				CorePreferences.deviceName = self.deviceId
+			if AppServices.corePreferences.deviceName != self.deviceId {
+				AppServices.corePreferences.deviceName = self.deviceId
 			}
 			
 			if core.fileTransferServer != self.uploadServerUrl && !(core.fileTransferServer == nil && self.uploadServerUrl.isEmpty) {

@@ -56,11 +56,11 @@ final class MagicSearchSingleton: ObservableObject {
 	}
 	
 	private init() {
-		allContact = CorePreferences.contactsFilter == ""
+		allContact = AppServices.corePreferences.contactsFilter == ""
 		
 		coreContext.doOnCoreQueue { core in
-			self.linphoneDomain = CorePreferences.defaultDomain == core.defaultAccount?.params?.domain
-			self.domainDefaultAccount = CorePreferences.contactsFilter
+			self.linphoneDomain = AppServices.corePreferences.defaultDomain == core.defaultAccount?.params?.domain
+			self.domainDefaultAccount = AppServices.corePreferences.contactsFilter
 			
 			self.magicSearch = try? core.createMagicSearch()
 			
@@ -158,8 +158,8 @@ final class MagicSearchSingleton: ObservableObject {
 	
 	func changeAllContact(allContactBool: Bool) {
 		allContact = allContactBool
-		domainDefaultAccount = allContactBool ? "" : (linphoneDomain ? CorePreferences.defaultDomain : "*")
-		CorePreferences.contactsFilter = domainDefaultAccount
+		domainDefaultAccount = allContactBool ? "" : (linphoneDomain ? AppServices.corePreferences.defaultDomain : "*")
+		AppServices.corePreferences.contactsFilter = domainDefaultAccount
 	}
     
     func updateContacts(

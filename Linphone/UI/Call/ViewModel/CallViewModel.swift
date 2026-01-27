@@ -1299,7 +1299,7 @@ class CallViewModel: ObservableObject {
 				if let chatParams = params.chatParams {
 					chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
 					
-					let sameDomain = remoteAddress?.domain == CorePreferences.defaultDomain && remoteAddress?.domain == account.params?.domain
+					let sameDomain = remoteAddress?.domain == AppServices.corePreferences.defaultDomain && remoteAddress?.domain == account.params?.domain
 					if account.params != nil && (account.params!.instantMessagingEncryptionMandatory && sameDomain) {
 						Log.info(
 							"\(CallViewModel.TAG) Account is in secure mode & domain matches, requesting E2E encryption"

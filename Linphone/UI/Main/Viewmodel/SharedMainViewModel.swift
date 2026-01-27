@@ -239,7 +239,7 @@ class SharedMainViewModel: ObservableObject {
 	
 	func updateDisableChatFeature() {
 		CoreContext.shared.doOnCoreQueue { core in
-			let disableChatFeatureTmp = CorePreferences.disableChatFeature
+			let disableChatFeatureTmp = AppServices.corePreferences.disableChatFeature
 			
 			DispatchQueue.main.async {
 				self.disableChatFeature = disableChatFeatureTmp
@@ -249,7 +249,7 @@ class SharedMainViewModel: ObservableObject {
 	
 	func updateDisableMeetingFeature() {
 		CoreContext.shared.doOnCoreQueue { core in
-			let disableMeetingFeatureTmp = CorePreferences.disableMeetings ||
+			let disableMeetingFeatureTmp = AppServices.corePreferences.disableMeetings ||
 			!LinphoneUtils.isRemoteConferencingAvailable(core: core)
 			DispatchQueue.main.async {
 				self.disableMeetingFeature = disableMeetingFeatureTmp

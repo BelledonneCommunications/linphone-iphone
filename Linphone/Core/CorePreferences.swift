@@ -21,219 +21,226 @@ import Foundation
 import linphonesw
 
 class CorePreferences {
-	static var printLogsInLogcat: Bool {
+	
+	private let config: Config
+	
+	init(config: Config) {
+		self.config = config
+	}
+	
+	var printLogsInLogcat: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "debug", defaultValue: true)
+			config.getBool(section: "app", key: "debug", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "debug", value: newValue)
+			config.setBool(section: "app", key: "debug", value: newValue)
 		}
 	}
 
-	static var firstLaunch: Bool {
+	var firstLaunch: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "first_6.0_launch", defaultValue: true)
+			config.getBool(section: "app", key: "first_6.0_launch", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "first_6.0_launch", value: newValue)
+			config.setBool(section: "app", key: "first_6.0_launch", value: newValue)
 		}
 	}
 	
-	static var linphoneConfigurationVersion: Int {
+	var linphoneConfigurationVersion: Int {
 		get {
-			return Config.get().getInt(section: "app", key: "config_version", defaultValue: 52005)
+			config.getInt(section: "app", key: "config_version", defaultValue: 52005)
 		}
 		set {
-			Config.get().setInt(section: "app", key: "config_version", value: newValue)
+			config.setInt(section: "app", key: "config_version", value: newValue)
 		}
 	}
 	
-	static var checkForUpdateServerUrl: String {
+	var checkForUpdateServerUrl: String {
 		get {
-			let raw = Config.get().getString(section: "misc", key: "version_check_url_root", defaultString: "")
+			let raw = config.getString(section: "misc", key: "version_check_url_root", defaultString: "")
 			return safeString(raw, defaultValue: "")
 		}
 		set {
-			Config.get().setString(section: "misc", key: "version_check_url_root", value: newValue)
+			config.setString(section: "misc", key: "version_check_url_root", value: newValue)
 		}
 	}
 	
-	static var conditionsAndPrivacyPolicyAccepted: Bool {
+	var conditionsAndPrivacyPolicyAccepted: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "read_and_agree_terms_and_privacy", defaultValue: false)
+			config.getBool(section: "app", key: "read_and_agree_terms_and_privacy", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "read_and_agree_terms_and_privacy", value: newValue)
+			config.setBool(section: "app", key: "read_and_agree_terms_and_privacy", value: newValue)
 		}
 	}
 	
-	static var publishPresence: Bool {
+	var publishPresence: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "publish_presence", defaultValue: true)
+			config.getBool(section: "app", key: "publish_presence", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "publish_presence", value: newValue)
+			config.setBool(section: "app", key: "publish_presence", value: newValue)
 		}
 	}
 	
-	static var keepServiceAlive: Bool {
+	var keepServiceAlive: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "keep_service_alive", defaultValue: false)
+			config.getBool(section: "app", key: "keep_service_alive", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "keep_service_alive", value: newValue)
+			config.setBool(section: "app", key: "keep_service_alive", value: newValue)
 		}
 	}
 	
-	static var deviceName: String {
+	var deviceName: String {
 		get {
-			let raw = Config.get().getString(section: "app", key: "device", defaultString: "").trimmingCharacters(in: .whitespaces)
+			let raw = config.getString(section: "app", key: "device", defaultString: "").trimmingCharacters(in: .whitespaces)
 			return safeString(raw, defaultValue: "")
 		}
 		set {
-			Config.get().setString(section: "app", key: "device", value: newValue.trimmingCharacters(in: .whitespaces))
+			config.setString(section: "app", key: "device", value: newValue.trimmingCharacters(in: .whitespaces))
 		}
 	}
 	
-	static var routeAudioToSpeakerWhenVideoIsEnabled: Bool {
+	var routeAudioToSpeakerWhenVideoIsEnabled: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "route_audio_to_speaker_when_video_enabled", defaultValue: true)
+			config.getBool(section: "app", key: "route_audio_to_speaker_when_video_enabled", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "route_audio_to_speaker_when_video_enabled", value: newValue)
+			config.setBool(section: "app", key: "route_audio_to_speaker_when_video_enabled", value: newValue)
 		}
 	}
 	
-	static var automaticallyStartCallRecording: Bool {
+	var automaticallyStartCallRecording: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "auto_start_call_record", defaultValue: false)
+			return config.getBool(section: "app", key: "auto_start_call_record", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "auto_start_call_record", value: newValue)
+			config.setBool(section: "app", key: "auto_start_call_record", value: newValue)
 		}
 	}
 	
-	static var showDialogWhenCallingDeviceUuidDirectly: Bool {
+	var showDialogWhenCallingDeviceUuidDirectly: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "show_confirmation_dialog_zrtp_trust_call", defaultValue: true)
+			return config.getBool(section: "app", key: "show_confirmation_dialog_zrtp_trust_call", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "show_confirmation_dialog_zrtp_trust_call", value: newValue)
+			config.setBool(section: "app", key: "show_confirmation_dialog_zrtp_trust_call", value: newValue)
 		}
 	}
 	
-	static var markConversationAsReadWhenDismissingMessageNotification: Bool {
+	var markConversationAsReadWhenDismissingMessageNotification: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "mark_as_read_notif_dismissal", defaultValue: false)
+			config.getBool(section: "app", key: "mark_as_read_notif_dismissal", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "mark_as_read_notif_dismissal", value: newValue)
+			config.setBool(section: "app", key: "mark_as_read_notif_dismissal", value: newValue)
 		}
 	}
 	
-	static var contactsFilter: String {
+	var contactsFilter: String {
 		get {
-			let raw = Config.get().getString(section: "ui", key: "contacts_filter", defaultString: "")
+			let raw = config.getString(section: "ui", key: "contacts_filter", defaultString: "")
 			return safeString(raw, defaultValue: "")
 		}
 		set {
-			Config.get().setString(section: "ui", key: "contacts_filter", value: newValue)
+			config.setString(section: "ui", key: "contacts_filter", value: newValue)
 		}
 	}
 	
-	static var disableAddContact: Bool {
+	var disableAddContact: Bool {
 		get {
-			return Config.get().getBool(section: "ui", key: "disable_add_contact", defaultValue: false)
+			config.getBool(section: "ui", key: "disable_add_contact", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "ui", key: "disable_add_contact", value: newValue)
+			config.setBool(section: "ui", key: "disable_add_contact", value: newValue)
 		}
 	}
 	
-	static var showFavoriteContacts: Bool {
+	var showFavoriteContacts: Bool {
 		get {
-			return Config.get().getBool(section: "ui", key: "show_favorites_contacts", defaultValue: true)
+			config.getBool(section: "ui", key: "show_favorites_contacts", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "ui", key: "show_favorites_contacts", value: newValue)
+			config.setBool(section: "ui", key: "show_favorites_contacts", value: newValue)
 		}
 	}
 	
-	static var friendListInWhichStoreNewlyCreatedFriends: String {
+	var friendListInWhichStoreNewlyCreatedFriends: String {
 		get {
-			return Config.get().getString(section: "app", key: "friend_list_to_store_newly_created_contacts", defaultString: "Linphone address-book")
+			config.getString(section: "app", key: "friend_list_to_store_newly_created_contacts", defaultString: "Linphone address-book")
 		}
 		set {
-			Config.get().setString(section: "app", key: "friend_list_to_store_newly_created_contacts", value: newValue)
+			config.setString(section: "app", key: "friend_list_to_store_newly_created_contacts", value: newValue)
 		}
 	}
 	
-	static var voiceRecordingMaxDuration: Int {
+	var voiceRecordingMaxDuration: Int {
 		get {
-			return Config.get().getInt(section: "app", key: "voice_recording_max_duration", defaultValue: 600000)
+			config.getInt(section: "app", key: "voice_recording_max_duration", defaultValue: 600000)
 		}
 		set {
-			Config.get().setInt(section: "app", key: "voice_recording_max_duration", value: newValue)
+			config.setInt(section: "app", key: "voice_recording_max_duration", value: newValue)
 		}
 	}
 	
-	static var darkMode: Int {
+	var darkMode: Int {
 		get {
 			if !darkModeAllowed { return 0 }
-			return Config.get().getInt(section: "app", key: "dark_mode", defaultValue: -1)
+			return config.getInt(section: "app", key: "dark_mode", defaultValue: -1)
 		}
 		set {
-			Config.get().setInt(section: "app", key: "dark_mode", value: newValue)
+			config.setInt(section: "app", key: "dark_mode", value: newValue)
 		}
 	}
 	
-	static var enableSecureMode: Bool {
+	var enableSecureMode: Bool {
 		get {
-			return Config.get().getBool(section: "ui", key: "enable_secure_mode", defaultValue: true)
+			config.getBool(section: "ui", key: "enable_secure_mode", defaultValue: true)
 		}
 		set {
-			Config.get().setBool(section: "ui", key: "enable_secure_mode", value: newValue)
+			config.setBool(section: "ui", key: "enable_secure_mode", value: newValue)
 		}
 	}
 	
-	static var themeMainColor: String {
+	var themeMainColor: String {
 		get {
-			let raw = Config.get().getString(section: "ui", key: "theme_main_color", defaultString: "orange")
+			let raw = config.getString(section: "ui", key: "theme_main_color", defaultString: "orange")
 			return safeString(raw, defaultValue: "orange")
 		}
 		set {
-			Config.get().setString(section: "ui", key: "theme_main_color", value: newValue)
+			config.setString(section: "ui", key: "theme_main_color", value: newValue)
 		}
 	}
 	
-	static var themeAboutPictureUrl: String? {
+	var themeAboutPictureUrl: String? {
 		get {
-			return Config.get().getString(section: "ui", key: "theme_about_picture_url", defaultString: nil)
+			return config.getString(section: "ui", key: "theme_about_picture_url", defaultString: nil)
 		}
 	}
 	
-	static var darkModeAllowed: Bool {
-		return Config.get().getBool(section: "ui", key: "dark_mode_allowed", defaultValue: true)
+	var darkModeAllowed: Bool {
+		config.getBool(section: "ui", key: "dark_mode_allowed", defaultValue: true)
 	}
 	
-	static var changeMainColorAllowed: Bool {
-		return Config.get().getBool(section: "ui", key: "change_main_color_allowed", defaultValue: false)
+	var changeMainColorAllowed: Bool {
+		config.getBool(section: "ui", key: "change_main_color_allowed", defaultValue: false)
 	}
 	
-	static var hideSettings: Bool {
-		return Config.get().getBool(section: "ui", key: "hide_settings", defaultValue: false)
+	var hideSettings: Bool {
+		config.getBool(section: "ui", key: "hide_settings", defaultValue: false)
 	}
 	
-	static var maxAccountsCount: Int {
-		return Config.get().getInt(section: "ui", key: "max_account", defaultValue: 0)
+	var maxAccountsCount: Int {
+		config.getInt(section: "ui", key: "max_account", defaultValue: 0)
 	}
 	
 	/*
-	static var configPath: String {
+	var configPath: String {
 		return context.view.window?.rootViewController?.view.frame.origin.x ?? "" + "/.linphonerc"
 	}
 	
-	static var factoryConfigPath: String {
+	var factoryConfigPath: String {
 		return context.view.window?.rootViewController?.view.frame.origin.x ?? "" + "/linphonerc"
 	}
 	
@@ -243,67 +250,67 @@ class CorePreferences {
 	}
 	*/
 	
-	static var vfsEnabled: Bool {
+	var vfsEnabled: Bool {
 		get {
-			return Config.get().getBool(section: "app", key: "vfs_enabled", defaultValue: false)
+			config.getBool(section: "app", key: "vfs_enabled", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "app", key: "vfs_enabled", value: newValue)
+			config.setBool(section: "app", key: "vfs_enabled", value: newValue)
 		}
 	}
 	
-	static var acceptEarlyMedia: Bool {
+	var acceptEarlyMedia: Bool {
 		get {
-			return Config.get().getBool(section: "sip", key: "incoming_calls_early_media", defaultValue: false)
+			config.getBool(section: "sip", key: "incoming_calls_early_media", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "sip", key: "incoming_calls_early_media", value: newValue)
+			config.setBool(section: "sip", key: "incoming_calls_early_media", value: newValue)
 		}
 	}
 	
-	static var allowOutgoingEarlyMedia: Bool {
+	var allowOutgoingEarlyMedia: Bool {
 		get {
-			return Config.get().getBool(section: "sip", key: "real_early_media", defaultValue: false)
+			config.getBool(section: "sip", key: "real_early_media", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "sip", key: "real_early_media", value: newValue)
+			config.setBool(section: "sip", key: "real_early_media", value: newValue)
 		}
 	}
 	
-	static var defaultDomain: String {
+	var defaultDomain: String {
 		get {
-			let raw = Config.get().getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
+			let raw = config.getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
 			return safeString(raw, defaultValue: "sip.linphone.org")
 		}
 		set {
-			Config.get().setString(section: "app", key: "default_domain", value: newValue)
+			config.setString(section: "app", key: "default_domain", value: newValue)
 		}
 	}
     
-	static var disableChatFeature: Bool {
+	var disableChatFeature: Bool {
 		get {
-			return Config.get().getBool(section: "ui", key: "disable_chat_feature", defaultValue: false)
+			config.getBool(section: "ui", key: "disable_chat_feature", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "ui", key: "disable_chat_feature", value: newValue)
+			config.setBool(section: "ui", key: "disable_chat_feature", value: newValue)
 		}
 	}
 	
-	static var disableMeetings: Bool {
+	var disableMeetings: Bool {
 		get {
-			return Config.get().getBool(section: "ui", key: "disable_meetings_feature", defaultValue: false)
+			config.getBool(section: "ui", key: "disable_meetings_feature", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "ui", key: "disable_meetings_feature", value: newValue)
+			config.setBool(section: "ui", key: "disable_meetings_feature", value: newValue)
 		}
 	}
 	
-	static var hideSipAddresses: Bool {
+	var hideSipAddresses: Bool {
 		get {
-			return Config.get().getBool(section: "ui", key: "hide_sip_addresses", defaultValue: false)
+			config.getBool(section: "ui", key: "hide_sip_addresses", defaultValue: false)
 		}
 		set {
-			Config.get().setBool(section: "ui", key: "hide_sip_addresses", value: newValue)
+			config.setBool(section: "ui", key: "hide_sip_addresses", value: newValue)
 		}
 	}
 	
@@ -322,7 +329,7 @@ class CorePreferences {
 		}
 	}
 	
-	private static func safeString(_ raw: String?, defaultValue: String = "") -> String {
+	private func safeString(_ raw: String?, defaultValue: String = "") -> String {
 		guard let raw = raw else { return defaultValue }
 		if let data = raw.data(using: .utf8) {
 			return String(decoding: data, as: UTF8.self)

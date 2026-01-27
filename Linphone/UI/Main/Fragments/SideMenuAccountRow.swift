@@ -123,7 +123,7 @@ struct SideMenuAccountRow: View {
 					)
 				}
 				
-				if model.notificationsCount > 0 && !CorePreferences.disableChatFeature {
+				if model.notificationsCount > 0 && !AppServices.corePreferences.disableChatFeature {
 					VStack {
 						Text(String(model.notificationsCount))
 							.foregroundStyle(.white)

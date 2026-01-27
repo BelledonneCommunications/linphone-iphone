@@ -51,7 +51,7 @@ class StartCallViewModel: ObservableObject {
     }
 	
 	func updateGroupCallButtonVisibility(core: Core) {
-		let hideGroupCall = CorePreferences.disableMeetings ||
+		let hideGroupCall = AppServices.corePreferences.disableMeetings ||
 		!LinphoneUtils.isRemoteConferencingAvailable(core: core) ||
 		core.callsNb > 0
 		DispatchQueue.main.async {

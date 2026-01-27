@@ -157,7 +157,7 @@ class MeetingsListViewModel: ObservableObject {
 				let mSchedulerDelegate = ConferenceSchedulerDelegateStub(onStateChanged: { (_: ConferenceScheduler, state: ConferenceScheduler.State) in
 					Log.info("\(MeetingViewModel.TAG) Conference state changed \(state)")
 					if state == ConferenceScheduler.State.Ready {
-                        if !CorePreferences.disableChatFeature {
+                        if !AppServices.corePreferences.disableChatFeature {
                             self.sendIcsInvitation(core: core, conferenceScheduler: conferenceScheduler)
                         }
                         

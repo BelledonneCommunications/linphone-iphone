@@ -59,6 +59,36 @@ class CoreContext: ObservableObject {
 	
 	var digestAuthInfoPendingPasswordUpdate: AuthInfo?
 	
+	let appGroupName = "group.org.linphone.phone.msgNotification"
+	
+	var teamID: String {
+		AppServices.config.getString(section: "app", key: "team_id", defaultString: "")
+	}
+	
+	var earlymediaContentExtCatIdentifier: String {
+		AppServices.config.getString(section: "app", key: "extension_category", defaultString: "")
+	}
+	
+	var serveraddress: String {
+		AppServices.config.getString(section: "app", key: "server", defaultString: "")
+	}
+	
+	var defaultUsername: String {
+		AppServices.config.getString(section: "app", key: "user", defaultString: "")
+	}
+	
+	var defaultPass: String {
+		AppServices.config.getString(section: "app", key: "pass", defaultString: "")
+	}
+	
+	var pushNotificationsInterval: Int {
+		AppServices.config.getInt(section: "net", key: "pn-call-remote-push-interval", defaultValue: 3)
+	}
+	
+	var voiceRecordingMaxDuration: Int {
+		AppServices.config.getInt(section: "app", key: "voice_recording_max_duration", defaultValue: 600000)
+	}
+	
 	@Published var reloadID = UUID()
 	
 	private init() {
@@ -122,11 +152,11 @@ class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (Config.appGroupName as NSString).utf8String))
+			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (self.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
 			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
-			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)?
+			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupName)?
 				.appendingPathComponent("Library/Preferences/linphone") {
 				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
 				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
@@ -144,7 +174,7 @@ class CoreContext: ObservableObject {
 				}
 			}
 			
-			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: Config.get(), systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: Config.appGroupName, mainCore: true)
+			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: self.appGroupName, mainCore: true)
 			
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -325,7 +355,7 @@ class CoreContext: ObservableObject {
 				}
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
-				let themeMainColor = CorePreferences.themeMainColor
+				let themeMainColor = AppServices.corePreferences.themeMainColor
 				SharedMainViewModel.shared.updateConfigChanges()
 				DispatchQueue.main.async {
 					if status == ConfiguringState.Successful {
@@ -524,7 +554,7 @@ class CoreContext: ObservableObject {
 	}
 	
 	func copyDatabaseFileToDocumentsDirectory() {
-		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Config.appGroupName)?
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupName)?
 			.appendingPathComponent("Library/Application Support/linphone") {
 			let rcFileUrl = rcDir.appendingPathComponent("linphone.db")
 			let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
@@ -540,6 +570,16 @@ class CoreContext: ObservableObject {
 			}
 		}
 	}
+}
+
+enum AppServices {
+	static let config = Config.newForSharedCore(
+		appGroupId: "group.org.linphone.phone.msgNotification",
+		configFilename: "linphonerc",
+		factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
+	)!
+	
+	static let corePreferences = CorePreferences(config: config)
 }
 
 // swiftlint:enable line_length

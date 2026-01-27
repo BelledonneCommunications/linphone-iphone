@@ -181,7 +181,7 @@ struct ContactInnerFragment: View {
 										}
 									})
                                     
-                                    if !CorePreferences.disableChatFeature {
+                                    if !AppServices.corePreferences.disableChatFeature {
                                         Spacer()
                                         
                                         Button(action: {
