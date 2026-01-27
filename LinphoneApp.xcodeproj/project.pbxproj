@@ -162,6 +162,7 @@
 		D7A0ACBB2C415D630043AE79 /* StartGroupConversationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A0ACBA2C415D630043AE79 /* StartGroupConversationFragment.swift */; };
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
 		D7ADF6002AFE356400212231 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ADF5FF2AFE356400212231 /* Avatar.swift */; };
+		D7AEB9472F29128500298546 /* Shared.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D7AEB9462F29128500298546 /* Shared.xcconfig */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5678D2B28888F00DE63EB /* CallView.swift */; };
 		D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */; };
@@ -421,6 +422,7 @@
 		D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMainViewModel.swift; sourceTree = "<group>"; };
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D7ADF5FF2AFE356400212231 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
+		D7AEB9462F29128500298546 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7B5678D2B28888F00DE63EB /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
 		D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
@@ -681,6 +683,7 @@
 				D792F15B2F02BCC2002E3225 /* intentsExtension */,
 				D7DF8BE52E2104DC003A3BC7 /* Frameworks */,
 				D719ABB42ABC67BF00B41C10 /* Products */,
+				D7AEB9462F29128500298546 /* Shared.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1345,6 +1348,7 @@
 				D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */,
 				D7FC8E4A2EBA12F90080C09D /* Launch Screen.storyboard in Resources */,
 				D737AEEF2DA011F2005C1280 /* Localizable.strings in Resources */,
+				D7AEB9472F29128500298546 /* Shared.xcconfig in Resources */,
 				D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */,
 				D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */,
 				D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */,
@@ -1685,6 +1689,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = msgNotificationService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = msgNotificationService;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1727,6 +1732,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = msgNotificationService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = msgNotificationService;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1751,6 +1757,7 @@
 		};
 		D719ABC02ABC67BF00B41C10 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D7AEB9462F29128500298546 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;
@@ -1813,6 +1820,7 @@
 		};
 		D719ABC12ABC67BF00B41C10 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D7AEB9462F29128500298546 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;

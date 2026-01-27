@@ -34,11 +34,17 @@ class Log: LoggingServiceDelegate {
 		
 	var debugEnabled = true // Todo : bind to app parameters
 	var service = LoggingService.Instance
-	let appGroupName = "group.org.linphone.phone.msgNotification"
+	
+	let appGroupName: String = {
+		Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+		?? {
+			fatalError("APP_GROUP_NAME not defined in Info.plist")
+		}()
+	}()
 
 	private init() {
 		service.domain = Bundle.main.bundleIdentifier!
-		Core.setLogCollectionPath(path: Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (appGroupName as NSString).utf8String)))
+		Core.setLogCollectionPath(path: Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (self.appGroupName as NSString).utf8String)))
 		Core.enableLogCollection(state: LogCollectionState.Enabled)
 		setMask()
 		LoggingService.Instance.addDelegate(delegate: self)

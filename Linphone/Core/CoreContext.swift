@@ -59,7 +59,12 @@ class CoreContext: ObservableObject {
 	
 	var digestAuthInfoPendingPasswordUpdate: AuthInfo?
 	
-	let appGroupName = "group.org.linphone.phone.msgNotification"
+	static let appGroupName: String = {
+		Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+		?? {
+			fatalError("APP_GROUP_NAME not defined in Info.plist")
+		}()
+	}()
 	
 	var teamID: String {
 		AppServices.config.getString(section: "app", key: "team_id", defaultString: "")
@@ -152,11 +157,11 @@ class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (self.appGroupName as NSString).utf8String))
+			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (CoreContext.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
 			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
-			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupName)?
+			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: CoreContext.appGroupName)?
 				.appendingPathComponent("Library/Preferences/linphone") {
 				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
 				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
@@ -174,7 +179,7 @@ class CoreContext: ObservableObject {
 				}
 			}
 			
-			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: self.appGroupName, mainCore: true)
+			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: CoreContext.appGroupName, mainCore: true)
 			
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -554,7 +559,7 @@ class CoreContext: ObservableObject {
 	}
 	
 	func copyDatabaseFileToDocumentsDirectory() {
-		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupName)?
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: CoreContext.appGroupName)?
 			.appendingPathComponent("Library/Application Support/linphone") {
 			let rcFileUrl = rcDir.appendingPathComponent("linphone.db")
 			let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
@@ -574,7 +579,10 @@ class CoreContext: ObservableObject {
 
 enum AppServices {
 	static let config = Config.newForSharedCore(
-		appGroupId: "group.org.linphone.phone.msgNotification",
+		appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+		?? {
+			fatalError("APP_GROUP_NAME not defined in Info.plist")
+		}(),
 		configFilename: "linphonerc",
 		factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
 	)!

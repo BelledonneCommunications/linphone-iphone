@@ -26,7 +26,13 @@ import Firebase
 #endif
 
 var LINPHONE_DUMMY_SUBJECT = "dummy subject"
-let appGroupName = "group.org.linphone.phone.msgNotification"
+
+let appGroupName: String = {
+	Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+	?? {
+		fatalError("APP_GROUP_NAME not defined in Info.plist")
+	}()
+}()
 
 extension String {
 	func getDisplayNameFromSipAddress(lc: Core) -> String? {

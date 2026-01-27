@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>TFInternalTestingOnly</key>
+	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -144,5 +146,7 @@
 	</array>
 	<key>UILaunchScreen</key>
 	<false/>
+	<key>APP_GROUP_NAME</key>
+	<string>$(APP_GROUP_NAME)</string>
 </dict>
 </plist>
