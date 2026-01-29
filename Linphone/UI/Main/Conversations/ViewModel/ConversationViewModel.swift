@@ -3593,7 +3593,7 @@ class AudioRecorder: NSObject, ObservableObject {
 	func startTimer() {
 		DispatchQueue.main.async {
 			self.recordingTime = 0
-			let maxVoiceRecordDuration = CoreContext.shared.voiceRecordingMaxDuration
+			let maxVoiceRecordDuration = AppServices.corePreferences.voiceRecordingMaxDuration
 			self.timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in  // More frequent updates
 				self.recordingTime += 0.1
 				self.updateSoundPower()

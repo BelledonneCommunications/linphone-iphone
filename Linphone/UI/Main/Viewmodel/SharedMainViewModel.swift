@@ -24,6 +24,13 @@ class SharedMainViewModel: ObservableObject {
 	
 	static let shared = SharedMainViewModel()
 	
+	static let appGroupName: String = {
+		Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+		?? {
+			fatalError("APP_GROUP_NAME not defined in Info.plist")
+		}()
+	}()
+	
 	@Published var welcomeViewDisplayed = false
 	@Published var generalTermsAccepted = false
 	@Published var displayProfileMode = false

@@ -59,41 +59,6 @@ class CoreContext: ObservableObject {
 	
 	var digestAuthInfoPendingPasswordUpdate: AuthInfo?
 	
-	static let appGroupName: String = {
-		Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
-		?? {
-			fatalError("APP_GROUP_NAME not defined in Info.plist")
-		}()
-	}()
-	
-	var teamID: String {
-		AppServices.config.getString(section: "app", key: "team_id", defaultString: "")
-	}
-	
-	var earlymediaContentExtCatIdentifier: String {
-		AppServices.config.getString(section: "app", key: "extension_category", defaultString: "")
-	}
-	
-	var serveraddress: String {
-		AppServices.config.getString(section: "app", key: "server", defaultString: "")
-	}
-	
-	var defaultUsername: String {
-		AppServices.config.getString(section: "app", key: "user", defaultString: "")
-	}
-	
-	var defaultPass: String {
-		AppServices.config.getString(section: "app", key: "pass", defaultString: "")
-	}
-	
-	var pushNotificationsInterval: Int {
-		AppServices.config.getInt(section: "net", key: "pn-call-remote-push-interval", defaultValue: 3)
-	}
-	
-	var voiceRecordingMaxDuration: Int {
-		AppServices.config.getInt(section: "app", key: "voice_recording_max_duration", defaultValue: 600000)
-	}
-	
 	@Published var reloadID = UUID()
 	
 	private init() {
@@ -157,11 +122,11 @@ class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (CoreContext.appGroupName as NSString).utf8String))
+			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (SharedMainViewModel.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
 			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
-			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: CoreContext.appGroupName)?
+			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
 				.appendingPathComponent("Library/Preferences/linphone") {
 				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
 				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
@@ -179,7 +144,7 @@ class CoreContext: ObservableObject {
 				}
 			}
 			
-			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: CoreContext.appGroupName, mainCore: true)
+			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
 			
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -559,7 +524,7 @@ class CoreContext: ObservableObject {
 	}
 	
 	func copyDatabaseFileToDocumentsDirectory() {
-		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: CoreContext.appGroupName)?
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
 			.appendingPathComponent("Library/Application Support/linphone") {
 			let rcFileUrl = rcDir.appendingPathComponent("linphone.db")
 			let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
