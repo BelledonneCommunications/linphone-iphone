@@ -422,21 +422,59 @@ final class ContactsManager: ObservableObject {
 		let sipUri = clonedAddress.asStringUriOnly()
 		
 		var friend: Friend?
+		let core = CoreContext.shared.mCore
+		
+		let normalizedIncoming = core?.defaultAccount?.normalizePhoneNumber(username: address.username ?? "")
 		
 		if let friendList = self.friendList {
-			friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
+			friend = friendList.friends.first(where: {
+				$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
+				(
+					normalizedIncoming != nil &&
+					$0.phoneNumbers.contains(where: {
+						core?.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
+					})
+				)
+			})
 		}
 		
 		if friend == nil, let linphoneFriendList = self.linphoneFriendList {
-			friend = linphoneFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
-        }
-        if friend == nil, let tempRemoteFriendList = self.tempRemoteFriendList {
-            friend = tempRemoteFriendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
-        }
+			friend = linphoneFriendList.friends.first(where: {
+				$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
+				(
+					normalizedIncoming != nil &&
+					$0.phoneNumbers.contains(where: {
+						core?.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
+					})
+				)
+			})
+		}
 		
-		CoreContext.shared.mCore.friendsLists.forEach { friendList in
-			if friendList.type == .CardDAV {
-				friend = friendList.friends.first(where: { $0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) || $0.phoneNumbers.contains(where: { $0 == address.username }) })
+		if friend == nil, let tempRemoteFriendList = self.tempRemoteFriendList {
+			friend = tempRemoteFriendList.friends.first(where: {
+				$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
+				(
+					normalizedIncoming != nil &&
+					$0.phoneNumbers.contains(where: {
+						core?.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
+					})
+				)
+			})
+		}
+		
+		if let core {
+			for list in core.friendsLists where list.type == .CardDAV {
+				if friend == nil {
+					friend = list.friends.first(where: {
+						$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
+						(
+							normalizedIncoming != nil &&
+							$0.phoneNumbers.contains(where: {
+								core.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
+							})
+						)
+					})
+				}
 			}
 		}
 		
