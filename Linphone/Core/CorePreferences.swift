@@ -159,6 +159,15 @@ class CorePreferences {
 		}
 	}
 	
+	var disableCallRecordings: Bool {
+		get {
+			config.getBool(section: "ui", key: "disable_call_recordings_feature", defaultValue: false)
+		}
+		set {
+			config.setBool(section: "ui", key: "disable_call_recordings_feature", value: newValue)
+		}
+	}
+	
 	var disableChatFeature: Bool {
 		get {
 			config.getBool(section: "ui", key: "disable_chat_feature", defaultValue: false)

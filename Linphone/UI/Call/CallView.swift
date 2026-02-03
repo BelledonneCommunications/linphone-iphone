@@ -2373,7 +2373,7 @@ struct CallView: View {
 								.frame(width: buttonSize, height: buttonSize)
 								.background(callViewModel.isRecording ? Color.redDanger500 : Color.gray500)
 								.cornerRadius(40)
-								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+								.disabled(AppServices.corePreferences.disableCallRecordings || callViewModel.isPaused || telecomManager.isPausedByRemote)
 								
 								Text("call_action_record_call")
 									.foregroundStyle(.white)
@@ -2381,7 +2381,7 @@ struct CallView: View {
 							}
 							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
 							
-							if telecomManager.isPausedByRemote {
+							if AppServices.corePreferences.disableCallRecordings || callViewModel.isPaused || telecomManager.isPausedByRemote {
 								Color.gray600.opacity(0.8)
 									.allowsHitTesting(false)
 							}
@@ -2799,7 +2799,7 @@ struct CallView: View {
 								.frame(width: buttonSize, height: buttonSize)
 								.background(callViewModel.isRecording ? Color.redDanger500 : Color.gray500)
 								.cornerRadius(40)
-								.disabled(callViewModel.isPaused || telecomManager.isPausedByRemote)
+								.disabled(AppServices.corePreferences.disableCallRecordings || callViewModel.isPaused || telecomManager.isPausedByRemote)
 								
 								Text("call_action_record_call")
 									.foregroundStyle(.white)
@@ -2807,7 +2807,7 @@ struct CallView: View {
 							}
 							.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
 							
-							if callViewModel.isPaused || telecomManager.isPausedByRemote {
+							if AppServices.corePreferences.disableCallRecordings || callViewModel.isPaused || telecomManager.isPausedByRemote {
 								Color.gray600.opacity(0.8)
 									.allowsHitTesting(false)
 							}

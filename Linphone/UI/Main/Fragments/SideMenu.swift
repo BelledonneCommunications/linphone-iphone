@@ -138,13 +138,16 @@ struct SideMenu: View {
 							}
 						}
 						
-						SideMenuEntry(
-							iconName: "record-fill",
-							title: "recordings_title"
-						).onTapGesture {
-							self.menuClose()
-							withAnimation {
-								isShowRecordingsListFragment = true
+						
+						if !AppServices.corePreferences.disableCallRecordings {
+							SideMenuEntry(
+								iconName: "record-fill",
+								title: "recordings_title"
+							).onTapGesture {
+								self.menuClose()
+								withAnimation {
+									isShowRecordingsListFragment = true
+								}
 							}
 						}
 						
