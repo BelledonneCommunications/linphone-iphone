@@ -256,6 +256,11 @@
 "conversation_menu_configure_ephemeral_messages" = "Messages éphémères";
 "conversation_menu_media_files" = "Médias";
 "conversation_menu_documents_files" = "Documents";
+"conversation_no_media_found" = "Aucun média pour le moment…";
+"conversation_no_document_found" = "Aucun document pour le moment…";
+"conversation_media_list_title" = "Médias partagés";
+"conversation_document_list_title" = "Documents partagés";
+"conversation_details_media_documents_title" = "Médias & documents";
 "conversation_message_forward_cancelled_toast" = "Transfert annulé";
 "conversation_message_forwarded_toast" = "Message transféré";
 "conversation_message_meeting_cancelled_label" = "La réunion a été annulée";

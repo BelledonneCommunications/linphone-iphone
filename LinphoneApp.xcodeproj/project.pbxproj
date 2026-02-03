@@ -163,6 +163,11 @@
 		D7A2EDD62AC18115005D90FC /* SharedMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A2EDD52AC18115005D90FC /* SharedMainViewModel.swift */; };
 		D7ADF6002AFE356400212231 /* Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ADF5FF2AFE356400212231 /* Avatar.swift */; };
 		D7AEB9472F29128500298546 /* Shared.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D7AEB9462F29128500298546 /* Shared.xcconfig */; };
+		D7AEB9722F324A5E00298546 /* ConversationMediaListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9712F324A5C00298546 /* ConversationMediaListFragment.swift */; };
+		D7AEB9742F324A6F00298546 /* ConversationDocumentsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9732F324A6E00298546 /* ConversationDocumentsListFragment.swift */; };
+		D7AEB9762F39E2A400298546 /* ConversationMediaListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9752F39E2A300298546 /* ConversationMediaListViewModel.swift */; };
+		D7AEB9782F39E2C300298546 /* ConversationDocumentsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9772F39E2C100298546 /* ConversationDocumentsListViewModel.swift */; };
+		D7AEB97A2F39E83600298546 /* FileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9792F39E83500298546 /* FileModel.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5678D2B28888F00DE63EB /* CallView.swift */; };
 		D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */; };
@@ -423,6 +428,11 @@
 		D7A2EDDA2AC19EEC005D90FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D7ADF5FF2AFE356400212231 /* Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar.swift; sourceTree = "<group>"; };
 		D7AEB9462F29128500298546 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		D7AEB9712F324A5C00298546 /* ConversationMediaListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationMediaListFragment.swift; sourceTree = "<group>"; };
+		D7AEB9732F324A6E00298546 /* ConversationDocumentsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDocumentsListFragment.swift; sourceTree = "<group>"; };
+		D7AEB9752F39E2A300298546 /* ConversationMediaListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationMediaListViewModel.swift; sourceTree = "<group>"; };
+		D7AEB9772F39E2C100298546 /* ConversationDocumentsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDocumentsListViewModel.swift; sourceTree = "<group>"; };
+		D7AEB9792F39E83500298546 /* FileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileModel.swift; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7B5678D2B28888F00DE63EB /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
 		D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
@@ -638,6 +648,7 @@
 		D70959EF2B8DF33B0014AC0B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D7AEB9792F39E83500298546 /* FileModel.swift */,
 				D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */,
 				D70959F02B8DF3EC0014AC0B /* ConversationModel.swift */,
 				D7E6ADF22B9875C20009A2BC /* Message.swift */,
@@ -1068,6 +1079,8 @@
 		D7CEE0362B7A212C00FD79B7 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				D7AEB9772F39E2C100298546 /* ConversationDocumentsListViewModel.swift */,
+				D7AEB9752F39E2A300298546 /* ConversationMediaListViewModel.swift */,
 				D7CEE0372B7A214F00FD79B7 /* ConversationsListViewModel.swift */,
 				D70A26EF2B7D02E6006CC8FC /* ConversationViewModel.swift */,
 				D759CB652C3FBE1D00AC35E8 /* StartConversationViewModel.swift */,
@@ -1079,6 +1092,8 @@
 		D7CEE0392B7A232200FD79B7 /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D7AEB9732F324A6E00298546 /* ConversationDocumentsListFragment.swift */,
+				D7AEB9712F324A5C00298546 /* ConversationMediaListFragment.swift */,
 				D7EFD1E32CD11F53005E67CD /* EphemeralFragment.swift */,
 				D7CEE03A2B7A234200FD79B7 /* ConversationsFragment.swift */,
 				D7CEE03C2B7A23B200FD79B7 /* ConversationsListFragment.swift */,
@@ -1453,6 +1468,7 @@
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
 				662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */,
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
+				D7AEB9742F324A6F00298546 /* ConversationDocumentsListFragment.swift in Sources */,
 				D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */,
 				D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
@@ -1464,6 +1480,7 @@
 				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
 				D738ACEE2E857BF10039F7D1 /* KeyboardResponder.swift in Sources */,
 				D70959F12B8DF3EC0014AC0B /* ConversationModel.swift in Sources */,
+				D7AEB9762F39E2A400298546 /* ConversationMediaListViewModel.swift in Sources */,
 				C6DC4E3D2C199C4E009096FD /* BundleExtenion.swift in Sources */,
 				D7343FEF2D3FE16C0059D784 /* HelpViewModel.swift in Sources */,
 				D7EAACCF2AD6ED8000AA6A8A /* PermissionsFragment.swift in Sources */,
@@ -1474,6 +1491,7 @@
 				D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */,
 				D7A03FBD2ACC2DB60081A588 /* ContactsView.swift in Sources */,
 				D78607712D36CB8A009E6A7E /* SettingsAdvancedFragment.swift in Sources */,
+				D7AEB97A2F39E83600298546 /* FileModel.swift in Sources */,
 				D762102C2E97FDFD002E7999 /* CardDavAddressBookConfigurationFragment.swift in Sources */,
 				66E50A492BD12B2300AD61CA /* MeetingsView.swift in Sources */,
 				D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */,
@@ -1482,6 +1500,7 @@
 				C6A5A9452C10B6270070FEA4 /* OIDAuthStateExtension.swift in Sources */,
 				D732A90F2B04C3B400DB42BA /* HistoryFragment.swift in Sources */,
 				D79F1C162CD3D6AD00FF0A05 /* ConversationInfoFragment.swift in Sources */,
+				D7AEB9722F324A5E00298546 /* ConversationMediaListFragment.swift in Sources */,
 				D7D1F5262EDD91B30034EEB0 /* RecordingMediaPlayerFragment.swift in Sources */,
 				D7C500422D2BE98100DD53EC /* AccountSettingsViewModel.swift in Sources */,
 				D79622342B1DFE600037EACD /* DialerBottomSheet.swift in Sources */,
@@ -1576,6 +1595,7 @@
 				D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */,
 				D70A26EE2B7CF60B006CC8FC /* ConversationsListBottomSheet.swift in Sources */,
 				D7D1698C2AE66FA500109A5C /* MagicSearchSingleton.swift in Sources */,
+				D7AEB9782F39E2C300298546 /* ConversationDocumentsListViewModel.swift in Sources */,
 				D714DE602C1B3B34006C1F1D /* RegisterViewModel.swift in Sources */,
 				D70C82A72C85F5910087F43F /* ConversationForwardMessageViewModel.swift in Sources */,
 				D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */,

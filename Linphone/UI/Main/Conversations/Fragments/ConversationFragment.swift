@@ -59,9 +59,11 @@ struct ConversationFragment: View {
 	@State private var mediasIsLoading = false
 	@State private var voiceRecordingInProgress = false
 	
-	@State private var isShowConversationForwardMessageFragment = false
 	@State private var isShowEphemeralFragment = false
+	@State private var isShowMediaFilesFragment = false
+	@State private var isShowDocumentsFilesFragment = false
 	@State private var isShowInfoConversationFragment = false
+	@State private var isShowConversationForwardMessageFragment = false
 	
 	@Binding var isShowConversationFragment: Bool
 	@Binding var isShowStartCallGroupPopup: Bool
@@ -449,6 +451,42 @@ struct ConversationFragment: View {
 											Text("conversation_menu_configure_ephemeral_messages")
 											Spacer()
 											Image("clock-countdown")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+									}
+									
+									Button {
+										isMenuOpen = false
+										withAnimation {
+											isShowMediaFilesFragment = true
+										}
+									} label: {
+										HStack {
+											Text("conversation_menu_media_files")
+											Spacer()
+											Image("image")
+												.renderingMode(.template)
+												.resizable()
+												.foregroundStyle(Color.grayMain2c500)
+												.frame(width: 25, height: 25, alignment: .leading)
+												.padding(.all, 10)
+										}
+									}
+									
+									Button {
+										isMenuOpen = false
+										withAnimation {
+											isShowDocumentsFilesFragment = true
+										}
+									} label: {
+										HStack {
+											Text("conversation_menu_documents_files")
+											Spacer()
+											Image("file-pdf")
 												.renderingMode(.template)
 												.resizable()
 												.foregroundStyle(Color.grayMain2c500)
@@ -1519,6 +1557,8 @@ struct ConversationFragment: View {
 				ConversationInfoFragment(
 					isMuted: $isMuted,
 					isShowEphemeralFragment: $isShowEphemeralFragment,
+					isShowMediaFilesFragment: $isShowMediaFilesFragment,
+					isShowDocumentsFilesFragment: $isShowDocumentsFilesFragment,
 					isShowStartCallGroupPopup: $isShowStartCallGroupPopup,
 					isShowInfoConversationFragment: $isShowInfoConversationFragment,
 					isShowEditContactFragment: $isShowEditContactFragment,
@@ -1537,6 +1577,24 @@ struct ConversationFragment: View {
 			if isShowEphemeralFragment {
 				EphemeralFragment(
 					isShowEphemeralFragment: $isShowEphemeralFragment
+				)
+				.environmentObject(conversationViewModel)
+				.zIndex(5)
+				.transition(.move(edge: .trailing))
+			}
+			
+			if isShowMediaFilesFragment {
+				ConversationMediaListFragment(
+					isShowMediaFilesFragment: $isShowMediaFilesFragment
+				)
+				.environmentObject(conversationViewModel)
+				.zIndex(5)
+				.transition(.move(edge: .trailing))
+			}
+			
+			if isShowDocumentsFilesFragment {
+				ConversationDocumentsListFragment(
+					isShowDocumentsFilesFragment: $isShowDocumentsFilesFragment
 				)
 				.environmentObject(conversationViewModel)
 				.zIndex(5)

@@ -33,6 +33,8 @@ struct ConversationInfoFragment: View {
 	
 	@Binding var isMuted: Bool
 	@Binding var isShowEphemeralFragment: Bool
+	@Binding var isShowMediaFilesFragment: Bool
+	@Binding var isShowDocumentsFilesFragment: Bool
 	@Binding var isShowStartCallGroupPopup: Bool
 	@Binding var isShowInfoConversationFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
@@ -525,6 +527,69 @@ struct ConversationInfoFragment: View {
 										}
 									}
 									
+									Text("conversation_details_media_documents_title")
+										.default_text_style_800(styleSize: 18)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.padding(.horizontal, 20)
+										.padding(.top, 20)
+									
+									VStack(spacing: 0) {
+										Button(
+											action: {
+												withAnimation {
+													isShowMediaFilesFragment = true
+												}
+											},
+											label: {
+												HStack {
+													Image("image")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+													
+													Text("conversation_menu_media_files")
+														.default_text_style(styleSize: 16)
+														.frame(maxWidth: .infinity, alignment: .leading)
+														.lineLimit(1)
+													
+												}
+											}
+										)
+										.frame(height: 60)
+										
+										Divider()
+										
+										Button(
+											action: {
+												withAnimation {
+													isShowDocumentsFilesFragment = true
+												}
+											},
+											label: {
+												HStack {
+													Image("file-pdf")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.grayMain2c600)
+														.frame(width: 25, height: 25)
+													
+													Text("conversation_menu_documents_files")
+														.default_text_style(styleSize: 16)
+														.frame(maxWidth: .infinity, alignment: .leading)
+														.lineLimit(1)
+													
+												}
+											}
+										)
+										.frame(height: 60)
+									}
+									.padding(.horizontal, 20)
+									.padding(.vertical, 4)
+									.background(.white)
+									.cornerRadius(15)
+									.padding(.all)
+									
 									Text("contact_details_actions_title")
 										.default_text_style_800(styleSize: 18)
 										.frame(maxWidth: .infinity, alignment: .leading)
@@ -710,6 +775,8 @@ struct ConversationInfoFragment: View {
 	ConversationInfoFragment(
 		isMuted: .constant(false),
 		isShowEphemeralFragment: .constant(false),
+		isShowMediaFilesFragment: .constant(false),
+		isShowDocumentsFilesFragment: .constant(false),
 		isShowStartCallGroupPopup: .constant(false),
 		isShowInfoConversationFragment: .constant(true),
 		isShowEditContactFragment: .constant(false),
