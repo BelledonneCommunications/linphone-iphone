@@ -220,8 +220,16 @@ struct AddParticipantsFragment: View {
 							}
 							.background(.white)
 							.onTapGesture {
-								if let addr = try? Factory.Instance.createAddress(addr: contactsManager.avatarListModel[index].address) {
-									addParticipantsViewModel.selectParticipant(addr: addr)
+								CoreContext.shared.doOnCoreQueue { core in
+									if !contactsManager.avatarListModel[index].address.isEmpty {
+										if let addr = try? Factory.Instance.createAddress(addr: contactsManager.avatarListModel[index].address) {
+											addParticipantsViewModel.selectParticipant(addr: addr)
+										}
+									} else if !contactsManager.avatarListModel[index].phoneNumbersWithLabel.isEmpty {
+										if let address = core.interpretUrl(url: contactsManager.avatarListModel[index].phoneNumbersWithLabel.first?.phoneNumber ?? "", applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+											addParticipantsViewModel.selectParticipant(addr: address)
+										}
+									}
 								}
 							}
 							.buttonStyle(.borderless)

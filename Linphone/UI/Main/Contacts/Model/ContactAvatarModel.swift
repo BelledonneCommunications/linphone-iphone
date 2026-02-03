@@ -205,6 +205,17 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 						avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: addressFriend.address!.asStringUriOnly(), withPresence: false)
 					}
 					completion(avatarModel!)
+				} else if !addressFriend.phoneNumbers.isEmpty {
+					var avatarModel = ContactsManager.shared.avatarListModel.first(where: {
+						$0.friend != nil && $0.friend!.name == addressFriend.name && !$0.friend!.phoneNumbers.isEmpty
+						&& $0.friend!.phoneNumbers == addressFriend.phoneNumbers
+					})
+					
+					if avatarModel == nil {
+						avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: addressFriend.phoneNumbers.first ?? addressFriend.address?.asStringUriOnly() ?? "", withPresence: false)
+					}
+					
+					completion(avatarModel!)
 				} else {
 					var name = ""
 					if address.displayName != nil {

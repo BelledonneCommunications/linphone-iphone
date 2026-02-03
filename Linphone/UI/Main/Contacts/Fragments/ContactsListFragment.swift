@@ -99,10 +99,17 @@ struct ContactRow: View {
                     SharedMainViewModel.shared.displayedFriend = contactAvatarModel
                 }
             }
-            
-			if contactAvatarModel.friend != nil
-				&& contactAvatarModel.friend!.address != nil {
-				startCallFunc(contactAvatarModel.friend!.address!)
+			
+			CoreContext.shared.doOnCoreQueue { core in
+				if let friend = contactAvatarModel.friend {
+					if let friendAddress = friend.address {
+						startCallFunc(friendAddress)
+					} else if !friend.phoneNumbers.isEmpty {
+						if let address = core.interpretUrl(url: friend.phoneNumbers.first ?? "", applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+							startCallFunc(address)
+						}
+					}
+				}
 			}
 		}
 		.onLongPressGesture(minimumDuration: 0.2) {

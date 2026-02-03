@@ -31,11 +31,11 @@ class CardDavViewModel: ObservableObject {
 	let tempRemoteAddressBookFriendList = "TempRemoteDirectoryContacts address-book"
 	
 	@Published var isEdit: Bool = false
-	@Published var displayName: String = ""
-	@Published var serverUrl: String = ""
-	@Published var username: String = ""
-	@Published var password: String = ""
-	@Published var realm: String = ""
+	@Published var displayName: String = "CardDav Test"
+	@Published var serverUrl: String = "https://dav.berfini.me/dav.php/addressbooks/BC/default/"
+	@Published var username: String = "BC"
+	@Published var password: String = "cotcot"
+	@Published var realm: String = "BaikalDAV"
 	@Published var storeNewContactsInIt: Bool = false
 	@Published var isReadOnly: Bool = false
 	
