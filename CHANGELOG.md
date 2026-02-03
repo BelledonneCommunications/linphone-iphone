@@ -11,7 +11,7 @@ Group changes to describe their impact on the project, as follows:
 	Security to invite users to upgrade in case of vulnerabilities.
 	
 	
-## [6.1.0] - 2025-12-08
+## [6.1.0] - Unreleased
 
 ### Added
 - LDAP and CardDAV settings
@@ -48,6 +48,28 @@ Group changes to describe their impact on the project, as follows:
 - Refresh displayed friend when the contacts list is updated
 - Prefix handling in interpretUrl when calling a phone number
 - SIP contacts filter
+
+## [6.0.3] – 2026-01-29
+
+### Changed
+- Updated translations from Weblate
+- Refreshed presence information in history details
+- Refreshed displayed friend when the contacts list is updated
+- Display core call logs instead of account call logs when only one account is configured
+- Updated launch screen (splash screen)
+- Use searchChatRoomByIdentifier instead of searchChatRoom when changing the displayed chat room
+- Updated encryption handling when call state changes
+- Store magicSearch.allContacts to display the full contact list on app startup
+- Moved disable_chat_feature to the UI section
+- Updated account parameters in CoreContext when needed
+- Enabled core push notifications by default
+
+### Fixed
+- Disabled video button in audio-only mode during a call
+- Disabled mediaEncryptionMandatory when media encryption is set to None
+- Fixed international prefix reset in settings
+- Fixed crash on defaultDomain with invalid UTF-8 strings
+- Removed authentication info when logging out of an account
 
 
 ## [6.0.2] - 2025-09-26
