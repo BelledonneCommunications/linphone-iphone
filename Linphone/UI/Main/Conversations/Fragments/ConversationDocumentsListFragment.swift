@@ -69,10 +69,12 @@ struct ConversationDocumentsListFragment: View {
 						VStack(spacing: 0) {
 							List {
 								ForEach(conversationDocumentsListViewModel.documentsList, id: \.path) { file in
-									MediaGridItemView(file: file)
-										.background()
+									DocumentRow(file: file)
+										.padding(.vertical, 4)
+										.padding(.horizontal, 8)
 										.listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
 										.listRowSeparator(.hidden)
+										.listRowBackground(Color.clear)
 								}
 							}
 							.safeAreaInset(edge: .top, content: {
@@ -82,7 +84,7 @@ struct ConversationDocumentsListFragment: View {
 							.listStyle(.plain)
 							.overlay(
 								VStack {
-									if true {
+									if conversationDocumentsListViewModel.documentsList.isEmpty {
 										Spacer()
 										Text("conversation_no_document_found")
 											.multilineTextAlignment(.leading)
@@ -90,7 +92,7 @@ struct ConversationDocumentsListFragment: View {
 										Spacer()
 									}
 								}
-									.padding(.all)
+								.padding(.all)
 							)
 						}
 						.frame(maxWidth: .infinity)
@@ -111,34 +113,62 @@ struct ConversationDocumentsListFragment: View {
 }
 
 struct DocumentRow: View {
-
+	
+	@State private var selectedURLAttachment: URL?
 	@ObservedObject var file: FileModel
 
 	var body: some View {
-		ZStack(alignment: .bottomTrailing) {
-			if let previewPath = file.mediaPreview,
-			   let image = UIImage(contentsOfFile: previewPath) {
-				Image(uiImage: image)
-					.resizable()
-					.scaledToFill()
-					.frame(height: 110)
-					.clipped()
-			} else {
-				Rectangle()
-					.fill(Color.gray.opacity(0.2))
-					.frame(height: 110)
+		HStack {
+			VStack {
+				Image(getImageOfType(filename: file.fileName, type: file.mimeTypeString))
+					   .renderingMode(.template)
+					   .resizable()
+					   .foregroundStyle(Color.grayMain2c700)
+					   .frame(width: 60, height: 60, alignment: .leading)
 			}
-
-			if let duration = file.audioVideoDuration, file.isVideoPreview {
-				Text(duration)
-					.font(.caption2)
-					.padding(6)
-					.background(Color.black.opacity(0.6))
-					.foregroundColor(.white)
-					.clipShape(RoundedRectangle(cornerRadius: 6))
-					.padding(6)
+			.frame(width: 100, height: 100)
+			.background(Color.grayMain2c200)
+			.onTapGesture {
+				selectedURLAttachment = URL(fileURLWithPath: file.originalPath)
 			}
+			
+			VStack {
+				Text(file.fileName)
+					.foregroundStyle(Color.grayMain2c700)
+					.default_text_style_600(styleSize: 14)
+					.truncationMode(.middle)
+					.frame(maxWidth: .infinity, alignment: .leading)
+					.lineLimit(1)
+				
+				if file.fileSize > 0 {
+					Text(Int(file.fileSize).formatBytes())
+					 .default_text_style_300(styleSize: 14)
+					 .frame(maxWidth: .infinity, alignment: .leading)
+					 .lineLimit(1)
+				}
+			}
+			.padding(.horizontal, 10)
+			.frame(maxWidth: .infinity, alignment: .leading)
 		}
-		.cornerRadius(8)
+		.background(.white)
+		.clipShape(RoundedRectangle(cornerRadius: 10))
+		.onTapGesture {
+			selectedURLAttachment = URL(fileURLWithPath: file.originalPath)
+		}
+	}
+	
+	func getImageOfType(filename: String, type: String) -> String {
+		print("mimemime \(type)")
+		if type == "audio/mpeg" {
+			return "file-audio"
+		} else if type == "application/pdf"
+					|| filename.lowercased().hasSuffix(".pdf") == true {
+			return "file-pdf"
+		} else if type.hasPrefix("text/") == true
+					|| ["txt", "md", "json", "xml", "csv", "log"].contains(filename.split(separator: ".").last?.lowercased()) {
+			return "file-text"
+		} else {
+			return "file"
+		}
 	}
 }

@@ -86,33 +86,42 @@ struct ConversationMediaListFragment: View {
 struct ConversationMediaGridView: View {
 
 	@ObservedObject var viewModel: ConversationMediaListViewModel
-
-	private let columns = [
-		GridItem(.flexible(), spacing: 1),
-		GridItem(.flexible(), spacing: 1),
-		GridItem(.flexible(), spacing: 1)
-	]
+	@State private var selectedURLAttachment: URL?
+	private let columns = 4
+	private let spacing: CGFloat = 2
 
 	var body: some View {
 		VStack(spacing: 0) {
 			if !viewModel.mediaList.isEmpty && !viewModel.operationInProgress {
-				ScrollView {
-					LazyVGrid(columns: columns, spacing: 1) {
-						ForEach(viewModel.mediaList, id: \.path) { file in
-							MediaGridItemView(file: file)
-								.onTapGesture {
-									//viewModel.openMediaEvent.send(file)
-								}
-								.onAppear {
-									if file == viewModel.mediaList.last {
-										viewModel.loadMoreData(totalItemsCount: viewModel.mediaList.count)
+				GeometryReader { geometry in
+					let totalSpacing = spacing * CGFloat(columns - 1)
+					let itemWidth = (geometry.size.width - totalSpacing) / CGFloat(columns)
+
+					ScrollView {
+						LazyVGrid(
+							columns: Array(repeating: GridItem(.fixed(itemWidth), spacing: spacing), count: columns),
+							spacing: spacing
+						) {
+							ForEach(viewModel.mediaList, id: \.path) { file in
+								MediaGridItemView(file: file)
+									.aspectRatio(1, contentMode: .fit)
+									.frame(width: itemWidth, height: itemWidth)
+									.clipped()
+									.onTapGesture {
+										selectedURLAttachment = URL(fileURLWithPath: file.originalPath)
 									}
-								}
+									.onAppear {
+										if file == viewModel.mediaList.last {
+											viewModel.loadMoreData(totalItemsCount: viewModel.mediaList.count)
+										}
+									}
+							}
 						}
+						.padding(.horizontal, spacing)
+						.padding(.top, spacing)
 					}
-					.padding(.horizontal, 2)
-					.padding(.top, 12)
 				}
+				.quickLookPreview($selectedURLAttachment, in: viewModel.mediaList.compactMap { URL(fileURLWithPath: $0.originalPath) })
 			} else if viewModel.mediaList.isEmpty && !viewModel.operationInProgress {
 				Spacer()
 				Text("conversation_no_media_found")
@@ -125,49 +134,47 @@ struct ConversationMediaGridView: View {
 }
 
 struct MediaGridItemView: View {
-
 	@ObservedObject var file: FileModel
 
 	var body: some View {
-		ZStack(alignment: .bottomTrailing) {
-			if let previewPath = file.mediaPreview,
-			   let image = UIImage(contentsOfFile: previewPath) {
-				Image(uiImage: image)
-					.resizable()
-					.scaledToFill()
-					.frame(width: 120, height: 120)
-					.clipped()
-			} else {
-				Rectangle()
-					.fill(Color.gray.opacity(0.2))
-					.frame(width: 120, height: 120)
-			}
-			
-			if file.isVideoPreview {
-				VStack {
-					Spacer()
-					
-					Image("play-fill")
-						.renderingMode(.template)
+		GeometryReader { geo in
+			ZStack(alignment: .bottomTrailing) {
+				if let previewPath = file.mediaPreview,
+				   let image = UIImage(contentsOfFile: previewPath) {
+					Image(uiImage: image)
 						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 35, height: 35)
-					
-					Spacer()
+						.scaledToFill()
+						.frame(width: geo.size.width, height: geo.size.height)
+						.clipped()
+				} else {
+					Rectangle()
+						.fill(Color.gray.opacity(0.2))
+						.frame(width: geo.size.width, height: geo.size.height)
 				}
-				.frame(width: 120, height: 120)
+				
+				if file.isVideoPreview {
+					Image("play-fill")
+						.resizable()
+						.renderingMode(.template)
+						.scaledToFit()
+						.frame(width: geo.size.width * 0.3, height: geo.size.height * 0.3)
+						.foregroundColor(.white)
+						.shadow(radius: 2)
+						.position(x: geo.size.width / 2, y: geo.size.height / 2)
+				}
+				
+				if let duration = file.audioVideoDuration, file.isVideoPreview {
+					Text(duration)
+						.font(.caption2)
+						.padding(4)
+						.background(Color.black.opacity(0.6))
+						.foregroundColor(.white)
+						.clipShape(RoundedRectangle(cornerRadius: 4))
+						.padding(6)
+				}
 			}
-			
-			if let duration = file.audioVideoDuration, file.isVideoPreview {
-				Text(duration)
-					.font(.caption2)
-					.padding(6)
-					.background(Color.black.opacity(0.6))
-					.foregroundColor(.white)
-					.clipShape(RoundedRectangle(cornerRadius: 6))
-					.padding(6)
-			}
+			.cornerRadius(8)
 		}
-		.cornerRadius(8)
+		.aspectRatio(1, contentMode: .fit)
 	}
 }
