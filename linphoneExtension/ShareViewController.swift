@@ -137,7 +137,7 @@ class ShareViewController: SLComposeServiceViewController {
 	
     func copyFileToSharedContainer(from url: URL) -> URL? {
         guard let sharedContainerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: "group.org.linphone.phone.linphoneExtension"
+            forSecurityApplicationGroupIdentifier: "group.com.starten.linphone.linphoneExtension"
         ) else { return nil }
 		
         let destinationURL = sharedContainerURL.appendingPathComponent(url.lastPathComponent)
