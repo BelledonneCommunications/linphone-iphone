@@ -215,10 +215,10 @@ class ConversationViewModel: ObservableObject {
 						} else {
 							if content.type != "video" {
 								let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+								guard filePathSep.count > 1 else { return }
 								let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 								
 								var typeTmp: AttachmentType = .other
-								
 								switch content.type {
 								case "image":
 									typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
@@ -255,6 +255,7 @@ class ConversationViewModel: ObservableObject {
 								}
 							} else if content.type == "video" {
 								let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+								guard filePathSep.count > 1 else { return }
 								let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 								let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 								
@@ -413,7 +414,6 @@ class ConversationViewModel: ObservableObject {
 							
 							let filePathSep = filePath.components(separatedBy: "/Library/Images/")
 							guard filePathSep.count > 1 else { return }
-							
 							let thumbnailURL = content.type == "video" ? URL(string: self.generateThumbnail(name: filePathSep[1])) : attachment.thumbnail
 							let fullPath = URL(string: self.getNewFilePath(name: filePathSep[1]))
 							
@@ -523,6 +523,7 @@ class ConversationViewModel: ObservableObject {
 					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
 						
 						let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+						guard filePathSep.count > 1 else { return }
 						let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 						if let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.first(where: {$0.full == path || ($0.name == content.name && $0.transferProgressIndication < 100)}) {
 							DispatchQueue.main.async {
@@ -748,6 +749,7 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										guard filePathSep.count > 1 else { return }
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										
 										var typeTmp: AttachmentType = .other
@@ -788,6 +790,7 @@ class ConversationViewModel: ObservableObject {
 										}
 									} else if content.type == "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										guard filePathSep.count > 1 else { return }
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 										
@@ -1006,6 +1009,7 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										guard filePathSep.count > 1 else { return }
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										var typeTmp: AttachmentType = .other
 										
@@ -1045,6 +1049,7 @@ class ConversationViewModel: ObservableObject {
 										}
 									} else if content.type == "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										guard filePathSep.count > 1 else { return }
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 										
@@ -1282,6 +1287,7 @@ class ConversationViewModel: ObservableObject {
 							} else if content.name != nil && !content.name!.isEmpty {
 								if content.type != "video" {
 									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+									guard filePathSep.count > 1 else { return }
 									let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 									
 									var typeTmp: AttachmentType = .other
@@ -1322,6 +1328,7 @@ class ConversationViewModel: ObservableObject {
 									}
 								} else if content.type == "video" {
 									let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+									guard filePathSep.count > 1 else { return }
 									let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 									
 									let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
@@ -1546,10 +1553,10 @@ class ConversationViewModel: ObservableObject {
 					} else if content.name != nil && !content.name!.isEmpty {
 						if content.type != "video" {
 							let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+							guard filePathSep.count > 1 else { return }
 							let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 							
 							var typeTmp: AttachmentType = .other
-							
 							switch content.type {
 							case "image":
 								typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
@@ -1586,8 +1593,8 @@ class ConversationViewModel: ObservableObject {
 							}
 						} else if content.type == "video" {
 							let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+							guard filePathSep.count > 1 else { return }
 							let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-							
 							let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 							if path != nil && pathThumbnail != nil {
 								let attachment =
@@ -1899,9 +1906,10 @@ class ConversationViewModel: ObservableObject {
 										} else {
 											if content.type != "video" {
 												let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+												guard filePathSep.count > 1 else { return }
 												let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-												var typeTmp: AttachmentType = .other
 												
+												var typeTmp: AttachmentType = .other
 												switch content.type {
 												case "image":
 													typeTmp = (content.name?.lowercased().hasSuffix("gif"))! ? .gif : .image
@@ -1938,6 +1946,7 @@ class ConversationViewModel: ObservableObject {
 												}
 											} else if content.type == "video" {
 												let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+												guard filePathSep.count > 1 else { return }
 												let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 												let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 												
@@ -2176,22 +2185,26 @@ class ConversationViewModel: ObservableObject {
 								content.name = attachment.full.lastPathComponent
 								
 								if message != nil {
-									
-									let path = FileManager.default.temporaryDirectory.appendingPathComponent(attachment.full.lastPathComponent)
-									if let newPath = URL(string: FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
-														 + (attachment.full.lastPathComponent)) {
-										do {
-											if FileManager.default.fileExists(atPath: newPath.path) {
-												try FileManager.default.removeItem(atPath: newPath.path)
-											}
-											try FileManager.default.moveItem(atPath: path.path, toPath: newPath.path)
-											
-											content.filePath = newPath.path
-											
-											message!.addFileContent(content: content)
-										} catch {
-											Log.error(error.localizedDescription)
+									let tempPath = FileManager.default.temporaryDirectory.appendingPathComponent(attachment.full.lastPathComponent)
+									let folderURL = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images")
+									let newPath = folderURL.appendingPathComponent(attachment.full.lastPathComponent)
+
+									do {
+										if !FileManager.default.fileExists(atPath: folderURL.path) {
+											try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
 										}
+										
+										if FileManager.default.fileExists(atPath: newPath.path) {
+											try FileManager.default.removeItem(atPath: newPath.path)
+										}
+										
+										try FileManager.default.moveItem(atPath: tempPath.path, toPath: newPath.path)
+										
+										content.filePath = newPath.path
+										message?.addFileContent(content: content)
+										
+									} catch {
+										Log.error(error.localizedDescription)
 									}
 								}
 							} catch {
@@ -2292,23 +2305,19 @@ class ConversationViewModel: ObservableObject {
 		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
 		if self.sharedMainViewModel.displayedConversation != nil {
 			if let contentName = content.name {
-				var file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-				var fileExists = FileUtil.sharedContainerUrl()
-					.appendingPathComponent("Library/Images")
-					.appendingPathComponent(contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-					.path
-				
+				let baseURL = FileUtil.sharedContainerUrl()
+					.appendingPathComponent("Library")
+					.appendingPathComponent("Images")
+
+				var fileURL = baseURL.appendingPathComponent(contentName)
 				var counter = 1
-				while FileManager.default.fileExists(atPath: fileExists) {
-					file = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + "\(counter)_" + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-					fileExists = FileUtil.sharedContainerUrl()
-						.appendingPathComponent("Library/Images")
-						.appendingPathComponent("\(counter)_" + (contentName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-						.path
+
+				while FileManager.default.fileExists(atPath: fileURL.path) {
+					fileURL = baseURL.appendingPathComponent("\(counter)_\(contentName)")
 					counter += 1
 				}
-				
-				content.filePath = String(file.dropFirst(7))
+
+				content.filePath = fileURL.path
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
 				)
@@ -2320,15 +2329,29 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func getNewFilePath(name: String) -> String {
-		return FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
+		let baseURL = FileUtil.sharedContainerUrl()
+			.appendingPathComponent("Library")
+			.appendingPathComponent("Images")
+		
+		let fileURL = baseURL.appendingPathComponent(name)
+		
+		return fileURL.absoluteString
 	}
 	
 	func generateThumbnail(name: String, pathThumbnail: URL? = nil) -> String {
 		do {
-			let path = pathThumbnail == nil
-			? URL(string: "file://" + FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-			: pathThumbnail!.appendingPathComponent((name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""))
-			let asset = AVURLAsset(url: path!, options: nil)
+			let baseURL = FileUtil.sharedContainerUrl()
+				.appendingPathComponent("Library")
+				.appendingPathComponent("Images")
+
+			let path: URL = {
+				if let pathThumbnail = pathThumbnail {
+					return pathThumbnail.appendingPathComponent(name)
+				} else {
+					return baseURL.appendingPathComponent(name)
+				}
+			}()
+			let asset = AVURLAsset(url: path, options: nil)
 			let imgGenerator = AVAssetImageGenerator(asset: asset)
 			imgGenerator.appliesPreferredTrackTransform = true
 			let cgImage = try imgGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
@@ -2338,20 +2361,18 @@ class ConversationViewModel: ObservableObject {
 				return ""
 			}
 			
-			let urlName = pathThumbnail == nil
-			? URL(string: "file://"
-				  + FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images").absoluteString
-				  + "preview_"
-				  + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")
-				  + ".png"
-			)
-			: pathThumbnail!.appendingPathComponent("preview_" + (name.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "") + ".png")
+			let urlName: URL = {
+				let previewName = "preview_\(name).png"
+				if let pathThumbnail = pathThumbnail {
+					return pathThumbnail.appendingPathComponent(previewName)
+				} else {
+					return baseURL.appendingPathComponent(previewName)
+				}
+			}()
 			
-			if urlName != nil {
-				_ = try data.write(to: urlName!)
-			}
+			_ = try data.write(to: urlName)
 			
-			return urlName!.absoluteString
+			return urlName.absoluteString
 		} catch let error {
 			print("*** Error generating thumbnail: \(error.localizedDescription)")
 			return ""
@@ -3126,6 +3147,7 @@ class ConversationViewModel: ObservableObject {
 								} else {
 									if content.type != "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										guard filePathSep.count > 1 else { return }
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										var typeTmp: AttachmentType = .other
 										
@@ -3165,6 +3187,7 @@ class ConversationViewModel: ObservableObject {
 										}
 									} else if content.type == "video" {
 										let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+										guard filePathSep.count > 1 else { return }
 										let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
 										let pathThumbnail = URL(string: self.generateThumbnail(name: filePathSep[1]))
 										
