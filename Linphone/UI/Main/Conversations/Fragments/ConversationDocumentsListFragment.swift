@@ -75,6 +75,11 @@ struct ConversationDocumentsListFragment: View {
 										.listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
 										.listRowSeparator(.hidden)
 										.listRowBackground(Color.clear)
+										.onAppear {
+										 if file == conversationDocumentsListViewModel.documentsList.last {
+											 conversationDocumentsListViewModel.loadMoreData(totalItemsCount: conversationDocumentsListViewModel.documentsList.count)
+										 }
+									 }
 								}
 							}
 							.safeAreaInset(edge: .top, content: {
@@ -98,6 +103,11 @@ struct ConversationDocumentsListFragment: View {
 						.frame(maxWidth: .infinity)
 					}
 					.background(Color.gray100)
+					
+					if conversationDocumentsListViewModel.operationInProgress {
+						PopupLoadingView()
+							.background(.black.opacity(0.65))
+					}
 				}
 				.navigationTitle("")
 				.navigationBarHidden(true)

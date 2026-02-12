@@ -41,30 +41,46 @@ final class ConversationDocumentsListViewModel: ObservableObject {
 
 	// MARK: - Loading
 	private func loadDocumentsList() {
-		operationInProgress = true
-		totalDocumentsCount = self.conversationModel.chatRoom.documentContentsSize
-
-		let contentsToLoad = min(totalDocumentsCount, Self.CONTENTS_PER_PAGE)
-		let contents = self.conversationModel.chatRoom.getDocumentContentsRange(begin: 0, end: contentsToLoad)
-
-		documentsList = getFileModelsList(from: contents)
-		operationInProgress = false
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { _ in
+			self.totalDocumentsCount = self.conversationModel.chatRoom.documentContentsSize
+			
+			let contentsToLoad = min(self.totalDocumentsCount, Self.CONTENTS_PER_PAGE)
+			let contents = self.conversationModel.chatRoom.getDocumentContentsRange(begin: 0, end: contentsToLoad)
+			
+			let documentsListTmp = self.getFileModelsList(from: contents)
+			
+			DispatchQueue.main.async {
+				self.documentsList = documentsListTmp
+				self.operationInProgress = false
+			}
+		}
 	}
 
 	func loadMoreData(totalItemsCount: Int) {
-		guard totalItemsCount < totalDocumentsCount else { return }
-
-		var upperBound = totalItemsCount + Self.CONTENTS_PER_PAGE
-		if upperBound > totalDocumentsCount {
-			upperBound = totalDocumentsCount
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { _ in
+			guard totalItemsCount < self.totalDocumentsCount else {
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+				}
+				return
+			}
+			
+			var upperBound = totalItemsCount + Self.CONTENTS_PER_PAGE
+			if upperBound > self.totalDocumentsCount {
+				upperBound = self.totalDocumentsCount
+			}
+			
+			let contents = self.conversationModel.chatRoom.getDocumentContentsRange(begin: totalItemsCount, end: upperBound)
+			let newModels = self.getFileModelsList(from: contents)
+			
+			DispatchQueue.main.async {
+				self.documentsList.append(contentsOf: newModels)
+				self.operationInProgress = false
+			}
 		}
-
-		let contents = self.conversationModel.chatRoom.getDocumentContentsRange(begin: totalItemsCount, end: upperBound)
-		let newModels = getFileModelsList(from: contents)
-
-		DispatchQueue.main.async {
-			self.documentsList.append(contentsOf: newModels)
-		}
+		
 	}
 
 	// MARK: - Mapping Content -> FileModel

@@ -42,28 +42,36 @@ final class ConversationMediaListViewModel: ObservableObject {
 	// MARK: - Loading
 
 	private func loadMediaList() {
-		operationInProgress = true
-		Log.info("\(Self.TAG) Loading media contents for conversation \(conversationModel.chatRoom.identifier ?? "No ID")")
-
-		totalMediaCount = conversationModel.chatRoom.mediaContentsSize
-		Log.info("\(Self.TAG) Media contents size is [\(totalMediaCount)]")
-
-		let contentsToLoad = min(totalMediaCount, Self.CONTENTS_PER_PAGE)
-		let contents = conversationModel.chatRoom.getMediaContentsRange(begin: 0, end: contentsToLoad)
-
-		Log.info("\(Self.TAG) \(contents.count) media have been fetched")
-
-		DispatchQueue.main.async {
-			self.mediaList = self.getFileModelsList(from: contents)
-			self.operationInProgress = false
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { _ in
+			Log.info("\(Self.TAG) Loading media contents for conversation \(self.conversationModel.chatRoom.identifier ?? "No ID")")
+			
+			self.totalMediaCount = self.conversationModel.chatRoom.mediaContentsSize
+			Log.info("\(Self.TAG) Media contents size is [\(self.totalMediaCount)]")
+			
+			let contentsToLoad = min(self.totalMediaCount, Self.CONTENTS_PER_PAGE)
+			let contents = self.conversationModel.chatRoom.getMediaContentsRange(begin: 0, end: contentsToLoad)
+			
+			Log.info("\(Self.TAG) \(contents.count) media have been fetched")
+			
+			DispatchQueue.main.async {
+				self.mediaList = self.getFileModelsList(from: contents)
+				self.operationInProgress = false
+			}
 		}
 	}
 
 	func loadMoreData(totalItemsCount: Int) {
-		CoreContext.shared.doOnCoreQueue { core in
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { _ in
 			Log.info("\(Self.TAG) Loading more data, current total is \(totalItemsCount), max size is \(self.totalMediaCount)")
 
-			guard totalItemsCount < self.totalMediaCount else { return }
+			guard totalItemsCount < self.totalMediaCount else {
+				DispatchQueue.main.async {
+					self.operationInProgress = false
+				}
+				return
+			}
 
 			var upperBound = totalItemsCount + Self.CONTENTS_PER_PAGE
 			if upperBound > self.totalMediaCount {
@@ -77,6 +85,7 @@ final class ConversationMediaListViewModel: ObservableObject {
 
 			DispatchQueue.main.async {
 				self.mediaList.append(contentsOf: newModels)
+				self.operationInProgress = false
 			}
 		}
 	}

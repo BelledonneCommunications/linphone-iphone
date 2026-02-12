@@ -69,6 +69,11 @@ struct ConversationMediaListFragment: View {
 						ConversationMediaGridView(viewModel: conversationMediaListViewModel)
 					}
 					.background(Color.gray100)
+					
+					if conversationMediaListViewModel.operationInProgress {
+						PopupLoadingView()
+							.background(.black.opacity(0.65))
+					}
 				}
 				.navigationTitle("")
 				.navigationBarHidden(true)
@@ -92,7 +97,7 @@ struct ConversationMediaGridView: View {
 
 	var body: some View {
 		VStack(spacing: 0) {
-			if !viewModel.mediaList.isEmpty && !viewModel.operationInProgress {
+			if !viewModel.mediaList.isEmpty {
 				GeometryReader { geometry in
 					let totalSpacing = spacing * CGFloat(columns - 1)
 					let itemWidth = (geometry.size.width - totalSpacing) / CGFloat(columns)
@@ -127,6 +132,8 @@ struct ConversationMediaGridView: View {
 				Text("conversation_no_media_found")
 					.multilineTextAlignment(.center)
 					.default_text_style_800(styleSize: 16)
+				Spacer()
+			} else {
 				Spacer()
 			}
 		}
