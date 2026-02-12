@@ -29,8 +29,10 @@ struct ContactFragment: View {
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
+	@Binding var isShowTrustLevelPopup: Bool
 	@Binding var isShowSipAddressesPopup: Bool
 	@Binding var isShowSipAddressesPopupType: Int
+	@Binding var isShowIncreaseTrustLevelPopup: Bool
 	@Binding var isShowEditContactFragmentInContactDetails: Bool
 	
 	@State private var showingSheet = false
@@ -68,19 +70,11 @@ struct ContactFragment: View {
 			showingSheet: $showingSheet,
 			showShareSheet: $showShareSheet,
 			isShowDismissPopup: $isShowDismissPopup,
+			isShowTrustLevelPopup: $isShowTrustLevelPopup,
 			isShowSipAddressesPopup: $isShowSipAddressesPopup,
 			isShowSipAddressesPopupType: $isShowSipAddressesPopupType,
+			isShowIncreaseTrustLevelPopup: $isShowIncreaseTrustLevelPopup,
 			isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails
 		)
 	}
-}
-
-#Preview {
-	ContactFragment(
-		isShowDeletePopup: .constant(false),
-		isShowDismissPopup: .constant(false),
-		isShowSipAddressesPopup: .constant(false),
-		isShowSipAddressesPopupType: .constant(0),
-		isShowEditContactFragmentInContactDetails: .constant(false)
-	)
 }

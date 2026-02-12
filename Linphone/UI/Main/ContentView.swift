@@ -59,6 +59,9 @@ struct ContentView: View {
 	@State var isShowStartConversationFragment = false
 	@State var isShowDismissPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
+	@State var isShowTrustLevelPopup = false
+	@State var isShowIncreaseTrustLevelPopup = false
+	@State var increaseTrustLevelPopupAcceptedTmp = false
 	@State var isShowStartCallGroupPopup = false
 	@State var isShowDeleteMessagePopup = false
 	@State var isShowSipAddressesPopup = false
@@ -1013,8 +1016,10 @@ struct ContentView: View {
 								ContactFragment(
 									isShowDeletePopup: $isShowDeleteContactPopup,
 									isShowDismissPopup: $isShowDismissPopup,
+									isShowTrustLevelPopup: $isShowTrustLevelPopup,
 									isShowSipAddressesPopup: $isShowSipAddressesPopup,
 									isShowSipAddressesPopupType: $isShowSipAddressesPopupType,
+									isShowIncreaseTrustLevelPopup: $isShowIncreaseTrustLevelPopup,
 									isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails
 								)
 								.environmentObject(contactsListVM)
@@ -1386,6 +1391,131 @@ struct ContentView: View {
 						.zIndex(3)
 						.onTapGesture {
 							self.isShowSendCancelMeetingNotificationPopup.toggle()
+						}
+					}
+					
+					if isShowTrustLevelPopup {
+						if let displayedFriend = sharedMainViewModel.displayedFriend {
+							PopupView(
+								isShowPopup: $isShowTrustLevelPopup,
+								title: Text("contact_dialog_devices_trust_help_title"),
+								content: Text("contact_dialog_devices_trust_help_message"),
+								additionalContent: {
+									HStack {
+										let avatarSize = 50.0
+										let avatar = Avatar(contactAvatarModel: displayedFriend, avatarSize: avatarSize, hidePresence: true)
+										
+										avatar
+										
+										Image("arrow-right")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.grayMain2c600)
+											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
+										
+										ZStack {
+											avatar
+											
+											Circle()
+												.stroke(Color.blueInfo500, lineWidth: 2)
+												.frame(width: avatarSize, height: avatarSize)
+											
+											HStack {
+												VStack {
+													Spacer()
+													Image("trusted")
+														   .resizable()
+														   .frame(width: avatarSize/4, height: avatarSize/4)
+														   .padding(.trailing, 1)
+														   .padding(.bottom, 1)
+												}
+												Spacer()
+											}
+											.frame(width: avatarSize, height: avatarSize)
+										}
+									}
+									.frame(maxWidth: .infinity)
+									.padding(.bottom, 10)
+								},
+								titleFirstButton: nil,
+								actionFirstButton: {},
+								titleSecondButton: Text("dialog_understood"),
+								actionSecondButton: { self.isShowTrustLevelPopup.toggle() },
+								titleThirdButton: nil,
+								actionThirdButton: {}
+							)
+							.background(.black.opacity(0.65))
+							.zIndex(3)
+							.onTapGesture {
+								self.isShowTrustLevelPopup.toggle()
+							}
+						}
+					}
+					
+					if isShowIncreaseTrustLevelPopup {
+						if let displayedFriend = sharedMainViewModel.displayedFriend {
+							PopupView(
+								isShowPopup: $isShowIncreaseTrustLevelPopup,
+								title: Text("contact_dialog_increase_trust_level_title"),
+								content: Text(String(format: String(localized: "contact_dialog_increase_trust_level_message"), displayedFriend.name, SharedMainViewModel.shared.increaseTrustLevelPopupDeviceName)),
+								additionalContent: {
+									if !SharedMainViewModel.shared.increaseTrustLevelPopupAccepted {
+										HStack {
+											Button(action: {
+												increaseTrustLevelPopupAcceptedTmp.toggle()
+											}, label: {
+												HStack {
+													Image(systemName: increaseTrustLevelPopupAcceptedTmp ? "checkmark.square.fill" : "square")
+														.renderingMode(.template)
+														.resizable()
+														.foregroundStyle(Color.orangeMain500)
+														.frame(width: 20, height: 20)
+												}
+											})
+											.buttonStyle(PlainButtonStyle())
+											
+											Text("dialog_do_not_show_anymore")
+												.tint(Color.grayMain2c600)
+												.default_text_style(styleSize: 15)
+										}
+										.padding(.bottom, 10)
+									}
+								},
+								titleFirstButton: nil,
+								actionFirstButton: {},
+								titleSecondButton: Text("contact_call_action"),
+								actionSecondButton: {
+									if increaseTrustLevelPopupAcceptedTmp == true {
+										SharedMainViewModel.shared.changeIncreaseTrustLevelPopupAccepted()
+									}
+									
+									if let deviceAddress = SharedMainViewModel.shared.increaseTrustLevelPopupDeviceAddress {
+										TelecomManager.shared.doCallOrJoinConf(address: deviceAddress)
+									}
+									
+									self.isShowIncreaseTrustLevelPopup.toggle()
+									self.increaseTrustLevelPopupAcceptedTmp = false
+									SharedMainViewModel.shared.increaseTrustLevelPopupDeviceName = ""
+									SharedMainViewModel.shared.increaseTrustLevelPopupDeviceAddress = nil
+								},
+								titleThirdButton: Text("dialog_cancel"),
+								actionThirdButton: {
+									self.isShowIncreaseTrustLevelPopup.toggle()
+									self.increaseTrustLevelPopupAcceptedTmp = false
+									SharedMainViewModel.shared.increaseTrustLevelPopupDeviceName = ""
+									SharedMainViewModel.shared.increaseTrustLevelPopupDeviceAddress = nil
+									
+								}
+							)
+							.background(.black.opacity(0.65))
+							.zIndex(3)
+							.onTapGesture {
+								self.isShowIncreaseTrustLevelPopup.toggle()
+								self.increaseTrustLevelPopupAcceptedTmp = false
+								SharedMainViewModel.shared.increaseTrustLevelPopupDeviceName = ""
+								SharedMainViewModel.shared.increaseTrustLevelPopupDeviceAddress = nil
+							}
 						}
 					}
 					

@@ -172,8 +172,15 @@
 "contact_details_numbers_and_addresses_title" = "Coordonnées";
 "contact_details_remove_from_favourites" = "Retirer des favoris";
 "contact_details_share" = "Partager";
-"contact_dialog_delete_message" = "Ce contact sera définitivement supprimé.";
+"contact_details_trust_title" = "Confiance";
+"contact_details_no_device_found" = "Aucun appareil trouvé";
+"contact_details_trusted_devices_count" = "Appareils du contact :";
+"contact_dialog_increase_trust_level_title" = "Vérifier l'appareil ?";
+"contact_dialog_increase_trust_level_message" = "Voulez-vous appeler l’appareil %2$@ de %1$@ ?\nVoulez-vous passer l’appel ?";
+"contact_dialog_devices_trust_help_title" = "Niveau de confiance";
+"contact_dialog_devices_trust_help_message" = "Vérifiez les appareils de votre contact pour confirmer que vos communications seront sécurisées et sans compromission.\nQuand tous seront vérifiés, vous atteindrez le niveau de confiance maximal.";
 "contact_dialog_delete_title" = "Supprimer %@ ?";
+"contact_dialog_delete_message" = "Ce contact sera définitivement supprimé.";
 "contact_dialog_pick_phone_number_or_sip_address_title" = "Choisissez un numéro ou adresse SIP";
 "contact_edit_title" = "Modifier contact";
 "contact_editor_company" = "Entreprise";
@@ -182,6 +189,8 @@
 "contact_editor_first_name" = "Prénom";
 "contact_editor_job_title" = "Poste";
 "contact_editor_last_name" = "Nom de famille";
+"contact_make_call_check_device_trust" = "Vérifier";
+"contact_device_without_name" = "Appareil sans nom";
 "contact_message_action" = "Message";
 "contact_new_title" = "Nouveau contact";
 "contact_video_call_action" = "Appel vidéo";
@@ -288,8 +297,10 @@
 "dialog_continue" = "Continuer";
 "dialog_deny" = "Refuser";
 "dialog_install" = "Installer";
+"dialog_do_not_show_anymore" = "Ne plus me montrer ce message";
 "dialog_no" = "Non";
 "dialog_confirm" = "Confirmer";
+"dialog_understood" = "J'ai compris";
 "dialog_yes" = "Oui";
 "drawer_menu_account_connection_status_cleared" = "Désactivé";
 "drawer_menu_account_connection_status_connected" = "Connecté";

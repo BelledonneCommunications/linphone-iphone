@@ -168,6 +168,7 @@
 		D7AEB9762F39E2A400298546 /* ConversationMediaListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9752F39E2A300298546 /* ConversationMediaListViewModel.swift */; };
 		D7AEB9782F39E2C300298546 /* ConversationDocumentsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9772F39E2C100298546 /* ConversationDocumentsListViewModel.swift */; };
 		D7AEB97A2F39E83600298546 /* FileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB9792F39E83500298546 /* FileModel.swift */; };
+		D7AEB9A02F3E219600298546 /* ContactDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5678D2B28888F00DE63EB /* CallView.swift */; };
 		D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */; };
@@ -433,6 +434,7 @@
 		D7AEB9752F39E2A300298546 /* ConversationMediaListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationMediaListViewModel.swift; sourceTree = "<group>"; };
 		D7AEB9772F39E2C100298546 /* ConversationDocumentsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDocumentsListViewModel.swift; sourceTree = "<group>"; };
 		D7AEB9792F39E83500298546 /* FileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileModel.swift; sourceTree = "<group>"; };
+		D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDeviceModel.swift; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7B5678D2B28888F00DE63EB /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
 		D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
@@ -822,6 +824,7 @@
 		D726E4372B1643FF0083C415 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */,
 				D726E4382B16440C0083C415 /* ContactAvatarModel.swift */,
 			);
 			path = Model;
@@ -1601,6 +1604,7 @@
 				D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */,
 				66D382052CEB7E0A0063E1C5 /* ShortcutModel.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
+				D7AEB9A02F3E219600298546 /* ContactDeviceModel.swift in Sources */,
 				D703F7082DC8C605005B8F75 /* FilePicker.swift in Sources */,
 				C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */,
 				D714DE622C1C4636006C1F1D /* RegisterCodeConfirmationFragment.swift in Sources */,

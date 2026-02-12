@@ -885,7 +885,7 @@ struct ChatBubbleView: View {
 					}
 				}
 			}
-			.frame(width: geometryProxy.size.width - 150)
+			.frame(width: max(0, geometryProxy.size.width - 150))
 		}
 	}
 	

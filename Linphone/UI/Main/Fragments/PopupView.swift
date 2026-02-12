@@ -20,13 +20,15 @@
 import SwiftUI
 import Photos
 
-struct PopupView: View {
+struct PopupView<AdditionalContent: View>: View {
 	
 	var permissionManager = PermissionManager.shared
 	
 	@Binding var isShowPopup: Bool
 	var title: Text
 	var content: Text?
+	
+	private let additionalContent: AdditionalContent
 	
 	var titleFirstButton: Text?
 	var actionFirstButton: () -> Void
@@ -36,6 +38,30 @@ struct PopupView: View {
 	
 	var titleThirdButton: Text?
 	var actionThirdButton: () -> Void
+	
+	init(
+		isShowPopup: Binding<Bool>,
+		title: Text,
+		content: Text? = nil,
+		@ViewBuilder additionalContent: () -> AdditionalContent = { EmptyView() },
+		titleFirstButton: Text? = nil,
+		actionFirstButton: @escaping () -> Void = {},
+		titleSecondButton: Text? = nil,
+		actionSecondButton: @escaping () -> Void = {},
+		titleThirdButton: Text? = nil,
+		actionThirdButton: @escaping () -> Void = {}
+	) {
+		self._isShowPopup = isShowPopup
+		self.title = title
+		self.content = content
+		self.additionalContent = additionalContent()
+		self.titleFirstButton = titleFirstButton
+		self.actionFirstButton = actionFirstButton
+		self.titleSecondButton = titleSecondButton
+		self.actionSecondButton = actionSecondButton
+		self.titleThirdButton = titleThirdButton
+		self.actionThirdButton = actionThirdButton
+	}
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -51,6 +77,8 @@ struct PopupView: View {
 						.default_text_style(styleSize: 15)
 						.padding(.bottom, 20)
 				}
+				
+				additionalContent
 				
 				HStack {
 					if titleFirstButton != nil {
@@ -115,17 +143,4 @@ struct PopupView: View {
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
 	}
-}
-
-#Preview {
-	PopupView(isShowPopup: .constant(true),
-			  title: Text("Title"),
-			  content: Text("Content"),
-			  titleFirstButton: Text("Accept all"),
-			  actionFirstButton: {},
-			  titleSecondButton: Text("dialog_confirm"),
-			  actionSecondButton: {},
-			  titleThirdButton: Text("dialog_cancel"),
-			  actionThirdButton: {})
-	.background(.black.opacity(0.65))
 }

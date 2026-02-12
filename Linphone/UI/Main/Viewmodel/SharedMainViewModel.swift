@@ -36,6 +36,9 @@ class SharedMainViewModel: ObservableObject {
 	@Published var displayProfileMode = false
 	@Published var defaultAvatar: URL?
 	@Published var indexView: Int = 0
+	@Published var increaseTrustLevelPopupAccepted = false
+	@Published var increaseTrustLevelPopupDeviceName = ""
+	@Published var increaseTrustLevelPopupDeviceAddress: Address?
 	
 	@Published var displayedFriend: ContactAvatarModel?
 	@Published var displayedCall: HistoryModel?
@@ -64,6 +67,7 @@ class SharedMainViewModel: ObservableObject {
 	let displayProfileModeKey = "display_profile_mode"
 	let defaultAvatarKey = "default_avatar"
 	let indexViewKey = "index_view"
+	let increaseTrustLevelKey = "increase_trust_level"
 	
 	var maxWidth = 600.0
 	
@@ -100,6 +104,12 @@ class SharedMainViewModel: ObservableObject {
 			if let defaultAvatarTmp = preferences.url(forKey: defaultAvatarKey) {
 				defaultAvatar = defaultAvatarTmp
 			}
+		}
+		
+		if preferences.object(forKey: increaseTrustLevelKey) == nil {
+			preferences.set(increaseTrustLevelPopupAccepted, forKey: increaseTrustLevelKey)
+		} else {
+			increaseTrustLevelPopupAccepted = preferences.bool(forKey: increaseTrustLevelKey)
 		}
         
         updateMissedCallsCount()
@@ -144,6 +154,14 @@ class SharedMainViewModel: ObservableObject {
 		
 		defaultAvatar = defaultAvatarURL
 		preferences.set(defaultAvatar, forKey: defaultAvatarKey)
+	}
+	
+	
+	func changeIncreaseTrustLevelPopupAccepted() {
+		let preferences = UserDefaults.standard
+		
+		increaseTrustLevelPopupAccepted = true
+		preferences.set(increaseTrustLevelPopupAccepted, forKey: increaseTrustLevelKey)
 	}
 	
 	func changeIndexView(indexViewInt: Int) {

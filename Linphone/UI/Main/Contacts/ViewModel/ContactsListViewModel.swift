@@ -23,6 +23,8 @@ import SwiftUI
 
 // swiftlint:disable line_length
 class ContactsListViewModel: ObservableObject {
+	static let TAG = "[ConversationForwardMessageViewModel]"
+	
 	@Published var selectedEditFriend: ContactAvatarModel?
 	
 	var stringToCopy: String = ""
@@ -31,22 +33,28 @@ class ContactsListViewModel: ObservableObject {
     var selectedFriendToShare: ContactAvatarModel?
 	var selectedFriendToDelete: ContactAvatarModel?
 	
+	@Published var devices: [ContactDeviceModel] = []
+	@Published var trustedDevicesPercentage: Double = 0.0
+	
 	@Published var displayedConversation: ConversationModel?
 	
+	private var coreDelegate: CoreDelegate?
 	private var contactChatRoomDelegate: ChatRoomDelegate?
 	
 	private let nativeAddressBookFriendList = "Native address-book"
 	let linphoneAddressBookFriendList = "Linphone address-book"
 	let tempRemoteAddressBookFriendList = "TempRemoteDirectoryContacts address-book"
 	
-	init() {}
+	init() {
+		addCoreDelegate()
+	}
 	
 	func createOneToOneChatRoomWith(remote: Address) {
 		CoreContext.shared.doOnCoreQueue { core in
 			let account = core.defaultAccount
 			if account == nil {
 				Log.error(
-					"\(ConversationForwardMessageViewModel.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())"
+					"\(Self.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())"
 				)
 				return
 			}
@@ -211,6 +219,30 @@ class ContactsListViewModel: ObservableObject {
 		chatRoom.addDelegate(delegate: contactChatRoomDelegate!)
 	}
 	
+	func addCoreDelegate() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if let coreDelegate = self.coreDelegate {
+				core.removeDelegate(delegate: coreDelegate)
+				self.coreDelegate = nil
+			}
+			
+			self.coreDelegate = CoreDelegateStub(
+				onCallStateChanged: { (core: Core, call: Call, state: Call.State, message: String) in
+					if call.state == Call.State.End && SharedMainViewModel.shared.displayedFriend != nil {
+						// Updates trust if need be
+						DispatchQueue.main.async {
+							self.fetchDevicesAndTrust()
+						}
+					}
+				}
+			)
+			
+			if self.coreDelegate != nil {
+				core.addDelegate(delegate: self.coreDelegate!)
+			}
+		}
+	}
+	
 	func deleteSelectedContact() {
 		CoreContext.shared.doOnCoreQueue { core in
 			if self.selectedFriendToDelete != nil && self.selectedFriendToDelete!.friend != nil {
@@ -264,6 +296,45 @@ class ContactsListViewModel: ObservableObject {
 					displayedFriend.starred = starredTmp
 				}
 			}
+		}
+	}
+	
+	func fetchDevicesAndTrust() {
+		if let friend = SharedMainViewModel.shared.displayedFriend?.friend {
+			var devicesList: [ContactDeviceModel] = []
+			
+			let friendDevices = friend.devices
+			if friendDevices.isEmpty {
+				Log.info("\(Self.TAG) No device found for friend [\(friend.name ?? "")]")
+			} else {
+				let devicesCount = friendDevices.count
+				var trustedDevicesCount = 0
+				
+				for device in friendDevices {
+					let trusted = device.securityLevel == .EndToEndEncryptedAndVerified
+					
+					if let address = device.address {
+						devicesList.append(
+							ContactDeviceModel(
+								name: device.displayName ?? NSLocalizedString("contact_device_without_name", comment: ""),
+								address: address,
+								trusted: trusted
+							)
+						)
+					}
+					
+					if trusted {
+						trustedDevicesCount += 1
+					}
+				}
+				
+				if !devicesList.isEmpty {
+					let percentage = trustedDevicesCount * 100 / devicesCount
+					trustedDevicesPercentage = Double(percentage)
+				}
+			}
+			
+			devices = devicesList
 		}
 	}
 }
