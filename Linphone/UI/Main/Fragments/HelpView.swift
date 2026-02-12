@@ -41,7 +41,7 @@ class HelpView { // TODO (basic debug moved here until halp view is implemented)
 		CoreContext.shared.doOnCoreQueue { core in
 			if let account = core.defaultAccount {
 				Log.info("Account \(account.displayName()) has been removed")
-				core.removeAccount(account: account) // UI update and auth info removal moved into onRegistrationChanged core callback, in CoreContext
+				core.removeAccountWithData(account: account) // UI update and auth info removal moved into onRegistrationChanged core callback, in CoreContext
 			}
 		}
 	}

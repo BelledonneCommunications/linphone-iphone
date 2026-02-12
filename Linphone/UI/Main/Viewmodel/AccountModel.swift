@@ -286,7 +286,7 @@ class AccountModel: ObservableObject {
 	func logout() {
 		CoreContext.shared.doOnCoreQueue { core in
 			Log.info("Account \(self.account.displayName()) has been removed")
-			core.removeAccount(account: self.account)
+			core.removeAccountWithData(account: self.account)
 			
 			if let authInfo = self.account.findAuthInfo() {
 				core.removeAuthInfo(info: authInfo)

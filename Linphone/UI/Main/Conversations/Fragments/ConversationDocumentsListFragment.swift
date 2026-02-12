@@ -158,7 +158,6 @@ struct DocumentRow: View {
 	}
 	
 	func getImageOfType(filename: String, type: String) -> String {
-		print("mimemime \(type)")
 		if type == "audio/mpeg" {
 			return "file-audio"
 		} else if type == "application/pdf"
