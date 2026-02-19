@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "not_trusted.svg",
+      "filename" : "not-trusted.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

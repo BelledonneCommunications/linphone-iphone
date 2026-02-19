@@ -45,6 +45,8 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	@Published var photo: String = ""
 	@Published var lastPresenceInfo: String = ""
 	@Published var presenceStatus: ConsolidatedPresence = .Offline
+	@Published var unsafeFriend: Bool = false
+	@Published var trustedFriend: Bool = false
 	
 	private var friendDelegate: FriendDelegate?
 	
@@ -89,6 +91,9 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 			var lastPresenceInfoTmp = ""
 			var presenceStatusTmp: ConsolidatedPresence = .Offline
 			
+			let unsafeFriendTmp = (friend?.securityLevel ?? .None) == .Unsafe
+			let trustedFriendTmp = (friend?.securityLevel ?? .None) == .EndToEndEncryptedAndVerified
+			
 			if let friend = friend, withPresence == true {
                 
 				lastPresenceInfoTmp = ""
@@ -128,6 +133,8 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 				self.photo = photoTmp
 				self.lastPresenceInfo = lastPresenceInfoTmp
 				self.presenceStatus = presenceStatusTmp
+				self.unsafeFriend = unsafeFriendTmp
+				self.trustedFriend = trustedFriendTmp
 			}
 		}
 	}

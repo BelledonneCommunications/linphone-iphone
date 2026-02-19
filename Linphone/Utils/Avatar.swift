@@ -27,65 +27,79 @@ struct Avatar: View {
 	@ObservedObject var contactAvatarModel: ContactAvatarModel
 	
 	let avatarSize: CGFloat
-    let hidePresence: Bool
-    
-    init(contactAvatarModel: ContactAvatarModel, avatarSize: CGFloat, hidePresence: Bool = false) {
-        self.contactAvatarModel = contactAvatarModel
-        self.avatarSize = avatarSize
-        self.hidePresence = hidePresence
-    }
+	let hidePresence: Bool
+	
+	init(contactAvatarModel: ContactAvatarModel, avatarSize: CGFloat, hidePresence: Bool = false) {
+		self.contactAvatarModel = contactAvatarModel
+		self.avatarSize = avatarSize
+		self.hidePresence = hidePresence
+	}
 	
 	var body: some View {
-		if !contactAvatarModel.photo.isEmpty {
-			let uniqueUrl = ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.photo)
-			//let finalUrl = uniqueUrl.appendingQueryItem("v", value: UUID().uuidString)
-
-			AsyncImage(url: uniqueUrl) { image in
-				switch image {
-				case .empty:
-					ProgressView()
-						.frame(width: avatarSize, height: avatarSize)
-				case .success(let image):
-					ZStack {
-						image
+		ZStack {
+			if !contactAvatarModel.photo.isEmpty {
+				let uniqueUrl = ContactsManager.shared.getImagePath(friendPhotoPath: contactAvatarModel.photo)
+				//let finalUrl = uniqueUrl.appendingQueryItem("v", value: UUID().uuidString)
+				
+				AsyncImage(url: uniqueUrl) { image in
+					switch image {
+					case .empty:
+						ProgressView()
+							.frame(width: avatarSize, height: avatarSize)
+					case .success(let image):
+						ZStack {
+							image
+								.resizable()
+								.aspectRatio(contentMode: .fill)
+								.frame(width: avatarSize, height: avatarSize)
+								.clipShape(Circle())
+						}
+					case .failure:
+						Image("profil-picture-default")
 							.resizable()
-							.aspectRatio(contentMode: .fill)
 							.frame(width: avatarSize, height: avatarSize)
 							.clipShape(Circle())
-						HStack {
-							Spacer()
-							VStack {
-								Spacer()
-								if !hidePresence && (contactAvatarModel.presenceStatus == .Online || contactAvatarModel.presenceStatus == .Busy) {
-									Image(contactAvatarModel.presenceStatus == .Online ? "presence-online" : "presence-busy")
-										.resizable()
-										.frame(width: avatarSize/4, height: avatarSize/4)
-										.padding(.trailing, avatarSize == 50 || avatarSize == 35 ? 1 : 3)
-										.padding(.bottom, avatarSize == 50 || avatarSize == 35 ? 1 : 3)
-								}
-							}
-						}
-						.frame(width: avatarSize, height: avatarSize)
+					@unknown default:
+						EmptyView()
 					}
-				case .failure:
-					Image("profil-picture-default")
-						.resizable()
-						.frame(width: avatarSize, height: avatarSize)
-						.clipShape(Circle())
-				@unknown default:
-					EmptyView()
 				}
+			} else if !contactAvatarModel.name.isEmpty {
+				ZStack {
+					Image(uiImage: contactsManager.textToImage(
+						firstName: contactAvatarModel.name,
+						lastName: contactAvatarModel.name.components(separatedBy: " ").count > 1
+						? contactAvatarModel.name.components(separatedBy: " ")[1]
+						: ""))
+					.resizable()
+					.frame(width: avatarSize, height: avatarSize)
+					.clipShape(Circle())
+				}
+			} else {
+				Image("profil-picture-default")
+					.resizable()
+					.frame(width: avatarSize, height: avatarSize)
+					.clipShape(Circle())
 			}
-		} else if !contactAvatarModel.name.isEmpty {
-			ZStack {
-				Image(uiImage: contactsManager.textToImage(
-					firstName: contactAvatarModel.name,
-					lastName: contactAvatarModel.name.components(separatedBy: " ").count > 1
-					? contactAvatarModel.name.components(separatedBy: " ")[1]
-					: ""))
-				.resizable()
-				.frame(width: avatarSize, height: avatarSize)
-				.clipShape(Circle())
+			
+			if contactAvatarModel.friend != nil && !hidePresence {
+				if contactAvatarModel.unsafeFriend || contactAvatarModel.trustedFriend {
+					Circle()
+						.stroke(contactAvatarModel.trustedFriend ? Color.blueInfo500 : Color.redDanger500, lineWidth: 2)
+						.frame(width: avatarSize, height: avatarSize)
+					
+					HStack {
+						VStack {
+							Spacer()
+							Image(contactAvatarModel.trustedFriend ? "trusted" : "not-trusted")
+								.resizable()
+								.frame(width: avatarSize/4, height: avatarSize/4)
+								.padding(.trailing, avatarSize == 50 || avatarSize == 35 ? 1 : 3)
+								.padding(.bottom, avatarSize == 50 || avatarSize == 35 ? 1 : 3)
+						}
+						Spacer()
+					}
+					.frame(width: avatarSize, height: avatarSize)
+				}
 				
 				HStack {
 					Spacer()
@@ -102,11 +116,6 @@ struct Avatar: View {
 				}
 				.frame(width: avatarSize, height: avatarSize)
 			}
-		} else {
-			Image("profil-picture-default")
-				.resizable()
-				.frame(width: avatarSize, height: avatarSize)
-				.clipShape(Circle())
 		}
 	}
 }
