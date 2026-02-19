@@ -288,6 +288,9 @@ struct ContactInnerFragment: View {
 									.onAppear {
 										contactsListViewModel.fetchDevicesAndTrust()
 									}
+									.onChange(of: SharedMainViewModel.shared.displayedFriend?.id) { _ in
+										contactsListViewModel.fetchDevicesAndTrust()
+									}
 								}
 								.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 							}
