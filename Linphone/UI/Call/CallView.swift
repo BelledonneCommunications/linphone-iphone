@@ -2045,22 +2045,18 @@ struct CallView: View {
                 HStack(spacing: 0) {
                     if callViewModel.isOneOneCall {
                         VStack {
-                            Button {
-                                if callViewModel.callsCounter < 2 {
-                                    withAnimation {
-                                        callViewModel.isTransferInsteadCall = true
-                                        isShowStartCallFragment.toggle()
-                                    }
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        telecomManager.callStarted = false
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                            telecomManager.callStarted = true
-                                        }
-                                    }
-                                } else {
-                                    callViewModel.transferClicked()
-                                }
+							Button {
+								withAnimation {
+									callViewModel.isTransferInsteadCall = true
+									isShowStartCallFragment.toggle()
+								}
+								
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+									telecomManager.callStarted = false
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+										telecomManager.callStarted = true
+									}
+								}
                             } label: {
                                 HStack {
                                     Image("phone-transfer")
@@ -2075,7 +2071,7 @@ struct CallView: View {
                             .background(Color.gray500)
                             .cornerRadius(40)
                             
-                            Text(callViewModel.callsCounter < 2 ? "call_action_blind_transfer" : "call_action_attended_transfer")
+                            Text("call_action_blind_transfer")
                                 .foregroundStyle(.white)
                                 .default_text_style(styleSize: 15)
                         }
@@ -2471,22 +2467,18 @@ struct CallView: View {
                 HStack {
                     if callViewModel.isOneOneCall {
                         VStack {
-                            Button {
-                                if callViewModel.callsCounter < 2 {
-                                    withAnimation {
-                                        callViewModel.isTransferInsteadCall = true
-                                        isShowStartCallFragment.toggle()
-                                    }
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                        telecomManager.callStarted = false
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                            telecomManager.callStarted = true
-                                        }
-                                    }
-                                } else {
-                                    callViewModel.transferClicked()
-                                }
+							Button {
+								withAnimation {
+									callViewModel.isTransferInsteadCall = true
+									isShowStartCallFragment.toggle()
+								}
+								
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+									telecomManager.callStarted = false
+									DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+										telecomManager.callStarted = true
+									}
+								}
                             } label: {
                                 HStack {
                                     Image("phone-transfer")
@@ -2501,7 +2493,7 @@ struct CallView: View {
                             .background(Color.gray500)
                             .cornerRadius(40)
                             
-                            Text(callViewModel.callsCounter < 2 ? "call_action_blind_transfer" : "call_action_attended_transfer")
+                            Text("call_action_blind_transfer")
                                 .foregroundStyle(.white)
                                 .default_text_style(styleSize: 15)
                         }

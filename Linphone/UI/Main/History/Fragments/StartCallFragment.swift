@@ -32,6 +32,9 @@ struct StartCallFragment: View {
 	
 	@StateObject private var startCallViewModel = StartCallViewModel()
 	
+	@State private var transferAddress: Address? = nil
+	@State private var isShowTransferPopup: Bool = false
+	
 	@Binding var isShowStartCallFragment: Bool
 	@Binding var showingDialer: Bool
 	
@@ -107,9 +110,23 @@ struct StartCallFragment: View {
 							}
 						}
 					
-					Text(!callViewModel.isTransferInsteadCall ? "history_call_start_title" : "call_transfer_current_call_title")
-						.multilineTextAlignment(.leading)
-						.default_text_style_orange_800(styleSize: 16)
+					let address = callViewModel.currentCall?.remoteAddress
+
+					let nameTmp =
+						address?.displayName
+						?? address?.username
+						?? String(address?.asStringUriOnly().dropFirst(4) ?? "")
+
+					Text(
+						!callViewModel.isTransferInsteadCall
+						? String(localized: "history_call_start_title")
+						: String(
+							format: String(localized: "call_transfer_current_call_title"),
+							nameTmp
+						  )
+					)
+					.multilineTextAlignment(.leading)
+					.default_text_style_orange_800(styleSize: 16)
 					
 					Spacer()
 					
@@ -121,6 +138,29 @@ struct StartCallFragment: View {
 				.background(.white)
 				
 				VStack(spacing: 0) {
+					if callViewModel.isTransferInsteadCall {
+						HStack(alignment: .center) {
+							Text("call_transfer_active_calls_label")
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+						}
+						.padding(.vertical, 10)
+						.padding(.horizontal, 16)
+						
+						if let remoteAddress = callViewModel.currentCall?.remoteAddress,
+						   !callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false }).isEmpty {
+							callsList(remoteAddress: remoteAddress)
+								.padding(.bottom, 10)
+						} else {
+							HStack(alignment: .center) {
+								Text("call_transfer_no_active_call_label")
+									.default_text_style_700(styleSize: 16)
+							}
+							.padding(.bottom, 10)
+						}
+					}
+					
 					ZStack(alignment: .trailing) {
 						TextField("history_call_start_search_bar_filter_hint", text: $startCallViewModel.searchField)
 							.default_text_style(styleSize: 15)
@@ -251,25 +291,8 @@ struct StartCallFragment: View {
 							ContactsListFragment(showingSheet: .constant(false)
 												 , startCallFunc: { addr in
 								if callViewModel.isTransferInsteadCall {
-									showingDialer = false
-									
-									startCallViewModel.searchField = ""
-									magicSearch.currentFilter = ""
-									
-									magicSearch.searchForContacts()
-									
-									if callViewModel.isTransferInsteadCall == true {
-										callViewModel.isTransferInsteadCall = false
-									}
-									
-									resetCallView()
-									
-									delayColorDismiss()
-									
-									withAnimation {
-										isShowStartCallFragment.toggle()
-										callViewModel.blindTransferCallTo(toAddress: addr)
-									}
+									self.transferAddress = addr
+									self.isShowTransferPopup = true
 								} else {
 									showingDialer = false
 									
@@ -318,6 +341,52 @@ struct StartCallFragment: View {
 				.frame(maxWidth: .infinity)
 			}
 			.background(.white)
+			
+			if isShowTransferPopup {
+				PopupView(
+					isShowPopup: $isShowTransferPopup,
+					title: Text("history_dialog_delete_all_call_logs_title"),
+					content: Text("history_dialog_delete_all_call_logs_message"),
+					titleFirstButton: nil,
+					actionFirstButton: {},
+					titleSecondButton: Text("dialog_confirm"),
+					actionSecondButton: {
+						showingDialer = false
+						
+						startCallViewModel.searchField = ""
+						magicSearch.currentFilter = ""
+						
+						magicSearch.searchForContacts()
+						
+						if callViewModel.isTransferInsteadCall == true {
+							callViewModel.isTransferInsteadCall = false
+						}
+						
+						resetCallView()
+						
+						delayColorDismiss()
+						
+						withAnimation {
+							isShowStartCallFragment.toggle()
+							if let transferAddress = self.transferAddress {
+								callViewModel.blindTransferCallTo(toAddress: transferAddress)
+								self.transferAddress = nil
+							}
+						}
+						
+						self.isShowTransferPopup.toggle()
+					},
+					titleThirdButton: Text("dialog_cancel"),
+					actionThirdButton: {
+						self.isShowTransferPopup.toggle()
+					}
+				)
+				.background(.black.opacity(0.65))
+				.zIndex(3)
+				.onTapGesture {
+					self.isShowTransferPopup.toggle()
+				}
+			}
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
@@ -341,31 +410,73 @@ struct StartCallFragment: View {
 		}
 	}
 	
+	func callsList(remoteAddress: Address) -> some View {
+		ForEach(0..<callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false }).count, id: \.self) { index in
+			Button {
+				if callViewModel.isTransferInsteadCall {
+					self.transferAddress = callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false })[index].remoteAddress
+					self.isShowTransferPopup = true
+				}
+			} label: {
+				HStack {
+					if index < callViewModel.calls.count,
+					   let remoteAddress = callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false })[index].remoteAddress{
+						if remoteAddress.domain != AppServices.corePreferences.defaultDomain {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: String(remoteAddress.asStringUriOnly().dropFirst(4)),
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(String(remoteAddress.asStringUriOnly().dropFirst(4)))
+								.default_text_style(styleSize: 16)
+								.lineLimit(1)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						} else {
+							let nameTmp = remoteAddress.displayName
+							?? remoteAddress.username
+							?? String(remoteAddress.asStringUriOnly().dropFirst(4))
+							
+							Image(uiImage: contactsManager.textToImage(
+								firstName: nameTmp,
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(nameTmp)
+								.default_text_style(styleSize: 16)
+								.lineLimit(1)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						}
+					} else {
+						Image("profil-picture-default")
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+						
+						Text("username_error")
+							.default_text_style(styleSize: 16)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.foregroundStyle(Color.orangeMain500)
+					}
+				}
+				.padding(.horizontal)
+			}
+			.buttonStyle(.borderless)
+			.listRowSeparator(.hidden)
+		}
+	}
+	
 	var suggestionsList: some View {
 		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
 			Button {
 				if callViewModel.isTransferInsteadCall {
-					showingDialer = false
-					
-					startCallViewModel.searchField = ""
-					magicSearch.currentFilter = ""
-					
-					magicSearch.searchForContacts()
-					
-					if callViewModel.isTransferInsteadCall == true {
-						callViewModel.isTransferInsteadCall = false
-					}
-					
-					resetCallView()
-					
-					delayColorDismiss()
-					
-					withAnimation {
-						isShowStartCallFragment.toggle()
-						if contactsManager.lastSearchSuggestions[index].address != nil {
-							callViewModel.blindTransferCallTo(toAddress: contactsManager.lastSearchSuggestions[index].address!)
-						}
-					}
+					self.transferAddress = contactsManager.lastSearchSuggestions[index].address
+					self.isShowTransferPopup = true
 				} else {
 					showingDialer = false
 					
@@ -378,7 +489,7 @@ struct StartCallFragment: View {
 						callViewModel.isTransferInsteadCall = false
 					}
 					
-						resetCallView()
+					resetCallView()
 					
 					delayColorDismiss()
 					

@@ -138,7 +138,11 @@
 "call_stats_audio_title" = "Audio";
 "call_stats_media_encryption_title" = "Media encryption";
 "call_stats_video_title" = "Video";
-"call_transfer_current_call_title" = "Transfer call";
+"call_transfer_current_call_title" = "Transfer %@ to…";
+"call_transfer_active_calls_label" = "Current calls";
+"call_transfer_no_active_call_label" = "No other call";
+"call_transfer_confirm_dialog_tittle" = "Confirm call transfer";
+"call_transfer_confirm_dialog_message" = "You're about to transfer call %1$@ to %2$@.";
 "call_transfer_failed_toast" = "Call transfer failed!";
 "call_transfer_in_progress_toast" = "Call is being transferred";
 "call_transfer_successful_toast" = "Call has been successfully transferred";
