@@ -30,7 +30,7 @@ class ConversationModel: ObservableObject, Identifiable {
 	var chatRoom: ChatRoom
 	var lastMessage: ChatMessage?
 	
-	let isDisabledBecauseNotSecured: Bool = false
+	var isDisabledBecauseNotSecured: Bool = false
 	
 	static let TAG = "[Conversation Model]"
 	
@@ -68,8 +68,19 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.remoteSipUri = chatRoom.peerAddress?.asStringUriOnly() ?? ""
 		
 		self.isGroup = !chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) && chatRoom.hasCapability(mask: ChatRoom.Capabilities.Conference.rawValue)
+		
+		if (!chatRoom.hasCapability(mask: ChatRoom.Capabilities.Encrypted.rawValue)) {
+			if let localAddress = chatRoom.localAddress , LinphoneUtils.getAccountForAddress(address: localAddress)?.params?.instantMessagingEncryptionMandatory == true {
+				Log.warn("\(ConversationModel.TAG) Conversation with subject \(chatRoom.subjectUtf8 ?? "No subject") is considered as read-only because it isn't encrypted and default account is in secure mode")
+				self.isDisabledBecauseNotSecured = true
+			} else {
+				self.isDisabledBecauseNotSecured = false
+			}
+		} else {
+			self.isDisabledBecauseNotSecured = false
+		}
 
-		self.isReadOnly = chatRoom.isReadOnly
+		self.isReadOnly = chatRoom.isReadOnly || self.isDisabledBecauseNotSecured
 		
 		let chatRoomParticipants = chatRoom.participants
 		let addressFriend = (chatRoomParticipants.first != nil && chatRoomParticipants.first!.address != nil)

@@ -458,41 +458,41 @@ struct ConversationFragment: View {
 												.padding(.all, 10)
 										}
 									}
-									
-									Button {
-										isMenuOpen = false
-										withAnimation {
-											isShowMediaFilesFragment = true
-										}
-									} label: {
-										HStack {
-											Text("conversation_menu_media_files")
-											Spacer()
-											Image("image")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(Color.grayMain2c500)
-												.frame(width: 25, height: 25, alignment: .leading)
-												.padding(.all, 10)
-										}
+								}
+								
+								Button {
+									isMenuOpen = false
+									withAnimation {
+										isShowMediaFilesFragment = true
 									}
-									
-									Button {
-										isMenuOpen = false
-										withAnimation {
-											isShowDocumentsFilesFragment = true
-										}
-									} label: {
-										HStack {
-											Text("conversation_menu_documents_files")
-											Spacer()
-											Image("file-pdf")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(Color.grayMain2c500)
-												.frame(width: 25, height: 25, alignment: .leading)
-												.padding(.all, 10)
-										}
+								} label: {
+									HStack {
+										Text("conversation_menu_media_files")
+										Spacer()
+										Image("image")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.grayMain2c500)
+											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
+									}
+								}
+								
+								Button {
+									isMenuOpen = false
+									withAnimation {
+										isShowDocumentsFilesFragment = true
+									}
+								} label: {
+									HStack {
+										Text("conversation_menu_documents_files")
+										Spacer()
+										Image("file-pdf")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(Color.grayMain2c500)
+											.frame(width: 25, height: 25, alignment: .leading)
+											.padding(.all, 10)
 									}
 								}
 							} label: {

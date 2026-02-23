@@ -161,7 +161,7 @@ class ConversationViewModel: ObservableObject {
 				if displayedConversation.isGroup {
 					self.getEventMessage(eventLog: eventLog)
 				}
-				let isReadOnly = chatRoom.isReadOnly
+				let isReadOnly = chatRoom.isReadOnly || displayedConversation.isDisabledBecauseNotSecured
 				DispatchQueue.main.async {
 					displayedConversation.isReadOnly = isReadOnly
 				}
@@ -171,7 +171,7 @@ class ConversationViewModel: ObservableObject {
 				if displayedConversation.isGroup {
 					self.getEventMessage(eventLog: eventLog)
 				}
-				let isReadOnly = chatRoom.isReadOnly
+				let isReadOnly = chatRoom.isReadOnly  || displayedConversation.isDisabledBecauseNotSecured
 				DispatchQueue.main.async {
 					displayedConversation.isReadOnly = isReadOnly
 				}
