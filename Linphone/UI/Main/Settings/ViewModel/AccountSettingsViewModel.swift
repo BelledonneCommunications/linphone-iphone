@@ -39,7 +39,7 @@ class AccountSettingsViewModel: ObservableObject {
 	@Published var turnPassword: String
 	@Published var transport: String
 	@Published var sipProxyUrl: String
-	@Published var outboundProxy: Bool
+	@Published var outboundProxy: String
 	@Published var avpf: Bool
 	@Published var bundleMode: Bool
 	@Published var cpimInBasicConversations: Bool
@@ -82,7 +82,7 @@ class AccountSettingsViewModel: ObservableObject {
 		}
 		
 		self.sipProxyUrl = accountModel.account.params?.serverAddress?.asStringUriOnly() ?? ""
-		self.outboundProxy = accountModel.account.params?.outboundProxyEnabled ?? false
+		self.outboundProxy = accountModel.account.params?.routesAddresses.first?.asStringUriOnly() ?? ""
 		self.avpf = accountModel.account.avpfEnabled
 		self.bundleMode = accountModel.account.params?.rtpBundleEnabled ?? false
 		self.cpimInBasicConversations = accountModel.account.params?.cpimInBasicChatRoomEnabled ?? false
@@ -140,7 +140,29 @@ class AccountSettingsViewModel: ObservableObject {
 						try? newParams.setServeraddress(newValue: serverAddress)
 					}
 				}
-				newParams.outboundProxyEnabled = self.outboundProxy
+				
+				if !self.outboundProxy.isEmpty {
+					Log.info("\(AccountSettingsViewModel.TAG) Outbound proxy server set to \(self.outboundProxy)")
+					if let outboundProxyAddress = core.interpretUrl(url: self.outboundProxy, applyInternationalPrefix: false) {
+						var transportTmp: TransportType = .Tls
+						if self.transport == "TLS" {
+							transportTmp = .Tls
+						} else if self.transport == "TCP" {
+							transportTmp = .Tcp
+						} else if self.transport == "UDP" {
+							transportTmp = .Udp
+						} else {
+							transportTmp = .Dtls
+						}
+						
+						try? outboundProxyAddress.setTransport(newValue: transportTmp)
+						try? newParams.setRoutesaddresses(newValue: [outboundProxyAddress])
+					} else {
+						Log.error("\(AccountSettingsViewModel.TAG) Failed to parse outbound proxy server!")
+					}
+				} else {
+					try? newParams.setRoutesaddresses(newValue: [])
+				}
 				
 				if let natPolicy = self.natPolicy {
 					print("\(AccountSettingsViewModel.TAG) Also applying changes to NAT policy")

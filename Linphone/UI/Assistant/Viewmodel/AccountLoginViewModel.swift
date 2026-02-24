@@ -30,6 +30,7 @@ class AccountLoginViewModel: ObservableObject {
 	@Published var displayName: String = ""
 	@Published var transportType: String = "TLS"
 	@Published var authId: String = ""
+	@Published var sipProxyUrl: String = ""
 	@Published var outboundProxy: String = ""
 	
 	private var mCoreDelegate: CoreDelegate!
@@ -102,18 +103,27 @@ class AccountLoginViewModel: ObservableObject {
 				
 				// We also need to configure where the proxy server is located
 				var serverAddress: Address
-				if (!self.outboundProxy.isEmpty) {
-					let server = self.outboundProxy.starts(with: "sip:") ? self.outboundProxy : String("sip:" + self.outboundProxy)
+				if (!self.sipProxyUrl.isEmpty) {
+					let server = self.sipProxyUrl.starts(with: "sip:") ? self.sipProxyUrl : String("sip:" + self.sipProxyUrl)
 					serverAddress = try Factory.Instance.createAddress(addr: server)
 				} else {
 					serverAddress = try Factory.Instance.createAddress(addr: String("sip:" + self.domain))
 				}
 				
-				let address = serverAddress
-				
 				// We use the Address object to easily set the transport protocol
-				try address.setTransport(newValue: transport)
-				try accountParams.setServeraddress(newValue: address)
+				try serverAddress.setTransport(newValue: transport)
+				try accountParams.setServeraddress(newValue: serverAddress)
+				
+				var routeAddress: Address
+				if (!self.outboundProxy.isEmpty) {
+					let server = self.outboundProxy.starts(with: "sip:") ? self.outboundProxy : String("sip:" + self.outboundProxy)
+					routeAddress = try Factory.Instance.createAddress(addr: server)
+					try routeAddress.setTransport(newValue: transport)
+					try accountParams.setRoutesaddresses(newValue: [routeAddress])
+				} else {
+					try accountParams.setRoutesaddresses(newValue: [])
+				}
+				
 				// And we ensure the account will start the registration process
 				accountParams.registerEnabled = true
 				

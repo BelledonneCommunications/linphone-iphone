@@ -35,8 +35,8 @@ struct ThirdPartySipAccountLoginFragment: View {
 	@FocusState var isPasswordFocused: Bool
 	@FocusState var isDomainFocused: Bool
 	@FocusState var isDisplayNameFocused: Bool
-    @FocusState var isSipProxyUrlFocused: Bool
 	@FocusState var isAuthIdFocused: Bool
+    @FocusState var isSipProxyUrlFocused: Bool
 	@FocusState var isOutboundProxyFocused: Bool
 	
 	var body: some View {
@@ -289,13 +289,14 @@ struct ThirdPartySipAccountLoginFragment: View {
                             )
                             .focused($isAuthIdFocused)
                     }
+					.padding(.bottom)
                     
                     VStack(alignment: .leading) {
                         Text("account_settings_sip_proxy_url_title")
                             .default_text_style_700(styleSize: 15)
                             .padding(.bottom, -5)
                         
-                        TextField("account_settings_sip_proxy_url_title", text: $accountLoginViewModel.outboundProxy)
+                        TextField("account_settings_sip_proxy_url_title", text: $accountLoginViewModel.sipProxyUrl)
 							.id(2)
                             .default_text_style(styleSize: 15)
                             .frame(height: 25)
@@ -306,11 +307,33 @@ struct ThirdPartySipAccountLoginFragment: View {
                             .overlay(
                                 RoundedRectangle(cornerRadius: 60)
                                     .inset(by: 0.5)
-                                    .stroke(isOutboundProxyFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+                                    .stroke(isSipProxyUrlFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
                             )
-                            .focused($isOutboundProxyFocused)
+                            .focused($isSipProxyUrlFocused)
                     }
                     .padding(.bottom)
+					
+					VStack(alignment: .leading) {
+						Text("account_settings_outbound_proxy_title")
+							.default_text_style_700(styleSize: 15)
+							.padding(.bottom, -5)
+						
+						TextField("account_settings_outbound_proxy_title", text: $accountLoginViewModel.outboundProxy)
+							.id(3)
+							.default_text_style(styleSize: 15)
+							.frame(height: 25)
+							.padding(.horizontal, 20)
+							.padding(.vertical, 15)
+							.background(.white)
+							.cornerRadius(60)
+							.overlay(
+								RoundedRectangle(cornerRadius: 60)
+									.inset(by: 0.5)
+									.stroke(isOutboundProxyFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+							)
+							.focused($isOutboundProxyFocused)
+					}
+					.padding(.bottom)
                 }
 			}
 			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)

@@ -53,7 +53,8 @@
 "account_settings_outbound_proxy_title" = "Serveur mandataire sortant";
 "account_settings_push_notification_not_available_title" = "Notifications push non disponibles";
 "account_settings_push_notification_title" = "Activer les notifications";
-"account_settings_sip_proxy_url_title" = "URL du serveur mandataire";
+"account_settings_sip_proxy_url_title" = "Registrar URI";
+"account_settings_outbound_proxy_title" = "URI du proxy SIP sortant";
 "account_settings_stun_server_url_title" = "URL du serveur STUN/TURN";
 "account_settings_title" = "Paramètres de compte";
 "account_settings_turn_password_title" = "Mot de passe TURN";

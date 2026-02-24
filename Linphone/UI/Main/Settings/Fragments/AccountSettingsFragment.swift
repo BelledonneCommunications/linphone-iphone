@@ -36,6 +36,7 @@ struct AccountSettingsFragment: View {
 	@FocusState var isTurnUsernameFocused: Bool
 	@FocusState var isTurnPasswordFocused: Bool
 	@FocusState var isSipProxyUrlFocused: Bool
+	@FocusState var isOutboundProxyFocused: Bool
 	@FocusState var isSettingsExpireFocused: Bool
 	@FocusState var isConferenceFactoryUriFocused: Bool
 	@FocusState var isAudioVideoConferenceFactoryUriFocused: Bool
@@ -354,8 +355,25 @@ struct AccountSettingsFragment: View {
 													.focused($isSipProxyUrlFocused)
 											}
 											
-											Toggle("account_settings_outbound_proxy_title", isOn: $accountSettingsViewModel.outboundProxy)
-												.default_text_style_700(styleSize: 15)
+											VStack(alignment: .leading) {
+												Text("account_settings_outbound_proxy_title")
+													.default_text_style_700(styleSize: 15)
+													.padding(.bottom, -5)
+												
+												TextField("account_settings_outbound_proxy_title", text: $accountSettingsViewModel.outboundProxy)
+													.default_text_style(styleSize: 15)
+													.frame(height: 25)
+													.padding(.horizontal, 20)
+													.padding(.vertical, 15)
+													.background(.white)
+													.cornerRadius(60)
+													.overlay(
+														RoundedRectangle(cornerRadius: 60)
+															.inset(by: 0.5)
+															.stroke(isOutboundProxyFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													)
+													.focused($isOutboundProxyFocused)
+											}
 											
 											Toggle("account_settings_avpf_title", isOn: $accountSettingsViewModel.avpf)
 												.default_text_style_700(styleSize: 15)
