@@ -112,6 +112,8 @@ class ConversationViewModel: ObservableObject {
 	@Published var searchInProgress = false
 	@Published var highlightedMessageID: String?
 	
+	@Published var peerAddress = ""
+	
 	var latestMatch: EventLogMessage?
 	
 	struct SheetCategory: Identifiable {
@@ -688,6 +690,8 @@ class ConversationViewModel: ObservableObject {
 			self.getParticipantConversationModel()
 			self.computeComposingLabel()
 			self.getEphemeralTime()
+			
+			self.peerAddress = self.sharedMainViewModel.displayedConversation!.chatRoom.peerAddress?.asStringUriOnly() ?? ""
 			
 			if self.sharedMainViewModel.displayedConversation != nil {
 				let historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)

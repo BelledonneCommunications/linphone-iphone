@@ -18,6 +18,7 @@
  */
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // swiftlint:disable type_body_length
 struct ConversationInfoFragment: View {
@@ -46,6 +47,7 @@ struct ConversationInfoFragment: View {
 	@Binding var isShowScheduleMeetingFragmentParticipants: [SelectedAddressModel]
 	
 	@State private var participantListIsOpen = true
+	@State private var displayPeerAddress = false
 	
 	@Binding var isShowConversationInfoPopup: Bool
 	@Binding var conversationInfoPopupText: String
@@ -77,6 +79,13 @@ struct ConversationInfoFragment: View {
 								}
 							
 							Spacer()
+							
+							Rectangle()
+								.foregroundColor(.white)
+								.frame(width: 45, height: 45)
+								.onLongPressGesture(minimumDuration: 0.3) {
+									displayPeerAddress = true
+								}
 						}
 						.frame(maxWidth: .infinity)
 						.frame(height: 50)
@@ -107,12 +116,53 @@ struct ConversationInfoFragment: View {
 												.padding(.top, 10)
 											
 											if !AppServices.corePreferences.hideSipAddresses {
-												Text(conversationViewModel.participantConversationModel.first?.address ?? "")
-													.foregroundStyle(Color.grayMain2c700)
-													.multilineTextAlignment(.center)
-													.default_text_style(styleSize: 14)
-													.frame(maxWidth: .infinity)
-													.padding(.top, 5)
+												Button {
+													UIPasteboard.general.setValue(
+														conversationViewModel.participantConversationModel.first?.address ?? "",
+														forPasteboardType: UTType.plainText.identifier
+													)
+													
+													ToastViewModel.shared.show("Success_address_copied_into_clipboard")
+												} label: {
+													HStack {
+														Text(conversationViewModel.participantConversationModel.first?.address ?? "")
+															.foregroundStyle(Color.grayMain2c700)
+															.default_text_style(styleSize: 14)
+															.padding(.top, 5)
+														
+														Image("copy")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c500)
+															.frame(width: 25, height: 25)
+													}
+												}
+												.padding(.horizontal, 10)
+											}
+											
+											if displayPeerAddress {
+												Button {
+													UIPasteboard.general.setValue(
+														conversationViewModel.peerAddress,
+														forPasteboardType: UTType.plainText.identifier
+													)
+													
+													ToastViewModel.shared.show("Success_address_copied_into_clipboard")
+												} label: {
+													HStack {
+														Text(conversationViewModel.peerAddress)
+															.foregroundStyle(Color.grayMain2c700)
+															.default_text_style(styleSize: 14)
+															.padding(.top, 5)
+														
+														Image("copy")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c500)
+															.frame(width: 25, height: 25, alignment: .leading)
+													}
+												}
+												.padding(.horizontal, 10)
 											}
 											
 											if !SharedMainViewModel.shared.displayedConversation!.avatarModel.lastPresenceInfo.isEmpty {
@@ -160,6 +210,31 @@ struct ConversationInfoFragment: View {
 												}
 											}
 											.padding(.leading, conversationViewModel.isUserAdmin ? 20 : 0)
+											
+											if displayPeerAddress {
+												Button {
+													UIPasteboard.general.setValue(
+														conversationViewModel.peerAddress,
+														forPasteboardType: UTType.plainText.identifier
+													)
+													
+													ToastViewModel.shared.show("Success_address_copied_into_clipboard")
+												} label: {
+													HStack {
+														Text(conversationViewModel.peerAddress)
+															.foregroundStyle(Color.grayMain2c700)
+															.default_text_style(styleSize: 14)
+															.padding(.top, 5)
+														
+														Image("copy")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c500)
+															.frame(width: 25, height: 25, alignment: .leading)
+													}
+												}
+												.padding(.horizontal, 10)
+											}
 										}
 									}
 									.frame(minHeight: 150)
