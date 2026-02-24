@@ -26,9 +26,10 @@ struct AccountSettingsFragment: View {
 	
 	@Environment(\.dismiss) var dismiss
 	
-	@State var natPolicySettingsIsOpen: Bool = false
-	@State var advancedSettingsIsOpen: Bool = false
-	@State var isSecured: Bool = true
+	@State private var isSecured = true
+	@State private var advancedSettingsIsOpen = false
+	@State private var natPolicySettingsIsOpen = false
+	@State private var isShowOutboundProxyPopup = false
 	
 	@FocusState var isVoicemailUriFocused: Bool
 	@FocusState var isMwiUriFocused: Bool
@@ -356,9 +357,23 @@ struct AccountSettingsFragment: View {
 											}
 											
 											VStack(alignment: .leading) {
-												Text("account_settings_outbound_proxy_title")
-													.default_text_style_700(styleSize: 15)
-													.padding(.bottom, -5)
+												HStack {
+													Text("account_settings_outbound_proxy_title")
+														.default_text_style_700(styleSize: 15)
+														.padding(.bottom, -5)
+														.frame(maxWidth: .infinity, alignment: .leading)
+													
+													Button(action: {
+														self.isShowOutboundProxyPopup = true
+													}, label: {
+														Image("info")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.grayMain2c500)
+															.frame(width: 25, height: 25)
+													})
+												}
+												.padding(.bottom, -5)
 												
 												TextField("account_settings_outbound_proxy_title", text: $accountSettingsViewModel.outboundProxy)
 													.default_text_style(styleSize: 15)
@@ -511,6 +526,25 @@ struct AccountSettingsFragment: View {
 				.background(Color.gray100)
 			}
 			.background(Color.gray100)
+			
+			if isShowOutboundProxyPopup {
+				PopupView(
+					isShowPopup: $isShowOutboundProxyPopup,
+					title: Text("manage_account_outbound_proxy"),
+					content: Text("manage_account_dialog_outbound_proxy_help_message"),
+					titleFirstButton: nil,
+					actionFirstButton: {},
+					titleSecondButton: Text("dialog_understood"),
+					actionSecondButton: { self.isShowOutboundProxyPopup.toggle() },
+					titleThirdButton: nil,
+					actionThirdButton: {}
+				)
+				.background(.black.opacity(0.65))
+				.zIndex(3)
+				.onTapGesture {
+					self.isShowOutboundProxyPopup.toggle()
+				}
+			}
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)

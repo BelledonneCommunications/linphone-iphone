@@ -372,6 +372,8 @@
 "manage_account_dialog_international_prefix_help_message" = "Choisissez votre pays pour permettre à Linphone de faire le lien avec vos contacts.";
 "manage_account_dialog_remove_account_message" = "Si vous souhaitez supprimer définitivement votre compte rendez-vous sur : https://sip.linphone.org";
 "manage_account_dialog_remove_account_title" = "Se déconnecter du compte ?";
+"manage_account_outbound_proxy" = "Proxy SIP sortant";
+"manage_account_dialog_outbound_proxy_help_message" = "Si ce champ est rempli, l'outbound proxy sera activé automatiquement. Laissez-le vide pour le désactiver.";
 "manage_account_edit_picture" = "Modifier";
 "manage_account_international_prefix" = "Indicatif international";
 "manage_account_no_device" = "Aucun appareil n'a été trouvé…";

@@ -364,6 +364,7 @@
 "Interoperable mode" = "Interoperable mode";
 "list_filter_no_result_found" = "No result found…";
 "manage_account_add_picture" = "Add a picture";
+
 "manage_account_delete" = "Sign out";
 "manage_account_details_title" = "Details";
 "manage_account_device_last_connection" = "Last connection:";
@@ -372,6 +373,8 @@
 "manage_account_dialog_international_prefix_help_message" = "Pick your country to allow Linphone to match your contacts.";
 "manage_account_dialog_remove_account_message" = "If you wish to delete your account permanently, go to: https://sip.linphone.org";
 "manage_account_dialog_remove_account_title" = "Sign out of your account?";
+"manage_account_outbound_proxy" = "Outbound SIP Proxy";
+"manage_account_dialog_outbound_proxy_help_message" = "If this field is filled, the outbound proxy will be enabled automatically. Leave it empty to disable it.";
 "manage_account_edit_picture" = "Edit picture";
 "manage_account_international_prefix" = "International Prefix";
 "manage_account_no_device" = "No device found…";
