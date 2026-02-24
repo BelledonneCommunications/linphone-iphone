@@ -291,6 +291,8 @@
 "conversation_pick_file_from_gallery_label" = "Ouvrir la galerie";
 "conversation_pick_any_file_label" = "Choisir un fichier";
 "conversation_file_cant_be_opened_error_toast" = "Impossible d'ouvrir le fichier!";
+"conversation_warning_disabled_because_not_secured_title" = "Cette conversation n'est pas chiffrée !";
+"conversation_warning_disabled_because_not_secured_subtitle" = "Les messages ne sont pas chiffrés de bout en bout, assurez-vous de ne pas partager d'informations sensibles !";
 "debug_logs_copied_to_clipboard_toast" = "Les journaux ont été ajoutés au presse-papier";
 "Default" = "Default";
 "default_account_disabled" = "Le compte selectionné est désactivé";

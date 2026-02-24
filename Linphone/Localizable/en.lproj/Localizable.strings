@@ -291,6 +291,8 @@
 "conversation_pick_file_from_gallery_label" = "Open gallery";
 "conversation_pick_any_file_label" = "Pick file";
 "conversation_file_cant_be_opened_error_toast" = "File can't be opened!";
+"conversation_warning_disabled_because_not_secured_title" = "This conversation is not encrypted!";
+"conversation_warning_disabled_because_not_secured_subtitle" = "Messages aren't end-to-end encrypted, make sure you don't share sensitive information!";
 "debug_logs_copied_to_clipboard_toast" = "Debug logs copied to clipboard";
 "Default" = "Default";
 "default_account_disabled" = "Selected account is currently disabled";

@@ -329,7 +329,7 @@ struct ConversationFragment: View {
 									.padding(.top, 4)
 									.lineLimit(1)
 								
-								if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") {
+								if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") || ((SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false) {
 									HStack {
 										if isMuted {
 											Image("bell-slash")
@@ -351,6 +351,22 @@ struct ConversationFragment: View {
 												.padding(.leading, -2)
 												.frame(maxWidth: .infinity, alignment: .leading)
 												.lineLimit(1)
+										}
+										
+										if (SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false {
+											HStack {
+												Image("lock-simple-open")
+													.renderingMode(.template)
+													.resizable()
+													.foregroundStyle(Color.orangeWarning600)
+													.frame(width: 16, height: 16, alignment: .trailing)
+												
+												Text("conversation_warning_disabled_because_not_secured_title")
+													.foregroundStyle(Color.orangeWarning600)
+													.default_text_style(styleSize: 12)
+													.frame(maxWidth: .infinity, alignment: .leading)
+													.lineLimit(1)
+											}
 										}
 										
 										Spacer()

@@ -173,11 +173,11 @@ struct ConversationRow: View {
 					}
 					
 					if !conversation.encryptionEnabled {
-						Image("lock-simple-open-bold")
+						Image("lock-simple-open")
 							.renderingMode(.template)
 							.resizable()
 							.foregroundStyle(Color.orangeWarning600)
-							.frame(width: 18, height: 18, alignment: .trailing)
+							.frame(width: 16, height: 16, alignment: .trailing)
 					}
 					
 					if conversation.isEphemeral {
