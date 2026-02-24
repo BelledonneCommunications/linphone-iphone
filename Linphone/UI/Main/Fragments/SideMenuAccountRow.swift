@@ -137,26 +137,27 @@ struct SideMenuAccountRow: View {
 					.padding(.trailing, -8)
 				}
 				
-				Menu {
-					Button {
-                        accountProfileViewModel.accountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.displayName == model.displayName})
-                        withAnimation {
-                            isOpen = false
-                            isShowAccountProfileFragment = true
-                        }
-					} label: {
-						Label("drawer_menu_manage_account", systemImage: "arrow.right.circle")
+				Button {
+					accountProfileViewModel.accountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.displayName == model.displayName})
+					withAnimation {
+						isOpen = false
+						isShowAccountProfileFragment = true
 					}
 				} label: {
-					VStack {
-						Image("dots-three-vertical")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundColor(Color.grayMain2c500)
-							.scaledToFit()
-							.frame(height: 25)
+					Image("user-circle-gear")
+						.renderingMode(.template)
+						.resizable()
+						.foregroundColor(Color.grayMain2c600)
+						.scaledToFit()
+						.frame(height: 25)
+				}
+				.frame(width: 30, height: 30)
+				.onTapGesture {
+					accountProfileViewModel.accountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.displayName == model.displayName})
+					withAnimation {
+						isOpen = false
+						isShowAccountProfileFragment = true
 					}
-					.frame(width: 30, height: 30)
 				}
 			}
 			.frame(alignment: .trailing)

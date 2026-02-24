@@ -598,65 +598,37 @@ struct ContentView: View {
 												}
 												.padding(.trailing, sharedMainViewModel.indexView == 2 ? 10 : 0)
 												
-												if sharedMainViewModel.indexView == 3 {
-													Button {
-														NotificationCenter.default.post(name: MeetingsListViewModel.ScrollToTodayNotification, object: nil)
-													} label: {
-														Image("calendar")
-															.renderingMode(.template)
-															.resizable()
-															.foregroundStyle(.white)
-															.frame(width: 25, height: 25, alignment: .leading)
-															.padding(.all, 10)
-													}
-													.padding(.trailing, 10)
-												} else if sharedMainViewModel.indexView != 2 {
+												if sharedMainViewModel.indexView == 0 {
 													Menu {
-														if sharedMainViewModel.indexView == 0 {
-															Button {
-																sharedMainViewModel.displayedFriend = nil
-																isMenuOpen = false
-																magicSearch.changeAllContact(allContactBool: true)
-																magicSearch.searchForContacts()
-															} label: {
-																HStack {
-																	Text("contacts_list_filter_popup_see_all")
-																	Spacer()
-																	if magicSearch.allContact {
-																		Image("green-check")
-																			.resizable()
-																			.frame(width: 25, height: 25, alignment: .leading)
-																			.padding(.all, 10)
-																	}
+														Button {
+															sharedMainViewModel.displayedFriend = nil
+															isMenuOpen = false
+															magicSearch.changeAllContact(allContactBool: true)
+															magicSearch.searchForContacts()
+														} label: {
+															HStack {
+																Text("contacts_list_filter_popup_see_all")
+																Spacer()
+																if magicSearch.allContact {
+																	Image("green-check")
+																		.resizable()
+																		.frame(width: 25, height: 25, alignment: .leading)
+																		.padding(.all, 10)
 																}
 															}
-															
-															Button {
-																sharedMainViewModel.displayedFriend = nil
-																isMenuOpen = false
-																magicSearch.changeAllContact(allContactBool: false)
-																magicSearch.searchForContacts()
-															} label: {
-																HStack {
-																	Text(!magicSearch.linphoneDomain ? String(localized: "contacts_list_filter_popup_see_sip_only") : String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
-																	Spacer()
-																	if !magicSearch.allContact {
-																		Image("green-check")
-																			.resizable()
-																			.frame(width: 25, height: 25, alignment: .leading)
-																			.padding(.all, 10)
-																	}
-																}
-															}
-														} else {
-															Button(role: .destructive) {
-																isMenuOpen = false
-																isShowDeleteAllHistoryPopup.toggle()
-															} label: {
-																HStack {
-																	Text("menu_delete_history")
-																	Spacer()
-																	Image("trash-simple-red")
+														}
+														
+														Button {
+															sharedMainViewModel.displayedFriend = nil
+															isMenuOpen = false
+															magicSearch.changeAllContact(allContactBool: false)
+															magicSearch.searchForContacts()
+														} label: {
+															HStack {
+																Text(!magicSearch.linphoneDomain ? String(localized: "contacts_list_filter_popup_see_sip_only") : String(format: String(localized: "contacts_list_filter_popup_see_linphone_only"), Bundle.main.displayName))
+																Spacer()
+																if !magicSearch.allContact {
+																	Image("green-check")
 																		.resizable()
 																		.frame(width: 25, height: 25, alignment: .leading)
 																		.padding(.all, 10)
@@ -675,6 +647,30 @@ struct ContentView: View {
 													.onTapGesture {
 														isMenuOpen = true
 													}
+												} else if sharedMainViewModel.indexView == 1 {
+													Button {
+														isShowDeleteAllHistoryPopup.toggle()
+													} label: {
+														Image("trash-simple")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(.white)
+															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
+													}
+													.padding(.trailing, 10)
+												} else if sharedMainViewModel.indexView == 3 {
+													Button {
+														NotificationCenter.default.post(name: MeetingsListViewModel.ScrollToTodayNotification, object: nil)
+													} label: {
+														Image("calendar")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(.white)
+															.frame(width: 25, height: 25, alignment: .leading)
+															.padding(.all, 10)
+													}
+													.padding(.trailing, 10)
 												}
 											}
 											.frame(maxWidth: .infinity)
