@@ -461,6 +461,8 @@
 "operation_in_progress_overlay" = "Operation in progress, please wait";
 "or" = "or";
 "password" = "Password";
+"pending_notification_for_other_accounts_single" = "1 notification for other account(s)";
+"pending_notification_for_other_accounts_multiple" = "%@ notifications for other account(s)";
 "Personnalize your profil mode" ="Personnalize your profil mode";
 "phone_number" = "Phone number";
 "picker_categories" = "Categories";

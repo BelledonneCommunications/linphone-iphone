@@ -143,6 +143,47 @@ struct ContentView: View {
 					.background(Color.redDanger500)
 				}
 				
+				if accountProfileViewModel.nonDefaultAccountNotificationsCount > 0 && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
+					HStack {
+						Image("bell-simple")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 26, height: 26)
+							.padding(.leading, 10)
+						
+						if accountProfileViewModel.nonDefaultAccountNotificationsCount > 1 {
+							Text(String(format: String(localized: "pending_notification_for_other_accounts_multiple"), accountProfileViewModel.nonDefaultAccountNotificationsCount.description))
+								.default_text_style_white(styleSize: 16)
+						} else {
+							Text(String(localized: "pending_notification_for_other_accounts_single"))
+								.default_text_style_white(styleSize: 16)
+						}
+						
+						Spacer()
+						
+						Button(
+							action: {
+								withAnimation {
+									accountProfileViewModel.nonDefaultAccountNotificationsCount = 0
+								}
+							}, label: {
+								Image("x")
+									.renderingMode(.template)
+									.resizable()
+									.foregroundStyle(.white)
+									.frame(width: 26, height: 26)
+									.padding(.trailing, 10)
+							}
+						)
+						
+					}
+					.frame(maxWidth: .infinity)
+					.frame(height: 40)
+					.padding(.horizontal, 10)
+					.background(Color.gray)
+				}
+				
 				if sharedMainViewModel.waitingMessageCount > 0 && (!telecomManager.callInProgress || (telecomManager.callInProgress && !telecomManager.callDisplayed)) {
 					HStack {
 						Image("voicemail")

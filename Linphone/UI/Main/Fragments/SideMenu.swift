@@ -46,6 +46,7 @@ struct SideMenu: View {
 			.onTapGesture {
 				self.menuClose()
 			}
+			
 			VStack {
 				VStack {
 					HStack {
@@ -173,7 +174,16 @@ struct SideMenu: View {
 			}
 			.frame(maxWidth: .infinity, alignment: .leading)
 			.padding(.leading, safeAreaInsets.leading)
-			.padding(.top, TelecomManager.shared.callInProgress ? 0 : safeAreaInsets.top)
+			.padding(
+				.top,
+				TelecomManager.shared.callInProgress
+				|| accountProfileViewModel.accountError
+				|| accountProfileViewModel.nonDefaultAccountNotificationsCount > 0
+				|| SharedMainViewModel.shared.waitingMessageCount > 0
+				|| !SharedMainViewModel.shared.fileUrlsToShare.isEmpty
+				? 0
+				: safeAreaInsets.top
+			)
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 	}

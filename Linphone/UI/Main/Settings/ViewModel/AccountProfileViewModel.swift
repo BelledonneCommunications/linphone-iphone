@@ -30,9 +30,11 @@ class AccountProfileViewModel: ObservableObject {
     @Published var accountModelIndex: Int? = 0
     @Published var defaultAccountModelIndex: Int? = 0
 	@Published var accountError: Bool = false
+	@Published var nonDefaultAccountNotificationsCount: Int = 0
 	
 	init() {
 		SharedMainViewModel.shared.getDialPlansList()
+		computeNonDefaultAccountNotificationsCount()
 	}
 	
 	func saveChangesWhenLeaving() {
@@ -177,6 +179,27 @@ class AccountProfileViewModel: ObservableObject {
 					)
 					account.params = copy
 				}
+			}
+		}
+	}
+	
+	func computeNonDefaultAccountNotificationsCount() {
+		CoreContext.shared.doOnCoreQueue { core in
+			var count = 0
+			core.accountList.forEach { accountTmp in
+				if let defaultAccount = core.defaultAccount?.params?.identityAddress, let accountAddress = accountTmp.params?.identityAddress,  !defaultAccount.equal(address2: accountAddress) {
+					count += accountTmp.unreadChatMessageCount + accountTmp.missedCallsCount
+				}
+			}
+			
+			if count > 0 {
+				Log.info("\(AccountProfileViewModel.TAG) Found \(count) pending notifications for other account(s)")
+			} else {
+				Log.info("\(AccountProfileViewModel.TAG) No pending notification found for other account(s)")
+			}
+			
+			DispatchQueue.main.async {
+				self.nonDefaultAccountNotificationsCount = count
 			}
 		}
 	}
