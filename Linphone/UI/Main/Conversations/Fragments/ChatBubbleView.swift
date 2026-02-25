@@ -20,6 +20,7 @@
 import SwiftUI
 import WebKit
 import QuickLook
+import Combine
 
 // swiftlint:disable type_body_length
 // swiftlint:disable cyclomatic_complexity
@@ -1162,12 +1163,14 @@ struct CustomSlider: View {
 	
 	let eventLogMessage: EventLogMessage
 	
+	@State private var timer: Timer?
 	@State private var value: Double = 0.0
 	@State private var isPlaying: Bool = false
-	@State private var timer: Timer?
+	@State private var cancellable: AnyCancellable?
 	
 	var minTrackColor: Color = .white.opacity(0.5)
 	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain300, Color.orangeMain500])
+	
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -1223,7 +1226,26 @@ struct CustomSlider: View {
 				.padding(.horizontal, 10)
 			}
 			.clipShape(RoundedRectangle(cornerRadius: radius))
+			.onAppear {
+				if eventLogMessage.message.attachments.first?.type == .voiceRecording {
+					cancellable =
+					NotificationCenter.default
+						.publisher(for: NSNotification.Name("VoiceRecording"))
+						.compactMap { $0.userInfo?["messageId"] as? String }
+						.sink { messageId in
+							if messageId == eventLogMessage.message.id {
+								conversationViewModel.startVoiceRecordPlayer(
+									voiceRecordPath: eventLogMessage.message.attachments.first!.full
+								)
+								playProgress()
+							}
+						}
+				}
+			}
 			.onDisappear {
+				cancellable?.cancel()
+				cancellable = nil
+				
 				resetProgress()
 			}
 		}
@@ -1247,7 +1269,23 @@ struct CustomSlider: View {
 					}
 				}
 			} else {
-				resetProgress()
+				self.resetProgress()
+				
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+					let rows = conversationViewModel.conversationMessagesSection[0].rows
+					
+					if let index = rows.firstIndex(where: { $0.eventModel.eventLogId == eventLogMessage.message.id }),
+					   rows.indices.contains(index - 1) {
+						let nextRow = rows[index - 1]
+						if nextRow.message.attachments.first?.type == .voiceRecording {
+							NotificationCenter.default.post(
+								name: NSNotification.Name("VoiceRecording"),
+								object: nil,
+								userInfo: ["messageId": nextRow.message.id]
+							)
+						}
+					}
+				}
 			}
 		}
 	}
