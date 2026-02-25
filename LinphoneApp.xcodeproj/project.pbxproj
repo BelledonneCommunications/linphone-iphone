@@ -173,6 +173,9 @@
 		D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5678D2B28888F00DE63EB /* CallView.swift */; };
 		D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */; };
 		D7B99E9B2B29F7C300BE7BF2 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E9A2B29F7C200BE7BF2 /* ActivityIndicator.swift */; };
+		D7BC10D42F4EF18600F09BDA /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */; };
+		D7BC10D72F4EF25400F09BDA /* incoming_chat.wav in Resources */ = {isa = PBXBuildFile; fileRef = D7BC10D62F4EF25400F09BDA /* incoming_chat.wav */; };
+		D7BC10D92F4EF65900F09BDA /* AudioMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BC10D82F4EF64E00F09BDA /* AudioMode.swift */; };
 		D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C2DA1C2CA44DE400A2441B /* EventModel.swift */; };
 		D7C365082AEFAB7F00FE6142 /* ContactListBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */; };
 		D7C3650A2AF001C300FE6142 /* EditContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C365092AF001C300FE6142 /* EditContactFragment.swift */; };
@@ -439,6 +442,9 @@
 		D7B5678D2B28888F00DE63EB /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
 		D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
 		D7B99E9A2B29F7C200BE7BF2 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
+		D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
+		D7BC10D62F4EF25400F09BDA /* incoming_chat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = incoming_chat.wav; sourceTree = "<group>"; };
+		D7BC10D82F4EF64E00F09BDA /* AudioMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMode.swift; sourceTree = "<group>"; };
 		D7C2DA1C2CA44DE400A2441B /* EventModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventModel.swift; sourceTree = "<group>"; };
 		D7C365072AEFAB7F00FE6142 /* ContactListBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactListBottomSheet.swift; sourceTree = "<group>"; };
 		D7C365092AF001C300FE6142 /* EditContactFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactFragment.swift; sourceTree = "<group>"; };
@@ -663,6 +669,8 @@
 		D717071C2AC591EF0037746F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				D7BC10D82F4EF64E00F09BDA /* AudioMode.swift */,
+				D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */,
 				C642277A2E8E4AC50094FEDC /* ThemeManager.swift */,
 				D738ACED2E857BEF0039F7D1 /* KeyboardResponder.swift */,
 				D7DF8BE82E2104E5003A3BC7 /* EmojiPickerView.swift */,
@@ -1038,6 +1046,7 @@
 		D7ADF6012AFE5C7C00212231 /* Ressources */ = {
 			isa = PBXGroup;
 			children = (
+				D7BC10D52F4EF21D00F09BDA /* Sounds */,
 				D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */,
 				D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */,
 				D732A90A2B0376F500DB42BA /* linphonerc-default */,
@@ -1066,6 +1075,14 @@
 				66C468FA2D2BE54300A836F7 /* PIPViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		D7BC10D52F4EF21D00F09BDA /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				D7BC10D62F4EF25400F09BDA /* incoming_chat.wav */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 		D7CEE0332B7A20A400FD79B7 /* Conversations */ = {
@@ -1362,6 +1379,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7D24D142AC1B4E800C6F35B /* NotoSans-Regular.ttf in Resources */,
+				D7BC10D72F4EF25400F09BDA /* incoming_chat.wav in Resources */,
 				D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */,
 				D7D24D152AC1B4E800C6F35B /* NotoSans-Light.ttf in Resources */,
 				D7FC8E4A2EBA12F90080C09D /* Launch Screen.storyboard in Resources */,
@@ -1453,6 +1471,7 @@
 			files = (
 				D7C3650E2AF15BF200FE6142 /* PhotoPicker.swift in Sources */,
 				D795F57E2EC5F9500022C17D /* RecordingsListFragment.swift in Sources */,
+				D7BC10D92F4EF65900F09BDA /* AudioMode.swift in Sources */,
 				D7ADF6002AFE356400212231 /* Avatar.swift in Sources */,
 				D7CEE03B2B7A234200FD79B7 /* ConversationsFragment.swift in Sources */,
 				D71707202AC5989C0037746F /* TextExtension.swift in Sources */,
@@ -1479,6 +1498,7 @@
 				D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */,
 				D7D1F5282EDD939E0034EEB0 /* RecordingMediaPlayerViewModel.swift in Sources */,
 				D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */,
+				D7BC10D42F4EF18600F09BDA /* SoundPlayer.swift in Sources */,
 				D717A10E2CEB772300849D92 /* ShareSheetController.swift in Sources */,
 				66C491FD2B24D36500CEA16D /* AudioRouteUtils.swift in Sources */,
 				D738ACEE2E857BF10039F7D1 /* KeyboardResponder.swift in Sources */,

@@ -95,9 +95,9 @@ class CallViewModel: ObservableObject {
 	
 	init() {
 		do {
-			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
-		} catch _ {
-			
+			try configureAudio(.call)
+		} catch {
+			print("Audio session error: \(error)")
 		}
 		NotificationCenter.default.addObserver(forName: Notification.Name("CallViewModelReset"), object: nil, queue: nil) { notification in
 			self.resetCallView()

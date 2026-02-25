@@ -39,9 +39,9 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	
 	init() {
 		do {
-			try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
-		} catch _ {
-			
+			try configureAudio(.call)
+		} catch {
+			print("Audio session error: \(error)")
 		}
 		if !telecomManager.callStarted {
 			self.resetMeetingRoomView()
@@ -51,9 +51,9 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	func resetMeetingRoomView() {
 		if self.telecomManager.meetingWaitingRoomSelected != nil {
 			do {
-				try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .voiceChat, options: .allowBluetooth)
-			} catch _ {
-				
+				try configureAudio(.call)
+			} catch {
+				print("Audio session error: \(error)")
 			}
 			coreContext.doOnCoreQueue { core in
 				
@@ -212,9 +212,9 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	
 	func enableAVAudioSession() {
 		do {
-			try AVAudioSession.sharedInstance().setActive(true)
-		} catch _ {
-			
+			try configureAudio(.call)
+		} catch {
+			print("Audio session error: \(error)")
 		}
 	}
 	

@@ -41,7 +41,7 @@ class RecordingMediaPlayerViewModel: ObservableObject {
 	func startVoiceRecordPlayer(voiceRecordPath: URL) {
 		coreContext.doOnCoreQueue { core in
 			if self.vrpManager == nil || self.vrpManager!.voiceRecordPath != voiceRecordPath {
-				self.vrpManager = VoiceRecordPlayerManager(core: core, voiceRecordPath: voiceRecordPath)
+				self.vrpManager = VoiceRecordPlayerManager(core: core, voiceRecordPath: voiceRecordPath, isPlaying: self.isPlaying)
 			}
 			
 			if self.vrpManager != nil {

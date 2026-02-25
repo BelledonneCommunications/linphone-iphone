@@ -1958,7 +1958,11 @@ struct VoiceRecorderPlayer: View {
 			.padding(.horizontal, 4)
 			.padding(.vertical, 5)
 			.onAppear {
-				self.audioRecorder.startRecording()
+				conversationViewModel.isRecording = isRecording
+				audioRecorder.startRecording()
+			}
+			.onChange(of: isRecording) { newValue in
+				conversationViewModel.isRecording = newValue
 			}
 			.onDisappear {
 				self.audioRecorder.stopVoiceRecorder()
