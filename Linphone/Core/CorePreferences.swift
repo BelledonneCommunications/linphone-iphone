@@ -339,6 +339,15 @@ class CorePreferences {
 		}
 	}
 	
+	var singleSignOnClientId: String {
+		get {
+			config.getString(section: "app", key: "oidc_client_id", defaultString: "linphone")
+		}
+		set {
+			config.setString(section: "app", key: "oidc_client_id", value: newValue)
+		}
+	}
+	
 	var teamID: String {
 		get {
 			config.getString(section: "app", key: "team_id", defaultString: "")

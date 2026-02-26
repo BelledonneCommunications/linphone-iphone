@@ -26,7 +26,7 @@ class SingleSignOnManager {
 	static let shared = SingleSignOnManager()
 
 	private let TAG = "[SSO]"
-	private let clientId = "linphone"
+	private let clientId = AppServices.corePreferences.singleSignOnClientId
 	private let userDefaultSSOKey = "sso-authstate"
 	let ssoRedirectUri = URL(string: "org.linphone:/openidcallback")!
 	private var singleSignOnUrl = ""
@@ -87,6 +87,7 @@ class SingleSignOnManager {
 					Log.error("\(self.TAG) Error retrieving discovery document: \(error?.localizedDescription ?? "Unknown error")")
 					return
 				}
+				
 				let request = OIDTokenRequest(
 					configuration: configuration,
 					grantType: OIDGrantTypeRefreshToken,
