@@ -21,7 +21,6 @@ import SwiftUI
 import linphonesw
 
 struct ConversationDocumentsListFragment: View {
-	@EnvironmentObject var conversationViewModel: ConversationViewModel
 	
 	@StateObject private var conversationDocumentsListViewModel = ConversationDocumentsListViewModel()
 	

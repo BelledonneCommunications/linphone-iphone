@@ -1603,7 +1603,6 @@ struct ConversationFragment: View {
 				ConversationMediaListFragment(
 					isShowMediaFilesFragment: $isShowMediaFilesFragment
 				)
-				.environmentObject(conversationViewModel)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
 			}
@@ -1612,7 +1611,6 @@ struct ConversationFragment: View {
 				ConversationDocumentsListFragment(
 					isShowDocumentsFilesFragment: $isShowDocumentsFilesFragment
 				)
-				.environmentObject(conversationViewModel)
 				.zIndex(5)
 				.transition(.move(edge: .trailing))
 			}

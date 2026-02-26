@@ -34,6 +34,8 @@ struct ContactInnerFragment: View {
 	
 	@State var cnContact: CNContact?
 	@State private var presentingEditContact = false
+	@State private var isShowMediaFilesFragment = false
+	@State private var isShowDocumentsFilesFragment = false
 	
 	@Binding var isShowDeletePopup: Bool
 	@Binding var showingSheet: Bool
@@ -280,6 +282,8 @@ struct ContactInnerFragment: View {
 										isShowDeletePopup: $isShowDeletePopup,
 										isShowDismissPopup: $isShowDismissPopup,
 										isShowTrustLevelPopup: $isShowTrustLevelPopup,
+										isShowMediaFilesFragment: $isShowMediaFilesFragment,
+										isShowDocumentsFilesFragment: $isShowDocumentsFilesFragment,
 										isShowIncreaseTrustLevelPopup: $isShowIncreaseTrustLevelPopup,
 										isShowEditContactFragmentInContactDetails: $isShowEditContactFragmentInContactDetails,
 										geometry: geometry,
@@ -287,9 +291,18 @@ struct ContactInnerFragment: View {
 									)
 									.onAppear {
 										contactsListViewModel.fetchDevicesAndTrust()
+										contactsListViewModel.getOneToOneChatRoomWith()
 									}
 									.onChange(of: SharedMainViewModel.shared.displayedFriend?.id) { _ in
+										isShowMediaFilesFragment = false
+										isShowDocumentsFilesFragment = false
+										SharedMainViewModel.shared.displayedFriendExistingChatRoom = nil
+										
 										contactsListViewModel.fetchDevicesAndTrust()
+										contactsListViewModel.getOneToOneChatRoomWith()
+									}
+									.onDisappear {
+										SharedMainViewModel.shared.displayedFriendExistingChatRoom = nil
 									}
 								}
 								.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
@@ -310,6 +323,22 @@ struct ContactInnerFragment: View {
 								.navigationBarTitleDisplayMode(.inline)
 								.edgesIgnoringSafeArea(.vertical)
 						}
+					}
+					
+					if isShowMediaFilesFragment {
+						ConversationMediaListFragment(
+							isShowMediaFilesFragment: $isShowMediaFilesFragment
+						)
+						.zIndex(5)
+						.transition(.move(edge: .trailing))
+					}
+					
+					if isShowDocumentsFilesFragment {
+						ConversationDocumentsListFragment(
+							isShowDocumentsFilesFragment: $isShowDocumentsFilesFragment
+						)
+						.zIndex(5)
+						.transition(.move(edge: .trailing))
 					}
 				}
 			}

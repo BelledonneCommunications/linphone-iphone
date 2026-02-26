@@ -337,5 +337,102 @@ class ContactsListViewModel: ObservableObject {
 			devices = devicesList
 		}
 	}
+	
+	func getOneToOneChatRoomWith() {
+		CoreContext.shared.doOnCoreQueue { core in
+			if let contactAvatarModel = SharedMainViewModel.shared.displayedFriend {
+				var remote: Address?
+
+				if contactAvatarModel.addresses.count == 1 {
+					do {
+						remote = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
+					} catch {
+						Log.error("\(Self.TAG) unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error)")
+						return
+					}
+				} else if contactAvatarModel.addresses.isEmpty &&
+						  contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+
+					if let firstPhone = contactAvatarModel.phoneNumbersWithLabel.first,
+					   let address = core.interpretUrl(
+							url: firstPhone.phoneNumber,
+							applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)
+					   ) {
+						remote = address
+					}
+				}
+
+				guard let remote else {
+					Log.error("\(Self.TAG) No valid remote address found")
+					return
+				}
+				
+				let account = core.defaultAccount
+				if account == nil {
+					Log.error(
+						"\(Self.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())"
+					)
+					return
+				}
+				
+				do {
+					let params = try core.createConferenceParams(conference: nil)
+					params.chatEnabled = true
+					params.groupEnabled = false
+					params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
+					params.account = account
+					
+					guard let chatParams = params.chatParams else { return }
+					chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
+					
+					let sameDomain = remote.domain == AppServices.corePreferences.defaultDomain && remote.domain == account!.params?.domain
+					if account!.params != nil && (account!.params!.instantMessagingEncryptionMandatory && sameDomain) {
+						Log.info("\(ConversationForwardMessageViewModel.TAG) Account is in secure mode & domain matches, creating an E2E encrypted conversation")
+						chatParams.backend = ChatRoom.Backend.FlexisipChat
+						params.securityLevel = Conference.SecurityLevel.EndToEnd
+					} else if account!.params != nil && (!account!.params!.instantMessagingEncryptionMandatory) {
+						if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
+							Log.info(
+								"\(ConversationForwardMessageViewModel.TAG) Account is in interop mode but LIME is available, creating an E2E encrypted conversation"
+							)
+							chatParams.backend = ChatRoom.Backend.FlexisipChat
+							params.securityLevel = Conference.SecurityLevel.EndToEnd
+						} else {
+							Log.info(
+								"\(ConversationForwardMessageViewModel.TAG) Account is in interop mode but LIME isn't available, creating a SIP simple conversation"
+							)
+							chatParams.backend = ChatRoom.Backend.Basic
+							params.securityLevel = Conference.SecurityLevel.None
+						}
+					} else {
+						Log.error(
+							"\(ConversationForwardMessageViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remote.asStringUriOnly())"
+						)
+						
+						DispatchQueue.main.async {
+							SharedMainViewModel.shared.operationInProgress = false
+							ToastViewModel.shared.show("Failed_to_create_conversation_error")
+						}
+						return
+					}
+					
+					let participants = [remote]
+					let localAddress = account?.params?.identityAddress
+					if let existingChatRoomTmp = core.searchChatRoom(params: params, localAddr: localAddress, remoteAddr: nil, participants: participants) {
+						Log.warn(
+							"\(ConversationForwardMessageViewModel.TAG) A 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) for given parameters already exists!"
+						)
+						
+						let conversationModel = ConversationModel(chatRoom: existingChatRoomTmp)
+						
+						DispatchQueue.main.async {
+							SharedMainViewModel.shared.displayedFriendExistingChatRoom = conversationModel
+						}
+					}
+				} catch {
+				}
+			}
+		}
+	}
 }
 // swiftlint:enable line_length

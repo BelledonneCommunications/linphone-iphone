@@ -23,8 +23,9 @@ import linphonesw
 // swiftlint:disable type_body_length
 struct ContactInnerActionsFragment: View {
 	
-	@ObservedObject var contactsManager = ContactsManager.shared
 	@ObservedObject private var telecomManager = TelecomManager.shared
+	@ObservedObject private var contactsManager = ContactsManager.shared
+	@ObservedObject private var sharedMainViewModel = SharedMainViewModel.shared
 	
 	@EnvironmentObject var contactAvatarModel: ContactAvatarModel
 	@EnvironmentObject var contactsListViewModel: ContactsListViewModel
@@ -37,6 +38,8 @@ struct ContactInnerActionsFragment: View {
 	@Binding var isShowDeletePopup: Bool
 	@Binding var isShowDismissPopup: Bool
 	@Binding var isShowTrustLevelPopup: Bool
+	@Binding var isShowMediaFilesFragment: Bool
+	@Binding var isShowDocumentsFilesFragment: Bool
 	@Binding var isShowIncreaseTrustLevelPopup: Bool
 	@Binding var isShowEditContactFragmentInContactDetails: Bool
 	
@@ -383,6 +386,87 @@ struct ContactInnerActionsFragment: View {
 			.cornerRadius(15)
 			.padding(.horizontal)
 			.zIndex(-2)
+			.transition(.move(edge: .top))
+		}
+		
+		if sharedMainViewModel.displayedFriendExistingChatRoom != nil {
+			HStack(alignment: .center) {
+				Text("conversation_details_media_documents_title")
+					.default_text_style_800(styleSize: 16)
+				
+				Spacer()
+				
+				Image("caret-up")
+					.renderingMode(.template)
+					.resizable()
+					.foregroundStyle(Color.grayMain2c600)
+					.frame(width: 25, height: 25, alignment: .leading)
+					.padding(.all, 10)
+					.hidden()
+			}
+			.padding(.top, 20)
+			.padding(.bottom, 10)
+			.padding(.horizontal, 16)
+			.background(Color.gray100)
+			
+			VStack(spacing: 0) {
+				Button {
+					withAnimation {
+						isShowMediaFilesFragment = true
+					}
+				} label: {
+					HStack {
+						Image("image")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c600)
+							.frame(width: 25, height: 25)
+							.padding(.all, 10)
+						
+						Text("conversation_menu_media_files")
+							.default_text_style(styleSize: 14)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.lineLimit(1)
+							.fixedSize(horizontal: false, vertical: true)
+						Spacer()
+					}
+					.padding(.vertical, 15)
+					.padding(.horizontal, 20)
+				}
+				
+				VStack {
+					Divider()
+				}
+				.padding(.horizontal)
+				
+				Button {
+					withAnimation {
+						isShowDocumentsFilesFragment = true
+					}
+				} label: {
+					HStack {
+						Image("file-pdf")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c600)
+							.frame(width: 25, height: 25)
+							.padding(.all, 10)
+						
+						Text("conversation_menu_documents_files")
+							.default_text_style(styleSize: 14)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.lineLimit(1)
+							.fixedSize(horizontal: false, vertical: true)
+						Spacer()
+					}
+					.padding(.vertical, 15)
+					.padding(.horizontal, 20)
+				}
+			}
+			.background(.white)
+			.cornerRadius(15)
+			.padding(.horizontal)
+			.zIndex(-1)
 			.transition(.move(edge: .top))
 		}
 		

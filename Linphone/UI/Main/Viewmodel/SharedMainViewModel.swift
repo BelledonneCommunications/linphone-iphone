@@ -45,6 +45,8 @@ class SharedMainViewModel: ObservableObject {
 	@Published var displayedConversation: ConversationModel?
 	@Published var displayedMeeting: MeetingModel?
 	
+	@Published var displayedFriendExistingChatRoom: ConversationModel?
+	
 	@Published var dialPlansList: [DialPlan?] = []
 	@Published var dialPlansLabelList: [String] = []
 	@Published var dialPlansShortLabelList: [String] = []

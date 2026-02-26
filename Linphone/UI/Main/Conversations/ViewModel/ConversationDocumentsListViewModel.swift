@@ -36,6 +36,9 @@ final class ConversationDocumentsListViewModel: ObservableObject {
 		if let conversationModelTmp = SharedMainViewModel.shared.displayedConversation {
 			self.conversationModel = conversationModelTmp
 			loadDocumentsList()
+		} else if let conversationModelTmp = SharedMainViewModel.shared.displayedFriendExistingChatRoom {
+			self.conversationModel = conversationModelTmp
+			loadDocumentsList()
 		}
 	}
 

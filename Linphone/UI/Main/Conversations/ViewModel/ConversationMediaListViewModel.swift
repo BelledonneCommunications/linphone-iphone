@@ -36,6 +36,9 @@ final class ConversationMediaListViewModel: ObservableObject {
 		if let conversationModelTmp = SharedMainViewModel.shared.displayedConversation {
 			self.conversationModel = conversationModelTmp
 			loadMediaList()
+		} else if let conversationModelTmp = SharedMainViewModel.shared.displayedFriendExistingChatRoom {
+			self.conversationModel = conversationModelTmp
+			loadMediaList()
 		}
 	}
 

@@ -21,8 +21,6 @@ import SwiftUI
 import linphonesw
 
 struct ConversationMediaListFragment: View {
-	@EnvironmentObject var conversationViewModel: ConversationViewModel
-	
 	@StateObject private var conversationMediaListViewModel = ConversationMediaListViewModel()
 	
 	@Binding var isShowMediaFilesFragment: Bool
