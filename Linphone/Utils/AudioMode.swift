@@ -52,6 +52,7 @@ func configureAudio(_ mode: AudioMode) throws {
 			options: [.allowBluetoothHFP, .defaultToSpeaker, .mixWithOthers]
 		)
 		
+	// Not needed since call audio configuration (AVAudioSession) is handled by the SDK
 	case .call:
 		try session.setCategory(
 			.playAndRecord,

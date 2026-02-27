@@ -94,11 +94,14 @@ class CallViewModel: ObservableObject {
 	private var chatRoomDelegate: ChatRoomDelegate?
 	
 	init() {
+		// Not needed since call audio configuration (AVAudioSession) is handled by the SDK
+		/*
 		do {
 			try configureAudio(.call)
 		} catch {
 			print("Audio session error: \(error)")
 		}
+		*/
 		NotificationCenter.default.addObserver(forName: Notification.Name("CallViewModelReset"), object: nil, queue: nil) { notification in
 			self.resetCallView()
 		}
