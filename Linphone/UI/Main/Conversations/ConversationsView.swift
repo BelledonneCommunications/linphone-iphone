@@ -55,7 +55,7 @@ struct ConversationsView: View {
 
 #Preview {
 	ConversationsListFragment(
-	  	showingSheet: .constant(false),
-		text: .constant("")
+		text: .constant(""),
+	  	showingSheet: .constant(false)
 	)
 }

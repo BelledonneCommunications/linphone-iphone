@@ -22,32 +22,26 @@ import SwiftUI
 struct PopupLoadingView: View {
 	
 	var body: some View {
-		GeometryReader { geometry in
-			VStack(alignment: .leading) {
-				
-				ProgressView()
-					.controlSize(.large)
-					.progressViewStyle(CircularProgressViewStyle(tint: Color.orangeMain500))
-					.frame(maxWidth: .infinity)
-					.padding(.top)
-					.padding(.bottom)
-				
-				Text("operation_in_progress_overlay")
-					.tint(Color.grayMain2c600)
-					.default_text_style(styleSize: 15)
-					.frame(maxWidth: .infinity)
-			}
-			.padding(.horizontal, 20)
-			.padding(.vertical, 20)
-			.background(.white)
-			.cornerRadius(20)
-			.padding(.horizontal)
-			.frame(maxHeight: .infinity)
-			.frame(maxWidth: .infinity)
-			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
-			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
-			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+		VStack {
+			ProgressView()
+				.controlSize(.large)
+				.progressViewStyle(CircularProgressViewStyle(tint: Color.orangeMain500))
+				.frame(maxWidth: .infinity)
+				.padding(.top)
+				.padding(.bottom)
+			
+			Text("operation_in_progress_overlay")
+				.tint(Color.grayMain2c600)
+				.default_text_style(styleSize: 15)
+				.frame(maxWidth: .infinity)
 		}
+		.padding(.horizontal, 20)
+		.padding(.vertical, 20)
+		.background(.white)
+		.cornerRadius(20)
+		.padding(.horizontal)
+		.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
+		.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 	}
 }
 

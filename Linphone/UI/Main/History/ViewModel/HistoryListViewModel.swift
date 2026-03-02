@@ -31,6 +31,8 @@ class HistoryListViewModel: ObservableObject {
 	var callLogsAddressToDelete = ""
 	var callLogCoreDelegate: CoreDelegate?
 	
+	@Published var callLogsFilter = ""
+	
 	@Published var selectedCall: HistoryModel?
 	
 	@Published var displayedConversation: ConversationModel?
@@ -171,6 +173,7 @@ class HistoryListViewModel: ObservableObject {
 	}
 	
 	func filterCallLogs(filter: String) {
+		callLogsFilter = filter
 		callLogs.removeAll()
 		callLogsTmp.forEach { callLog in
 			if callLog.addressName.lowercased().contains(filter.lowercased()) {
@@ -180,6 +183,7 @@ class HistoryListViewModel: ObservableObject {
 	}
 	
 	func resetFilterCallLogs() {
+		callLogsFilter = ""
 		callLogs = callLogsTmp
 	}
 	

@@ -26,10 +26,12 @@ struct ConversationsListFragment: View {
 	
 	@EnvironmentObject var navigationManager: NavigationManager
 	
+	@ObservedObject var contactsManager = ContactsManager.shared
+	
 	@EnvironmentObject var conversationsListViewModel: ConversationsListViewModel
 	
-	@Binding var showingSheet: Bool
 	@Binding var text: String
+	@Binding var showingSheet: Bool
 	
 	var body: some View {
 		VStack {
@@ -42,6 +44,34 @@ struct ConversationsListFragment: View {
 						text: $text
 					)
 				}
+				
+				if !conversationsListViewModel.currentFilter.isEmpty {
+					if !contactsManager.lastSearch.isEmpty {
+						HStack(alignment: .center) {
+							Text("contacts_list_all_contacts_title")
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+						}
+					}
+					
+					ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
+						withAnimation {
+							conversationsListViewModel.createOneToOneChatRoomWith(remote: addr)
+						}
+					})
+					
+					if !contactsManager.lastSearchSuggestions.isEmpty {
+						HStack(alignment: .center) {
+							Text("generic_address_picker_suggestions_list_title")
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+						}
+						
+						suggestionsList
+					}
+				}
 			}
 			.safeAreaInset(edge: .top, content: {
 				Spacer()
@@ -50,7 +80,13 @@ struct ConversationsListFragment: View {
 			.listStyle(.plain)
 			.overlay(
 				VStack {
-					if conversationsListViewModel.conversationsList.isEmpty {
+					if conversationsListViewModel.conversationsList.isEmpty &&
+						(
+							conversationsListViewModel.currentFilter.isEmpty ||
+							(!conversationsListViewModel.currentFilter.isEmpty &&
+							 contactsManager.lastSearch.isEmpty &&
+							 contactsManager.lastSearchSuggestions.isEmpty)
+						) {
 						Spacer()
 						Image("illus-belledonne")
 							.resizable()
@@ -65,6 +101,11 @@ struct ConversationsListFragment: View {
 				}
 					.padding(.all)
 			)
+			.onDisappear {
+				if !conversationsListViewModel.currentFilter.isEmpty {
+					conversationsListViewModel.resetFilterConversations()
+				}
+			}
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
@@ -75,6 +116,69 @@ struct ConversationsListFragment: View {
 					navigationManager.peerAddr = nil
 				}
 			}
+		}
+	}
+	
+	var suggestionsList: some View {
+		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
+			Button {
+				if let address = contactsManager.lastSearchSuggestions[index].address {
+					withAnimation {
+						conversationsListViewModel.createOneToOneChatRoomWith(remote: address)
+					}
+				}
+			} label: {
+				HStack {
+					if index < contactsManager.lastSearchSuggestions.count
+						&& contactsManager.lastSearchSuggestions[index].address != nil {
+						if contactsManager.lastSearchSuggestions[index].address!.domain != AppServices.corePreferences.defaultDomain {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
+								.default_text_style(styleSize: 16)
+								.lineLimit(1)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						} else {
+							if let address = contactsManager.lastSearchSuggestions[index].address {
+								let nameTmp = address.displayName
+								?? address.username
+								?? String(address.asStringUriOnly().dropFirst(4))
+								
+								Image(uiImage: contactsManager.textToImage(
+									firstName: nameTmp,
+									lastName: ""))
+								.resizable()
+								.frame(width: 45, height: 45)
+								.clipShape(Circle())
+								
+								Text(nameTmp)
+									.default_text_style(styleSize: 16)
+									.lineLimit(1)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.foregroundStyle(Color.orangeMain500)
+							}
+						}
+					} else {
+						Image("profil-picture-default")
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+						
+						Text("username_error")
+							.default_text_style(styleSize: 16)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.foregroundStyle(Color.orangeMain500)
+					}
+				}
+			}
+			.buttonStyle(.borderless)
+			.listRowSeparator(.hidden)
 		}
 	}
 }
@@ -244,7 +348,7 @@ struct ConversationRow: View {
 
 #Preview {
 	ConversationsListFragment(
-		showingSheet: .constant(false),
-		text: .constant("")
+		text: .constant(""),
+		showingSheet: .constant(false)
 	)
 }

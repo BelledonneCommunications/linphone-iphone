@@ -36,11 +36,11 @@ class StartConversationViewModel: ObservableObject {
 	
 	@Published var participants: [SelectedAddressModel] = []
 	
-	@Published var operationOneToOneInProgress: Bool = false
+	@Published var hideGroupChatButton: Bool = false
 	@Published var operationGroupInProgress: Bool = false
+	@Published var operationOneToOneInProgress: Bool = false
 	@Published var displayedConversation: ConversationModel?
 	
-	@Published var hideGroupChatButton: Bool = false
 	
 	private var chatRoomDelegate: ChatRoomDelegate?
 	

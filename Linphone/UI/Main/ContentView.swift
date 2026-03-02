@@ -48,6 +48,7 @@ struct ContentView: View {
 	@State private var searchIsActive = false
 	@State private var text = ""
 	@FocusState private var focusedField: Bool
+	
 	@State private var showingDialer = false
 	@State var isMenuOpen = false
 	@State var isShowDeleteContactPopup = false
@@ -320,6 +321,8 @@ struct ContentView: View {
 										Spacer()
 										
 										Button(action: {
+											resetFilter()
+											
 											sharedMainViewModel.changeIndexView(indexViewInt: 0)
 											sharedMainViewModel.displayedCall = nil
 											sharedMainViewModel.displayedConversation = nil
@@ -341,7 +344,8 @@ struct ContentView: View {
 											}
 										})
 										.padding(.top)
-										.frame(height: geometry.size.height/4)
+										
+										Spacer()
 										
 										ZStack {
 											if SharedMainViewModel.shared.missedCallsCount > 0 {
@@ -365,6 +369,8 @@ struct ContentView: View {
 											}
 											
 											Button(action: {
+												resetFilter()
+												
 												sharedMainViewModel.changeIndexView(indexViewInt: 1)
 												sharedMainViewModel.displayedFriend = nil
 												sharedMainViewModel.displayedConversation = nil
@@ -390,7 +396,8 @@ struct ContentView: View {
 											})
 											.padding(.top)
 										}
-										.frame(height: geometry.size.height/4)
+										
+										Spacer()
 										
                                         if !sharedMainViewModel.disableChatFeature {
                                             ZStack {
@@ -415,6 +422,8 @@ struct ContentView: View {
                                                 }
                                                 
                                                 Button(action: {
+													resetFilter()
+													
                                                     sharedMainViewModel.changeIndexView(indexViewInt: 2)
                                                     sharedMainViewModel.displayedFriend = nil
                                                     sharedMainViewModel.displayedCall = nil
@@ -438,11 +447,14 @@ struct ContentView: View {
                                                 })
                                                 .padding(.top)
                                             }
-                                            .frame(height: geometry.size.height/4)
+											
+											Spacer()
                                         }
 										
 										if !sharedMainViewModel.disableMeetingFeature {
 											Button(action: {
+												resetFilter()
+												
 												sharedMainViewModel.changeIndexView(indexViewInt: 3)
 												sharedMainViewModel.displayedFriend = nil
 												sharedMainViewModel.displayedCall = nil
@@ -464,13 +476,13 @@ struct ContentView: View {
 												}
 											})
 											.padding(.top)
-											.frame(height: geometry.size.height/4)
 											
 											Spacer()
 										}
 									}
 								}
 								.frame(width: 75, height: geometry.size.height)
+								.padding(.bottom, geometry.safeAreaInsets.bottom)
 								.padding(.leading,
 										 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
 										 ? -geometry.safeAreaInsets.leading
@@ -690,10 +702,12 @@ struct ContentView: View {
 													
 													text = ""
 													
-													if sharedMainViewModel.indexView == 0 {
+													if sharedMainViewModel.indexView != 3 {
 														magicSearch.currentFilter = ""
 														magicSearch.searchForContacts()
-													} else if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+													}
+													
+													if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
 														historyListVM.resetFilterCallLogs()
 													} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
 														conversationsListVM.resetFilterConversations()
@@ -735,10 +749,12 @@ struct ContentView: View {
 														self.focusedField = true
 													}
 													.onChange(of: text) { newValue in
-														if sharedMainViewModel.indexView == 0 {
+														if sharedMainViewModel.indexView != 3 {
 															magicSearch.currentFilter = newValue
 															magicSearch.searchForContacts()
-														} else if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+														}
+														
+														if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
 															if text.isEmpty {
 																historyListVM.resetFilterCallLogs()
 															} else {
@@ -753,6 +769,34 @@ struct ContentView: View {
 														} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
 															meetingsListVM.currentFilter = text
 															meetingsListVM.computeMeetingsList()
+														}
+													}
+													.onChange(of: isShowStartCallFragment) { isShowStartCallFragmentNewValue in
+														if isShowStartCallFragmentNewValue == false && !text.isEmpty {
+															if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+																magicSearch.currentFilter = text
+																magicSearch.searchForContacts()
+																
+																if text.isEmpty {
+																	historyListVM.resetFilterCallLogs()
+																} else {
+																	historyListVM.filterCallLogs(filter: text)
+																}
+															}
+														}
+													}
+													.onChange(of: isShowStartConversationFragment) { isShowStartConversationFragmentNewValue in
+														if isShowStartConversationFragmentNewValue == false && !text.isEmpty {
+															if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+																magicSearch.currentFilter = text
+																magicSearch.searchForContacts()
+																
+																if text.isEmpty {
+																	conversationsListVM.resetFilterConversations()
+																} else {
+																	conversationsListVM.filterConversations(filter: text)
+																}
+															}
 														}
 													}
 												} else {
@@ -777,16 +821,54 @@ struct ContentView: View {
 														self.focusedField = true
 													}
 													.onChange(of: text) { newValue in
-														if sharedMainViewModel.indexView == 0 {
+														if sharedMainViewModel.indexView != 3 {
 															magicSearch.currentFilter = newValue
 															magicSearch.searchForContacts()
-														} else if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
-															historyListVM.filterCallLogs(filter: text)
+														}
+														
+														if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+															if text.isEmpty {
+																historyListVM.resetFilterCallLogs()
+															} else {
+																historyListVM.filterCallLogs(filter: text)
+															}
 														} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
-															conversationsListVM.filterConversations(filter: text)
+															if text.isEmpty {
+																conversationsListVM.resetFilterConversations()
+															} else {
+																conversationsListVM.filterConversations(filter: text)
+															}
 														} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
 															meetingsListVM.currentFilter = text
 															meetingsListVM.computeMeetingsList()
+														}
+													}
+													.onChange(of: isShowStartCallFragment) { isShowStartCallFragmentNewValue in
+														if isShowStartCallFragmentNewValue == false && !text.isEmpty {
+															if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+																magicSearch.currentFilter = text
+																magicSearch.searchForContacts()
+																
+																if text.isEmpty {
+																	historyListVM.resetFilterCallLogs()
+																} else {
+																	historyListVM.filterCallLogs(filter: text)
+																}
+															}
+														}
+													}
+													.onChange(of: isShowStartConversationFragment) { isShowStartConversationFragmentNewValue in
+														if isShowStartConversationFragmentNewValue == false && !text.isEmpty {
+															if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+																magicSearch.currentFilter = text
+																magicSearch.searchForContacts()
+																
+																if text.isEmpty {
+																	conversationsListVM.resetFilterConversations()
+																} else {
+																	conversationsListVM.filterConversations(filter: text)
+																}
+															}
 														}
 													}
 												}
@@ -874,6 +956,8 @@ struct ContentView: View {
 								Group {
 									Spacer()
 									Button(action: {
+										resetFilter()
+										
 										sharedMainViewModel.changeIndexView(indexViewInt: 0)
 										sharedMainViewModel.displayedCall = nil
 										sharedMainViewModel.displayedConversation = nil
@@ -921,6 +1005,8 @@ struct ContentView: View {
 										}
 										
 										Button(action: {
+											resetFilter()
+											
 											sharedMainViewModel.changeIndexView(indexViewInt: 1)
 											sharedMainViewModel.displayedFriend = nil
 											sharedMainViewModel.displayedConversation = nil
@@ -973,6 +1059,8 @@ struct ContentView: View {
                                             }
                                             
                                             Button(action: {
+												resetFilter()
+												
                                                 sharedMainViewModel.changeIndexView(indexViewInt: 2)
                                                 sharedMainViewModel.displayedFriend = nil
                                                 sharedMainViewModel.displayedCall = nil
@@ -1002,6 +1090,8 @@ struct ContentView: View {
 									if !sharedMainViewModel.disableMeetingFeature {
 										Spacer()
 										Button(action: {
+											resetFilter()
+											
 											sharedMainViewModel.changeIndexView(indexViewInt: 3)
 											sharedMainViewModel.displayedFriend = nil
 											sharedMainViewModel.displayedCall = nil
@@ -1299,13 +1389,17 @@ struct ContentView: View {
 					
 					if sharedMainViewModel.operationInProgress {
 						PopupLoadingView()
+							.frame(maxWidth: .infinity, maxHeight: .infinity)
+							.padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad && (orientation == .landscapeLeft || orientation == .landscapeRight || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) ? geometry.safeAreaInsets.bottom : 0)
 							.background(.black.opacity(0.65))
 							.zIndex(3)
 							.onDisappear {
 								if let contactsListVM = contactsListViewModel, let displayedConversation = contactsListVM.displayedConversation {
                                     
                                     if !sharedMainViewModel.disableChatFeature {
-                                        sharedMainViewModel.displayedFriend = nil
+										resetFilter()
+                                        
+										sharedMainViewModel.displayedFriend = nil
                                         sharedMainViewModel.displayedCall = nil
                                         sharedMainViewModel.changeIndexView(indexViewInt: 2)
                                         
@@ -1330,6 +1424,8 @@ struct ContentView: View {
 								} else if let historyListVM = historyListViewModel, let displayedConversation = historyListVM.displayedConversation {
                                     
                                     if !sharedMainViewModel.disableChatFeature {
+										resetFilter()
+										
                                         sharedMainViewModel.displayedFriend = nil
                                         sharedMainViewModel.displayedCall = nil
                                         sharedMainViewModel.changeIndexView(indexViewInt: 2)
@@ -1352,6 +1448,15 @@ struct ContentView: View {
                                             }
                                         }
                                     }
+								} else if let conversationsListVM = conversationsListViewModel {
+									conversationsListVM.currentFilter = ""
+									
+									self.resetFilter()
+									
+									if let displayedConversation = conversationsListVM.displayedConversation {
+										conversationsListVM.changeDisplayedChatRoom(conversationModel: displayedConversation)
+										conversationsListVM.displayedConversation = nil
+									}
 								}
 							}
 					}
@@ -1404,7 +1509,7 @@ struct ContentView: View {
 						.transition(.move(edge: .trailing))
 					}
 					
-					if  let meetingsListVM = meetingsListViewModel, isShowSendCancelMeetingNotificationPopup {
+					if let meetingsListVM = meetingsListViewModel, isShowSendCancelMeetingNotificationPopup {
 						PopupView(
 							isShowPopup: $isShowSendCancelMeetingNotificationPopup,
 							title: Text("meeting_schedule_cancel_dialog_title"),
@@ -1668,6 +1773,7 @@ struct ContentView: View {
 			.onChange(of: navigationManager.selectedCallId) { newCallId in
 				if newCallId != nil {
                     if !sharedMainViewModel.disableChatFeature {
+						resetFilter()
                         sharedMainViewModel.changeIndexView(indexViewInt: 2)
                     }
 				}
@@ -1758,6 +1864,17 @@ struct ContentView: View {
 	func openMenu() {
 		withAnimation {
 			self.sideMenuIsOpen.toggle()
+		}
+	}
+	
+	func resetFilter() {
+		self.text = ""
+		self.focusedField = false
+		self.searchIsActive = false
+		
+		if !magicSearch.currentFilter.isEmpty {
+			magicSearch.currentFilter = ""
+			magicSearch.searchForContacts()
 		}
 	}
 }

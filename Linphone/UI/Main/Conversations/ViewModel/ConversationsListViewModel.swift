@@ -33,11 +33,13 @@ class ConversationsListViewModel: ObservableObject {
 	
 	private var coreConversationDelegate: CoreDelegate?
 	
+	@Published var currentFilter: String = ""
+	@Published var displayedConversation: ConversationModel?
 	@Published var conversationsList: [ConversationModel] = []
 	
 	var selectedConversation: ConversationModel?
 	
-	var currentFilter: String = ""
+	private var chatRoomDelegate: ChatRoomDelegate?
 	
 	init() {
 		computeChatRoomsList()
@@ -428,6 +430,7 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func resetFilterConversations() {
+		currentFilter = ""
 		filterConversations(filter: "")
 	}
 	
@@ -478,6 +481,164 @@ class ConversationsListViewModel: ObservableObject {
 				Log.warn("\(ConversationsListViewModel.TAG) changeDisplayedChatRoom: no chat room found for identifier \(conversationModel.id)")
 			}
 		}
+	}
+	
+	func createOneToOneChatRoomWith(remote: Address) {
+		CoreContext.shared.doOnCoreQueue { core in
+			let account = core.defaultAccount
+			if account == nil {
+				Log.error(
+					"\(ConversationsListViewModel.TAG) No default account found, can't create conversation with \(remote.asStringUriOnly())"
+				)
+				return
+			}
+			
+			DispatchQueue.main.async {
+				self.sharedMainViewModel.operationInProgress = true
+			}
+			
+			do {
+				let params = try core.createConferenceParams(conference: nil)
+				params.chatEnabled = true
+				params.groupEnabled = false
+				params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
+				params.account = account
+				
+				guard let chatParams = params.chatParams else { return }
+				chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
+				
+				let sameDomain = remote.domain == AppServices.corePreferences.defaultDomain && remote.domain == account!.params?.domain
+				if account!.params != nil && (account!.params!.instantMessagingEncryptionMandatory && sameDomain) {
+					Log.info("\(ConversationsListViewModel.TAG) Account is in secure mode & domain matches, creating an E2E encrypted conversation")
+					chatParams.backend = ChatRoom.Backend.FlexisipChat
+					params.securityLevel = Conference.SecurityLevel.EndToEnd
+				} else if account!.params != nil && (!account!.params!.instantMessagingEncryptionMandatory) {
+					if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
+						Log.info(
+							"\(ConversationsListViewModel.TAG) Account is in interop mode but LIME is available, creating an E2E encrypted conversation"
+						)
+						chatParams.backend = ChatRoom.Backend.FlexisipChat
+						params.securityLevel = Conference.SecurityLevel.EndToEnd
+					} else {
+						Log.info(
+							"\(ConversationsListViewModel.TAG) Account is in interop mode but LIME isn't available, creating a SIP simple conversation"
+						)
+						chatParams.backend = ChatRoom.Backend.Basic
+						params.securityLevel = Conference.SecurityLevel.None
+					}
+				} else {
+					Log.error(
+						"\(ConversationsListViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remote.asStringUriOnly())"
+					)
+					
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+						self.sharedMainViewModel.operationInProgress = false
+						ToastViewModel.shared.show("Failed_to_create_conversation_error")
+					}
+					return
+				}
+				
+				let participants = [remote]
+				let localAddress = account?.params?.identityAddress
+				let existingChatRoom = core.searchChatRoom(params: params, localAddr: localAddress, remoteAddr: nil, participants: participants)
+				if existingChatRoom == nil {
+					Log.info(
+						"\(ConversationsListViewModel.TAG) No existing 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) was found for given parameters, let's create it"
+					)
+					
+					do {
+						let chatRoom = try core.createChatRoom(params: params, participants: participants)
+						if chatParams.backend == ChatRoom.Backend.FlexisipChat {
+							let state = chatRoom.state
+							if state == ChatRoom.State.Created {
+								let chatRoomId = LinphoneUtils.getConversationId(chatRoom: chatRoom)
+								Log.info("\(ConversationsListViewModel.TAG) 1-1 conversation \(chatRoomId) has been created")
+								
+								let model = ConversationModel(chatRoom: chatRoom)
+								DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+									self.displayedConversation = model
+									self.sharedMainViewModel.operationInProgress = false
+								}
+							} else {
+								Log.info("\(ConversationsListViewModel.TAG) Conversation isn't in Created state yet (state is \(state)), wait for it")
+								self.chatRoomAddDelegate(core: core, chatRoom: chatRoom)
+							}
+						} else {
+							let chatRoomId = LinphoneUtils.getConversationId(chatRoom: chatRoom)
+							Log.info("\(ConversationsListViewModel.TAG) Conversation successfully created \(chatRoomId)")
+							
+							let model = ConversationModel(chatRoom: chatRoom)
+							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+								self.displayedConversation = model
+								self.sharedMainViewModel.operationInProgress = false
+							}
+						}
+					} catch {
+						Log.error("\(ConversationsListViewModel.TAG) Failed to create 1-1 conversation with \(remote.asStringUriOnly())")
+						DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+							self.sharedMainViewModel.operationInProgress = false
+							ToastViewModel.shared.show("Failed_to_create_conversation_error")
+						}
+					}
+				} else {
+					Log.warn(
+						"\(ConversationsListViewModel.TAG) A 1-1 conversation between local account \(localAddress?.asStringUriOnly() ?? "") and remote \(remote.asStringUriOnly()) for given parameters already exists!"
+					)
+					let model = ConversationModel(chatRoom: existingChatRoom!)
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+						self.displayedConversation = model
+						self.sharedMainViewModel.operationInProgress = false
+					}
+				}
+			} catch {
+			}
+		}
+	}
+	
+	func chatRoomAddDelegate(core: Core, chatRoom: ChatRoom) {
+		self.chatRoomDelegate = ChatRoomDelegateStub(onStateChanged: { (chatRoom: ChatRoom, state: ChatRoom.State) in
+			let state = chatRoom.state
+			let chatRoomId = LinphoneUtils.getChatRoomId(room: chatRoom)
+			if state == ChatRoom.State.CreationFailed {
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(chatRoomId) creation has failed!")
+				if let chatRoomDelegate = self.chatRoomDelegate {
+					chatRoom.removeDelegate(delegate: chatRoomDelegate)
+				}
+				self.chatRoomDelegate = nil
+				DispatchQueue.main.async {
+					self.sharedMainViewModel.operationInProgress = false
+					ToastViewModel.shared.show("Failed_to_create_conversation_error")
+				}
+			}
+		}, onConferenceJoined: { (chatRoom: ChatRoom, _: EventLog) in
+			let state = chatRoom.state
+			let id = LinphoneUtils.getChatRoomId(room: chatRoom)
+			Log.info("\(StartConversationViewModel.TAG) Conversation \(id) \(chatRoom.subject ?? "") state changed: \(state)")
+			if state == ChatRoom.State.Created {
+				Log.info("\(StartConversationViewModel.TAG) Conversation \(id) successfully created")
+				if let chatRoomDelegate = self.chatRoomDelegate {
+					chatRoom.removeDelegate(delegate: chatRoomDelegate)
+				}
+				self.chatRoomDelegate = nil
+				
+				let model = ConversationModel(chatRoom: chatRoom)
+				DispatchQueue.main.async {
+					self.displayedConversation = model
+					self.sharedMainViewModel.operationInProgress = false
+				}
+			} else if state == ChatRoom.State.CreationFailed {
+				Log.error("\(StartConversationViewModel.TAG) Conversation \(id) creation has failed!")
+				if let chatRoomDelegate = self.chatRoomDelegate {
+					chatRoom.removeDelegate(delegate: chatRoomDelegate)
+				}
+				self.chatRoomDelegate = nil
+				DispatchQueue.main.async {
+					self.sharedMainViewModel.operationInProgress = false
+					ToastViewModel.shared.show("Failed_to_create_conversation_error")
+				}
+			}
+		})
+		chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 	}
 }
 // swiftlint:enable line_length

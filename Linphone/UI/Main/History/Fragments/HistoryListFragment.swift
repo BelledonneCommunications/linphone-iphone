@@ -38,6 +38,34 @@ struct HistoryListFragment: View {
 				ForEach(historyListViewModel.callLogs) { historyModel in
 					HistoryRow(historyModel: historyModel, showingSheet: $showingSheet)
 				}
+				
+				if !historyListViewModel.callLogsFilter.isEmpty {
+					if !contactsManager.lastSearch.isEmpty {
+						HStack(alignment: .center) {
+							Text("contacts_list_all_contacts_title")
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+						}
+					}
+					
+					ContactsListFragment(showingSheet: .constant(false), startCallFunc: { addr in
+						withAnimation {
+							telecomManager.doCallOrJoinConf(address: addr)
+						}
+					})
+					
+					if !contactsManager.lastSearchSuggestions.isEmpty {
+						HStack(alignment: .center) {
+							Text("generic_address_picker_suggestions_list_title")
+								.default_text_style_800(styleSize: 16)
+							
+							Spacer()
+						}
+						
+						suggestionsList
+					}
+				}
 			}
 			.safeAreaInset(edge: .top, content: {
 				Spacer()
@@ -46,7 +74,13 @@ struct HistoryListFragment: View {
 			.listStyle(.plain)
 			.overlay(
 				VStack {
-					if historyListViewModel.callLogs.isEmpty {
+					if historyListViewModel.callLogs.isEmpty &&
+						(
+							historyListViewModel.callLogsFilter.isEmpty ||
+							(!historyListViewModel.callLogsFilter.isEmpty &&
+							 contactsManager.lastSearch.isEmpty &&
+							 contactsManager.lastSearchSuggestions.isEmpty)
+						) {
 						Spacer()
 						Image("illus-belledonne")
 							.resizable()
@@ -62,9 +96,77 @@ struct HistoryListFragment: View {
 				}
 					.padding(.all)
 			)
+			.onDisappear {
+				if !historyListViewModel.callLogsFilter.isEmpty {
+					historyListViewModel.resetFilterCallLogs()
+				}
+			}
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+	}
+	
+	var suggestionsList: some View {
+		ForEach(0..<contactsManager.lastSearchSuggestions.count, id: \.self) { index in
+			Button {
+				if let address = contactsManager.lastSearchSuggestions[index].address {
+					withAnimation {
+						telecomManager.doCallOrJoinConf(address: address)
+					}
+				}
+			} label: {
+				HStack {
+					if index < contactsManager.lastSearchSuggestions.count
+						&& contactsManager.lastSearchSuggestions[index].address != nil {
+						if contactsManager.lastSearchSuggestions[index].address!.domain != AppServices.corePreferences.defaultDomain {
+							Image(uiImage: contactsManager.textToImage(
+								firstName: String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)),
+								lastName: ""))
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+							
+							Text(String(contactsManager.lastSearchSuggestions[index].address!.asStringUriOnly().dropFirst(4)))
+								.default_text_style(styleSize: 16)
+								.lineLimit(1)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.foregroundStyle(Color.orangeMain500)
+						} else {
+							if let address = contactsManager.lastSearchSuggestions[index].address {
+								let nameTmp = address.displayName
+								?? address.username
+								?? String(address.asStringUriOnly().dropFirst(4))
+								
+								Image(uiImage: contactsManager.textToImage(
+									firstName: nameTmp,
+									lastName: ""))
+								.resizable()
+								.frame(width: 45, height: 45)
+								.clipShape(Circle())
+								
+								Text(nameTmp)
+									.default_text_style(styleSize: 16)
+									.lineLimit(1)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.foregroundStyle(Color.orangeMain500)
+							}
+						}
+					} else {
+						Image("profil-picture-default")
+							.resizable()
+							.frame(width: 45, height: 45)
+							.clipShape(Circle())
+						
+						Text("username_error")
+							.default_text_style(styleSize: 16)
+							.frame(maxWidth: .infinity, alignment: .leading)
+							.foregroundStyle(Color.orangeMain500)
+					}
+				}
+			}
+			.buttonStyle(.borderless)
+			.listRowSeparator(.hidden)
+		}
 	}
 }
 
