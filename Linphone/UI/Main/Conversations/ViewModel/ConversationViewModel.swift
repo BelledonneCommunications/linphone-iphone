@@ -521,6 +521,8 @@ class ConversationViewModel: ObservableObject {
 							self.conversationMessagesSection[0].rows[indexMessage!].message.reactions = reactionsTmp
 						}
 					}
+				}, onFileTransferTerminated: { (message: ChatMessage, content: Content) in
+					print("filePath ?????? 000")
 				}, onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) in
 					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
 						
@@ -2324,7 +2326,9 @@ class ConversationViewModel: ObservableObject {
 					fileURL = baseURL.appendingPathComponent("\(counter)_\(contentName)")
 					counter += 1
 				}
-
+				
+				print("filePath 11 \(fileURL.path)")
+				
 				content.filePath = fileURL.path
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"

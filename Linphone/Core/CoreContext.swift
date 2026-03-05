@@ -211,10 +211,26 @@ class CoreContext: ObservableObject {
 				self.forceRemotePushToMatchVoipPushSettings(account: acc)
 			}
 			
+			let fm = FileManager.default
+			
+			let folderURL = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images")
+			if !fm.fileExists(atPath: folderURL.path) {
+				do {
+					try fm.createDirectory(
+						at: folderURL,
+						withIntermediateDirectories: true,
+						attributes: nil
+					)
+					print("Images directory created.")
+				} catch {
+					print("Error creating directory: \(error)")
+				}
+			} else {
+				print("Images directory already exists.")
+			}
+			
 			let container = FileUtil.sharedContainerUrl()
 			let recordingsDir = container.appendingPathComponent("Library/Recordings")
-
-			let fm = FileManager.default
 			
 			if !fm.fileExists(atPath: recordingsDir.path) {
 				do {
