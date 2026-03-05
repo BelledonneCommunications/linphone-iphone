@@ -21,8 +21,6 @@ import SwiftUI
 
 struct PopupLoadingView: View {
 	
-	@State private var orientation = UIDevice.current.orientation
-	
 	var body: some View {
 		VStack {
 			ProgressView()
