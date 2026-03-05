@@ -1389,7 +1389,6 @@ struct ContentView: View {
 					
 					if sharedMainViewModel.operationInProgress {
 						PopupLoadingView()
-							.frame(maxWidth: .infinity, maxHeight: .infinity)
 							.padding(.bottom, UIDevice.current.userInterfaceIdiom == .pad && (orientation == .landscapeLeft || orientation == .landscapeRight || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) ? geometry.safeAreaInsets.bottom : 0)
 							.background(.black.opacity(0.65))
 							.zIndex(3)

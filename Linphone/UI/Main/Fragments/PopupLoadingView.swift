@@ -21,6 +21,8 @@ import SwiftUI
 
 struct PopupLoadingView: View {
 	
+	@State private var orientation = UIDevice.current.orientation
+	
 	var body: some View {
 		VStack {
 			ProgressView()
@@ -42,6 +44,7 @@ struct PopupLoadingView: View {
 		.padding(.horizontal)
 		.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
 		.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+		.frame(maxWidth: .infinity, maxHeight: .infinity)
 	}
 }
 
