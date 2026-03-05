@@ -2435,9 +2435,17 @@ class ConversationViewModel: ObservableObject {
 							
 							let indexMessageSelected = self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessageToDisplayDetails!)
 							
+							var reactionsTmp: [String] = []
+							if let messageToSendReactionTmp = messageToSendReaction {
+								messageToSendReactionTmp.reactions.forEach({ chatMessageReaction in
+									reactionsTmp.append(chatMessageReaction.body)
+								})
+							}
+							
 							DispatchQueue.main.async {
 								if indexMessageSelected != nil {
 									self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = ""
+									self.conversationMessagesSection[0].rows[indexMessageSelected!].message.reactions = reactionsTmp
 								}
 								self.selectedMessageToDisplayDetails = nil
 								self.isShowSelectedMessageToDisplayDetails = false
@@ -2463,9 +2471,17 @@ class ConversationViewModel: ObservableObject {
 						
 						let indexMessageSelected = self.conversationMessagesSection[0].rows.firstIndex(of: self.selectedMessage!)
 						
+						var reactionsTmp: [String] = []
+						if let messageToSendReactionTmp = messageToSendReaction {
+							messageToSendReactionTmp.reactions.forEach({ chatMessageReaction in
+								reactionsTmp.append(chatMessageReaction.body)
+							})
+						}
+						
 						DispatchQueue.main.async {
 							if indexMessageSelected != nil {
 								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji
+								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.reactions = reactionsTmp
 							}
 							self.selectedMessage = nil
 						}
