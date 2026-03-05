@@ -535,6 +535,7 @@
 "settings_contacts_ldap_empty_server_error_toast" = "L'URL du serveur ne peut être vide";
 "settings_contacts_title" = "Contacts";
 "settings_conversations_auto_download_title" = "Télécharger automatiquement les fichiers";
+"settings_conversations_hide_message_content_in_notif_title" = "Masquer le contenu du message dans la notification iOS";
 "settings_conversations_mark_as_read_when_dismissing_notif_title" = "Marquer la conversation comme lue lorsqu'une notification de message est supprimée";
 "settings_conversations_title" = "Conversations";
 "settings_meetings_default_layout_title" = "Disposition par défaut";

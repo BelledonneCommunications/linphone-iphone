@@ -234,6 +234,9 @@ struct SettingsFragment: View {
 									VStack(spacing: 30) {
 										Toggle("settings_conversations_auto_download_title", isOn: $settingsViewModel.autoDownload)
 											.default_text_style_700(styleSize: 15)
+										
+										Toggle("settings_conversations_hide_message_content_in_notif_title", isOn: $settingsViewModel.hideNotificationContent)
+											.default_text_style_700(styleSize: 15)
 									}
 									.padding(.vertical, 30)
 									.padding(.horizontal, 20)

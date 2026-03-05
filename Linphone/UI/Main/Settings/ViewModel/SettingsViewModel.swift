@@ -37,6 +37,7 @@ class SettingsViewModel: ObservableObject {
 	
 	// Conversations settings
 	@Published var autoDownload: Bool = false
+	@Published var hideNotificationContent: Bool = false
 	
 	// Contacts settings
 	@Published var ldapServers: [String] = []
@@ -80,6 +81,7 @@ class SettingsViewModel: ObservableObject {
 			let autoRecordTmp = AppServices.corePreferences.automaticallyStartCallRecording
 			
 			let autoDownloadTmp = core.maxSizeForAutoDownloadIncomingFiles == 0
+			let hideNotificationContentTmp = !AppServices.corePreferences.showChatMessageContentInNotification
 			
 			let defaultLayoutTmp = core.defaultConferenceLayout.rawValue == 0 ? String(localized: "settings_meetings_layout_mosaic_label") : String(localized: "settings_meetings_layout_active_speaker_label")
 			
@@ -114,6 +116,7 @@ class SettingsViewModel: ObservableObject {
 				self.autoRecord = autoRecordTmp
 				
 				self.autoDownload = autoDownloadTmp
+				self.hideNotificationContent = hideNotificationContentTmp
 				
 				self.defaultLayout = defaultLayoutTmp
 				
@@ -361,6 +364,10 @@ class SettingsViewModel: ObservableObject {
 			
 			if (core.maxSizeForAutoDownloadIncomingFiles == 0) != self.autoDownload {
 				core.maxSizeForAutoDownloadIncomingFiles = self.autoDownload ? 0 : -1
+			}
+			
+			if AppServices.corePreferences.showChatMessageContentInNotification == self.hideNotificationContent {
+				AppServices.corePreferences.showChatMessageContentInNotification = !self.hideNotificationContent
 			}
 			
 			if (core.defaultConferenceLayout.rawValue == 0) != (self.defaultLayout == String(localized: "settings_meetings_layout_mosaic_label")) {

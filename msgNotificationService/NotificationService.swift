@@ -289,7 +289,7 @@ class NotificationService: UNNotificationServiceExtension {
 		
 		var msgData = MsgData(from: fromAddr, body: "", subtitle: "", callId: callId, localAddr: localUri, peerAddr: peerUri)
 		
-		if let showMsg = lc!.config?.getBool(section: "app", key: "show_msg_in_notif", defaultValue: true), showMsg == true {
+		if let showMsg = lc!.config?.getBool(section: "ui", key: "display_notification_content", defaultValue: true), showMsg == true {
 			msgData.subtitle = message.subject ?? from
 			if reactionContent == nil {
 				msgData.body = (message.subject != nil ? "\(from): " : "") + content

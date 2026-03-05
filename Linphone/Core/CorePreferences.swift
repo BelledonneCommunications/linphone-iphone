@@ -321,6 +321,15 @@ class CorePreferences {
 		}
 	}
 	
+	var showChatMessageContentInNotification: Bool {
+		get {
+			config.getBool(section: "ui", key: "display_notification_content", defaultValue: true)
+		}
+		set {
+			config.setBool(section: "ui", key: "display_notification_content", value: newValue)
+		}
+	}
+	
 	var showDialogWhenCallingDeviceUuidDirectly: Bool {
 		get {
 			config.getBool(section: "app", key: "show_confirmation_dialog_zrtp_trust_call", defaultValue: true)
