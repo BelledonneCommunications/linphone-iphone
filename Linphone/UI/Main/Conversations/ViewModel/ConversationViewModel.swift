@@ -2480,7 +2480,7 @@ class ConversationViewModel: ObservableObject {
 						
 						DispatchQueue.main.async {
 							if indexMessageSelected != nil {
-								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = messageToSendReaction?.ownReaction?.body == emoji ? "" : emoji
+								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.ownReaction = messageToSendReaction?.ownReaction?.body ?? ""
 								self.conversationMessagesSection[0].rows[indexMessageSelected!].message.reactions = reactionsTmp
 							}
 							self.selectedMessage = nil
