@@ -222,6 +222,8 @@
 		D7F01ADE2E1D0DA3006942C0 /* PopupUpdatePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F01ADD2E1D0D92006942C0 /* PopupUpdatePassword.swift */; };
 		D7F4D9CB2B5FD27200CDCD76 /* CallsListFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */; };
 		D7F5F6412C359F3B007FCF2F /* SipAddressesPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */; };
+		D7F988C42F5B1CF800CA7C6D /* AppIntentVocabulary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7F988C32F5B1CF800CA7C6D /* AppIntentVocabulary.plist */; };
+		D7F988C52F5B1CF800CA7C6D /* AppIntentVocabulary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7F988C32F5B1CF800CA7C6D /* AppIntentVocabulary.plist */; };
 		D7FB55112AD447FD00A5AB15 /* RegisterFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */; };
 		D7FC8E4A2EBA12F90080C09D /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7FC8E492EBA12F90080C09D /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
@@ -487,6 +489,7 @@
 		D7F372C42E65C51E0008B863 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Localizable/zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		D7F4D9CA2B5FD27200CDCD76 /* CallsListFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallsListFragment.swift; sourceTree = "<group>"; };
 		D7F5F6402C359F3B007FCF2F /* SipAddressesPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SipAddressesPopup.swift; sourceTree = "<group>"; };
+		D7F988C32F5B1CF800CA7C6D /* AppIntentVocabulary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppIntentVocabulary.plist; sourceTree = "<group>"; };
 		D7FB55102AD447FD00A5AB15 /* RegisterFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterFragment.swift; sourceTree = "<group>"; };
 		D7FC8E492EBA12F90080C09D /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -697,6 +700,7 @@
 		D719ABAA2ABC67BF00B41C10 = {
 			isa = PBXGroup;
 			children = (
+				D7F988C32F5B1CF800CA7C6D /* AppIntentVocabulary.plist */,
 				660D8A702B517D260092694D /* GoogleService-Info.plist */,
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
 				660AAF7C2B839272004C0FA6 /* msgNotificationService */,
@@ -1392,6 +1396,7 @@
 				D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */,
 				D7D24D132AC1B4E800C6F35B /* NotoSans-Medium.ttf in Resources */,
 				D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */,
+				D7F988C42F5B1CF800CA7C6D /* AppIntentVocabulary.plist in Resources */,
 				D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */,
 				D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */,
 				660D8A712B517D260092694D /* GoogleService-Info.plist in Resources */,
@@ -1409,6 +1414,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7F988C52F5B1CF800CA7C6D /* AppIntentVocabulary.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
