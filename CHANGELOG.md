@@ -14,40 +14,33 @@ Group changes to describe their impact on the project, as follows:
 ## [6.1.0] - Unreleased
 
 ### Added
-- LDAP and CardDAV settings
-- Advanced settings in third-party SIP account login view
-- Phone number calls in contact details
-- Recording player
-- Recording list
-- Automatic Git commit, branch, and tag info for Help views
-- Message deletion feature
-- Message editing feature
+- Support for LDAP and CardDAV accounts
+- Advanced settings for third-party SIP accounts, including outbound proxy configuration
+- Display of contacts, suggestions, media, and document lists in history, conversation, and contact detail views
+- Recording player with automatic playback of next recording
+- Trusted/untrusted devices visualization and list management
+- Pending notifications banner
+- Option to show or hide chat message content in notifications
+- Message editing and deletion features
 
 ### Changed
-- Launch Screen (Splash Screen)
 - Updated translations from Weblate
-- Updated SPM dependencies
-- Disabled meetings view when audio/video conference factory address is missing
-- Moved disable_chat_feature to UI section
-- Updated configuration files
-- Updated last message text in conversation list
-- Updated PopupView UI
-- Display core call logs instead of account call logs when the user has only one account
+- Launch Screen (Splash Screen) refreshed
+- Dialer and Popup UI improvements, including DTMF playback and layout fixes
+- Audio session management refactored for stability
+- Core call logs displayed when user has only one account
+- Updated last message text display in conversation list
 
 ### Fixed
-- International prefix reset in settings
-- Prevent editing of read-only (LDAP) contacts
-- Crash when editing a contact (safe unwrapping of friend/photo)
-- EditContactFragment view and “+” allowed in dialer
-- Dial plan selector and default dial plan
-- Encryption update when call state changes
-- Unread message counter update in onMessageRetracted
-- French translation of message_content_deleted
-- Stop composing when the user stops typing
-- Refresh presence info in history detail
-- Refresh displayed friend when the contacts list is updated
-- Prefix handling in interpretUrl when calling a phone number
-- SIP contacts filter
+- Reaction refresh issues
+- Media list UI and message bubble paths
+- Various contact and phone number handling issues
+- Chatroom disabled when insecure
+- Call transfer logic updated
+- Debug print statements removed
+- CorePreferences and SSO improvements
+- Display peer address in conversation
+- Several minor crashes and UI inconsistencies resolved
 
 ## [6.0.3] – 2026-01-29
 
