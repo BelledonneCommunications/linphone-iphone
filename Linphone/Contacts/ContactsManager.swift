@@ -418,62 +418,60 @@ final class ContactsManager: ObservableObject {
 		guard let address = address, let clonedAddress = address.clone() else {
 			return nil
 		}
+		
 		clonedAddress.clean()
 		let sipUri = clonedAddress.asStringUriOnly()
 		
-		var friend: Friend?
 		let core = CoreContext.shared.mCore
+		let account = core?.defaultAccount
 		
-		let normalizedIncoming = core?.defaultAccount?.normalizePhoneNumber(username: address.username ?? "")
+		let normalizedIncoming = address.username.flatMap {
+			account?.normalizePhoneNumber(username: $0)
+		}
 		
+		func matches(_ friend: Friend) -> Bool {
+			
+			let sipMatch = friend.addresses.contains {
+				$0.asStringUriOnly() == sipUri
+			}
+			
+			let phoneMatch = friend.phoneNumbers.contains { phone in
+				guard
+					let normalizedIncoming,
+					!normalizedIncoming.isEmpty,
+					let normalized = account?.normalizePhoneNumber(username: phone),
+					!normalized.isEmpty
+				else {
+					return false
+				}
+				return normalized == normalizedIncoming
+			}
+			return sipMatch || phoneMatch
+		}
+		
+		var friend: Friend?
+		
+		// Friend list
 		if let friendList = self.friendList {
-			friend = friendList.friends.first(where: {
-				$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
-				(
-					normalizedIncoming != nil &&
-					$0.phoneNumbers.contains(where: {
-						core?.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
-					})
-				)
-			})
+			friend = friendList.friends.first(where: matches)
 		}
 		
+		// Linphone friend list
 		if friend == nil, let linphoneFriendList = self.linphoneFriendList {
-			friend = linphoneFriendList.friends.first(where: {
-				$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
-				(
-					normalizedIncoming != nil &&
-					$0.phoneNumbers.contains(where: {
-						core?.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
-					})
-				)
-			})
+			friend = linphoneFriendList.friends.first(where: matches)
 		}
 		
+		// Temp remote friend list
 		if friend == nil, let tempRemoteFriendList = self.tempRemoteFriendList {
-			friend = tempRemoteFriendList.friends.first(where: {
-				$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
-				(
-					normalizedIncoming != nil &&
-					$0.phoneNumbers.contains(where: {
-						core?.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
-					})
-				)
-			})
+			friend = tempRemoteFriendList.friends.first(where: matches)
 		}
 		
-		if let core {
+		// CardDAV lists
+		if friend == nil, let core {
 			for list in core.friendsLists where list.type == .CardDAV {
-				if friend == nil {
-					friend = list.friends.first(where: {
-						$0.addresses.contains(where: { $0.asStringUriOnly() == sipUri }) ||
-						(
-							normalizedIncoming != nil &&
-							$0.phoneNumbers.contains(where: {
-								core.defaultAccount?.normalizePhoneNumber(username: $0) == normalizedIncoming
-							})
-						)
-					})
+				friend = list.friends.first(where: matches)
+				if friend != nil {
+					break
 				}
 			}
 		}
