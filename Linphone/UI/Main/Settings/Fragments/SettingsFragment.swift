@@ -167,10 +167,10 @@ struct SettingsFragment: View {
 										Toggle("settings_calls_adaptive_rate_control_title", isOn: $settingsViewModel.adaptiveRateControl)
 											.default_text_style_700(styleSize: 15)
 										
+										/*
 										Toggle("settings_calls_enable_video_title", isOn: $settingsViewModel.enableVideo)
 											.default_text_style_700(styleSize: 15)
 										
-										/*
 										Toggle("settings_calls_vibrate_while_ringing_title", isOn: $isOn)
 											.default_text_style_700(styleSize: 15)
 										*/
