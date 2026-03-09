@@ -50,7 +50,7 @@ class URIHandler {
 					CoreContext.shared.removeCoreDelegateStub(delegate: uriHandlerCoreDelegate!)
 				}
 				if state == .Successful {
-					toast("uri_handler_config_success")
+					toast("Success_uri_handler_config_success")
 					CoreContext.shared.removeCoreDelegateStub(delegate: uriHandlerCoreDelegate!)
 				}
 			})
@@ -104,6 +104,10 @@ class URIHandler {
 					var urlString = url.resourceSpecifier
 					if urlString.starts(with: "//") {
 						urlString = String(urlString.dropFirst(2))
+					}
+					
+					if !urlString.starts(with: "https://") {
+						urlString = "https://" + urlString
 					}
 					
 					core.config?.setString(section: "misc", key: "config-uri", value: urlString)

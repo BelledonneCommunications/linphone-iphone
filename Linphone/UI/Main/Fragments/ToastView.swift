@@ -219,10 +219,10 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
-					case "uri_handler_config_success":
+					case "Success_uri_handler_config_success":
 						Text("uri_handler_config_success_toast")
 							.multilineTextAlignment(.center)
-							.foregroundStyle(Color.redDanger500)
+							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 			
