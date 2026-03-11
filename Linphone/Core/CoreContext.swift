@@ -295,6 +295,11 @@ class CoreContext: ObservableObject {
 					}
 				}
 			}, onAuthenticationRequested: { (core: Core, authInfo: AuthInfo, method: AuthMethod) in
+                guard self.networkStatusIsConnected else {
+                    Log.warn("[CoreContext] Authentication requested while device is offline, ignoring")
+                    return
+                }
+                
 				if method == .Bearer {
 					if let server = authInfo.authorizationServer, !server.isEmpty {
 						Log.info("Authentication requested method is Bearer, starting Single Sign On activity with server URL \(server) and username \(authInfo.username ?? "")")
