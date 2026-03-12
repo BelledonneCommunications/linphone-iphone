@@ -25,6 +25,8 @@ struct HelpFragment: View {
 	
 	@Binding var isShowHelpFragment: Bool
 	
+	@State var clickCounter: Int = 0
+	
 	var showAssistant: Bool {
 		(CoreContext.shared.coreIsStarted && CoreContext.shared.accounts.isEmpty)
 		|| SharedMainViewModel.shared.displayProfileMode
@@ -197,6 +199,29 @@ struct HelpFragment: View {
 									.padding(.vertical, 10)
 									.background(Color.orangeMain100)
 									.cornerRadius(60)
+								}
+								.background(Color.gray100)
+								.onTapGesture {
+									if !AppServices.corePreferences.showDeveloperSettings {
+										clickCounter += 1
+										
+										switch clickCounter {
+										case 1:
+											ToastViewModel.shared.show("Success_two_more_clicks_toast")
+											
+										case 2:
+											ToastViewModel.shared.show("Success_one_more_click_toast")
+											
+										case 3:
+											AppServices.corePreferences.showDeveloperSettings = true
+											ToastViewModel.shared.show("Success_developer_enabled_toast")
+											
+										default:
+											ToastViewModel.shared.show("Success_developer_already_enabled_toast")
+										}
+									} else {
+										ToastViewModel.shared.show("Success_developer_already_enabled_toast")
+									}
 								}
 								
 								Button {

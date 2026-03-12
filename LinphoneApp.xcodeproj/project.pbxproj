@@ -205,6 +205,8 @@
 		D7D5AD872DD34F3C00016721 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD862DD34F3C00016721 /* FirebaseCrashlytics */; };
 		D7D67B6A2F601F6100DD9976 /* AppIntentVocabulary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7D67B692F601F6100DD9976 /* AppIntentVocabulary.plist */; };
 		D7D67B6B2F601F6100DD9976 /* AppIntentVocabulary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7D67B692F601F6100DD9976 /* AppIntentVocabulary.plist */; };
+		D7D67B8B2F62B0DA00DD9976 /* SettingsAdvancedCallFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D67B8A2F62B07F00DD9976 /* SettingsAdvancedCallFragment.swift */; };
+		D7D67B8D2F62B0F100DD9976 /* SettingsDeveloperFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D67B8C2F62B0EF00DD9976 /* SettingsDeveloperFragment.swift */; };
 		D7DA67622ACCB2FA00E95002 /* LoginFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */; };
 		D7DA67642ACCB31700E95002 /* ProfileModeFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */; };
 		D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */; };
@@ -487,6 +489,8 @@
 		D7D67B7A2F601F7400DD9976 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = sk; path = sk.lproj/AppIntentVocabulary.plist; sourceTree = "<group>"; };
 		D7D67B7B2F601F7400DD9976 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = es; path = es.lproj/AppIntentVocabulary.plist; sourceTree = "<group>"; };
 		D7D67B7C2F601F7500DD9976 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = uk; path = uk.lproj/AppIntentVocabulary.plist; sourceTree = "<group>"; };
+		D7D67B8A2F62B07F00DD9976 /* SettingsAdvancedCallFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAdvancedCallFragment.swift; sourceTree = "<group>"; };
+		D7D67B8C2F62B0EF00DD9976 /* SettingsDeveloperFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDeveloperFragment.swift; sourceTree = "<group>"; };
 		D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFragment.swift; sourceTree = "<group>"; };
 		D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModeFragment.swift; sourceTree = "<group>"; };
 		D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountProfileFragment.swift; sourceTree = "<group>"; };
@@ -1191,12 +1195,14 @@
 		D7DC096B2CFA192F00A6D47C /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */,
+				D7C5003F2D27F16900DD53EC /* AccountSettingsFragment.swift */,
 				D762102B2E97FDF8002E7999 /* CardDavAddressBookConfigurationFragment.swift */,
 				D711B1332E93F18300DF8C71 /* LdapServerConfigurationFragment.swift */,
-				D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */,
 				D732C38B2D311D2100F78100 /* SettingsFragment.swift */,
-				D7C5003F2D27F16900DD53EC /* AccountSettingsFragment.swift */,
-				D7DC096E2CFA1D7400A6D47C /* AccountProfileFragment.swift */,
+				D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */,
+				D7D67B8C2F62B0EF00DD9976 /* SettingsDeveloperFragment.swift */,
+				D7D67B8A2F62B07F00DD9976 /* SettingsAdvancedCallFragment.swift */,
 			);
 			path = Fragments;
 			sourceTree = "<group>";
@@ -1508,6 +1514,7 @@
 				D71A0E192B485ADF0002C6CD /* ViewExtension.swift in Sources */,
 				D759CB642C3FBD4200AC35E8 /* StartConversationFragment.swift in Sources */,
 				D7DF8BE92E2104EC003A3BC7 /* EmojiPickerView.swift in Sources */,
+				D7D67B8B2F62B0DA00DD9976 /* SettingsAdvancedCallFragment.swift in Sources */,
 				66FDB7812C7C689A00561566 /* EventEditViewController.swift in Sources */,
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
@@ -1593,6 +1600,7 @@
 				D79F2D0A2C47F4BF0038FA07 /* TouchFeedback.swift in Sources */,
 				D78E06282BE3811D00CE3783 /* CallStatsModel.swift in Sources */,
 				D7E6D0512AEBDBD500A57AAF /* ContactsListBottomSheet.swift in Sources */,
+				D7D67B8D2F62B0F100DD9976 /* SettingsDeveloperFragment.swift in Sources */,
 				D75759322B56D40900E7AC10 /* ZRTPPopup.swift in Sources */,
 				D78E062E2BEA69F400CE3783 /* AudioRouteBottomSheet.swift in Sources */,
 				D7A0ACBB2C415D630043AE79 /* StartGroupConversationFragment.swift in Sources */,

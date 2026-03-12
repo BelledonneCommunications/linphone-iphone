@@ -330,6 +330,15 @@ class CorePreferences {
 		}
 	}
 	
+	var showDeveloperSettings: Bool {
+		get {
+			config.getBool(section: "ui", key: "show_developer_settings", defaultValue: false)
+		}
+		set {
+			config.setBool(section: "ui", key: "show_developer_settings", value: newValue)
+		}
+	}
+	
 	var showDialogWhenCallingDeviceUuidDirectly: Bool {
 		get {
 			config.getBool(section: "app", key: "show_confirmation_dialog_zrtp_trust_call", defaultValue: true)

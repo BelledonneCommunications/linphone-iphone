@@ -172,19 +172,5 @@ class HelpViewModel: ObservableObject {
 			}
 		}
 	}
-
-	func clearNativeFriendsDatabase() {
-		CoreContext.shared.doOnCoreQueue { core in
-			if let list = core.getFriendListByName(NATIVE_ADDRESS_BOOK_FRIEND_LIST) {
-				let friends = list.friends
-				Log.i("\(self.TAG) Friend list to remove found with [\(friends.count)] friends")
-				for friend in friends {
-					list.removeFriend(friend)
-				}
-				core.removeFriendList(list)
-				Log.i("\(self.TAG) Friend list [\(NATIVE_ADDRESS_BOOK_FRIEND_LIST)] removed")
-			}
-		}
-	}
 	*/
 }

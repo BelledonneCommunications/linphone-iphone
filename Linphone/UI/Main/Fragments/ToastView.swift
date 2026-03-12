@@ -198,6 +198,55 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_cleared_native_friends_toast":
+						Text("settings_developer_cleared_native_friends_in_database_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_no_auth_info_removed_toast":
+						Text("settings_developer_no_auth_info_removed_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_cleared_auth_info_toast":
+						Text("settings_developer_cleared_auth_info_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_two_more_clicks_toast":
+						Text("settings_developer_two_more_clicks_required_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_one_more_click_toast":
+						Text("settings_developer_one_more_click_required_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_developer_enabled_toast":
+						Text("settings_developer_enabled_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_developer_already_enabled_toast":
+						Text("settings_developer_already_enabled_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Failed_toast_call_transfer_failed":
 						Text("call_transfer_failed_toast")
 							.multilineTextAlignment(.center)
