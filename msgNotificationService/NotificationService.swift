@@ -80,7 +80,9 @@ class NotificationService: UNNotificationServiceExtension {
     var bestAttemptContent: UNMutableNotificationContent?
     
     var lc: Core?
-    
+    var coreDelegate: CoreDelegate?
+    var iterateTimer: DispatchSourceTimer?
+
     override init() {
         super.init()
 #if USE_CRASHLYTICS
@@ -127,50 +129,18 @@ class NotificationService: UNNotificationServiceExtension {
                     lc?.defaultAccount?.params = clonedParams
                 }
                 
-                /*
-                 let defaults = UserDefaults.init(suiteName: AppServices.config.appGroupName)
-                 if let chatroomsPushStatus = defaults?.dictionary(forKey: "chatroomsPushStatus") {
-                 let aps = bestAttemptContent.userInfo["aps"] as? NSDictionary
-                 let alert = aps?["alert"] as? NSDictionary
-                 let fromAddresses = alert?["loc-args"] as? [String]
-                 
-                 if let from = fromAddresses?.first {
-                 if ((chatroomsPushStatus[from] as? String) == "disabled") {
-                 NotificationService.log.message(message: "message comes from a muted chatroom, ignore it")
-                 contentHandler(UNNotificationContent())
-                 }
-                 }
-                 }
-                 */
                 if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
-                    Log.info("fetch chat room for invite, addr: \(chatRoomInviteAddr), ignore it")
+                    bestAttemptContent.body = String(localized: "GC_MSG")
+                    Log.info("fetch chat room for invite, addr: \(chatRoomInviteAddr)")
                     if let chatRoom = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr) {
                         Log.info("chat room invite received from: \(chatRoom.subject ?? "unknown")")
-                        /*
-                         bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
-                         if chatRoom.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-                         if chatRoom.peerAddress != nil {
-                         if chatRoom.peerAddress!.displayName != nil && chatRoom.peerAddress!.displayName!.isEmpty != true {
-                         bestAttemptContent.body = chatRoom.peerAddress!.displayName!
-                         } else if chatRoom.peerAddress!.username != nil {
-                         bestAttemptContent.body = chatRoom.peerAddress!.username!
-                         } else {
-                         bestAttemptContent.body = String(chatRoom.peerAddress!.asStringUriOnly().dropFirst(4))
-                         }
-                         } else {
-                         bestAttemptContent.body = "Peer Address Error"
-                         }
-                         } else {
-                         bestAttemptContent.body = chatRoom.subject!
-                         }
-                         contentHandler(bestAttemptContent)
-                         return
-                         */
+                        if let subject = chatRoom.subject, !subject.isEmpty {
+                            bestAttemptContent.title = subject
+                        }
                     }
-                    stopCore()
-                    contentHandler(UNNotificationContent())
+                    stopCoreThenDisplay(bestAttemptContent, notLaterThan: timeStart.addingTimeInterval(25))
                     return
-                    
+
                 } else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
                     Log.info("fetch msg for callid ["+callId+"]")
                     let message = lc!.getNewMessageFromCallid(callId: callId)
@@ -209,17 +179,12 @@ class NotificationService: UNNotificationServiceExtension {
                         bestAttemptContent.userInfo.updateValue(msgData?.peerAddr as Any, forKey: "peer_addr")
                         bestAttemptContent.userInfo.updateValue(msgData?.localAddr as Any, forKey: "local_addr")
                         
-                        // start remaining time count 25 instead of 30 to make sure we keep at least 5 seconds to finish the message processing
-                        let remainingTime = max(0, 25 - Date.now.timeIntervalSince(timeStart))
-                        DispatchQueue.main.asyncAfter(deadline: .now() + min(3, remainingTime)) {
-                            self.lc?.iterate()
-                            self.stopCore()
-                            if message.reactionContent != " " {
-                                contentHandler(bestAttemptContent)
-                            } else {
-                                contentHandler(UNNotificationContent())
-                            }
-                        }
+                        // Do not display any notification if it was a reaction being removed
+                        let content: UNNotificationContent =
+                            message.reactionContent == " " ? UNNotificationContent() : bestAttemptContent
+
+                        // start remaining time count 25 instead of 30 to make sure we keep at least 5 seconds to stop the core
+                        stopCoreThenDisplay(content, notLaterThan: timeStart.addingTimeInterval(25))
                         return
                     } else {
                         Log.info("Message not found for callid ["+callId+"]")
@@ -248,14 +213,8 @@ class NotificationService: UNNotificationServiceExtension {
             NSLog("[msgNotificationService] serviceExtensionTimeWillExpire")
             bestAttemptContent.categoryIdentifier = "app_active"
             if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
-                /*
-                 bestAttemptContent.title = NSLocalizedString("GC_MSG", comment: "")
-                 bestAttemptContent.body = ""
-                 bestAttemptContent.sound = UNNotificationSound(named: UNNotificationSoundName("msg.caf"))
-                 */
-                let _ = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
                 stopCore()
-                contentHandler(UNNotificationContent())
+                contentHandler(bestAttemptContent)
                 return
             } else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
                 stopCore()
@@ -336,7 +295,64 @@ class NotificationService: UNNotificationServiceExtension {
             lc.stop()
         }
     }
-    
+
+    // Stops the core and displays the notification as soon as it reaches Off, so that pending IMDNs are sent
+    // first: the core stays in Shutdown while they are in flight. If running on flexisip 2.4 or older, will
+    // wait for timeout configured by config variable 'misc' > 'delay_message_send_app_ext_s'.
+    //
+    // Waiting for Off can never be open ended. linphone_core_stop_async() is meant to force the shutdown after
+    // misc/max_stop_async_time, but that safety net is armed by sal_begin_background_task(), which returns 0 in
+    // an app extension: the core then stays in Shutdown for as long as the server keeps talking to it, which a
+    // stream of conference NOTIFYs does indefinitely. So we bound the wait on the delay the IMDNs actually need
+    // and force the stop past it. The core must always end up Off: that is what releases the shared core for
+    // the next pushes.
+    func stopCoreThenDisplay(_ content: UNNotificationContent, notLaterThan hardDeadline: Date) {
+        guard let lc = lc, lc.globalState == GlobalState.On else {
+            // Already stopped, typically by a main core starting up: nothing left to wait for.
+            display(content)
+            return
+        }
+
+        let imdnDelay = lc.config?.getInt(section: "misc", key: "delay_message_send_app_ext_s", defaultValue: 3) ?? 3
+        let deadline = min(Date.now.addingTimeInterval(TimeInterval(imdnDelay) + 1), hardDeadline)
+
+        coreDelegate = CoreDelegateStub(onGlobalStateChanged: { [weak self] (_: Core, gstate: GlobalState, _: String) in
+            // Called from within linphone_core_iterate(), where stopping the core is forbidden. It is off anyway.
+            if gstate == .Off {
+                self?.display(content, coreIsOff: true)
+            }
+        })
+        lc.addDelegate(delegate: coreDelegate!)
+        lc.stopAsync()
+
+        // Auto iterate does not work for app extension, so we manualy loop.
+        // This is what sends the IMDNs and ends the shutdown
+        let timer = DispatchSource.makeTimerSource(queue: .main)
+        timer.schedule(deadline: .now(), repeating: .milliseconds(20))
+        timer.setEventHandler { [weak self] in
+            guard let self = self, self.contentHandler != nil else { return }
+            self.lc?.iterate()
+            if Date.now >= deadline {
+                Log.warn("core did not stop by itself, forcing it")
+                self.display(content)
+            }
+        }
+        iterateTimer = timer
+        timer.resume()
+    }
+
+    // Single exit point of the message path: stops the core, then displays. Only the first call counts.
+    func display(_ content: UNNotificationContent, coreIsOff: Bool = false) {
+        guard let contentHandler = contentHandler else { return }
+        self.contentHandler = nil
+        iterateTimer?.cancel()
+        iterateTimer = nil
+        if !coreIsOff {
+            stopCore()
+        }
+        contentHandler(content)
+    }
+
     func updateBadge() -> Int {
         var count = 0
         count += lc!.unreadChatMessageCount
