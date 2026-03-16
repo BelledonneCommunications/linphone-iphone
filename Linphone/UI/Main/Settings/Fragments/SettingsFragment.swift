@@ -427,6 +427,9 @@ struct SettingsFragment: View {
 							if meetingsIsOpen {
 								VStack(spacing: 0) {
 									VStack(spacing: 30) {
+										Toggle("settings_meetings_show_past_meetings_title", isOn: $settingsViewModel.showPastMeetings)
+											.default_text_style_700(styleSize: 15)
+										
 										VStack(alignment: .leading) {
 											Text("settings_meetings_default_layout_title")
 												.default_text_style_700(styleSize: 15)
@@ -607,6 +610,8 @@ struct SettingsFragment: View {
 								.background(Color.gray100)
 							}
 						}
+						.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+						.frame(maxWidth: .infinity)
 					}
 					.background(Color.gray100)
 				}

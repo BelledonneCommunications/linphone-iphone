@@ -98,7 +98,7 @@ class MeetingsListViewModel: ObservableObject {
 							}
 					}
 					
-					if matchFilter {
+					if matchFilter && (AppServices.corePreferences.showPastMeetings || !model.isInPast) {
 						meetingsListTmp.append(MeetingsListItemModel(meetingModel: model))
 						currentIdx += 1
 					}

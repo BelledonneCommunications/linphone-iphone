@@ -24,6 +24,8 @@ struct MeetingsFragment: View {
     
     @EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
+	@ObservedObject var corePreferences = AppServices.corePreferences
+	
 	private var idiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 	
 	@Binding var showingSheet: Bool
@@ -185,6 +187,9 @@ struct MeetingsFragment: View {
 			}
 			.navigationTitle("")
 			.navigationBarHidden(true)
+		}
+		.onChange(of: corePreferences.showPastMeetings) { _ in
+			meetingsListViewModel.computeMeetingsList()
 		}
 	}
 }

@@ -27,6 +27,7 @@ class MeetingModel: ObservableObject {
 	var meetingDate: Date
 	var endDate: Date
 	var isToday: Bool
+	var isInPast: Bool
 	var isAfterToday: Bool
 	
 	private let startTime: String
@@ -55,6 +56,7 @@ class MeetingModel: ObservableObject {
 		dayNumber = meetingDate.formatted(Date.FormatStyle().day(.twoDigits))
 		
 		isToday = Calendar.current.isDateInToday(meetingDate)
+		isInPast = meetingDate < Date.now
 		if isToday {
 			isAfterToday = false
 		} else {

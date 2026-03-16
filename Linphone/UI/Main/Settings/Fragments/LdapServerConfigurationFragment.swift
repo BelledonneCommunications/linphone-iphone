@@ -359,10 +359,16 @@ struct LdapServerConfigurationFragment: View {
 									.focused($isSipDomainFocused)
 							}
 						}
-						.padding(.vertical, 30)
+						.padding(.vertical, 20)
 						.padding(.horizontal, 20)
+						.background(.white)
+						.cornerRadius(15)
 						.background(Color.gray100)
 					}
+					.padding(.vertical, 20)
+					.padding(.horizontal, 20)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+					.frame(maxWidth: .infinity)
 				}
 				.background(Color.gray100)
 			}

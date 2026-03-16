@@ -562,6 +562,7 @@
 "settings_meetings_layout_active_speaker_label" = "Active speaker";
 "settings_meetings_layout_mosaic_label" = "Mosaic";
 "settings_meetings_title" = "Meetings";
+"settings_meetings_show_past_meetings_title" = "Show past meetings";
 "settings_network_allow_ipv6" = "Allow IPv6";
 "settings_network_title" = "Network";
 "settings_network_use_wifi_only" = "Use only Wi-Fi networks";

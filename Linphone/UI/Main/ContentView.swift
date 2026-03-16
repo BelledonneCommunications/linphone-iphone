@@ -459,6 +459,11 @@ struct ContentView: View {
 												sharedMainViewModel.displayedFriend = nil
 												sharedMainViewModel.displayedCall = nil
 												sharedMainViewModel.displayedConversation = nil
+												
+												if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+													meetingsListVM.currentFilter = ""
+													meetingsListVM.computeMeetingsList()
+												}
 											}, label: {
 												VStack {
 													Image("video-conference")
@@ -1096,6 +1101,11 @@ struct ContentView: View {
 											sharedMainViewModel.displayedFriend = nil
 											sharedMainViewModel.displayedCall = nil
 											sharedMainViewModel.displayedConversation = nil
+											
+											if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+												meetingsListVM.currentFilter = ""
+												meetingsListVM.computeMeetingsList()
+											}
 										}, label: {
 											VStack {
 												Image("video-conference")

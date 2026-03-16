@@ -45,6 +45,7 @@ class SettingsViewModel: ObservableObject {
 	
 	// Meetings settings
 	@Published var defaultLayout: String = ""
+	@Published var showPastMeetings: Bool = false
 	
 	// Network settings
 	@Published var useWifiOnly: Bool = false
@@ -90,6 +91,7 @@ class SettingsViewModel: ObservableObject {
 			let hideNotificationContentTmp = !AppServices.corePreferences.showChatMessageContentInNotification
 			
 			let defaultLayoutTmp = core.defaultConferenceLayout.rawValue == 0 ? String(localized: "settings_meetings_layout_mosaic_label") : String(localized: "settings_meetings_layout_active_speaker_label")
+			let showPastMeetingsTmp = AppServices.corePreferences.showPastMeetings
 			
 			let useWifiOnlyTmp = core.wifiOnlyEnabled
 			let allowIpv6Tmp = core.ipv6Enabled
@@ -130,6 +132,7 @@ class SettingsViewModel: ObservableObject {
 				self.hideNotificationContent = hideNotificationContentTmp
 				
 				self.defaultLayout = defaultLayoutTmp
+				self.showPastMeetings = showPastMeetingsTmp
 				
 				self.useWifiOnly = useWifiOnlyTmp
 				self.allowIpv6 = allowIpv6Tmp
@@ -359,6 +362,59 @@ class SettingsViewModel: ObservableObject {
 		}
 	}
 	
+	func clearNativeFriendsDatabase() {
+		CoreContext.shared.doOnCoreQueue { core in
+			let nativeAddressBookFriendList = "Native address-book"
+			if let list = core.getFriendListByName(name: nativeAddressBookFriendList) {
+				let friends = list.friends
+				Log.info("\(SettingsViewModel.TAG) Friend list to remove found with \(friends.count) friends")
+				for friend in friends {
+					_ = list.removeFriend(linphoneFriend: friend)
+				}
+				core.removeFriendList(list: list)
+				Log.info("\(SettingsViewModel.TAG) Friend list \(nativeAddressBookFriendList) removed")
+			}
+			
+			DispatchQueue.main.async {
+				ToastViewModel.shared.show("Success_cleared_native_friends_toast")
+			}
+		}
+	}
+	
+	func clearOrphanAuthInfo() {
+		CoreContext.shared.doOnCoreQueue { core in
+			var count = 0
+			
+			for authInfo in core.authInfoList {
+				if let username = authInfo.username {
+					let account = core.accountList.first {
+						$0.params?.identityAddress?.username == username
+					}
+					
+					if account == nil {
+						Log.info("\(SettingsViewModel.TAG) Removing auth info \(authInfo) with username \(username) for which no account was found")
+						core.removeAuthInfo(info: authInfo)
+						count += 1
+					}
+				} else {
+					Log.info("\(SettingsViewModel.TAG) Removing auth info \(authInfo) without username")
+					core.removeAuthInfo(info: authInfo)
+					count += 1
+				}
+			}
+			
+			if count == 0 {
+				DispatchQueue.main.async {
+					ToastViewModel.shared.show("Success_no_auth_info_removed_toast")
+				}
+			} else {
+				DispatchQueue.main.async {
+					ToastViewModel.shared.show("Success_cleared_auth_info_toast")
+				}
+			}
+		}
+	}
+	
 	func saveChangesWhenLeaving() {
 		CoreContext.shared.doOnCoreQueue { core in
 			if AppServices.corePreferences.vfsEnabled != self.enableVfs {
@@ -388,6 +444,10 @@ class SettingsViewModel: ObservableObject {
 			
 			if (core.defaultConferenceLayout.rawValue == 0) != (self.defaultLayout == String(localized: "settings_meetings_layout_mosaic_label")) {
 				core.defaultConferenceLayout = self.defaultLayout == String(localized: "settings_meetings_layout_mosaic_label") ? .Grid : .ActiveSpeaker
+			}
+			
+			if AppServices.corePreferences.showPastMeetings != self.showPastMeetings {
+				AppServices.corePreferences.showPastMeetings = self.showPastMeetings
 			}
 			
 			if core.wifiOnlyEnabled != self.useWifiOnly {
@@ -452,58 +512,6 @@ class SettingsViewModel: ObservableObject {
 			
 			if core.logCollectionUploadServerUrl != self.logsUploadServerUrl && !(core.logCollectionUploadServerUrl == nil && self.logsUploadServerUrl.isEmpty) {
 				core.logCollectionUploadServerUrl = self.logsUploadServerUrl
-			}
-		}
-	}
-	func clearNativeFriendsDatabase() {
-		CoreContext.shared.doOnCoreQueue { core in
-			let nativeAddressBookFriendList = "Native address-book"
-			if let list = core.getFriendListByName(name: nativeAddressBookFriendList) {
-				let friends = list.friends
-				Log.info("\(SettingsViewModel.TAG) Friend list to remove found with \(friends.count) friends")
-				for friend in friends {
-					_ = list.removeFriend(linphoneFriend: friend)
-				}
-				core.removeFriendList(list: list)
-				Log.info("\(SettingsViewModel.TAG) Friend list \(nativeAddressBookFriendList) removed")
-			}
-			
-			DispatchQueue.main.async {
-				ToastViewModel.shared.show("Success_cleared_native_friends_toast")
-			}
-		}
-	}
-	
-	func clearOrphanAuthInfo() {
-		CoreContext.shared.doOnCoreQueue { core in
-			var count = 0
-			
-			for authInfo in core.authInfoList {
-				if let username = authInfo.username {
-					let account = core.accountList.first {
-						$0.params?.identityAddress?.username == username
-					}
-					
-					if account == nil {
-						Log.info("\(SettingsViewModel.TAG) Removing auth info \(authInfo) with username \(username) for which no account was found")
-						core.removeAuthInfo(info: authInfo)
-						count += 1
-					}
-				} else {
-					Log.info("\(SettingsViewModel.TAG) Removing auth info \(authInfo) without username")
-					core.removeAuthInfo(info: authInfo)
-					count += 1
-				}
-			}
-			
-			if count == 0 {
-				DispatchQueue.main.async {
-					ToastViewModel.shared.show("Success_no_auth_info_removed_toast")
-				}
-			} else {
-				DispatchQueue.main.async {
-					ToastViewModel.shared.show("Success_cleared_auth_info_toast")
-				}
 			}
 		}
 	}

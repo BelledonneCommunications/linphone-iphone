@@ -263,6 +263,8 @@ struct SettingsAdvancedCallFragment: View {
 						}
 					}
 					.background(Color.gray100)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+					.frame(maxWidth: .infinity)
 				}
 				.background(Color.gray100)
 			}

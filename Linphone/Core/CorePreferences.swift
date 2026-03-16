@@ -20,7 +20,7 @@
 import Foundation
 import linphonesw
 
-class CorePreferences {
+class CorePreferences: ObservableObject {
 	
 	private let config: Config
 	
@@ -354,6 +354,18 @@ class CorePreferences {
 		}
 		set {
 			config.setBool(section: "ui", key: "show_favorites_contacts", value: newValue)
+		}
+	}
+	
+	var showPastMeetings: Bool {
+		get {
+			config.getBool(section: "ui", key: "show_past_meetings", defaultValue: true)
+		}
+		set {
+			DispatchQueue.main.async {
+				self.objectWillChange.send()
+			}
+			config.setBool(section: "ui", key: "show_past_meetings", value: newValue)
 		}
 	}
 	

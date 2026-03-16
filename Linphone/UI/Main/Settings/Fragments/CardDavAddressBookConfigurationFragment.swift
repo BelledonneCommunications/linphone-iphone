@@ -213,10 +213,16 @@ struct CardDavAddressBookConfigurationFragment: View {
 								.default_text_style_700(styleSize: 15)
 							
 						}
-						.padding(.vertical, 30)
+						.padding(.vertical, 20)
 						.padding(.horizontal, 20)
+						.background(.white)
+						.cornerRadius(15)
 						.background(Color.gray100)
 					}
+					.padding(.vertical, 20)
+					.padding(.horizontal, 20)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+					.frame(maxWidth: .infinity)
 				}
 				.background(Color.gray100)
 			}

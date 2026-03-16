@@ -241,6 +241,8 @@ struct SettingsAdvancedFragment: View {
 					}
 					.padding(.vertical, 20)
 					.padding(.horizontal, 20)
+					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+					.frame(maxWidth: .infinity)
 				}
 				.background(Color.gray100)
 			}
