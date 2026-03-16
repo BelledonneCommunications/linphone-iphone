@@ -1694,6 +1694,7 @@ struct ContentView: View {
 						}
 					}
 					
+					/*
 					if isShowDeleteMessagePopup {
 						PopupView(
 							isShowPopup: $isShowDeleteMessagePopup,
@@ -1718,6 +1719,7 @@ struct ContentView: View {
 							self.isShowDeleteMessagePopup.toggle()
 						}
 					}
+					*/
 					
 					if isShowConversationInfoPopup {
 						PopupViewWithTextField(

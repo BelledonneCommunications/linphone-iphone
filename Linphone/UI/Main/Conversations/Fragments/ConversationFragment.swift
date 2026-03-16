@@ -133,6 +133,15 @@ struct ConversationFragment: View {
 								.presentationDetents([.medium])
 				 				.presentationDragIndicator(.visible)
 						})
+						.sheet(isPresented: $isShowDeleteMessagePopup, onDismiss: {
+							isShowDeleteMessagePopup = false
+						}, content: {
+							ConversationDeleteMessageBottomSheet(
+								showingSheet: $isShowDeleteMessagePopup
+							)
+							.presentationDetents([.fraction(0.15)])
+							.ignoresSafeArea(.all)
+						})
 						.sheet(isPresented: $isShowPhotoLibrary, onDismiss: {
 							isShowPhotoLibrary = false
 						}, content: {
@@ -212,6 +221,13 @@ struct ConversationFragment: View {
 								.environmentObject(conversationViewModel)
 						} onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
+						}
+						.halfSheet(showSheet: $isShowDeleteMessagePopup) {
+							ConversationDeleteMessageBottomSheet(
+								showingSheet: $isShowDeleteMessagePopup
+							)
+						} onDismiss: {
+							isShowDeleteMessagePopup = false
 						}
 						.sheet(isPresented: $isShowPhotoLibrary, onDismiss: {
 							isShowPhotoLibrary = false

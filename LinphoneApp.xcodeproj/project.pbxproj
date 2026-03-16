@@ -198,6 +198,7 @@
 		D7D24D162AC1B4E800C6F35B /* NotoSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */; };
 		D7D24D172AC1B4E800C6F35B /* NotoSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */; };
 		D7D24D182AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */; };
+		D7D3007A2F684EAF00836032 /* ConversationDeleteMessageBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D300792F684EAE00836032 /* ConversationDeleteMessageBottomSheet.swift */; };
 		D7D5AD7F2DD34F0E00016721 /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD7E2DD34F0E00016721 /* AppAuth */; };
 		D7D5AD812DD34F1A00016721 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD802DD34F1A00016721 /* FirebaseAnalytics */; };
 		D7D5AD832DD34F2300016721 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D7D5AD822DD34F2300016721 /* FirebaseCrashlytics */; };
@@ -471,6 +472,7 @@
 		D7D24D102AC1B4E800C6F35B /* NotoSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		D7D24D112AC1B4E800C6F35B /* NotoSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-Bold.ttf"; sourceTree = "<group>"; };
 		D7D24D122AC1B4E800C6F35B /* NotoSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSans-ExtraBold.ttf"; sourceTree = "<group>"; };
+		D7D300792F684EAE00836032 /* ConversationDeleteMessageBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationDeleteMessageBottomSheet.swift; sourceTree = "<group>"; };
 		D7D67B682F601F6100DD9976 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = Base.lproj/AppIntentVocabulary.plist; sourceTree = "<group>"; };
 		D7D67B6C2F601F6C00DD9976 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = en.lproj/AppIntentVocabulary.plist; sourceTree = "<group>"; };
 		D7D67B6D2F601F6D00DD9976 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = eu; path = eu.lproj/AppIntentVocabulary.plist; sourceTree = "<group>"; };
@@ -1137,6 +1139,7 @@
 		D7CEE0392B7A232200FD79B7 /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D7D300792F684EAE00836032 /* ConversationDeleteMessageBottomSheet.swift */,
 				D7AEB9732F324A6E00298546 /* ConversationDocumentsListFragment.swift */,
 				D7AEB9712F324A5C00298546 /* ConversationMediaListFragment.swift */,
 				D7EFD1E32CD11F53005E67CD /* EphemeralFragment.swift */,
@@ -1624,6 +1627,7 @@
 				D74C9CF82ACACECE0021626A /* WelcomePage1Fragment.swift in Sources */,
 				66E56BCE2BA9A1F8006CE56F /* MeetingModel.swift in Sources */,
 				D7DC09712CFDBF9A00A6D47C /* AccountProfileViewModel.swift in Sources */,
+				D7D3007A2F684EAF00836032 /* ConversationDeleteMessageBottomSheet.swift in Sources */,
 				D7E6D0552AEBFCCE00A57AAF /* ContactsInnerFragment.swift in Sources */,
 				D72343362AD037AF009AA24E /* ToastView.swift in Sources */,
 				D711B1302E8FCEDE00DF8C71 /* CardDavViewModel.swift in Sources */,

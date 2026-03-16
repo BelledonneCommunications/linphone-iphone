@@ -221,8 +221,8 @@
 "conversation_editing_message_title" = "Message being edited";
 "conversation_message_edited_label" = "Edited";
 "conversation_dialog_delete_chat_message_title" = "Delete this message?";
-"conversation_dialog_delete_locally_label" = "For me";
-"conversation_dialog_delete_for_everyone_label" = "For everyone";
+"conversation_dialog_delete_locally_label" = "Delete for me";
+"conversation_dialog_delete_for_everyone_label" = "Delete for everyone";
 "conversation_message_content_deleted_label" = "This message has been deleted";
 "conversation_message_content_deleted_by_us_label" = "You have deleted this message";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
