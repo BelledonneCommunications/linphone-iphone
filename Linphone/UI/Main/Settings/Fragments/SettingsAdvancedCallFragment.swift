@@ -83,15 +83,12 @@ struct SettingsAdvancedCallFragment: View {
 										}
 										Button("SRTP") {
 											settingsViewModel.mediaEncryption = "SRTP"
-											settingsViewModel.mediaEncryptionMandatory = true
 										}
 										Button("ZRTP") {
 											settingsViewModel.mediaEncryption = "ZRTP"
-											settingsViewModel.mediaEncryptionMandatory = true
 										}
 										Button("DTLS") {
 											settingsViewModel.mediaEncryption = "DTLS"
-											settingsViewModel.mediaEncryptionMandatory = true
 										}
 									} label: {
 										Text(settingsViewModel.mediaEncryption)

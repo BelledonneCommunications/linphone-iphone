@@ -343,7 +343,7 @@ class ContactsListViewModel: ObservableObject {
 			if let contactAvatarModel = SharedMainViewModel.shared.displayedFriend {
 				var remote: Address?
 
-				if contactAvatarModel.addresses.count == 1 {
+				if contactAvatarModel.addresses.count >= 1 {
 					do {
 						remote = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 					} catch {
