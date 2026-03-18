@@ -32,7 +32,7 @@ struct ContactsView: View {
 			ZStack(alignment: .bottomTrailing) {
 				ContactsFragment(isShowDeletePopup: $isShowDeletePopup, text: $text)
 				
-				if !AppServices.corePreferences.disableAddContact {
+				if !AppServices.corePreferences.disableAddContact && !AppServices.corePreferences.hideContactEdition {
 					Button {
 						withAnimation {
 							contactsListViewModel.selectedEditFriend = nil

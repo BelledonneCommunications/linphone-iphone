@@ -55,7 +55,7 @@ struct ContactsListBottomSheet: View {
 				.padding(.trailing)
 			}
 			
-			if !contactsListViewModel.selectedFriend!.isReadOnly {
+			if !contactsListViewModel.selectedFriend!.isReadOnly && !AppServices.corePreferences.hideContactEdition {
 				Spacer()
 				
 				Button {
@@ -137,12 +137,12 @@ struct ContactsListBottomSheet: View {
 			.padding(.horizontal, 30)
 			.background(Color.gray100)
 			
-			if !contactsListViewModel.selectedFriend!.isReadOnly {
+			if !contactsListViewModel.selectedFriend!.isReadOnly && !AppServices.corePreferences.hideContactEdition {
 				VStack {
 					Divider()
 				}
 				.frame(maxWidth: .infinity)
-				
+
 				Button {
 					if contactsListViewModel.selectedFriend != nil {
 						isShowDeletePopup.toggle()

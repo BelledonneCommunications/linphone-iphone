@@ -77,7 +77,7 @@ struct ContactInnerFragment: View {
 							
 							Spacer()
 							
-							if !contactAvatarModel.isReadOnly {
+							if !contactAvatarModel.isReadOnly && !AppServices.corePreferences.hideContactEdition {
 								if !contactAvatarModel.editable {
 									Button(action: {
 										editNativeContact()

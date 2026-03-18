@@ -60,9 +60,10 @@ struct HistoryListBottomSheet: View {
 			Spacer()
 			
 			let disableAddContact = AppServices.corePreferences.disableAddContact
+			let hideContactEdition = AppServices.corePreferences.hideContactEdition
 			let isFriend = historyListViewModel.selectedCall?.isFriend == true
 
-			if !disableAddContact || (disableAddContact && isFriend) {
+			if (!disableAddContact || (disableAddContact && isFriend)) && !hideContactEdition {
 				Button {
 					
 					if #available(iOS 16.0, *) {

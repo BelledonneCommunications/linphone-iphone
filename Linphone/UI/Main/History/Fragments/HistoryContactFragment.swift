@@ -71,9 +71,10 @@ struct HistoryContactFragment: View {
 					
 					Menu {
 						let disableAddContact = AppServices.corePreferences.disableAddContact
+						let hideContactEdition = AppServices.corePreferences.hideContactEdition
 						let isFriend = historyModel.isFriend == true
-						
-						if !historyModel.isConf && (!disableAddContact || (disableAddContact && isFriend)) {
+
+						if !historyModel.isConf && (!disableAddContact || (disableAddContact && isFriend)) && !hideContactEdition {
 							Button {
 								isMenuOpen = false
 								

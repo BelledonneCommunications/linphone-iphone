@@ -150,6 +150,15 @@ class CorePreferences: ObservableObject {
 		}
 	}
 	
+	var hideContactEdition: Bool {
+		get {
+			config.getBool(section: "ui", key: "hide_contact_edition", defaultValue: false)
+		}
+		set {
+			config.setBool(section: "ui", key: "hide_contact_edition", value: newValue)
+		}
+	}
+
 	var disableAddContact: Bool {
 		get {
 			config.getBool(section: "ui", key: "disable_add_contact", defaultValue: false)

@@ -490,7 +490,7 @@ struct ContactInnerActionsFragment: View {
 		.background(Color.gray100)
 		
 		VStack(spacing: 0) {
-			if !contactAvatarModel.isReadOnly {
+			if !contactAvatarModel.isReadOnly && !AppServices.corePreferences.hideContactEdition {
 				if !contactAvatarModel.editable {
 					Button {
 						actionEditButton()
@@ -502,7 +502,7 @@ struct ContactInnerActionsFragment: View {
 								.foregroundStyle(Color.grayMain2c600)
 								.frame(width: 25, height: 25)
 								.padding(.all, 10)
-							
+
 							Text("contact_details_edit")
 								.default_text_style(styleSize: 14)
 								.frame(maxWidth: .infinity, alignment: .leading)
@@ -525,7 +525,7 @@ struct ContactInnerActionsFragment: View {
 									.foregroundStyle(Color.grayMain2c600)
 									.frame(width: 25, height: 25)
 									.padding(.all, 10)
-								
+
 								Text("contact_details_edit")
 									.default_text_style(styleSize: 14)
 									.frame(maxWidth: .infinity, alignment: .leading)
@@ -542,12 +542,12 @@ struct ContactInnerActionsFragment: View {
 							}
 						)
 				}
-				
+
 				VStack {
 					Divider()
 				}
 				.padding(.horizontal)
-				
+
 				Button {
 					contactsListViewModel.toggleStarredSelectedFriend()
 				} label: {
@@ -570,7 +570,7 @@ struct ContactInnerActionsFragment: View {
 					.padding(.vertical, 15)
 					.padding(.horizontal, 20)
 				}
-				
+
 				VStack {
 					Divider()
 				}
@@ -599,12 +599,12 @@ struct ContactInnerActionsFragment: View {
 				.padding(.horizontal, 20)
 			}
 			
-			if !contactAvatarModel.isReadOnly {
+			if !contactAvatarModel.isReadOnly && !AppServices.corePreferences.hideContactEdition {
 				VStack {
 					Divider()
 				}
 				.padding(.horizontal)
-				
+
 				Button {
 					isShowDeletePopup.toggle()
 				} label: {
@@ -615,7 +615,7 @@ struct ContactInnerActionsFragment: View {
 							.foregroundStyle(Color.redDanger500)
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
-						
+
 						Text("contact_details_delete")
 							.foregroundStyle(Color.redDanger500)
 							.default_text_style(styleSize: 14)

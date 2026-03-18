@@ -436,12 +436,13 @@ struct ConversationInfoFragment: View {
 																				where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 																
 																let disableAddContact = AppServices.corePreferences.disableAddContact
-																
-																if (!disableAddContact || (disableAddContact && friendIndex != nil)) {
+																let hideContactEdition = AppServices.corePreferences.hideContactEdition
+
+																if (!disableAddContact || (disableAddContact && friendIndex != nil)) && !hideContactEdition {
 																	Button(
 																		action: {
 																			let addressConv = participantConversationModel.address
-																			
+
 																			let friendIndex = contactsManager.avatarListModel.first(
 																				where: {$0.addresses.contains(where: {$0 == addressConv})})
 																			
@@ -679,8 +680,9 @@ struct ConversationInfoFragment: View {
 												where: {$0.friend!.addresses.contains(where: {$0.asStringUriOnly() == addressConv})})
 											
 											let disableAddContact = AppServices.corePreferences.disableAddContact
-											
-											if !SharedMainViewModel.shared.displayedConversation!.isGroup && (!disableAddContact || (disableAddContact && friendIndex != nil)) {
+											let hideContactEdition = AppServices.corePreferences.hideContactEdition
+
+											if !SharedMainViewModel.shared.displayedConversation!.isGroup && (!disableAddContact || (disableAddContact && friendIndex != nil)) && !hideContactEdition {
 												Button(
 													action: {
 														if SharedMainViewModel.shared.displayedConversation != nil {
