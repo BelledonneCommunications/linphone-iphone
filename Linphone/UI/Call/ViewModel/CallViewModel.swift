@@ -275,7 +275,7 @@ class CallViewModel: ObservableObject {
 					}
 				}
 				
-				self.callDelegate = CallDelegateStub(onEncryptionChanged: { (_: Call, _: Bool, _: String)in
+				self.callDelegate = CallDelegateStub(onEncryptionChanged: { (_: Call, _: Bool, _: String) in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.updateEncryption(withToast: false)
                     }
@@ -296,10 +296,6 @@ class CallViewModel: ObservableObject {
                             self.isNotVerified = true
                             self.zrtpPopupDisplayed = true
                         }
-					}
-				}, onStateChanged: { (_: Call, state: Call.State, message: String) in
-					if let currentParamsTmp = self.currentCall?.currentParams, state == .StreamsRunning, currentParamsTmp.mediaEncryption == .None || currentParamsTmp.mediaEncryption == .SRTP {
-						self.updateEncryption(withToast: false)
 					}
 				}, onStatsUpdated: { (_: Call, stats: CallStats) in
 					DispatchQueue.main.async {
@@ -994,9 +990,11 @@ class CallViewModel: ObservableObject {
 						self.isNotEncrypted = false
 					}
 				case MediaEncryption.None:
-					let isNotEncryptedTmp = self.currentCall?.state == .StreamsRunning && !self.telecomManager.outgoingCallStarted
+					let isMediaEncryptedTmp = self.currentCall?.params?.mediaEncryption != .None && self.currentCall?.params?.mediaEncryption != .ZRTP
+					let isNotEncryptedTmp = self.currentCall?.params?.mediaEncryption == .None
+					
 					DispatchQueue.main.async {
-						self.isMediaEncrypted = false
+						self.isMediaEncrypted = isMediaEncryptedTmp
 						self.isZrtp = false
 						self.isNotEncrypted = isNotEncryptedTmp
 					}

@@ -408,7 +408,7 @@ struct CallView: View {
 								.zIndex(1)
 							} else if callViewModel.isNotEncrypted {
 								HStack {
-									Image("lock_simple")
+									Image("lock-simple-open")
 										.renderingMode(.template)
 										.resizable()
 										.foregroundStyle(.white)
