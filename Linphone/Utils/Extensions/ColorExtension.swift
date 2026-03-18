@@ -28,11 +28,8 @@ extension Color {
 	static let black = Color(hex: "#000000")
 	static let white = Color(hex: "#FFFFFF")
 	
-	static var orangeMain700: Color { theme.main700 }
-	static var orangeMain500: Color { theme.main500 }
-	static var orangeMain300: Color { theme.main300 }
 	static var orangeMain100: Color { theme.main100 }
-	static var orangeMain100Alpha50: Color { theme.main100Alpha50 }
+	static var orangeMain500: Color { theme.main500 }
 	
 	static let grayMain2c800 = Color(hex: "#22334D")
 	static let grayMain2c800Alpha65 = Color(hex: "#A622334D")

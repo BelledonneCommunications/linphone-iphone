@@ -25,10 +25,7 @@ import Combine
 struct Theme: Equatable {
 	let name: String
 	let main100: Color
-	let main100Alpha50: Color
-	let main300: Color
 	let main500: Color
-	let main700: Color
 }
 
 // MARK: - Theme Manager
@@ -61,70 +58,112 @@ final class ThemeManager: ObservableObject {
 		blue.name: blue,
 		red.name: red,
 		pink.name: pink,
-		purple.name: purple
+		purple.name: purple,
+		terracotta.name: terracotta,
+		lavender.name: lavender,
+		honey.name: honey,
+		burgundy.name: burgundy,
+		mint.name: mint,
+		coral.name: coral,
+		plum.name: plum,
+		titanium.name: titanium,
+		mineral_blue.name: mineral_blue
 	]
 	
 	static let orange = Theme(
 		name: "orange",
 		main100: Color(hex: "#FFEACB"),
-		main100Alpha50: Color(hex: "#80FFEACB"),
-		main300: Color(hex: "#FFB266"),
-		main500: Color(hex: "#FF5E00"),
-		main700: Color(hex: "#B72D00")
+		main500: Color(hex: "#FF5E00")
 	)
 	
 	static let yellow = Theme(
 		name: "yellow",
 		main100: Color(hex: "#FFF5D6"),
-		main100Alpha50: Color(hex: "#80FFF5D6"),
-		main300: Color(hex: "#FFE799"),
-		main500: Color(hex: "#F5BC00"),
-		main700: Color(hex: "#A37D00")
+		main500: Color(hex: "#F5BC00")
 	)
 	
 	static let green = Theme(
 		name: "green",
 		main100: Color(hex: "#DCF9E7"),
-		main100Alpha50: Color(hex: "#80DCF9E7"),
-		main300: Color(hex: "#A8F0C2"),
-		main500: Color(hex: "#25D366"),
-		main700: Color(hex: "#1C9C4B")
+		main500: Color(hex: "#25D366")
 	)
 	
 	static let blue = Theme(
 		name: "blue",
 		main100: Color(hex: "#D6F4FF"),
-		main100Alpha50: Color(hex: "#80D6F4FF"),
-		main300: Color(hex: "#99E4FF"),
-		main500: Color(hex: "#00AFF0"),
-		main700: Color(hex: "#0078A3")
+		main500: Color(hex: "#00AFF0")
 	)
 	
 	static let red = Theme(
 		name: "red",
 		main100: Color(hex: "#FBE1DA"),
-		main100Alpha50: Color(hex: "#80FBE1DA"),
-		main300: Color(hex: "#F5B53A"),
-		main500: Color(hex: "#E14318"),
-		main700: Color(hex: "#A63211")
+		main500: Color(hex: "#E14318")
 	)
 	
 	static let pink = Theme(
 		name: "pink",
 		main100: Color(hex: "#FFD6F1"),
-		main100Alpha50: Color(hex: "#80FFD6F1"),
-		main300: Color(hex: "#FF99DD"),
-		main500: Color(hex: "#FF00A9"),
-		main700: Color(hex: "#B8007A")
+		main500: Color(hex: "#FF00A9")
 	)
 	
 	static let purple = Theme(
 		name: "purple",
 		main100: Color(hex: "#FFD6FF"),
-		main100Alpha50: Color(hex: "#80FFD6FF"),
-		main300: Color(hex: "#FF99FF"),
-		main500: Color(hex: "#800080"),
-		main700: Color(hex: "#520052")
+		main500: Color(hex: "#800080")
+	)
+	
+	static let terracotta = Theme(
+		name: "terracotta",
+		main100: Color(hex: "#F2D2C7"),
+		main500: Color(hex: "#C86B45")
+	)
+	
+	static let lavender = Theme(
+		name: "lavender",
+		main100: Color(hex: "#E9E7F2"),
+		main500: Color(hex: "#7F79B5")
+	)
+	
+	static let honey = Theme(
+		name: "honey",
+		main100: Color(hex: "#FBFCE9"),
+		main500: Color(hex: "#D9A441")
+	)
+	
+	static let burgundy = Theme(
+		name: "burgundy",
+		main100: Color(hex: "#F6BBC3"),
+		main500: Color(hex: "#7A1E39")
+	)
+	
+	static let mint = Theme(
+		name: "mint",
+		main100: Color(hex: "#DEF2E8"),
+		main500: Color(hex: "#7AC9A1")
+	)
+	
+	static let coral = Theme(
+		name: "coral",
+		main100: Color(hex: "#FFD3D6"),
+		main500: Color(hex: "#F26B5E")
+	)
+	
+	static let plum = Theme(
+		name: "plum",
+		main100: Color(hex: "#DBBED9"),
+		main500: Color(hex: "#9B4F96")
+	)
+	
+	static let titanium = Theme(
+		name: "titanium",
+		main100: Color(hex: "#D9D9D9"),
+		main500: Color(hex: "#8A939B")
+	)
+	
+	static let mineral_blue = Theme(
+		name: "mineral_blue",
+		main100: Color(hex: "#C5E0F3"),
+		main500: Color(hex: "#669ED7")
 	)
 }
 

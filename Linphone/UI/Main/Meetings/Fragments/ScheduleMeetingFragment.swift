@@ -311,7 +311,7 @@ struct ScheduleMeetingFragment: View {
 								Toggle("", isOn: $meetingViewModel.sendInvitations)
 									.padding(.leading, 16)
 									.labelsHidden()
-									.tint(Color.orangeMain300)
+									.tint(Color.orangeMain500)
 								Text("meeting_schedule_send_invitations_title")
 									.default_text_style_500(styleSize: 14)
 								Spacer()

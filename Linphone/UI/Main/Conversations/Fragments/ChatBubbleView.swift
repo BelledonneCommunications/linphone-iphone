@@ -1169,7 +1169,7 @@ struct CustomSlider: View {
 	@State private var cancellable: AnyCancellable?
 	
 	var minTrackColor: Color = .white.opacity(0.5)
-	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain300, Color.orangeMain500])
+	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain500.opacity(0.5), Color.orangeMain500])
 	
 	
 	var body: some View {
