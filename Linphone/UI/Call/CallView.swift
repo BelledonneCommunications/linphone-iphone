@@ -2004,38 +2004,46 @@ struct CallView: View {
                 .background(callViewModel.micMutted ? Color.redDanger500 : Color.gray500)
                 .cornerRadius(40)
                 
-                Button {
-                    if AVAudioSession.sharedInstance().availableInputs != nil
-                        && !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            audioRouteSheet = true
-                        }
-                    } else {
-                        do {
-                            try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
-                        } catch _ {
-                            
-                        }
-                    }
-                    
-                } label: {
-                    HStack {
-                        Image(imageAudioRoute)
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundStyle(.white)
-                            .frame(width: 32, height: 32)
-                            .onAppear(perform: getAudioRouteImage)
-                            .onReceive(pub) { _ in
-                                self.getAudioRouteImage()
+                if !callViewModel.hasAudioRouteRestriction {
+                    Button {
+                        if AVAudioSession.sharedInstance().availableInputs != nil
+                            && !AVAudioSession.sharedInstance().availableInputs!.filter({ $0.portType.rawValue.contains("Bluetooth") }).isEmpty {
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                audioRouteSheet = true
                             }
+                        } else {
+                            do {
+                                try AVAudioSession.sharedInstance().overrideOutputAudioPort(AVAudioSession.sharedInstance().currentRoute.outputs.filter({ $0.portType.rawValue == "Speaker" }).isEmpty ? .speaker : .none)
+                            } catch _ {
+
+                            }
+                        }
+
+                    } label: {
+                        HStack {
+                            Image(imageAudioRoute)
+                                .renderingMode(.template)
+                                .resizable()
+                                .foregroundStyle(.white)
+                                .frame(width: 32, height: 32)
+                        }
                     }
+                    .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+                    .frame(width: buttonSize, height: buttonSize)
+                    .background(Color.gray500)
+                    .cornerRadius(40)
                 }
-                .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
-                .frame(width: buttonSize, height: buttonSize)
-                .background(Color.gray500)
-                .cornerRadius(40)
+                Color.clear
+                    .frame(width: 0, height: 0)
+                    .onAppear {
+                        getAudioRouteImage()
+                        callViewModel.enforceEarpieceIfNeeded()
+                    }
+                    .onReceive(pub) { _ in
+                        self.getAudioRouteImage()
+                        callViewModel.enforceEarpieceIfNeeded()
+                    }
             }
             .frame(height: geo.size.height * 0.15)
             .padding(.horizontal, 20)

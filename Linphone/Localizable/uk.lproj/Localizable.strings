@@ -199,6 +199,7 @@
 "new_conversation_title" = "Нова розмова";
 "next" = "Наступний";
 "notification_missed_call_title" = "Пропущений виклик";
+"notification_earpiece_enforcement_message" = "Будь ласка, використовуйте лише навушник. Інші аудіовиходи вимкнено.";
 "operation_in_progress_overlay" = "Операція триває, будь ласка, зачекайте";
 "password" = "Пароль";
 "phone_number" = "Номер телефону";

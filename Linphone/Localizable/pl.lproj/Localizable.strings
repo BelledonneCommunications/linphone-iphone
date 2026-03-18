@@ -48,6 +48,7 @@
 "menu_reply_to_chat_message" = "Odpowiedz";
 "next" = "Dalej";
 "notification_missed_call_title" = "Nieodebrane połączenie";
+"notification_earpiece_enforcement_message" = "Proszę używać tylko słuchawki. Inne wyjścia audio są wyłączone.";
 "or" = "lub";
 "password" = "Hasło";
 "phone_number" = "Numer telefonu";

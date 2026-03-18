@@ -310,6 +310,7 @@
 "new_conversation_title" = "Nova conversa";
 "next" = "Próximo";
 "notification_missed_call_title" = "Chamada perdida";
+"notification_earpiece_enforcement_message" = "Use apenas o auricular. As outras saídas de áudio estão desativadas.";
 "operation_in_progress_overlay" = "Operação em andamento, por favor, aguarde";
 "recordings_title" = "Gravações";
 "settings_advanced_accept_early_media_title" = "Aceitar mídia antecipada";

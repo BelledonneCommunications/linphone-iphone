@@ -70,72 +70,74 @@ struct AudioRouteBottomSheet: View {
 			})
 			.frame(maxHeight: .infinity)
 			
-			Button(action: {
-				optionsAudioRoute = 2
-				
-				do {
-					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-				} catch _ {
-					
-				}
-			}, label: {
-				HStack {
-					Image(optionsAudioRoute == 2 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text("call_audio_device_type_speaker")
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("speaker-high")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
-			
-			Button(action: {
-				optionsAudioRoute = 3
-				
-				do {
-					try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-					try AVAudioSession.sharedInstance().setPreferredInput(
-						AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
-				} catch _ {
-					
-				}
-			}, label: {
-				HStack {
-					Image(optionsAudioRoute == 3 ? "radio-button-fill" : "radio-button")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-					
-					Text(String(format: String(localized: "call_audio_device_type_bluetooth"),
-								AVAudioSession.sharedInstance().currentRoute.outputs.first?.portName ?? ""))
-						.default_text_style_white(styleSize: 15)
-					
-					Spacer()
-					
-					Image("bluetooth")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(.white)
-						.frame(width: 25, height: 25, alignment: .leading)
-						.padding(.all, 10)
-				}
-			})
-			.frame(maxHeight: .infinity)
+			if !AppServices.corePreferences.onlyAllowEarpieceDuringCall {
+				Button(action: {
+					optionsAudioRoute = 2
+
+					do {
+						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+					} catch _ {
+
+					}
+				}, label: {
+					HStack {
+						Image(optionsAudioRoute == 2 ? "radio-button-fill" : "radio-button")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+
+						Text("call_audio_device_type_speaker")
+							.default_text_style_white(styleSize: 15)
+
+						Spacer()
+
+						Image("speaker-high")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+					}
+				})
+				.frame(maxHeight: .infinity)
+
+				Button(action: {
+					optionsAudioRoute = 3
+
+					do {
+						try AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+						try AVAudioSession.sharedInstance().setPreferredInput(
+							AVAudioSession.sharedInstance().availableInputs?.filter({ $0.portType.rawValue.contains("Bluetooth") }).first)
+					} catch _ {
+
+					}
+				}, label: {
+					HStack {
+						Image(optionsAudioRoute == 3 ? "radio-button-fill" : "radio-button")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+
+						Text(String(format: String(localized: "call_audio_device_type_bluetooth"),
+									AVAudioSession.sharedInstance().currentRoute.outputs.first?.portName ?? ""))
+							.default_text_style_white(styleSize: 15)
+
+						Spacer()
+
+						Image("bluetooth")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(.white)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.padding(.all, 10)
+					}
+				})
+				.frame(maxHeight: .infinity)
+			}
 		}
 		.padding(.horizontal, 20)
 		.background(Color.gray600)

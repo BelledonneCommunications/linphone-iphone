@@ -291,6 +291,7 @@
 "new_conversation_title" = "Nieuw gesprek";
 "next" = "Volgende";
 "notification_missed_call_title" = "Gemiste oproep";
+"notification_earpiece_enforcement_message" = "Gebruik alleen de oortelefoon. Andere audio-uitgangen zijn uitgeschakeld.";
 "operation_in_progress_overlay" = "Bezig met bewerking, even geduld alstublieft";
 "or" = "of";
 "password" = "Wachtwoord";

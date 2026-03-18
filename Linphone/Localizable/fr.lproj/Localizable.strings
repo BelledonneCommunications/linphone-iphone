@@ -463,6 +463,7 @@
 "notification_chat_message_reaction_received" = "%@ a réagi par %@ à : %@";
 "notification_chat_message_received_title" = "Message reçu";
 "notification_missed_call_title" = "Appel manqué";
+"notification_earpiece_enforcement_message" = "Veuillez utiliser uniquement l'écouteur. Les autres sorties audio sont désactivées.";
 "operation_in_progress_overlay" = "Opération en cours, merci de patienter...";
 "or" = "ou";
 "password" = "Mot de passe";

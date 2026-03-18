@@ -137,6 +137,7 @@
 "message_delivery_info_error_title" = "Error";
 "next" = "Siguiente";
 "notification_missed_call_title" = "Llamada perdida";
+"notification_earpiece_enforcement_message" = "Utilice únicamente el auricular. Las demás salidas de audio están desactivadas.";
 "or" = "o";
 "password" = "Clave";
 "phone_number" = "Número de teléfono";

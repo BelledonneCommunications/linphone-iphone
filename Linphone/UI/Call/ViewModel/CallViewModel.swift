@@ -22,6 +22,7 @@ import linphonesw
 import AVFAudio
 import Combine
 import SwiftUI
+import UserNotifications
 
 // swiftlint:disable line_length
 // swiftlint:disable type_body_length
@@ -89,25 +90,142 @@ class CallViewModel: ObservableObject {
 	@Published var letters4: String = "DD"
 	
 	@Published var operationInProgress: Bool = false
-	
+	@Published var hasAudioRouteRestriction: Bool = false
+	@Published var audioMutedByEarpieceEnforcement: Bool = false
+
 	private var mCoreDelegate: CoreDelegate?
 	private var chatRoomDelegate: ChatRoomDelegate?
-	
+
+	private static let earpieceNotificationIdentifier = "linphone-earpiece-enforcement"
+	private var isEnforcingEarpiece: Bool = false
+	private var routeChangeObserver: Any?
+
 	init() {
-		// Not needed since call audio configuration (AVAudioSession) is handled by the SDK
-		/*
-		do {
-			try configureAudio(.call)
-		} catch {
-			print("Audio session error: \(error)")
-		}
-		*/
+		hasAudioRouteRestriction = AppServices.corePreferences.onlyAllowEarpieceDuringCall
+
 		NotificationCenter.default.addObserver(forName: Notification.Name("CallViewModelReset"), object: nil, queue: nil) { notification in
 			self.resetCallView()
 		}
+
+		if hasAudioRouteRestriction {
+			routeChangeObserver = NotificationCenter.default.addObserver(
+				forName: AVAudioSession.routeChangeNotification,
+				object: nil,
+				queue: .main
+			) { [weak self] _ in
+				self?.enforceEarpieceIfNeeded()
+			}
+		}
+	}
+
+	deinit {
+		if let observer = routeChangeObserver {
+			NotificationCenter.default.removeObserver(observer)
+		}
+	}
+
+	func isRouteAllowed() -> Bool {
+		guard AppServices.corePreferences.onlyAllowEarpieceDuringCall else { return true }
+		let output = AVAudioSession.sharedInstance().currentRoute.outputs.first
+		return output?.portType == .builtInReceiver
+	}
+
+	func enforceEarpieceIfNeeded() {
+		guard hasAudioRouteRestriction else { return }
+
+		if isRouteAllowed() {
+			if audioMutedByEarpieceEnforcement {
+				coreContext.doOnCoreQueue { core in
+					if let call = self.currentCall {
+						call.microphoneMuted = false
+						core.micEnabled = true
+						let micMuttedTmp = call.microphoneMuted || !core.micEnabled
+						DispatchQueue.main.async {
+							self.micMutted = micMuttedTmp
+							self.audioMutedByEarpieceEnforcement = false
+						}
+						Log.info("\(CallViewModel.TAG) Earpiece restored, unmuting audio")
+					}
+				}
+				cancelEarpieceNotification()
+			}
+		} else {
+			guard !isEnforcingEarpiece else { return }
+			isEnforcingEarpiece = true
+
+			Log.info("\(CallViewModel.TAG) Disallowed audio route detected, muting and forcing earpiece")
+
+			DispatchQueue.main.async {
+				self.micMutted = true
+				self.audioMutedByEarpieceEnforcement = true
+			}
+
+			self.forceEarpiece()
+			self.postEarpieceEnforcementNotification()
+
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+				if !self.isRouteAllowed() {
+					self.forceEarpiece()
+				}
+			}
+
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+				self.isEnforcingEarpiece = false
+			}
+		}
+	}
+
+	private func forceEarpiece() {
+		coreContext.doOnCoreQueue { core in
+			if let call = self.currentCall {
+				call.microphoneMuted = true
+				AudioRouteUtils.routeAudioToEarpiece(core: core, call: call)
+			}
+		}
+
+		do {
+			let session = AVAudioSession.sharedInstance()
+			try session.overrideOutputAudioPort(.none)
+			let receiver = session.availableInputs?.first(where: { $0.portType.rawValue.contains("Receiver") })
+				?? session.availableInputs?.first
+			try session.setPreferredInput(receiver)
+		} catch {
+			Log.error("\(CallViewModel.TAG) Failed to override audio port to earpiece: \(error)")
+		}
+	}
+
+	private func postEarpieceEnforcementNotification() {
+		let content = UNMutableNotificationContent()
+		content.title = "Linphone"
+		content.body = String(localized: "notification_earpiece_enforcement_message")
+		content.sound = .default
+
+		let request = UNNotificationRequest(
+			identifier: CallViewModel.earpieceNotificationIdentifier,
+			content: content,
+			trigger: nil
+		)
+
+		UNUserNotificationCenter.current().add(request) { error in
+			if let error = error {
+				Log.error("\(CallViewModel.TAG) Failed to post earpiece notification: \(error)")
+			}
+		}
+	}
+
+	private func cancelEarpieceNotification() {
+		UNUserNotificationCenter.current().removeDeliveredNotifications(
+			withIdentifiers: [CallViewModel.earpieceNotificationIdentifier]
+		)
+		UNUserNotificationCenter.current().removePendingNotificationRequests(
+			withIdentifiers: [CallViewModel.earpieceNotificationIdentifier]
+		)
 	}
 	
 	func resetCallView() {
+		cancelEarpieceNotification()
+		audioMutedByEarpieceEnforcement = false
+
 		DispatchQueue.main.async {
 			self.displayName = ""
 			self.avatarModel = nil

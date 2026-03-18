@@ -254,6 +254,7 @@
 "new_conversation_title" = "Nová konverzace";
 "next" = "Další";
 "notification_missed_call_title" = "Zmeškaný hovor";
+"notification_earpiece_enforcement_message" = "Používejte pouze sluchátko. Ostatní zvukové výstupy jsou zakázány.";
 "operation_in_progress_overlay" = "Operace probíhá, prosím počkejte";
 "or" = "nebo";
 "settings_advanced_allow_outgoing_early_media_title" = "Přenášet zvuk při odchozím hovoru (early media)";

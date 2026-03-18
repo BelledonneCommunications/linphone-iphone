@@ -464,6 +464,7 @@
 "notification_chat_message_reaction_received" = "%@ reacted by %@ to: %@";
 "notification_chat_message_received_title" = "Message received";
 "notification_missed_call_title" = "Missed call";
+"notification_earpiece_enforcement_message" = "Please use the earpiece only. Other audio outputs are disabled.";
 "operation_in_progress_overlay" = "Operation in progress, please wait";
 "or" = "or";
 "password" = "Password";

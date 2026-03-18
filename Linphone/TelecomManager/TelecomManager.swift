@@ -102,7 +102,7 @@ class TelecomManager: ObservableObject {
 			Log.info("Can not start a call with null address!")
 			return
 		}
-		
+
 		if TelecomManager.callKitEnabled(core: core) {// && !nextCallIsTransfer != true {
 			let uuid = UUID()
 			let name = addr?.asStringUriOnly() ?? "Unknown"
@@ -383,6 +383,13 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
+	static func isAudioRouteAllowedForCall() -> Bool {
+		guard AppServices.corePreferences.onlyAllowEarpieceDuringCall else { return true }
+		let output = AVAudioSession.sharedInstance().currentRoute.outputs.first
+		Log.info("Current audio route output is \(output?.portType.rawValue ?? "Unknown")")
+		return output?.portType == .builtInReceiver
+	}
+
 	static func callKitEnabled(core: Core) -> Bool {
 #if !targetEnvironment(simulator)
 		return core.callkitEnabled
@@ -650,8 +657,12 @@ class TelecomManager: ObservableObject {
 							do {
 								try core.setVideodevice(newValue: "AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1")
 							} catch _ {
-								
+
 							}
+
+							UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["linphone-earpiece-enforcement"])
+							UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["linphone-earpiece-enforcement"])
+
 							withAnimation {
 								self.outgoingCallStarted = false
 								self.callInProgress = false
@@ -726,6 +737,10 @@ class TelecomManager: ObservableObject {
 				}
 			case .Released:
 				TelecomManager.setAppData(sCall: call, appData: nil)
+				if core.callsNb == 0 {
+					UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["linphone-earpiece-enforcement"])
+					UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["linphone-earpiece-enforcement"])
+				}
 			case .Referred:
 				referedFromCall = call.callLog?.callId
 			default:

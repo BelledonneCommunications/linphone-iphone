@@ -14,3 +14,4 @@
 "sip_address_domain" = "Domeinua";
 "start" = "Hasi";
 "username" = "Erabiltzaile izena";
+"notification_earpiece_enforcement_message" = "Mesedez, erabili entzungailua soilik. Beste audio-irteerak desgaituta daude.";

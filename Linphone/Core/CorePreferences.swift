@@ -276,6 +276,15 @@ class CorePreferences: ObservableObject {
 		}
 	}
 	
+	var onlyAllowEarpieceDuringCall: Bool {
+		get {
+			config.getBool(section: "ui", key: "only_allow_earpiece_during_call", defaultValue: false)
+		}
+		set {
+			config.setBool(section: "ui", key: "only_allow_earpiece_during_call", value: newValue)
+		}
+	}
+
 	var printLogsInLogcat: Bool {
 		get {
 			config.getBool(section: "app", key: "debug", defaultValue: true)

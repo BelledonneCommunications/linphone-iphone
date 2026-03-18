@@ -287,6 +287,7 @@
 "new_conversation_title" = "新聊天";
 "next" = "下一个";
 "notification_missed_call_title" = "未接来电";
+"notification_earpiece_enforcement_message" = "请仅使用听筒。其他音频输出已被禁用。";
 "operation_in_progress_overlay" = "操作正在进行中，请稍候";
 "or" = "或";
 "password" = "密码";

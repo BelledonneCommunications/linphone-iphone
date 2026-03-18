@@ -292,6 +292,7 @@
 "new_conversation_title" = "Новая беседа";
 "next" = "Следующий";
 "notification_missed_call_title" = "Пропущенный звонок";
+"notification_earpiece_enforcement_message" = "Пожалуйста, используйте только динамик телефона. Другие аудиовыходы отключены.";
 "operation_in_progress_overlay" = "Операция выполняется, пожалуйста, подождите";
 "or" = "или";
 "password" = "Пароль";

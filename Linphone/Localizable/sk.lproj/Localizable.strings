@@ -178,6 +178,7 @@
 "menu_reply_to_chat_message" = "Odpovedať";
 "next" = "Ďalej";
 "notification_missed_call_title" = "Zmeškaný hovor";
+"notification_earpiece_enforcement_message" = "Používajte iba slúchadlo. Ostatné zvukové výstupy sú zakázané.";
 "or" = "alebo";
 "password" = "Heslo";
 "phone_number" = "Telefónne číslo";

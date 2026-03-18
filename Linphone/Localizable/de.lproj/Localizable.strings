@@ -301,6 +301,7 @@
 "new_conversation_title" = "Neuer Chat";
 "next" = "Weiter";
 "notification_missed_call_title" = "Verpasster Anruf";
+"notification_earpiece_enforcement_message" = "Bitte verwenden Sie nur den Hörer. Andere Audioausgaben sind deaktiviert.";
 "operation_in_progress_overlay" = "Vorgang wird ausgeführt, bitte warten";
 "or" = "oder";
 "password" = "Passwort";

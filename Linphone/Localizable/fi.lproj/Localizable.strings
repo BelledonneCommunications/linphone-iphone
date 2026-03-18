@@ -27,5 +27,6 @@
 "8" = "8";
 "9" = "9";
 "account_settings_avpf_title" = "AVPF";
+"notification_earpiece_enforcement_message" = "Käytä vain kuuloketta. Muut äänilähdöt on poistettu käytöstä.";
 "ZRTP" = "ZRTP";
 "[https://sip.linphone.org](https://sip.linphone.org)" = "[https://sip.linphone.org](https://sip.linphone.org)";

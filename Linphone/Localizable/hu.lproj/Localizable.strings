@@ -60,6 +60,7 @@
 "message_delivery_info_error_title" = "Hiba";
 "next" = "Következő";
 "notification_missed_call_title" = "Nem fogadott hívás";
+"notification_earpiece_enforcement_message" = "Kérjük, csak a fülhallgatót használja. A többi hangkimenet le van tiltva.";
 "or" = "vagy";
 "password" = "Jelszó";
 "phone_number" = "Telefonszám";
