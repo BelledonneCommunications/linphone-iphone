@@ -28,6 +28,8 @@ struct ConversationDeleteMessageBottomSheet: View {
 	
 	@State private var orientation = UIDevice.current.orientation
 	
+	@EnvironmentObject var conversationViewModel: ConversationViewModel
+	
 	@Binding var showingSheet: Bool
 	
 	var body: some View {
@@ -52,6 +54,7 @@ struct ConversationDeleteMessageBottomSheet: View {
 			
 			Spacer()
 			
+			
 			Button {
 				NotificationCenter.default.post(name: NSNotification.Name("DeleteMessageForEveryone"), object: nil)
 				
@@ -71,10 +74,10 @@ struct ConversationDeleteMessageBottomSheet: View {
 					Image("trash-simple")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.redDanger500)
+						.foregroundStyle(conversationViewModel.selectedMessage?.message.isRetractable == true ? Color.redDanger500 : Color.gray200)
 						.frame(width: 25, height: 25, alignment: .leading)
 					Text("conversation_dialog_delete_for_everyone_label")
-						.foregroundStyle(Color.redDanger500)
+						.foregroundStyle(conversationViewModel.selectedMessage?.message.isRetractable == true ? Color.redDanger500 : Color.gray200)
 						.default_text_style(styleSize: 16)
 					Spacer()
 				}
@@ -82,6 +85,7 @@ struct ConversationDeleteMessageBottomSheet: View {
 			}
 			.padding(.horizontal, 30)
 			.background(Color.gray100)
+			.disabled(conversationViewModel.selectedMessage?.message.isRetractable == false)
 			
 			VStack {
 				Divider()

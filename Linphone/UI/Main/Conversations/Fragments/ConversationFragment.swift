@@ -139,6 +139,7 @@ struct ConversationFragment: View {
 							ConversationDeleteMessageBottomSheet(
 								showingSheet: $isShowDeleteMessagePopup
 							)
+							.environmentObject(conversationViewModel)
 							.presentationDetents([.fraction(0.15)])
 							.ignoresSafeArea(.all)
 						})
@@ -226,6 +227,7 @@ struct ConversationFragment: View {
 							ConversationDeleteMessageBottomSheet(
 								showingSheet: $isShowDeleteMessagePopup
 							)
+							.environmentObject(conversationViewModel)
 						} onDismiss: {
 							isShowDeleteMessagePopup = false
 						}
@@ -1505,8 +1507,7 @@ struct ConversationFragment: View {
 										
 										Button {
 											if conversationViewModel.selectedMessage!.message.isOutgoing
-												&& !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly)
-												&& conversationViewModel.selectedMessage!.message.isRetractable && !conversationViewModel.selectedMessage!.message.isRetracted {
+												&& !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) && !conversationViewModel.selectedMessage!.message.isRetracted {
 												isShowDeleteMessagePopup = true
 											} else {
 												conversationViewModel.deleteMessage()
