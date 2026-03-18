@@ -68,7 +68,7 @@ struct ConversationDocumentsListFragment: View {
 						VStack(spacing: 0) {
 							List {
 								ForEach(conversationDocumentsListViewModel.documentsList, id: \.path) { file in
-									DocumentRow(file: file)
+									DocumentRow(viewModel: conversationDocumentsListViewModel, file: file)
 										.padding(.vertical, 4)
 										.padding(.horizontal, 8)
 										.listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
@@ -123,6 +123,7 @@ struct ConversationDocumentsListFragment: View {
 
 struct DocumentRow: View {
 	
+	@ObservedObject var viewModel: ConversationDocumentsListViewModel
 	@State private var selectedURLAttachment: URL?
 	@ObservedObject var file: FileModel
 
@@ -159,6 +160,7 @@ struct DocumentRow: View {
 			.padding(.horizontal, 10)
 			.frame(maxWidth: .infinity, alignment: .leading)
 		}
+		.quickLookPreview($selectedURLAttachment, in: viewModel.documentsList.compactMap { URL(fileURLWithPath: $0.originalPath) })
 		.background(.white)
 		.clipShape(RoundedRectangle(cornerRadius: 10))
 		.onTapGesture {
