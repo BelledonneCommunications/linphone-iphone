@@ -150,14 +150,14 @@ struct ContactInnerFragment: View {
 										
 										Button(action: {
 											CoreContext.shared.doOnCoreQueue { core in
-												if contactAvatarModel.addresses.count == 1 {
+												if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 													do {
 														let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 														telecomManager.doCallOrJoinConf(address: address, isVideo: false)
 													} catch {
 														Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
 													}
-												} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+												} else if contactAvatarModel.addresses.isEmpty && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
 													if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 														telecomManager.doCallOrJoinConf(address: address, isVideo: false)
 													}
@@ -191,14 +191,14 @@ struct ContactInnerFragment: View {
 											
 											Button(action: {
 												CoreContext.shared.doOnCoreQueue { core in
-													if contactAvatarModel.addresses.count == 1 {
+													if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 														do {
 															let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 															contactsListViewModel.createOneToOneChatRoomWith(remote: address)
 														} catch {
 															Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
 														}
-													} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+													} else if contactAvatarModel.addresses.isEmpty && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
 														if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 															contactsListViewModel.createOneToOneChatRoomWith(remote: address)
 														}
@@ -233,14 +233,14 @@ struct ContactInnerFragment: View {
 										if !SharedMainViewModel.shared.disableVideoCall {
 											Button(action: {
 												CoreContext.shared.doOnCoreQueue { core in
-													if contactAvatarModel.addresses.count == 1 {
+													if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 														do {
 															let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 															telecomManager.doCallOrJoinConf(address: address, isVideo: true)
 														} catch {
 															Log.error("[ContactInnerFragment] unable to create address for a new outgoing call : \(contactAvatarModel.address) \(error) ")
 														}
-													} else if contactAvatarModel.addresses.count < 1 && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
+													} else if contactAvatarModel.addresses.isEmpty && contactAvatarModel.phoneNumbersWithLabel.count == 1 {
 														if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let address = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 															telecomManager.doCallOrJoinConf(address: address, isVideo: true)
 														}

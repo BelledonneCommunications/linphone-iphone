@@ -85,7 +85,51 @@ struct SipAddressesPopup: View {
 								}
 							}
 						} catch {
-							Log.error("[ContactInnerActionsFragment] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
+							Log.error("[SipAddressesPopup] unable to create address for a new outgoing call : \(contactAvatarModel.addresses[index]) \(error) ")
+						}
+					}
+				}
+				
+				ForEach(0..<contactAvatarModel.phoneNumbersWithLabel.count, id: \.self) { index in
+					HStack {
+						HStack {
+							VStack {
+								Text(String(localized: "phone_number") + ":")
+									.default_text_style_700(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+								Text(contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber)
+									.default_text_style(styleSize: 14)
+									.frame(maxWidth: .infinity, alignment: .leading)
+									.lineLimit(1)
+									.fixedSize(horizontal: false, vertical: true)
+							}
+							Spacer()
+						}
+						.padding(.vertical, 15)
+						.padding(.horizontal, 10)
+					}
+					.background(.white)
+					.onTapGesture {
+						CoreContext.shared.doOnCoreQueue { core in
+							if let address = core.interpretUrl(url: contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+								DispatchQueue.main.async {
+									if isShowSipAddressesPopupType != 1 {
+										withAnimation {
+											isShowSipAddressesPopup = false
+											telecomManager.doCallOrJoinConf(address: address, isVideo: isShowSipAddressesPopupType == 2)
+											isShowSipAddressesPopupType = 0
+										}
+									} else {
+										withAnimation {
+											isShowSipAddressesPopup = false
+											contactsListViewModel.createOneToOneChatRoomWith(remote: address)
+											isShowSipAddressesPopupType = 0
+										}
+									}
+								}
+							} else {
+								Log.error("[SipAddressesPopup] unable to create address (interpret Url for phone number) for a new outgoing call : \(contactAvatarModel.addresses[index])")
+							}
 						}
 					}
 				}
@@ -97,6 +141,7 @@ struct SipAddressesPopup: View {
 			.frame(maxHeight: .infinity)
 			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
 			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+			.padding(.horizontal, 20)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 		}
     }

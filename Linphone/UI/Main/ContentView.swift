@@ -1276,8 +1276,8 @@ struct ContentView: View {
 					
 					if isShowStartCallFragment {
 						StartCallFragment(
-							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer,
+							isShowStartCallFragment: $isShowStartCallFragment,
 							resetCallView: {callViewModel.resetCallView()}
 						)
 						.environmentObject(callViewModel)

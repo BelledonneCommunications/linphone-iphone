@@ -232,6 +232,7 @@ struct HistoryContactFragment: View {
 							.frame(maxWidth: .infinity)
 							.padding(.top, 10)
 							.padding(.bottom, 2)
+							.padding(.horizontal, 10)
 							.background(Color.gray100)
 							
 							HStack {

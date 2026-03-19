@@ -35,6 +35,9 @@ struct AddParticipantsFragment: View {
 	
 	@FocusState var isSearchFieldFocused: Bool
 	
+	@State private var isShowSipAddressesPopup: Bool = false
+	@State private var contactAvatarModel: ContactAvatarModel? = nil
+	
 	var dismissOnCheckClick: Bool
 	
 	var body: some View {
@@ -208,6 +211,11 @@ struct AddParticipantsFragment: View {
 									
 									if addParticipantsViewModel.participantsToAdd.contains(where: {
 										$0.address.asStringUriOnly() == contactsManager.avatarListModel[index].address
+										|| $0.avatarModel.address == contactsManager.avatarListModel[index].address
+										|| phoneListsEqual(
+											$0.avatarModel.phoneNumbersWithLabel,
+											contactsManager.avatarListModel[index].phoneNumbersWithLabel
+										)
 									}) {
 										Image("check")
 											.renderingMode(.template)
@@ -221,13 +229,20 @@ struct AddParticipantsFragment: View {
 							.background(.white)
 							.onTapGesture {
 								CoreContext.shared.doOnCoreQueue { core in
-									if !contactsManager.avatarListModel[index].address.isEmpty {
-										if let addr = try? Factory.Instance.createAddress(addr: contactsManager.avatarListModel[index].address) {
-											addParticipantsViewModel.selectParticipant(addr: addr)
-										}
-									} else if !contactsManager.avatarListModel[index].phoneNumbersWithLabel.isEmpty {
-										if let address = core.interpretUrl(url: contactsManager.avatarListModel[index].phoneNumbersWithLabel.first?.phoneNumber ?? "", applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
-											addParticipantsViewModel.selectParticipant(addr: address)
+									self.contactAvatarModel = contactsManager.avatarListModel[index]
+									if let contactAvatarModelTmp = self.contactAvatarModel {
+										if contactAvatarModelTmp.addresses.count == 1 && contactAvatarModelTmp.phoneNumbersWithLabel.isEmpty {
+											if let firstAddress = contactAvatarModelTmp.addresses.first, let addr = try? Factory.Instance.createAddress(addr: firstAddress) {
+												addParticipantsViewModel.selectParticipant(addr: addr)
+											}
+										} else if contactAvatarModelTmp.addresses.isEmpty && contactAvatarModelTmp.phoneNumbersWithLabel.count == 1 {
+											if let address = core.interpretUrl(url: contactAvatarModelTmp.phoneNumbersWithLabel.first?.phoneNumber ?? "", applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+												addParticipantsViewModel.selectParticipant(addr: address)
+											}
+										} else {
+											DispatchQueue.main.async {
+												isShowSipAddressesPopup = true
+											}
 										}
 									}
 								}
@@ -255,6 +270,7 @@ struct AddParticipantsFragment: View {
 					}
 				}
 			}
+			
 			Button {
 				withAnimation {
 					confirmAddParticipantsFunc(addParticipantsViewModel.participantsToAdd)
@@ -277,6 +293,100 @@ struct AddParticipantsFragment: View {
 				
 			}
 			.padding()
+			
+			if isShowSipAddressesPopup && contactAvatarModel != nil {
+				VStack(alignment: .leading) {
+					HStack {
+						Text("contact_dialog_pick_phone_number_or_sip_address_title")
+							.default_text_style_800(styleSize: 16)
+							.padding(.bottom, 2)
+						
+						Spacer()
+						
+						Image("x")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c600)
+							.frame(width: 25, height: 25)
+							.padding(.all, 10)
+					}
+					.frame(maxWidth: .infinity)
+					
+					ForEach(0..<contactAvatarModel!.addresses.count, id: \.self) { index in
+						HStack {
+							HStack {
+								VStack {
+									Text(String(localized: "sip_address") + ":")
+										.default_text_style_700(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+									Text(contactAvatarModel!.addresses[index].dropFirst(4))
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
+										.fixedSize(horizontal: false, vertical: true)
+								}
+								Spacer()
+							}
+							.padding(.vertical, 15)
+							.padding(.horizontal, 10)
+						}
+						.background(.white)
+						.onTapGesture {
+							do {
+								let addr = try Factory.Instance.createAddress(addr: contactAvatarModel!.addresses[index])
+								addParticipantsViewModel.selectParticipant(addr: addr)
+								self.isShowSipAddressesPopup = false
+							} catch {
+								Log.error("[AddParticipantsFragment] unable to create address for a new outgoing call : \(contactAvatarModel!.addresses[index]) \(error) ")
+							}
+						}
+					}
+					
+					ForEach(0..<contactAvatarModel!.phoneNumbersWithLabel.count, id: \.self) { index in
+						HStack {
+							HStack {
+								VStack {
+									Text(String(localized: "phone_number") + ":")
+										.default_text_style_700(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+									Text(contactAvatarModel!.phoneNumbersWithLabel[index].phoneNumber)
+										.default_text_style(styleSize: 14)
+										.frame(maxWidth: .infinity, alignment: .leading)
+										.lineLimit(1)
+										.fixedSize(horizontal: false, vertical: true)
+								}
+								Spacer()
+							}
+							.padding(.vertical, 15)
+							.padding(.horizontal, 10)
+						}
+						.background(.white)
+						.onTapGesture {
+							CoreContext.shared.doOnCoreQueue { core in
+								if let phoneAddr = core.interpretUrl(url: contactAvatarModel!.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+									addParticipantsViewModel.selectParticipant(addr: phoneAddr)
+									self.isShowSipAddressesPopup = false
+								} else {
+									Log.error("[AddParticipantsFragment] unable to create address (interpret Url for phone number) for a new outgoing call : \(contactAvatarModel!.addresses[index])")
+								}
+							}
+						}
+					}
+				}
+				.padding(.horizontal, 20)
+				.padding(.vertical, 20)
+				.background(.white)
+				.cornerRadius(20)
+				.frame(maxHeight: .infinity)
+				.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
+				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
+				.padding(.horizontal, 20)
+				.background(.black.opacity(0.65))
+				.zIndex(3)
+				.onTapGesture {
+					isShowSipAddressesPopup.toggle()
+				}
+			}
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
@@ -360,6 +470,16 @@ struct AddParticipantsFragment: View {
 			}
 			.buttonStyle(.borderless)
 			.listRowSeparator(.hidden)
+		}
+	}
+	
+	func phoneListsEqual(
+		_ lhs: [(label: String, phoneNumber: String)],
+		_ rhs: [(label: String, phoneNumber: String)]
+	) -> Bool {
+		lhs.count == rhs.count &&
+		zip(lhs, rhs).allSatisfy { l, r in
+			l.label == r.label && l.phoneNumber == r.phoneNumber
 		}
 	}
 }
