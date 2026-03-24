@@ -131,7 +131,6 @@
 "call_history_deleted_toast" = "History has been deleted";
 "call_not_encrypted" = "Call is not encrypted";
 "call_outgoing" = "Outgoing call";
-"call_srtp_point_to_point_encrypted" = "Point-to-point encrypted by SRTP";
 "call_state_connected" = "Active";
 "call_state_paused" = "Paused";
 "call_state_paused_by_remote" = "Paused by remote";
@@ -148,7 +147,12 @@
 "call_transfer_in_progress_toast" = "Call is being transferred";
 "call_transfer_successful_toast" = "Call has been successfully transferred";
 "call_waiting_for_encryption_info" = "Waiting for encryption…";
+
+"call_conference_end_to_end_encrypted" = "End-to-end encrypted";
+"call_zrtp_point_to_point_encrypted" = "Point-to-point encrypted by ZRTP";
+"call_srtp_point_to_point_encrypted" = "Point-to-point encrypted by SRTP";
 "call_zrtp_end_to_end_encrypted" = "End-to-end encrypted by ZRTP";
+
 "call_zrtp_sas_validation_required" = "Validation required";
 "call_zrtp_sas_validation_skip" = "Skip";
 "calls_count_label" = "%@ calls";

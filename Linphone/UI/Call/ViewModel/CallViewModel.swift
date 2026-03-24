@@ -49,6 +49,7 @@ class CallViewModel: ObservableObject {
 	@Published var zrtpPopupDisplayed: Bool = false
 	@Published var upperCaseAuthTokenToRead = ""
 	@Published var upperCaseAuthTokenToListen = ""
+	@Published var isEndToEndEncrypted: Bool = false
 	@Published var isMediaEncrypted: Bool = false
 	@Published var isNotEncrypted: Bool = false
 	@Published var isZrtp: Bool = false
@@ -259,6 +260,7 @@ class CallViewModel: ObservableObject {
 				}
 				
 				var displayNameTmp = ""
+				var isEndToEndEncryptedTmp = false
 				
 				var isOneOneCallTmp = false
 				if self.currentCall?.remoteAddress != nil {
@@ -268,6 +270,7 @@ class CallViewModel: ObservableObject {
 						isOneOneCallTmp = true
 					} else {
 						displayNameTmp = confInfo?.subject ?? "Conference-focus"
+						isEndToEndEncryptedTmp = confInfo?.securityLevel == .EndToEnd || conf?.currentParams?.securityLevel == .EndToEnd
 					}
 				}
 				
@@ -376,6 +379,7 @@ class CallViewModel: ObservableObject {
 					
 					self.videoDisplayed = videoDisplayedTmp
 					self.isOneOneCall = isOneOneCallTmp
+					self.isEndToEndEncrypted = isEndToEndEncryptedTmp
 					self.isMediaEncrypted = isMediaEncryptedTmp
 					self.isNotEncrypted = false
 					self.isZrtp = isZrtpTmp

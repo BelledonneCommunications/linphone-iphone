@@ -337,118 +337,78 @@ struct CallView: View {
 						.zIndex(1)
 						
 						if !telecomManager.outgoingCallStarted && telecomManager.callInProgress {
-							if callViewModel.isMediaEncrypted && callViewModel.isRemoteDeviceTrusted && callViewModel.isZrtp {
-								HStack {
-									Image("lock-key")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.blueInfo500)
-										.frame(width: 15, height: 15, alignment: .leading)
-										.padding(.leading, 50)
-										.padding(.top, 35)
+							// Compute the image, text, and color before the HStack
+							let encryptionInfo: (image: String, textKey: LocalizedStringKey, color: Color) = {
+								if callViewModel.isMediaEncrypted && callViewModel.isRemoteDeviceTrusted && callViewModel.isZrtp {
+									// Encrypted call, ZRTP, device trusted
+									let key: LocalizedStringKey = {
+										if callViewModel.isConference {
+											if callViewModel.isEndToEndEncrypted {
+												return LocalizedStringKey("call_conference_end_to_end_encrypted")
+											} else if callViewModel.isZrtp {
+												return LocalizedStringKey("call_zrtp_point_to_point_encrypted")
+											} else {
+												return LocalizedStringKey("call_srtp_point_to_point_encrypted")
+											}
+										} else {
+											if callViewModel.isZrtp {
+												return LocalizedStringKey("call_zrtp_end_to_end_encrypted")
+											} else {
+												return LocalizedStringKey("call_srtp_point_to_point_encrypted")
+											}
+										}
+									}()
+									return ("lock-key", key, Color.blueInfo500)
 									
-									Text(callViewModel.isConference ? "call_srtp_point_to_point_encrypted" : "call_zrtp_end_to_end_encrypted")
-										.foregroundStyle(Color.blueInfo500)
-										.default_text_style_white(styleSize: 12)
-										.padding(.top, 35)
+								} else if callViewModel.isMediaEncrypted && !callViewModel.isZrtp {
+									// Encrypted call, SRTP
+									return ("lock_simple", LocalizedStringKey("call_srtp_point_to_point_encrypted"), Color.blueInfo500)
 									
-									Spacer()
-								}
-								.onTapGesture {
-									mediaEncryptedSheet = true
-								}
-								.frame(height: topBarHeight)
-								.padding(.leading, geometry.safeAreaInsets.leading)
-								.zIndex(1)
-							} else if callViewModel.isMediaEncrypted && !callViewModel.isZrtp {
-								HStack {
-									Image("lock_simple")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.blueInfo500)
-										.frame(width: 15, height: 15, alignment: .leading)
-										.padding(.leading, 50)
-										.padding(.top, 35)
+								} else if callViewModel.isMediaEncrypted && (!callViewModel.isRemoteDeviceTrusted && callViewModel.isZrtp) || callViewModel.cacheMismatch {
+									// ZRTP warning
+									return ("warning-circle", LocalizedStringKey("call_zrtp_sas_validation_required"), Color.orangeWarning600)
 									
-									Text("call_srtp_point_to_point_encrypted")
-										.foregroundStyle(Color.blueInfo500)
-										.default_text_style_white(styleSize: 12)
-										.padding(.top, 35)
+								} else if callViewModel.isNotEncrypted {
+									// Not encrypted
+									return ("lock-simple-open", LocalizedStringKey("call_not_encrypted"), .white)
 									
-									Spacer()
+								} else {
+									// Waiting for encryption info
+									return ("progress", LocalizedStringKey("call_waiting_for_encryption_info"), .white)
 								}
-								.onTapGesture {
-									mediaEncryptedSheet = true
-								}
-								.frame(height: topBarHeight)
-								.padding(.leading, geometry.safeAreaInsets.leading)
-								.zIndex(1)
-							} else if callViewModel.isMediaEncrypted && (!callViewModel.isRemoteDeviceTrusted && callViewModel.isZrtp) || callViewModel.cacheMismatch {
-								HStack {
-									Image("warning-circle")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.orangeWarning600)
-										.frame(width: 15, height: 15, alignment: .leading)
-										.padding(.leading, 50)
-										.padding(.top, 35)
-									
-									Text("call_zrtp_sas_validation_required")
-										.foregroundStyle(Color.orangeWarning600)
-										.default_text_style_white(styleSize: 12)
-										.padding(.top, 35)
-									
-									Spacer()
-								}
-								.onTapGesture {
-									mediaEncryptedSheet = true
-								}
-								.frame(height: topBarHeight)
-								.padding(.leading, geometry.safeAreaInsets.leading)
-								.zIndex(1)
-							} else if callViewModel.isNotEncrypted {
-								HStack {
-									Image("lock-simple-open")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(.white)
-										.frame(width: 15, height: 15, alignment: .leading)
-										.padding(.leading, 50)
-										.padding(.top, 35)
-									
-									Text("call_not_encrypted")
-										.foregroundStyle(.white)
-										.default_text_style_white(styleSize: 12)
-										.padding(.top, 35)
-									
-									Spacer()
-								}
-								.onTapGesture {
-									mediaEncryptedSheet = true
-								}
-								.frame(height: topBarHeight)
-								.padding(.leading, geometry.safeAreaInsets.leading)
-								.zIndex(1)
-							} else {
-								HStack {
+							}()
+
+							HStack {
+								if encryptionInfo.image == "progress" {
 									ProgressView()
 										.controlSize(.mini)
-										.progressViewStyle(CircularProgressViewStyle(tint: .white))
+										.progressViewStyle(CircularProgressViewStyle(tint: encryptionInfo.color))
 										.frame(width: 15, height: 15, alignment: .leading)
 										.padding(.leading, 50)
 										.padding(.top, 35)
-									
-									Text("call_waiting_for_encryption_info")
-										.foregroundStyle(.white)
-										.default_text_style_white(styleSize: 12)
+								} else {
+									Image(encryptionInfo.image)
+										.renderingMode(.template)
+										.resizable()
+										.foregroundStyle(encryptionInfo.color)
+										.frame(width: 15, height: 15, alignment: .leading)
+										.padding(.leading, 50)
 										.padding(.top, 35)
-									
-									Spacer()
 								}
-								.frame(height: topBarHeight)
-								.padding(.leading, geometry.safeAreaInsets.leading)
-								.zIndex(1)
+								
+								Text(encryptionInfo.textKey)
+									.foregroundStyle(encryptionInfo.color)
+									.default_text_style_white(styleSize: 12)
+									.padding(.top, 35)
+								
+								Spacer()
 							}
+							.onTapGesture {
+								mediaEncryptedSheet = true
+							}
+							.frame(height: topBarHeight)
+							.padding(.leading, geometry.safeAreaInsets.leading)
+							.zIndex(1)
 						}
 					}
                     .frame(height: topBarHeight)
