@@ -34,8 +34,9 @@ class ParticipantModel: ObservableObject {
 	@Published var isMuted: Bool
 	@Published var isAdmin: Bool
 	@Published var isSpeaking: Bool
+	@Published var isScreenSharing: Bool
 	
-	init(address: Address, isJoining: Bool = false, onPause: Bool = false, isMuted: Bool = false, isAdmin: Bool = false, isSpeaking: Bool = false) {
+	init(address: Address, isJoining: Bool = false, onPause: Bool = false, isMuted: Bool = false, isAdmin: Bool = false, isSpeaking: Bool = false, isScreenSharing: Bool = false) {
 		self.address = address
 		
 		self.sipUri = address.asStringUriOnly()
@@ -49,6 +50,7 @@ class ParticipantModel: ObservableObject {
 		self.isMuted = isMuted
 		self.isAdmin = isAdmin
 		self.isSpeaking = isSpeaking
+		self.isScreenSharing = isScreenSharing
 		
 		ContactsManager.shared.getFriendWithAddressInCoreQueue(address: self.address) { friendResult in
 			if let addressFriend = friendResult {

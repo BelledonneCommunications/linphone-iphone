@@ -167,22 +167,24 @@ class TelecomManager: ObservableObject {
 	}
 	
 	func doCallOrJoinConf(address: Address, isVideo: Bool = false, isConference: Bool = false) {
-		if address.asStringUriOnly().hasPrefix("sip:conference-focus@sip.linphone.org") {
-			do {
-				let meetingAddress = try Factory.Instance.createAddress(addr: address.asStringUriOnly())
-				
-				DispatchQueue.main.async {
-					withAnimation {
-						self.meetingWaitingRoomDisplayed = true
-						self.meetingWaitingRoomSelected = meetingAddress
-					}
-				}
-			} catch {}
-		} else {
-			doCallWithCore(
-				addr: address, isVideo: isVideo, isConference: isConference
-			)
-		}
+        CoreContext.shared.doOnCoreQueue { core in
+            if let _ = core.findConferenceInformationFromUri(uri: address) {
+                do {
+                    let meetingAddress = try Factory.Instance.createAddress(addr: address.asStringUriOnly())
+                    
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            self.meetingWaitingRoomDisplayed = true
+                            self.meetingWaitingRoomSelected = meetingAddress
+                        }
+                    }
+                } catch {}
+            } else {
+                self.doCallWithCore(
+                    addr: address, isVideo: isVideo, isConference: isConference
+                )
+            }
+        }
 	}
 	
 	func doCallWithCore(addr: Address, isVideo: Bool, isConference: Bool) {

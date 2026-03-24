@@ -607,9 +607,9 @@ struct CallView: View {
 				}
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
 				let heightValue = (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
-				if optionsChangeLayout == 1 && callViewModel.participantList.count <= 5 {
+				if optionsChangeLayout == 1 && callViewModel.participantList.count <= 5 && callViewModel.activeSpeakerParticipant?.isScreenSharing == false {
 					mosaicMode(geometry: geometry, height: heightValue)
-				} else if optionsChangeLayout == 3 {
+				} else if optionsChangeLayout == 3 && callViewModel.activeSpeakerParticipant?.isScreenSharing == false {
 					audioOnlyMode(geometry: geometry, height: heightValue)
 				} else {
 					activeSpeakerMode(geometry: geometry)
@@ -990,7 +990,7 @@ struct CallView: View {
 									.cornerRadius(20)
 									
 									ForEach(0..<callViewModel.participantList.count, id: \.self) { index in
-										if callViewModel.activeSpeakerParticipant != nil && !callViewModel.participantList[index].address.equal(address2: callViewModel.activeSpeakerParticipant!.address) {
+										if callViewModel.activeSpeakerParticipant != nil && (!callViewModel.participantList[index].address.weakEqual(address2: callViewModel.activeSpeakerParticipant!.address) || callViewModel.activeSpeakerParticipant!.isScreenSharing) {
 											ZStack {
 												if callViewModel.participantList[index].isJoining {
 													VStack {
@@ -1040,7 +1040,7 @@ struct CallView: View {
 													LinphoneVideoViewHolder { view in
 														coreContext.doOnCoreQueue { core in
 															if index < callViewModel.participantList.count {
-																let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
+																let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.weakEqual(address2: callViewModel.participantList[index].address)})
 																if participantVideo != nil && participantVideo!.devices.first != nil {
 																	participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
 																}
@@ -1160,7 +1160,7 @@ struct CallView: View {
 								.cornerRadius(20)
 								
 								ForEach(0..<callViewModel.participantList.count, id: \.self) { index in
-									if callViewModel.activeSpeakerParticipant != nil && !callViewModel.participantList[index].address.equal(address2: callViewModel.activeSpeakerParticipant!.address) {
+                                    if callViewModel.activeSpeakerParticipant != nil && (!callViewModel.participantList[index].address.weakEqual(address2: callViewModel.activeSpeakerParticipant!.address) || callViewModel.activeSpeakerParticipant!.isScreenSharing) {
 										ZStack {
 											if callViewModel.participantList[index].isJoining {
 												VStack {
@@ -1210,7 +1210,7 @@ struct CallView: View {
 												LinphoneVideoViewHolder { view in
 													coreContext.doOnCoreQueue { core in
 														if index < callViewModel.participantList.count {
-															let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
+															let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.weakEqual(address2: callViewModel.participantList[index].address)})
 															if participantVideo != nil && participantVideo!.devices.first != nil {
 																participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
 															}
@@ -1466,7 +1466,7 @@ struct CallView: View {
 									LinphoneVideoViewHolder { view in
 										coreContext.doOnCoreQueue { core in
 											if index < callViewModel.participantList.count {
-												let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
+												let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.weakEqual(address2: callViewModel.participantList[index].address)})
 												if participantVideo != nil && participantVideo!.devices.first != nil {
 													participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
 												}
@@ -1707,7 +1707,7 @@ struct CallView: View {
 									LinphoneVideoViewHolder { view in
 										coreContext.doOnCoreQueue { core in
 											if index < callViewModel.participantList.count {
-												let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.equal(address2: callViewModel.participantList[index].address)})
+												let participantVideo = core.currentCall?.conference?.participantList.first(where: {$0.address!.weakEqual(address2: callViewModel.participantList[index].address)})
 												if participantVideo != nil && participantVideo!.devices.first != nil {
 													participantVideo!.devices.first!.nativeVideoWindowId = UnsafeMutableRawPointer(Unmanaged.passRetained(view).toOpaque())
 												}
@@ -2218,28 +2218,37 @@ struct CallView: View {
                         }
                         .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     } else {
-                        VStack {
-                            Button {
-                                changeLayoutSheet = true
-                            } label: {
-                                HStack {
-                                    Image("layout")
-                                        .renderingMode(.template)
-                                        .resizable()
-                                        .foregroundStyle(.white)
-                                        .frame(width: 32, height: 32)
-                                }
-                            }
-                            .buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
-                            .frame(width: buttonSize, height: buttonSize)
-                            .background(Color.gray500)
-                            .cornerRadius(40)
-                            
-                            Text("call_action_change_layout")
-                                .foregroundStyle(.white)
-                                .default_text_style(styleSize: 15)
-                        }
-                        .frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
+						ZStack {
+							VStack {
+								Button {
+									changeLayoutSheet = true
+								} label: {
+									HStack {
+										Image("layout")
+											.renderingMode(.template)
+											.resizable()
+											.foregroundStyle(.white)
+											.frame(width: 32, height: 32)
+									}
+								}
+								.buttonStyle(PressedButtonStyle(buttonSize: buttonSize))
+								.frame(width: buttonSize, height: buttonSize)
+								.background(Color.gray500)
+								.cornerRadius(40)
+								.disabled(callViewModel.activeSpeakerParticipant?.isScreenSharing == true)
+								
+								Text("call_action_change_layout")
+									.foregroundStyle(.white)
+									.default_text_style(styleSize: 15)
+							}
+							.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
+							
+							if callViewModel.activeSpeakerParticipant?.isScreenSharing == true {
+								Color.gray600.opacity(0.8)
+									.allowsHitTesting(false)
+							}
+						}
+						.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     }
                 }
                 .frame(height: geo.size.height * 0.15)

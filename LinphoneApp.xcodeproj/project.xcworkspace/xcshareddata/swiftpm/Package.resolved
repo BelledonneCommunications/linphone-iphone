@@ -123,7 +123,7 @@
       "location" : "https://gitlab.linphone.org/BC/public/linphone-sdk-swift-ios.git",
       "state" : {
         "branch" : "beta",
-        "revision" : "5c2b2f448fbbd0326d01116227c7f5bda8e277c6"
+        "revision" : "2444acf4b34629fc229435895750f3784e52b5d9"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "5596511fce902e649c403cd4d6d5da1254f142b7",
-        "version" : "1.35.1"
+        "revision" : "a008af1a102ff3dd6cc3764bb69bf63226d0f5f6",
+        "version" : "1.36.1"
       }
     }
   ],

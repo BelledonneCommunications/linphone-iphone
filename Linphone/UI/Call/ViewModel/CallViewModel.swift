@@ -458,9 +458,9 @@ class CallViewModel: ObservableObject {
 				
 				var myParticipantModelTmp: ParticipantModel?
 				if conf.me?.address != nil {
-					myParticipantModelTmp = ParticipantModel(address: conf.me!.address!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin)
+					myParticipantModelTmp = ParticipantModel(address: conf.me!.address!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin, isScreenSharing: false)
 				} else if self.currentCall?.callLog?.localAddress != nil {
-					myParticipantModelTmp = ParticipantModel(address: self.currentCall!.callLog!.localAddress!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin)
+					myParticipantModelTmp = ParticipantModel(address: self.currentCall!.callLog!.localAddress!, isJoining: false, onPause: false, isMuted: false, isAdmin: conf.me!.isAdmin, isScreenSharing: false)
 				}
 				
 				var activeSpeakerParticipantTmp: ParticipantModel?
@@ -469,21 +469,24 @@ class CallViewModel: ObservableObject {
 						address: conf.activeSpeakerParticipantDevice!.address!,
 						isJoining: conf.activeSpeakerParticipantDevice!.state == .Joining || conf.activeSpeakerParticipantDevice!.state == .Alerting,
 						onPause: conf.activeSpeakerParticipantDevice!.state == .OnHold,
-						isMuted: conf.activeSpeakerParticipantDevice!.isMuted
+						isMuted: conf.activeSpeakerParticipantDevice!.isMuted,
+						isScreenSharing: conf.activeSpeakerParticipantDevice!.screenSharingEnabled
 					)
 				} else if conf.participantList.first?.address != nil && conf.participantList.first!.address!.clone()!.equal(address2: (conf.me?.address)!) {
 					activeSpeakerParticipantTmp = ParticipantModel(
 						address: conf.participantDeviceList.first!.address!,
 						isJoining: conf.participantDeviceList.first!.state == .Joining || conf.participantDeviceList.first!.state == .Alerting,
 						onPause: conf.participantDeviceList.first!.state == .OnHold,
-						isMuted: conf.participantDeviceList.first!.isMuted
+						isMuted: conf.participantDeviceList.first!.isMuted,
+						isScreenSharing: conf.participantDeviceList.first!.screenSharingEnabled
 					)
 				} else if conf.participantList.last?.address != nil {
 					activeSpeakerParticipantTmp = ParticipantModel(
 						address: conf.participantDeviceList.last!.address!,
 						isJoining: conf.participantDeviceList.last!.state == .Joining || conf.participantDeviceList.last!.state == .Alerting,
 						onPause: conf.participantDeviceList.last!.state == .OnHold,
-						isMuted: conf.participantDeviceList.last!.isMuted
+						isMuted: conf.participantDeviceList.last!.isMuted,
+						isScreenSharing: conf.participantDeviceList.last!.screenSharingEnabled
 					)
 				}
 				
@@ -514,7 +517,8 @@ class CallViewModel: ObservableObject {
 									isJoining: participantDevice.state == .Joining || participantDevice.state == .Alerting,
 									onPause: participantDevice.state == .OnHold,
 									isMuted: participantDevice.isMuted,
-									isAdmin: isAdmin ?? false
+									isAdmin: isAdmin ?? false,
+									isScreenSharing: participantDevice.screenSharingEnabled
 								)
 							)
 						}
@@ -572,7 +576,8 @@ class CallViewModel: ObservableObject {
 										isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
 										onPause: pDevice.state == .OnHold,
 										isMuted: pDevice.isMuted,
-										isAdmin: isAdmin ?? false
+										isAdmin: isAdmin ?? false,
+										isScreenSharing: pDevice.screenSharingEnabled
 									)
 								)
 							}
@@ -588,21 +593,24 @@ class CallViewModel: ObservableObject {
 								address: conference.activeSpeakerParticipantDevice!.address!,
 								isJoining: conference.activeSpeakerParticipantDevice!.state == .Joining || conference.activeSpeakerParticipantDevice!.state == .Alerting,
 								onPause: conference.activeSpeakerParticipantDevice!.state == .OnHold,
-								isMuted: conference.activeSpeakerParticipantDevice!.isMuted
+								isMuted: conference.activeSpeakerParticipantDevice!.isMuted,
+								isScreenSharing: conference.activeSpeakerParticipantDevice!.screenSharingEnabled
 							)
 						} else if conference.participantList.first?.address != nil && conference.participantList.first!.address!.clone()!.equal(address2: (conference.me?.address)!) {
 							activeSpeakerParticipantTmp = ParticipantModel(
 								address: conference.participantDeviceList.first!.address!,
 								isJoining: conference.participantDeviceList.first!.state == .Joining || conference.participantDeviceList.first!.state == .Alerting,
 								onPause: conference.participantDeviceList.first!.state == .OnHold,
-								isMuted: conference.participantDeviceList.first!.isMuted
+								isMuted: conference.participantDeviceList.first!.isMuted,
+								isScreenSharing: conference.participantDeviceList.first!.screenSharingEnabled
 							)
 						} else if conference.participantList.last?.address != nil {
 							activeSpeakerParticipantTmp = ParticipantModel(
 								address: conference.participantDeviceList.last!.address!,
 								isJoining: conference.participantDeviceList.last!.state == .Joining || conference.participantDeviceList.last!.state == .Alerting,
 								onPause: conference.participantDeviceList.last!.state == .OnHold,
-								isMuted: conference.participantDeviceList.last!.isMuted
+								isMuted: conference.participantDeviceList.last!.isMuted,
+								isScreenSharing: conference.participantDeviceList.last!.screenSharingEnabled
 							)
 						}
 						
@@ -648,7 +656,8 @@ class CallViewModel: ObservableObject {
 										isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
 										onPause: pDevice.state == .OnHold,
 										isMuted: pDevice.isMuted,
-										isAdmin: isAdmin ?? false
+										isAdmin: isAdmin ?? false,
+										isScreenSharing: pDevice.screenSharingEnabled
 									)
 								)
 							}
@@ -697,7 +706,57 @@ class CallViewModel: ObservableObject {
 						}
 					}
 				})
-			}, onParticipantDeviceIsSpeakingChanged: { (_: Conference, device: ParticipantDevice, isSpeaking: Bool) in
+			}, onParticipantDeviceScreenSharingChanged: { (_: Conference, device: ParticipantDevice, enabled: Bool) in
+				self.toggleVideoMode(isAudioOnlyMode: false)
+				
+                let activeSpeakerParticipantTmp = ParticipantModel(
+                    address: device.address!,
+                    isJoining: device.state == .Joining || device.state == .Alerting,
+                    onPause: device.state == .OnHold,
+                    isMuted: device.isMuted,
+                    isScreenSharing: device.screenSharingEnabled
+                )
+                
+                var activeSpeakerNameTmp = ""
+                let friend = ContactsManager.shared.getFriendWithAddress(address: activeSpeakerParticipantTmp.address)
+                if friend != nil && friend!.address != nil && friend!.address!.displayName != nil {
+                    activeSpeakerNameTmp = friend!.address!.displayName!
+                } else {
+                    if activeSpeakerParticipantTmp.address.displayName != nil {
+                        activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.displayName!
+                    } else if activeSpeakerParticipantTmp.address.username != nil {
+                        activeSpeakerNameTmp = activeSpeakerParticipantTmp.address.username!
+                    } else {
+                        activeSpeakerNameTmp = String(activeSpeakerParticipantTmp.address.asStringUriOnly().dropFirst(4))
+                    }
+                }
+                
+                var participantListTmp: [ParticipantModel] = []
+                conference.participantDeviceList.forEach({ pDevice in
+                    if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
+                        if !conference.isMe(uri: pDevice.address!.clone()!) {
+                            let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
+                            
+                            participantListTmp.append(
+                                ParticipantModel(
+                                    address: pDevice.address!,
+                                    isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
+                                    onPause: pDevice.state == .OnHold,
+                                    isMuted: pDevice.isMuted,
+                                    isAdmin: isAdmin ?? false,
+                                    isScreenSharing: pDevice.screenSharingEnabled
+                                )
+                            )
+                        }
+                    }
+                })
+                
+                DispatchQueue.main.async {
+                    self.activeSpeakerParticipant = activeSpeakerParticipantTmp
+                    self.activeSpeakerName = activeSpeakerNameTmp
+                    self.participantList = participantListTmp
+                }
+			} , onParticipantDeviceIsSpeakingChanged: { (_: Conference, device: ParticipantDevice, isSpeaking: Bool) in
 				let isSpeaking = device.isSpeaking
 				if self.myParticipantModel != nil && self.myParticipantModel!.address.clone()!.equal(address2: device.address!) {
 					DispatchQueue.main.async {
@@ -732,7 +791,8 @@ class CallViewModel: ObservableObject {
 						address: participantDevice!.address!,
 						isJoining: participantDevice!.state == .Joining || participantDevice!.state == .Alerting,
 						onPause: participantDevice!.state == .OnHold,
-						isMuted: participantDevice!.isMuted
+						isMuted: participantDevice!.isMuted,
+						isScreenSharing: participantDevice!.screenSharingEnabled
 					)
 					
 					var activeSpeakerNameTmp = ""
@@ -763,7 +823,8 @@ class CallViewModel: ObservableObject {
 											isJoining: pDevice.state == .Joining || pDevice.state == .Alerting,
 											onPause: pDevice.state == .OnHold,
 											isMuted: pDevice.isMuted,
-											isAdmin: isAdmin ?? false
+											isAdmin: isAdmin ?? false,
+											isScreenSharing: pDevice.screenSharingEnabled
 										)
 									)
 								}
