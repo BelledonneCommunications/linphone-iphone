@@ -1,7 +1,7 @@
 import Foundation
 
 public enum AppGitInfo {
-    public static let branch = "feature/screen_sharing"
-    public static let commit = "1dc5dec22"
+    public static let branch = "master"
+    public static let commit = "127e12b38"
     public static let tag = "6.1.0-alpha"
 }
