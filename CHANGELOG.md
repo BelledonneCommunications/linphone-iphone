@@ -22,6 +22,12 @@ Group changes to describe their impact on the project, as follows:
 - Pending notifications banner
 - Option to show or hide chat message content in notifications
 - Message editing and deletion features
+- Screen-sharing video preview in call view
+- SipAddressesPopup added to StartCallFragment, StartConversationFragment, and AddParticipantsFragment
+- Deleted message bottom sheet when message is not retractable
+- Bottom sheet to display message deletion choice
+- Settings to show past meetings and limit max width in settings views
+- Siri intent example phrases for all localizations
 
 ### Changed
 - Updated translations from Weblate
@@ -30,17 +36,24 @@ Group changes to describe their impact on the project, as follows:
 - Audio session management refactored for stability
 - Core call logs displayed when user has only one account
 - Updated last message text display in conversation list
+- Updated Settings UI
+- New colors and theme adjustments to only use two main colors
 
 ### Fixed
 - Reaction refresh issues
 - Media list UI and message bubble paths
 - Various contact and phone number handling issues
+- Fix phoneListsEqual to return false when both lists are empty
 - Chatroom disabled when insecure
 - Call transfer logic updated
 - Debug print statements removed
 - CorePreferences and SSO improvements
 - Display peer address in conversation
 - Several minor crashes and UI inconsistencies resolved
+- Fix document preview
+- Fix media encryption state in CallView and mediaEncryption settings for friends with multiple addresses
+- Ignore authentication requests while offline
+
 
 ## [6.0.3] – 2026-01-29
 
