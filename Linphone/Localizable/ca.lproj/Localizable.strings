@@ -1,3 +1,11 @@
 "notification_earpiece_enforcement_message" = "Si us plau, utilitzeu només l'auricular. Les altres sortides d'àudio estan desactivades.";
 "welcome_page_2_title" = "Assegurada";
 "welcome_page_title" = "Benvingut";
+"conference_action_show_participants" = "Participants";
+"conversation_add_participants_title" = "Afegeix participants";
+"conversation_dialog_delete_locally_label" = "Esborra-ho per a mi";
+"conversation_dialog_delete_for_everyone_label" = "Esborra-ho per a tothom";
+"conversation_info_add_participants_label" = "Afegeix participants";
+"conversation_participants_list_empty" = "No s'ha trobat cap participant";
+"conversation_participants_list_header" = "Participants";
+"meeting_schedule_add_participants_title" = "Afegeix participants";

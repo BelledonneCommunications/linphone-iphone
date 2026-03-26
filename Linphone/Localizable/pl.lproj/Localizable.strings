@@ -41,7 +41,6 @@
 "dialog_deny" = "Nie zezwalaj";
 "dialog_install" = "Instaluj";
 "dialog_no" = "Nie";
-"dialog_ok" = "OK";
 "dialog_yes" = "Tak";
 "manage_account_device_remove" = "Usuń";
 "menu_delete_selected_item" = "Usuń";
@@ -69,3 +68,5 @@
 "welcome_page_2_title" = "Zabezpieczone";
 "welcome_page_3_title" = "Open source";
 "welcome_page_title" = "Witamy";
+"dialog_confirm" = "Potwierdź";
+"dialog_do_not_show_anymore" = "Nie pokazuj więcej tego okna dialogowego";

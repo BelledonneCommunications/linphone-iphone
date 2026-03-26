@@ -38,7 +38,6 @@
 "dialog_deny" = "Elutasít";
 "dialog_install" = "Telepítés";
 "dialog_no" = "Nem";
-"dialog_ok" = "OK";
 "dialog_yes" = "Igen";
 "drawer_menu_account_connection_status_cleared" = "Letiltva";
 "drawer_menu_account_connection_status_connected" = "Csatlakoztatva";
@@ -85,3 +84,6 @@
 "welcome_page_2_title" = "Biztonságos";
 "welcome_page_3_title" = "Nyílt forráskódú";
 "welcome_page_title" = "Üdvözöljük";
+"dialog_do_not_show_anymore" = "Ne mutassa többet ezt az ablakot";
+"dialog_confirm" = "Megerősít";
+"settings_developer_clear_native_friends_in_database_title" = "Importált névjegyek törlése a telefon névjegyzékéből";

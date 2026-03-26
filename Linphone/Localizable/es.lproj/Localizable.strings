@@ -83,7 +83,6 @@
 "dialog_continue" = "Continuar";
 "dialog_deny" = "Denegar";
 "dialog_install" = "Instalar";
-"dialog_ok" = "Ok";
 "dialog_yes" = "Si";
 "drawer_menu_account_connection_status_cleared" = "Deshabilitado";
 "drawer_menu_account_connection_status_connected" = "Conectado";
@@ -161,3 +160,17 @@
 "settings_calls_calibrate_echo_canceller_in_progress" = "en progreso";
 "settings_calls_calibrate_echo_canceller_title" = "Calibrar el cancelador de eco";
 "settings_calls_adaptive_rate_control_title" = "Control de velocidad adaptativo";
+"contact_details_no_device_found" = "No se encontró ningún dispositivo…";
+"conversation_menu_search_in_messages" = "Buscar";
+"dialog_do_not_show_anymore" = "No mostrar este mensaje más";
+"dialog_confirm" = "Confirmar";
+"dialog_understood" = "Entendido";
+"settings_advanced_create_e2e_encrypted_conferences_title" = "Cree reuniones y llamadas grupales con cifrado de extremo a extremo";
+"settings_advanced_logs_upload_server_url" = "URL del servidor para compartir registros";
+"settings_contacts_ldap_error_toast" = "Se produjo un error ¡el servidor LDAP no se guardó!";
+"settings_contacts_ldap_empty_server_error_toast" = "La URL del servidor no puede estar vacía";
+"settings_developer_title" = "Configuración del desarrollador";
+"settings_developer_show_title" = "Mostrar configuración del desarrollador";
+"settings_developer_enabled_toast" = "Configuración de desarrollador habilitada";
+"settings_developer_already_enabled_toast" = "Configuración de desarrollador ya habilitada";
+"settings_developer_clear_native_friends_in_database_title" = "Borrar contactos importados de la libreta de direcciones nativa";

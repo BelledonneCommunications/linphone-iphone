@@ -4,7 +4,6 @@
   
 */
 
-"" = "";
 ": %@" = ": %@";
 "[https://sip.linphone.org](https://sip.linphone.org)" = "[https://sip.linphone.org](https://sip.linphone.org)";
 "[linphone.org/contact](https://linphone.org/contact)" = "[linphone.org/contact](https://linphone.org/contact)";
@@ -146,12 +145,10 @@
 "call_transfer_in_progress_toast" = "Transfert en cours";
 "call_transfer_successful_toast" = "Appel transféré";
 "call_waiting_for_encryption_info" = "En attente du chiffrement…";
-
 "call_conference_end_to_end_encrypted" = "Conférence chiffrée de bout en bout";
 "call_zrtp_point_to_point_encrypted" = "Appel chiffré de point à point";
 "call_srtp_point_to_point_encrypted" = "Appel chiffré de point à point";
 "call_zrtp_end_to_end_encrypted" = "Appel chiffré de bout en bout";
-
 "call_zrtp_sas_validation_required" = "Vérification nécessaire";
 "call_zrtp_sas_validation_skip" = "Passer";
 "calls_count_label" = "%@ appels";
@@ -560,8 +557,6 @@
 "settings_developer_cleared_native_friends_in_database_toast" = "Contacts importés supprimés";
 "settings_developer_clear_orphan_auth_info_title" = "Supprimer les informations d'authentification orphelines";
 "settings_developer_no_auth_info_removed_toast" = "Aucune information d'authentification orpheline trouvée";
-"settings_developer_cleared_auth_info_toast_single" = "%@ information d'authentification supprimée";
-"settings_developer_cleared_auth_info_toast_multiple" = "%@ informations d'authentification supprimées";
 "settings_meetings_default_layout_title" = "Disposition par défaut";
 "settings_meetings_layout_active_speaker_label" = "Intervenant actif";
 "settings_meetings_layout_mosaic_label" = "Mosaïque";
@@ -582,8 +577,8 @@
 "sip.linphone.org" = "sip.linphone.org";
 "SRTP" = "SRTP";
 "start" = "Commencer";
-"TCP" ="TCP";
-"Temp Help" ="Temp Help";
+"TCP" = "TCP";
+"Temp Help" = "Temp Help";
 "text_copied_to_clipboard_toast" = "Texte copié dans le presse-papier";
 "TLS" = "TLS";
 "UDP" = "UDP";
