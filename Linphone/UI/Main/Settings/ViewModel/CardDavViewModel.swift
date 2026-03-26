@@ -40,10 +40,15 @@ class CardDavViewModel: ObservableObject {
 	@Published var isReadOnly: Bool = false
 	
 	var isFormComplete: Bool {
-		!displayName.isEmpty &&
-		!serverUrl.isEmpty &&
-		!username.isEmpty &&
-		!realm.isEmpty
+		if !isEdit {
+			!displayName.isEmpty &&
+			!serverUrl.isEmpty &&
+			!username.isEmpty &&
+			!realm.isEmpty
+		} else {
+			!displayName.isEmpty &&
+			!serverUrl.isEmpty
+		}
 	}
 	
 	@Published var cardDavServerOperationInProgress = false
@@ -147,7 +152,7 @@ class CardDavViewModel: ObservableObject {
 		
 		self.coreContext.doOnCoreQueue { core in
 			// TODO: add dialog to ask user before removing existing friend list & auth info ?
-			if !self.isEdit == false {
+			if !self.isEdit {
 				let foundFriendList = core.getFriendListByName(name: name)
 				if let foundFriendList = foundFriendList {
 					Log.warn("\(CardDavViewModel.TAG) Friend list \(name) already exists, removing it first")
@@ -177,6 +182,7 @@ class CardDavViewModel: ObservableObject {
 			
 			if self.isEdit && self.friendList != nil {
 				Log.info("\(CardDavViewModel.TAG) Changes were made to CardDAV friend list \(name), synchronizing it")
+				self.addFriendListDelegate(friendList: self.friendList!)
 			} else {
 				self.friendList = try? core.createFriendList()
 				
