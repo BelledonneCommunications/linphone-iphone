@@ -43,7 +43,7 @@
 "assistant_account_login_forbidden_error" = "Falscher Benutzername oder Passwort";
 "assistant_account_register" = "Registrieren";
 "assistant_account_register_push_notification_not_received_error" = "Push Benachrichtigung mit Authentifizierungstoken nicht innerhalb von 5 Sekunden empfangen, bitte versuchen Sie es später erneut";
-"assistant_account_register_unexpected_error" = "Unerwarteter Fehler ist aufgetreten, bitte versuchen Sie es später erneut";
+"assistant_account_register_unexpected_error" = "Unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.";
 "assistant_already_have_an_account" = "Haben Sie bereits ein Konto?";
 "assistant_create_account_using_email_on_our_web_platform" = "Erstellen Sie mit Ihrer E-Mail ein Konto bei:";
 "assistant_dialog_confirm_phone_number_title" = "Telefonnummer bestätigen";
@@ -318,7 +318,7 @@
 "settings_calls_auto_record_title" = "Automatische Anrufaufzeichnung starten";
 "settings_calls_calibrate_echo_canceller_title" = "Echokompensator kalibrieren";
 "settings_calls_change_ringtone_title" = "Klingelton ändern";
-"settings_calls_echo_canceller_subtitle" = "Verhindert, dass das Echo am entfernten Ende gehört wird, wenn kein Hardware Echokompensator verfügbar ist";
+"settings_calls_echo_canceller_subtitle" = "Verhindert, dass das Echo am entfernten Ende gehört wird, wenn kein Hardware Echokompensator verfügbar ist.";
 "settings_calls_echo_canceller_title" = "Verwenden Sie die Software Echounterdrückung";
 "settings_calls_enable_fec_title" = "Video FEC aktivieren";
 "settings_calls_enable_video_title" = "Video aktivieren";

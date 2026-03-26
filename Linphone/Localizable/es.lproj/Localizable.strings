@@ -159,3 +159,4 @@
 "settings_calls_calibrate_echo_canceller_failed" = "fallido";
 "settings_calls_calibrate_echo_canceller_in_progress" = "en progreso";
 "settings_calls_calibrate_echo_canceller_title" = "Calibrar el cancelador de eco";
+"settings_calls_adaptive_rate_control_title" = "Control de velocidad adaptativo";

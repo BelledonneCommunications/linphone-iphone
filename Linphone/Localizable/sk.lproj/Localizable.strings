@@ -381,3 +381,4 @@
 "conversation_message_meeting_updated_label" = "Schôdzka bola aktualizovaná";
 "meeting_info_delete" = "Vymazať schôdzku";
 "authentication_id" = "ID pre overenie (ak je odlišné)";
+"settings_contacts_ldap_search_filter_title" = "Počiatočný bod hľadania (nesmie byť prázdne)";
