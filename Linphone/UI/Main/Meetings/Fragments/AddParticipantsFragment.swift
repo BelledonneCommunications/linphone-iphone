@@ -477,7 +477,11 @@ struct AddParticipantsFragment: View {
 		_ lhs: [(label: String, phoneNumber: String)],
 		_ rhs: [(label: String, phoneNumber: String)]
 	) -> Bool {
-		lhs.count == rhs.count &&
+		guard !lhs.isEmpty && !rhs.isEmpty else {
+			return false
+		}
+		
+		return lhs.count == rhs.count &&
 		zip(lhs, rhs).allSatisfy { l, r in
 			l.label == r.label && l.phoneNumber == r.phoneNumber
 		}
