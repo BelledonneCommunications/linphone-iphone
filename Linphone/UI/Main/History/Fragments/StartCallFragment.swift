@@ -532,48 +532,58 @@ struct StartCallFragment: View {
 			}
 			
 			if isShowTransferPopup {
-				PopupView(
-					isShowPopup: $isShowTransferPopup,
-					title: Text("history_dialog_delete_all_call_logs_title"),
-					content: Text("history_dialog_delete_all_call_logs_message"),
-					titleFirstButton: nil,
-					actionFirstButton: {},
-					titleSecondButton: Text("dialog_confirm"),
-					actionSecondButton: {
-						showingDialer = false
-						
-						startCallViewModel.searchField = ""
-						magicSearch.currentFilter = ""
-						
-						magicSearch.searchForContacts()
-						
-						if callViewModel.isTransferInsteadCall == true {
-							callViewModel.isTransferInsteadCall = false
-						}
-						
-						resetCallView()
-						
-						delayColorDismiss()
-						
-						withAnimation {
-							isShowStartCallFragment.toggle()
-							if let transferAddress = self.transferAddress {
-								callViewModel.blindTransferCallTo(toAddress: transferAddress)
-								self.transferAddress = nil
+				if let remoteAddress = callViewModel.currentCall?.remoteAddress, let transferAddress = self.transferAddress {
+					let currentCallNameTmp = remoteAddress.displayName
+					?? remoteAddress.username
+					?? String(remoteAddress.asStringUriOnly().dropFirst(4))
+					
+					let transferAddressNameTmp = transferAddress.displayName
+					?? transferAddress.username
+					?? String(transferAddress.asStringUriOnly().dropFirst(4))
+					
+					PopupView(
+						isShowPopup: $isShowTransferPopup,
+						title: Text("call_transfer_confirm_dialog_tittle"),
+						content: Text(String(format: String(localized: "call_transfer_confirm_dialog_message"), currentCallNameTmp, transferAddressNameTmp)),
+						titleFirstButton: nil,
+						actionFirstButton: {},
+						titleSecondButton: Text("dialog_confirm"),
+						actionSecondButton: {
+							showingDialer = false
+							
+							startCallViewModel.searchField = ""
+							magicSearch.currentFilter = ""
+							
+							magicSearch.searchForContacts()
+							
+							if callViewModel.isTransferInsteadCall == true {
+								callViewModel.isTransferInsteadCall = false
 							}
+							
+							resetCallView()
+							
+							delayColorDismiss()
+							
+							withAnimation {
+								isShowStartCallFragment.toggle()
+								if let transferAddress = self.transferAddress {
+									callViewModel.blindTransferCallTo(toAddress: transferAddress)
+									self.transferAddress = nil
+								}
+							}
+							
+							self.isShowTransferPopup.toggle()
+						},
+						titleThirdButton: Text("dialog_cancel"),
+						actionThirdButton: {
+							self.isShowTransferPopup.toggle()
 						}
-						
-						self.isShowTransferPopup.toggle()
-					},
-					titleThirdButton: Text("dialog_cancel"),
-					actionThirdButton: {
+					)
+					.background(.black.opacity(0.65))
+					.zIndex(3)
+					.onTapGesture {
 						self.isShowTransferPopup.toggle()
 					}
-				)
-				.background(.black.opacity(0.65))
-				.zIndex(3)
-				.onTapGesture {
-					self.isShowTransferPopup.toggle()
 				}
 			}
 		}
