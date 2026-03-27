@@ -110,6 +110,8 @@ struct CallView: View {
 								callViewModel: callViewModel,
 								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer,
+								transferAddress: .constant(nil),
+								isShowTransferPopup: .constant(false),
 								currentCall: callViewModel.currentCall
 							)
 							.presentationDetents([.medium])
@@ -147,6 +149,8 @@ struct CallView: View {
 								callViewModel: callViewModel,
 								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer,
+								transferAddress: .constant(nil),
+								isShowTransferPopup: .constant(false),
 								currentCall: callViewModel.currentCall
 							)
 							.presentationDetents([.medium])
@@ -179,6 +183,8 @@ struct CallView: View {
 								callViewModel: callViewModel,
 								isShowStartCallFragment: $isShowStartCallFragment,
 								showingDialer: $showingDialer,
+								transferAddress: .constant(nil),
+								isShowTransferPopup: .constant(false),
 								currentCall: callViewModel.currentCall
 							)
 						} onDismiss: {}

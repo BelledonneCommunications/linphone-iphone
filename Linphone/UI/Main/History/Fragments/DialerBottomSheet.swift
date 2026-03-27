@@ -42,6 +42,9 @@ struct DialerBottomSheet: View {
 	@Binding var isShowStartCallFragment: Bool
 	@Binding var showingDialer: Bool
 	
+	@Binding var transferAddress: Address?
+	@Binding var isShowTransferPopup: Bool
+	
 	let currentCall: Call?
 	
 	var body: some View {
@@ -405,24 +408,15 @@ struct DialerBottomSheet: View {
 						Button {
 							if !startCallViewModel.searchField.isEmpty {
 								if callViewModel.isTransferInsteadCall {
-									showingDialer = false
-									
-									magicSearch.currentFilter = ""
-									
-									magicSearch.searchForContacts()
-									
-									if callViewModel.isTransferInsteadCall == true {
-										callViewModel.isTransferInsteadCall = false
+									CoreContext.shared.doOnCoreQueue { core in
+										if let transferAddressTmp = core.interpretUrl(url: startCallViewModel.searchField, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
+											DispatchQueue.main.async {
+												showingDialer = false
+												self.transferAddress = transferAddressTmp
+												self.isShowTransferPopup = true
+											}
+										}
 									}
-									
-									callViewModel.resetCallView()
-									
-									withAnimation {
-										isShowStartCallFragment.toggle()
-										startCallViewModel.interpretAndStartCall()
-									}
-									
-									startCallViewModel.searchField = ""
 								} else {
 									showingDialer = false
 									
@@ -502,15 +496,6 @@ struct DialerBottomSheet: View {
 			}
 		}
 	}
-}
-
-#Preview {
-	DialerBottomSheet(
-		startCallViewModel: StartCallViewModel()
-		, callViewModel: CallViewModel()
-		, isShowStartCallFragment: .constant(false)
-		, showingDialer: .constant(false)
-		, currentCall: nil)
 }
 
 // swiftlint:enable type_body_length

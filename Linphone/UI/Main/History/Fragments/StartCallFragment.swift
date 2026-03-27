@@ -42,6 +42,7 @@ struct StartCallFragment: View {
 	@Binding var showingDialer: Bool
 	@Binding var isShowStartCallFragment: Bool
 	
+	
 	@FocusState var isSearchFieldFocused: Bool
 	@State private var delayedColor = Color.white
 	
@@ -57,6 +58,8 @@ struct StartCallFragment: View {
 							callViewModel: callViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer,
+							transferAddress: $transferAddress,
+							isShowTransferPopup: $isShowTransferPopup,
 							currentCall: nil
 						)
 						.presentationDetents([.medium])
@@ -70,6 +73,8 @@ struct StartCallFragment: View {
 							callViewModel: callViewModel,
 							isShowStartCallFragment: $isShowStartCallFragment,
 							showingDialer: $showingDialer,
+							transferAddress: $transferAddress,
+							isShowTransferPopup: $isShowTransferPopup,
 							currentCall: nil
 						)
 					} onDismiss: {}
