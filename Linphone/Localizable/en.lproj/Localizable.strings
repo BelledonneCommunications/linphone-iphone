@@ -615,3 +615,6 @@
 "welcome_page_title" = "Welcome";
 "You will change this mode later" = "You will change this mode later";
 "ZRTP" = "ZRTP";
+"early_push_unknown_caller" = "Unknown";
+"early_push_missed_call_title" = "Missed call";
+"early_push_missed_call_body" = "You received a call while your device was locked. Please unlock and reopen the app.";

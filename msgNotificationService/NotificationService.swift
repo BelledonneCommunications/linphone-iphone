@@ -112,7 +112,11 @@ class NotificationService: UNNotificationServiceExtension {
                 return
             }
             
-            createCore()
+			if !createCore() {
+				bestAttemptContent.title = String(localized: "notification_chat_message_received_title")
+				contentHandler(bestAttemptContent)
+				return
+			}
             if !lc!.config!.getBool(section: "app", key: "disable_chat_feature", defaultValue: false) {
                 Log.info("received push payload : \(bestAttemptContent.userInfo.debugDescription)")
                 
@@ -314,14 +318,17 @@ class NotificationService: UNNotificationServiceExtension {
         return msgData
     }
     
-    func createCore() {
-        Log.info("[msgNotificationService] create core")
-        
-        let factoryPath = FileUtil.bundleFilePath("linphonerc-factory")!
-        let config = Config.newForSharedCore(appGroupId: appGroupName, configFilename: "linphonerc", factoryConfigFilename: factoryPath)!
-        
-        lc = try? Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroupId: appGroupName, mainCore: false)
-    }
+	func createCore() -> Bool {
+		Log.info("[msgNotificationService] create core")
+
+		let factoryPath = FileUtil.bundleFilePath("linphonerc-factory")!
+		if let config = Config.newForSharedCore(appGroupId: appGroupName, configFilename: "linphonerc", factoryConfigFilename: factoryPath) {
+			lc = try? Factory.Instance.createSharedCoreWithConfig(config: config, systemContext: nil, appGroupId: appGroupName, mainCore: false)
+			return lc != nil
+		} else {
+			return false
+		}
+	}
     
     func stopCore() {
         Log.info("stop core")

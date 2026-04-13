@@ -49,6 +49,7 @@
 		C642277B2E8E4AC50094FEDC /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C642277A2E8E4AC50094FEDC /* ThemeManager.swift */; };
 		C642277C2E8E4D900094FEDC /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C642277A2E8E4AC50094FEDC /* ThemeManager.swift */; };
 		C642277D2E8E4E2B0094FEDC /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717071D2AC5922E0037746F /* ColorExtension.swift */; };
+		C65270F82F879D2700FF248C /* EarlyPushkitDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65270F72F879D2700FF248C /* EarlyPushkitDelegate.swift */; };
 		C67586AE2C09F23C002E77BF /* URLExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67586AD2C09F23C002E77BF /* URLExtension.swift */; };
 		C67586B02C09F247002E77BF /* URIHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67586AF2C09F247002E77BF /* URIHandler.swift */; };
 		C67586B52C09F617002E77BF /* SingleSignOnManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67586B22C09F617002E77BF /* SingleSignOnManager.swift */; };
@@ -307,6 +308,7 @@
 		C62817312C1C400A00DBA646 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		C62817332C1C7C7400DBA646 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
 		C642277A2E8E4AC50094FEDC /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		C65270F72F879D2700FF248C /* EarlyPushkitDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlyPushkitDelegate.swift; sourceTree = "<group>"; };
 		C67586AD2C09F23C002E77BF /* URLExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLExtension.swift; sourceTree = "<group>"; };
 		C67586AF2C09F247002E77BF /* URIHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URIHandler.swift; sourceTree = "<group>"; };
 		C67586B22C09F617002E77BF /* SingleSignOnManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleSignOnManager.swift; sourceTree = "<group>"; };
@@ -593,6 +595,7 @@
 		662B69D72B25DDF6007118BF /* TelecomManager */ = {
 			isa = PBXGroup;
 			children = (
+				C65270F72F879D2700FF248C /* EarlyPushkitDelegate.swift */,
 				662B69D82B25DE18007118BF /* TelecomManager.swift */,
 				662B69DA2B25DE25007118BF /* ProviderDelegate.swift */,
 			);
@@ -1525,6 +1528,7 @@
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
 				D7AEB9742F324A6F00298546 /* ConversationDocumentsListFragment.swift in Sources */,
 				D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */,
+				C65270F82F879D2700FF248C /* EarlyPushkitDelegate.swift in Sources */,
 				D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,

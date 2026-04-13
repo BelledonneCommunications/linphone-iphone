@@ -566,15 +566,30 @@ class CoreContext: ObservableObject {
 }
 
 enum AppServices {
-	static let config = Config.newForSharedCore(
-		appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
-		?? {
-			fatalError("APP_GROUP_NAME not defined in Info.plist")
-		}(),
-		configFilename: "linphonerc",
-		factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
-	)!
-	
+	private static var _config: Config?
+
+	static var configIfAvailable: Config? {
+		if let existing = _config {
+			return existing
+		}
+		_config = Config.newForSharedCore(
+			appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+			?? {
+				fatalError("APP_GROUP_NAME not defined in Info.plist")
+			}(),
+			configFilename: "linphonerc",
+			factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
+		)
+		return _config
+	}
+
+	static var config: Config {
+		guard let config = configIfAvailable else {
+			fatalError("AppServices.config accessed before it was available")
+		}
+		return config
+	}
+
 	static let corePreferences = CorePreferences(config: config)
 }
 

@@ -20,17 +20,23 @@
 import SwiftUI
 
 struct SplashScreen: View {
+	var showSpinner: Bool = false
+
 	var body: some View {
 		ZStack {
 			Color.white
 				.ignoresSafeArea()
-			
+
 			Image("linphone")
 				.resizable()
 				.renderingMode(.template)
 				.aspectRatio(contentMode: .fit)
 				.frame(width: 240, height: 128)
 				.foregroundColor(ThemeManager.shared.currentTheme.main500)
+
+			if showSpinner {
+				ProgressView()
+			}
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.ignoresSafeArea(.all)

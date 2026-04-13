@@ -610,3 +610,6 @@
 "welcome_page_title" = "Bienvenue";
 "You will change this mode later" = "You will change this mode later";
 "ZRTP" = "ZRTP";
+"early_push_unknown_caller" = "Inconnu";
+"early_push_missed_call_title" = "Appel manqué";
+"early_push_missed_call_body" = "Vous avez reçu un appel alors que votre appareil était verrouillé. Veuillez déverrouiller et rouvrir l'application.";

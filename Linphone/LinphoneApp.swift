@@ -21,6 +21,7 @@ import SwiftUI
 import linphonesw
 import UserNotifications
 import Intents
+import PushKit
 
 let accountTokenNotification = Notification.Name("AccountCreationTokenReceived")
 var displayedChatroomPeerAddr: String?
@@ -151,28 +152,69 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
 @main
 struct LinphoneApp: App {
-	@Environment(\.scenePhase) var scenePhase
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+	@State private var configAvailable = AppServices.configIfAvailable != nil
+	private let earlyPushDelegate = EarlyPushkitDelegate()
+	private let voipRegistry = PKPushRegistry(queue: coreQueue)
+
+	init() {
+		if !configAvailable {
+			voipRegistry.delegate = earlyPushDelegate
+			voipRegistry.desiredPushTypes = [.voIP]
+			waitForConfig()
+		} else {
+			let _ = CoreContext.shared
+		}
+	}
+
+	var body: some Scene {
+		WindowGroup {
+			if configAvailable {
+				AppView(delegate: delegate)
+			} else {
+				SplashScreen(showSpinner: true)
+					.onAppear {
+						waitForConfig()
+				}
+			}
+		}
+	}
+
+	private func waitForConfig() {
+		if AppServices.configIfAvailable != nil {
+			let _ = CoreContext.shared
+			configAvailable = true
+		} else {
+			Log.warn("AppServices.config not available yet, retrying in 1s...")
+			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+				waitForConfig()
+			}
+		}
+	}
+}
+
+struct AppView: View {
+	@Environment(\.scenePhase) var scenePhase
+	let delegate: AppDelegate
 
 	@StateObject private var coreContext = CoreContext.shared
 	@StateObject private var navigationManager = NavigationManager()
 	@StateObject private var telecomManager = TelecomManager.shared
 	@StateObject private var sharedMainViewModel = SharedMainViewModel.shared
 
-	var body: some Scene {
-		WindowGroup {
-			RootView(
-				coreContext: coreContext,
-				telecomManager: telecomManager,
-				sharedMainViewModel: sharedMainViewModel,
-				navigationManager: navigationManager,
-				appDelegate: delegate
-			)
-			.environmentObject(coreContext)
-			.environmentObject(navigationManager)
-			.environmentObject(telecomManager)
-			.environmentObject(sharedMainViewModel)
-		}
+	var body: some View {
+		RootView(
+			coreContext: coreContext,
+			telecomManager: telecomManager,
+			sharedMainViewModel: sharedMainViewModel,
+			navigationManager: navigationManager,
+			appDelegate: delegate
+		)
+		.environmentObject(coreContext)
+		.environmentObject(navigationManager)
+		.environmentObject(telecomManager)
+		.environmentObject(sharedMainViewModel)
 		.onChange(of: scenePhase) { newPhase in
 			if !telecomManager.callInProgress {
 				switch newPhase {
