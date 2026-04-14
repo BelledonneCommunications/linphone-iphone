@@ -417,5 +417,13 @@ class ConversationModel: ObservableObject, Identifiable {
 			core.deleteChatRoom(chatRoom: self.chatRoom)
 	   }
 	}
+	
+	
+	func deleteHistory() {
+		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("\(ConversationModel.TAG) Cleaning conversation \(LinphoneUtils.getConversationId(chatRoom: self.chatRoom)) history")
+			self.chatRoom.deleteHistory()
+		}
+	}
 }
 // swiftlint:enable line_length

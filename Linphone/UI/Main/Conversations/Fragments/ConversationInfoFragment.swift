@@ -798,8 +798,7 @@ struct ConversationInfoFragment: View {
 										
 										Button(
 											action: {
-												SharedMainViewModel.shared.displayedConversation!.deleteChatRoom()
-												SharedMainViewModel.shared.displayedConversation = nil
+												SharedMainViewModel.shared.displayedConversation!.deleteHistory()
 											},
 											label: {
 												HStack {
