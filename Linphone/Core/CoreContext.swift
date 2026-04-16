@@ -65,7 +65,60 @@ class CoreContext: ObservableObject {
 		do {
 			try initialiseCore()
 		} catch {
-			
+
+		}
+		observeMDMNotifications()
+	}
+
+	// MARK: - MDM notifications
+
+	private func observeMDMNotifications() {
+		NotificationCenter.default.addObserver(self, selector: #selector(onMDMConfigurationApplied(_:)), name: MDMManager.configurationAppliedNotification, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(onMDMConfigurationRemoved), name: MDMManager.configurationRemovedNotification, object: nil)
+	}
+
+	@objc private func onMDMConfigurationApplied(_ notification: Notification) {
+		Log.info("[CoreContext] MDM configuration applied, refreshing configuration")
+		CoreContext.shared.performActionOnCoreQueueWhenCoreIsStarted { core in
+			self.handleConfigurationChanged(status: .Successful)
+		}
+	}
+
+	@objc private func onMDMConfigurationRemoved() {
+		doOnCoreQueue { core in
+			Log.info("[CoreContext] MDM configuration removed, re-initializing app to default state")
+			var startCore = false
+			if core.globalState == .On {
+				core.stop()
+				startCore = true
+			}
+			AppServices.resetConfig()
+			self.mCore.config?.reload()
+			if startCore {
+				try?core.start()
+			}
+			self.handleConfigurationChanged(status: .Successful)
+		}
+	}
+
+	/// Shared handler for configuration changes (both from core provisioning and MDM).
+	private func handleConfigurationChanged(status: ConfiguringState) {
+		let themeMainColor = AppServices.corePreferences.themeMainColor
+		SharedMainViewModel.shared.updateConfigChanges()
+		if status == .Successful {
+			var accountModels: [AccountModel] = []
+			for account in self.mCore.accountList {
+				accountModels.append(AccountModel(account: account, core: self.mCore))
+			}
+			DispatchQueue.main.async {
+					self.accounts = accountModels
+					if accountModels.isEmpty {
+						self.loggingInProgress = false
+						self.loggedIn = false
+					}
+					ThemeManager.shared.applyTheme(named: themeMainColor)
+					self.reloadID = UUID()
+			}
 		}
 	}
 	
@@ -143,8 +196,14 @@ class CoreContext: ObservableObject {
 					Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
 				}
 			}
-			
+
+			MDMManager.shared.loadXMLConfigFromMdm(config: AppServices.config)
+
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
+
+			MDMManager.shared.applyMdmConfigToCore(core: self.mCore)
+			self.startObservingMDMConfigurationUpdates()
+			
 			
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -348,19 +407,7 @@ class CoreContext: ObservableObject {
 				}
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
-				let themeMainColor = AppServices.corePreferences.themeMainColor
-				SharedMainViewModel.shared.updateConfigChanges()
-				DispatchQueue.main.async {
-					if status == ConfiguringState.Successful {
-						var accountModels: [AccountModel] = []
-						for account in self.mCore.accountList {
-							accountModels.append(AccountModel(account: account, core: self.mCore))
-						}
-						self.accounts = accountModels
-						ThemeManager.shared.applyTheme(named: themeMainColor)
-						self.reloadID = UUID()
-					}
-				}
+				self.handleConfigurationChanged(status: status)
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in
 				if info.starts(with: "https") {
 					DispatchQueue.main.async {
@@ -563,6 +610,24 @@ class CoreContext: ObservableObject {
 			}
 		}
 	}
+
+	func startObservingMDMConfigurationUpdates() {
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(mdmConfigDidChange),
+			name: UserDefaults.didChangeNotification,
+			object: nil
+		)
+	}
+
+	@objc private func mdmConfigDidChange() {
+		guard MDMManager.shared.managedConfigChangedSinceLastCheck() else { return }
+		CoreContext.shared.doOnCoreQueue { core in
+			MDMManager.shared.applyMdmConfigToCore(core: core)
+		}
+	}
+
+
 }
 
 enum AppServices {
@@ -589,8 +654,30 @@ enum AppServices {
 		}
 		return config
 	}
+	
+	static func resetConfig() {
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
+			.appendingPathComponent("Library/Preferences/linphone") {
+			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+			do {
+				try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
+				if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
+					if FileManager.default.fileExists(atPath: rcFileUrl.path) {
+						try FileManager.default.removeItem(at: rcFileUrl)
+					}
+					try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
+					Log.info("Successfully copied linphonerc-default configuration")
+					_config = nil
+					let _ = configIfAvailable
+					corePreferences = CorePreferences(config: config)
+				}
+			} catch let error {
+				Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
+			}
+		}
+	}
 
-	static let corePreferences = CorePreferences(config: config)
+	static var corePreferences = CorePreferences(config: config)
 }
 
 // swiftlint:enable line_length

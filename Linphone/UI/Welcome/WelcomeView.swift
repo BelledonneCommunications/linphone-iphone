@@ -55,7 +55,7 @@ struct WelcomeView: View {
 						Text("welcome_carousel_skip")
 							.underline()
 							.default_text_style_600(styleSize: 15)
-						
+
 					})
 					.padding(.top, -35)
 					.padding(.trailing, 20)
@@ -64,6 +64,7 @@ struct WelcomeView: View {
 							self.index = 2
 						}
 					)
+					.accessibilityIdentifier("welcome_skip_button")
 					Text("welcome_page_title")
 						.default_text_style_800(styleSize: 35)
 						.padding(.trailing, 100)

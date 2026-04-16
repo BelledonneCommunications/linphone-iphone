@@ -180,6 +180,7 @@ struct PermissionsFragment: View {
 			)
 			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal)
+			.accessibilityIdentifier("permissions_skip_button")
 			
 			Button {
 				permissionManager.getPermissions()

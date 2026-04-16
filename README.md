@@ -133,3 +133,117 @@ cmake --preset=ios-sdk -G Ninja -B spm-ios && cmake --build spm-ios
 - Add it manually if needed.
 
 ![Image6](ReadmeImages/ReadmeImage6.png)
+
+# MDM (Mobile Device Management) configuration
+
+Linphone iOS supports managed app configuration via the standard iOS MDM
+`com.apple.configuration.managed` mechanism. When the app is deployed through
+an MDM server, administrators can push a configuration dictionary that the app
+reads at startup and whenever the managed configuration changes at runtime.
+
+The following keys are supported:
+
+| Key           | Type   | Description                                                                                     |
+|---------------|--------|-------------------------------------------------------------------------------------------------|
+| `xml-config`  | String | A Linphone configuration in XML format (same schema as `linphonerc`). Applied via `Config.loadFromXmlString`. |
+| `root-ca`     | String | A PEM-encoded root CA certificate used by the Linphone SDK for TLS operations (SIPS, HTTPS provisioning, …). Applied to `core.rootCaData`. |
+| `config-uri`  | String | URI to a remote provisioning file. When set, it takes precedence over any `config-uri` that may be defined inside `xml-config`, and triggers a core restart to fetch the remote configuration. |
+
+Notes:
+- All three keys are optional and can be combined.
+- If `config-uri` is present, it is set last and the core is restarted so that
+  remote provisioning takes effect; any `config-uri` value embedded in
+  `xml-config` is therefore overridden.
+- Applying and removing the managed configuration at runtime is supported:
+  removing it resets the core to its default configuration and returns to the
+  assistant/login screen.
+
+## Testing MDM configuration
+
+Two kinds of tests are provided:
+
+### UI tests (end-to-end)
+
+Located in `LinphoneAppUITests/MDMChatFeatureUITests.swift`. They inject a
+managed configuration at launch via the app's DEBUG-only
+`UITEST_MDM_CONFIG` launch-environment hook (implemented in
+`Linphone/LinphoneApp.swift`), so no `xcrun simctl` setup is needed.
+
+Note: the tests only cover MDM *application* (fresh launch with a managed
+config). Live removal of MDM while the app is running cannot be simulated
+from an XCUITest process (UserDefaults is per-process and we want the app
+to stay alive for a realistic removal scenario), so that path is covered by
+manual testing only.
+
+Each MDM test case represents "a fresh device receiving a specific managed
+configuration", so we uninstall the app before every test to avoid any
+leakage of UserDefaults / keychain / provisioning / accounts between cases.
+The wrapper script `scripts/run-mdm-tests.sh` does this for you.
+
+The tests need a real SIP account to reach the main screen (the MDM XML
+embeds proxy + auth_info sections) and a remote provisioning URL for the
+config-uri test. Credentials can be provided three ways — the script
+resolves them in this order, highest first:
+
+1. CLI flags: `--username`, `--ha1`, `--domain`, `--config-uri` (and
+   `--device` for the sim UUID)
+2. Shell env vars: `LINPHONE_TEST_USERNAME`, `LINPHONE_TEST_HA1`,
+   `LINPHONE_TEST_DOMAIN`, `LINPHONE_TEST_CONFIG_URI`
+3. The gitignored file `scripts/test-credentials.env` (copy from `.env.example`)
+
+Examples:
+
+```bash
+scripts/run-mdm-tests.sh --device <uuid> --username alice --ha1 <md5-hash> --config-uri https://example.com/provisioning.xml
+```
+
+```bash
+cp scripts/test-credentials.env.example scripts/test-credentials.env
+# edit scripts/test-credentials.env, fill in LINPHONE_TEST_USERNAME /
+# LINPHONE_TEST_HA1 / LINPHONE_TEST_CONFIG_URI
+scripts/run-mdm-tests.sh
+```
+
+It will create+boot a throwaway simulator if `DEVICE_UUID` is not set,
+uninstall the app before each test, run the tests one at a time with
+`-parallel-testing-enabled NO`, and clean up at the end. To reuse an
+already-booted simulator:
+
+```bash
+DEVICE_UUID=<your-booted-simulator-uuid> scripts/run-mdm-tests.sh
+```
+
+`-parallel-testing-enabled NO` avoids flaky UI test launch failures caused by
+Xcode spinning up multiple simulator clones in parallel (the test-runner app
+can fail to launch on a clone under pressure).
+
+Covered cases:
+- `testChatButtonHiddenWithMDMDisableChat` — MDM `xml-config` with
+  `disable_chat_feature=1`; the test reaches the main screen and asserts the
+  chat button is hidden.
+- `testConfigUriMDMLandsOnMainPage` — MDM `config-uri` pointing at the URL
+  supplied via `--config-uri` / `LINPHONE_TEST_CONFIG_URI`; the test verifies
+  that remote provisioning completes and the app lands on the main screen.
+
+### Unit tests (MDMManager)
+
+Located in `LinphoneAppTests/MDMManagerTests.swift`. The unit test covers
+only `root-ca` application: it calls
+`MDMManager.shared.applyMdmConfigToCore(core:)` directly on a throwaway
+`Core` and asserts `core.rootCaData` matches the MDM-provided certificate.
+The `config-uri` and `xml-config` paths are exercised end-to-end by the UI
+tests above.
+
+This requires a **Unit Testing Bundle** target in Xcode (separate from the UI
+test target, because `@testable import Linphone` only works from a unit test
+bundle):
+
+1. Xcode → File → New → Target → iOS → Unit Testing Bundle
+2. Name it `LinphoneAppTests`, set "Target to be Tested" to `LinphoneApp`
+3. Add `LinphoneAppTests/MDMManagerTests.swift` to that target
+
+Then run:
+
+```bash
+xcodebuild test -project LinphoneApp.xcodeproj -scheme LinphoneAppTests -destination "platform=iOS Simulator,id=$DEVICE_UUID"
+```

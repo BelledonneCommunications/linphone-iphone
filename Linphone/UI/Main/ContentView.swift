@@ -370,7 +370,7 @@ struct ContentView: View {
 											
 											Button(action: {
 												resetFilter()
-												
+
 												sharedMainViewModel.changeIndexView(indexViewInt: 1)
 												sharedMainViewModel.displayedFriend = nil
 												sharedMainViewModel.displayedConversation = nil
@@ -395,6 +395,7 @@ struct ContentView: View {
 												}
 											})
 											.padding(.top)
+											.accessibilityIdentifier("bottom_bar_calls_button")
 										}
 										
 										Spacer()
@@ -435,7 +436,7 @@ struct ContentView: View {
                                                             .resizable()
                                                             .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
                                                             .frame(width: 25, height: 25)
-                                                        
+
                                                         if sharedMainViewModel.indexView == 2 {
                                                             Text("bottom_navigation_conversations_label")
                                                                 .default_text_style_700(styleSize: 10)
@@ -446,6 +447,7 @@ struct ContentView: View {
                                                     }
                                                 })
                                                 .padding(.top)
+                                                .accessibilityIdentifier("bottom_bar_chat_button")
                                             }
 											
 											Spacer()
