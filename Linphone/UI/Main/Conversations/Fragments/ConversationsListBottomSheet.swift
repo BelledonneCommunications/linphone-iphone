@@ -32,6 +32,10 @@ struct ConversationsListBottomSheet: View {
 	
 	@Binding var showingSheet: Bool
 	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	var body: some View {
 		VStack(alignment: .leading) {
 			if idiom != .pad && (orientation == .landscapeLeft
@@ -171,7 +175,8 @@ struct ConversationsListBottomSheet: View {
 				}
                 
                 Button {
-                    selectedConversation.deleteChatRoom()
+					conversationsListViewModel.targetConversation = selectedConversation
+					showDeleteConversationPopup = true
                     
                     if #available(iOS 16.0, *) {
                         if idiom != .pad {
@@ -209,8 +214,8 @@ struct ConversationsListBottomSheet: View {
                     .frame(maxWidth: .infinity)
                     
                     Button {
-                        selectedConversation.leave()
-                        selectedConversation.isReadOnly = true
+						conversationsListViewModel.targetConversation = selectedConversation
+						showLeaveConversationPopup = true
                         
                         if #available(iOS 16.0, *) {
                             if idiom != .pad {
@@ -242,7 +247,8 @@ struct ConversationsListBottomSheet: View {
 				}
 			} else if let selectedConversation = conversationsListViewModel.selectedConversation, selectedConversation.isReadOnly {
 				Button {
-					selectedConversation.deleteChatRoom()
+					conversationsListViewModel.targetConversation = selectedConversation
+					showDeleteConversationPopup = true
 					
 					if #available(iOS 16.0, *) {
 						if idiom != .pad {
@@ -280,8 +286,4 @@ struct ConversationsListBottomSheet: View {
 			orientation = newOrientation
 		}
 	}
-}
-
-#Preview {
-	ConversationsListBottomSheet(showingSheet: .constant(true))
 }

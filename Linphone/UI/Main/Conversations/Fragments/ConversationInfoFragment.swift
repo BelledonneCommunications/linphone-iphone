@@ -52,6 +52,10 @@ struct ConversationInfoFragment: View {
 	@Binding var isShowConversationInfoPopup: Bool
 	@Binding var conversationInfoPopupText: String
 	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	var body: some View {
 		let accountModel = CoreContext.shared.accounts[accountProfileViewModel.accountModelIndex ?? 0]
 		NavigationView {
@@ -770,8 +774,8 @@ struct ConversationInfoFragment: View {
 											if SharedMainViewModel.shared.displayedConversation!.isGroup {
 												Button(
 													action: {
-														SharedMainViewModel.shared.displayedConversation!.leave()
-														SharedMainViewModel.shared.displayedConversation!.isReadOnly = true
+														conversationsListViewModel.targetConversation = SharedMainViewModel.shared.displayedConversation!
+							 							showLeaveConversationPopup = true
 														isShowInfoConversationFragment = false
 													},
 													label: {
@@ -798,7 +802,9 @@ struct ConversationInfoFragment: View {
 										
 										Button(
 											action: {
-												SharedMainViewModel.shared.displayedConversation!.deleteHistory()
+												conversationsListViewModel.targetConversation = SharedMainViewModel.shared.displayedConversation!
+												showDeleteConversationHistoryPopup = true
+												isShowInfoConversationFragment = false
 											},
 											label: {
 												HStack {
@@ -861,7 +867,10 @@ struct ConversationInfoFragment: View {
 		isShowScheduleMeetingFragmentSubject: .constant(""),
 		isShowScheduleMeetingFragmentParticipants: .constant([]),
 		isShowConversationInfoPopup: .constant(false),
-		conversationInfoPopupText: .constant("")
+		conversationInfoPopupText: .constant(""),
+		showLeaveConversationPopup: .constant(false),
+		showDeleteConversationPopup: .constant(false),
+		showDeleteConversationHistoryPopup: .constant(false)
 	)
 }
 // swiftlint:enable type_body_length

@@ -414,15 +414,42 @@ class ConversationModel: ObservableObject, Identifiable {
 	
 	func deleteChatRoom() {
 		CoreContext.shared.doOnCoreQueue { core in
+			Log.info("\(ConversationModel.TAG) Deleting conversation \(LinphoneUtils.getConversationId(chatRoom: self.chatRoom))")
 			core.deleteChatRoom(chatRoom: self.chatRoom)
-	   }
+			
+			DispatchQueue.main.async {
+				ToastViewModel.shared.show("Success_chatroom_deleted")
+			}
+		}
 	}
-	
-	
+
 	func deleteHistory() {
-		CoreContext.shared.doOnCoreQueue { core in
-			Log.info("\(ConversationModel.TAG) Cleaning conversation \(LinphoneUtils.getConversationId(chatRoom: self.chatRoom)) history")
+		CoreContext.shared.doOnCoreQueue { _ in
+			Log.info("\(ConversationModel.TAG) Deleting history for conversation \(LinphoneUtils.getConversationId(chatRoom: self.chatRoom))")
 			self.chatRoom.deleteHistory()
+			
+			DispatchQueue.main.async {
+				self.lastMessage = nil
+				self.lastMessagePrefixText = ""
+				self.lastMessageText = ""
+				self.lastMessageIcon = ""
+				self.lastMessageIsOutgoing = false
+				self.lastMessageState = 0
+				self.lastMessageInItalic = false
+				ToastViewModel.shared.show("Success_remove_conversation_history")
+			}
+		}
+	}
+
+	func leaveChatRoom() {
+		CoreContext.shared.doOnCoreQueue { _ in
+			Log.info("\(ConversationModel.TAG) Leaving conversation \(LinphoneUtils.getConversationId(chatRoom: self.chatRoom))")
+			self.chatRoom.leave()
+			
+			DispatchQueue.main.async {
+				self.isReadOnly = true
+				ToastViewModel.shared.show("Success_left_chatroom")
+			}
 		}
 	}
 }

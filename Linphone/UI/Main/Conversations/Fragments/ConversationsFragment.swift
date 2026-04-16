@@ -29,13 +29,20 @@ struct ConversationsFragment: View {
 	
 	@State var showingSheet: Bool = false
 	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	var body: some View {
 		ZStack {
 			if #available(iOS 16.0, *), idiom != .pad {
 				ConversationsListFragment(text: $text, showingSheet: $showingSheet)
 					.sheet(isPresented: $showingSheet) {
 						ConversationsListBottomSheet(
-							showingSheet: $showingSheet
+							showingSheet: $showingSheet,
+							showLeaveConversationPopup: $showLeaveConversationPopup,
+							showDeleteConversationPopup: $showDeleteConversationPopup,
+							showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 						)
 						.presentationDetents(
 							conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly
@@ -47,15 +54,14 @@ struct ConversationsFragment: View {
 				ConversationsListFragment(text: $text, showingSheet: $showingSheet)
 					.halfSheet(showSheet: $showingSheet) {
 						ConversationsListBottomSheet(
-							showingSheet: $showingSheet
+							showingSheet: $showingSheet,
+							showLeaveConversationPopup: $showLeaveConversationPopup,
+							showDeleteConversationPopup: $showDeleteConversationPopup,
+							showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 						)
                         .environmentObject(conversationsListViewModel)
 					} onDismiss: {}
 			}
 		}
 	}
-}
-
-#Preview {
-	ConversationsFragment(text: .constant(""))
 }

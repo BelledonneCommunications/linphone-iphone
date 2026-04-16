@@ -84,6 +84,10 @@ struct ConversationFragment: View {
 	@Binding var isShowConversationInfoPopup: Bool
 	@Binding var conversationInfoPopupText: String
 	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	@State var searchText: String = ""
 	@State var messageText: String = ""
 	
@@ -1600,7 +1604,10 @@ struct ConversationFragment: View {
 					isShowScheduleMeetingFragmentSubject: $isShowScheduleMeetingFragmentSubject,
 					isShowScheduleMeetingFragmentParticipants: $isShowScheduleMeetingFragmentParticipants,
 					isShowConversationInfoPopup: $isShowConversationInfoPopup,
-					conversationInfoPopupText: $conversationInfoPopupText
+					conversationInfoPopupText: $conversationInfoPopupText,
+					showLeaveConversationPopup: $showLeaveConversationPopup,
+					showDeleteConversationPopup: $showDeleteConversationPopup,
+					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 				)
 				.environmentObject(conversationViewModel)
 				.zIndex(5)

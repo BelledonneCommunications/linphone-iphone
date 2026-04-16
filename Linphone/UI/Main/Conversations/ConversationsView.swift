@@ -27,10 +27,19 @@ struct ConversationsView: View {
 	
 	@Binding var isShowStartConversationFragment: Bool
 	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
-				ConversationsFragment(text: $text)
+				ConversationsFragment(
+					text: $text,
+					showLeaveConversationPopup: $showLeaveConversationPopup,
+					showDeleteConversationPopup: $showDeleteConversationPopup,
+					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
+				)
 				
 				Button {
 					withAnimation {
@@ -51,11 +60,4 @@ struct ConversationsView: View {
 		}
 		.navigationViewStyle(.stack)
 	}
-}
-
-#Preview {
-	ConversationsListFragment(
-		text: .constant(""),
-	  	showingSheet: .constant(false)
-	)
 }

@@ -91,6 +91,10 @@ struct ContentView: View {
 	@State var isShowUpdatePasswordPopup: Bool = false
 	@State var passwordUpdateAddress: String = ""
 	
+	@State var showLeaveConversationPopup: Bool = false
+	@State var showDeleteConversationPopup: Bool = false
+	@State var showDeleteConversationHistoryPopup: Bool = false
+	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
@@ -921,6 +925,9 @@ struct ContentView: View {
 											ConversationsContainer(
 												conversationsListViewModel: $conversationsListViewModel,
 												isShowStartConversationFragment: $isShowStartConversationFragment,
+												showLeaveConversationPopup: $showLeaveConversationPopup,
+						   						showDeleteConversationPopup: $showDeleteConversationPopup,
+						   						showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
 												text: $text,
 												orientation: orientation
 											)
@@ -1188,7 +1195,10 @@ struct ContentView: View {
 									isShowScheduleMeetingFragmentSubject: $isShowScheduleMeetingFragmentSubject,
 									isShowScheduleMeetingFragmentParticipants: $isShowScheduleMeetingFragmentParticipants,
 									isShowConversationInfoPopup: $isShowConversationInfoPopup,
-									conversationInfoPopupText: $conversationInfoPopupText
+									conversationInfoPopupText: $conversationInfoPopupText,
+									showLeaveConversationPopup: $showLeaveConversationPopup,
+									showDeleteConversationPopup: $showDeleteConversationPopup,
+									showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 								)
 								.environmentObject(conversationsListVM)
 								.environmentObject(accountProfileViewModel)
@@ -1339,6 +1349,7 @@ struct ContentView: View {
 								if let historyListVM = historyListViewModel {
 									historyListVM.removeCallLogs()
 								}
+								
 								self.isShowDeleteAllHistoryPopup.toggle()
 								sharedMainViewModel.displayedCall = nil
 								
@@ -1356,6 +1367,87 @@ struct ContentView: View {
 						.zIndex(3)
 						.onTapGesture {
 							self.isShowDeleteAllHistoryPopup.toggle()
+						}
+					}
+					
+					if showLeaveConversationPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("conversation_info_dialog_leave_chatroom_title"),
+							content: Text("conversation_info_dialog_leave_chatroom_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("conversation_info_leave_chatroom_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel, let targetConversation = conversationsListVM.targetConversation {
+									targetConversation.leaveChatRoom()
+								}
+								self.showLeaveConversationPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.showLeaveConversationPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.showLeaveConversationPopup.toggle()
+						}
+					}
+					
+					if showDeleteConversationPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("conversation_info_dialog_delete_chatroom_title"),
+							content: Text("conversation_info_dialog_delete_chatroom_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("conversation_info_delete_chatroom_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel, let targetConversation = conversationsListVM.targetConversation {
+									targetConversation.deleteChatRoom()
+									SharedMainViewModel.shared.displayedConversation = nil
+								}
+								self.showDeleteConversationPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.showDeleteConversationPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.showDeleteConversationPopup.toggle()
+						}
+					}
+					
+					if showDeleteConversationHistoryPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("conversation_info_dialog_delete_all_call_logs_title"),
+							content: Text("conversation_info_dialog_delete_all_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("conversation_info_delete_history_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel, let targetConversation = conversationsListVM.targetConversation {
+									targetConversation.deleteHistory()
+									conversationsListVM.displayedConversation = nil
+									SharedMainViewModel.shared.displayedConversation = nil
+								}
+								self.showDeleteConversationHistoryPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.showDeleteConversationHistoryPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.showDeleteConversationHistoryPopup.toggle()
 						}
 					}
 					
@@ -1988,8 +2080,15 @@ struct HistoryContainer: View {
 
 struct ConversationsContainer: View {
 	@Binding var conversationsListViewModel: ConversationsListViewModel?
+	
 	@Binding var isShowStartConversationFragment: Bool
+	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	@Binding var text: String
+	
 	var orientation: UIDeviceOrientation
 
 	var body: some View {
@@ -1997,7 +2096,10 @@ struct ConversationsContainer: View {
 			if let conversationsListVM = conversationsListViewModel {
 				ConversationsView(
 					text: $text,
-					isShowStartConversationFragment: $isShowStartConversationFragment
+					isShowStartConversationFragment: $isShowStartConversationFragment,
+					showLeaveConversationPopup: $showLeaveConversationPopup,
+					showDeleteConversationPopup: $showDeleteConversationPopup,
+					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 				)
 				.environmentObject(conversationsListVM)
 				.roundedCorner(25, corners: [.topRight, .topLeft])
