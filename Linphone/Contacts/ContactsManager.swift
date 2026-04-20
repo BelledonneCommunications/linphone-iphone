@@ -197,9 +197,24 @@ final class ContactsManager: ObservableObject {
 	}
 	
 	func textToImage(firstName: String?, lastName: String?) -> UIImage {
-		let firstInitial = firstName?.first.map { String($0) } ?? ""
-		let lastInitial = lastName?.first.map { String($0) } ?? ""
-		let textToDisplay = (firstInitial + lastInitial).uppercased()
+		let firstParts = firstName?
+			.split(separator: " ")
+			.map(String.init) ?? []
+
+		let firstInitial = firstParts.first?.first.map(String.init) ?? ""
+		let secondInitial = firstParts.count > 1 ? firstParts[1].first.map(String.init) ?? "" : ""
+
+		let lastInitial = lastName?.first.map(String.init) ?? ""
+
+		let textToDisplay: String
+
+		if !firstInitial.isEmpty && !secondInitial.isEmpty {
+			textToDisplay = firstInitial + secondInitial
+		} else if !firstInitial.isEmpty {
+			textToDisplay = firstInitial + lastInitial
+		} else {
+			textToDisplay = lastInitial
+		}
 
 		let size = CGSize(width: 200, height: 200)
 		let renderer = UIGraphicsImageRenderer(size: size)
