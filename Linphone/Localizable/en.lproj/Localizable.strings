@@ -421,6 +421,8 @@
 "meeting_schedule_add_participants_title" = "Add participants";
 "meeting_schedule_cancel_dialog_message" = "Do you want to cancel the meeting and send a notification to all participants?";
 "meeting_schedule_cancel_dialog_title" = "Cancel the meeting?";
+"meeting_schedule_delete_dialog_title" = "Delete the meeting?";
+"meeting_schedule_delete_dialog_message" = "Do you want to delete the meeting?";
 "meeting_schedule_description_hint" = "Add description";
 "meeting_schedule_description_title" = "Description";
 "meeting_schedule_edit_title" = "Edit meeting";

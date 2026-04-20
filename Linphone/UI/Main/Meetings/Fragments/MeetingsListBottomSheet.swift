@@ -31,6 +31,7 @@ struct MeetingsListBottomSheet: View {
 	@EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@Binding var showingSheet: Bool
+	@Binding var isShowDeleteMeetingNotificationPopup: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	
 	var body: some View {
@@ -65,7 +66,7 @@ struct MeetingsListBottomSheet: View {
 							}
 						} else { 
 							// If we are not the organizer, delete meeting locally without popup
-							meetingsListViewModel.deleteSelectedMeeting()
+							self.isShowDeleteMeetingNotificationPopup = true
 						}
 					}
 				}

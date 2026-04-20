@@ -417,6 +417,8 @@
 "meeting_schedule_add_participants_title" = "Ajouter des participants";
 "meeting_schedule_cancel_dialog_message" = "Voulez-vous annuler la réunion et envoyer une notification aux participants ?";
 "meeting_schedule_cancel_dialog_title" = "Annuler la réunion ?";
+"meeting_schedule_delete_dialog_title" = "Supprimer la réunion ?";
+"meeting_schedule_delete_dialog_message" = "Voulez-vous supprimer la réunion ?";
 "meeting_schedule_description_hint" = "Ajouter une description";
 "meeting_schedule_description_title" = "Description";
 "meeting_schedule_edit_title" = "Modifier la réunion";

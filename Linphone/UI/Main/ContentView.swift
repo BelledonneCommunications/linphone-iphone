@@ -59,6 +59,7 @@ struct ContentView: View {
 	@State var isShowStartCallFragment = false
 	@State var isShowStartConversationFragment = false
 	@State var isShowDismissPopup = false
+	@State var isShowDeleteMeetingNotificationPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowTrustLevelPopup = false
 	@State var isShowIncreaseTrustLevelPopup = false
@@ -935,6 +936,7 @@ struct ContentView: View {
 											MeetingsContainer(
 												meetingsListViewModel: $meetingsListViewModel,
 												isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+												isShowDeleteMeetingNotificationPopup: $isShowDeleteMeetingNotificationPopup,
 												isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
 												text: $text,
 												orientation: orientation
@@ -1639,6 +1641,29 @@ struct ContentView: View {
 						}
 					}
 					
+					if let meetingsListVM = meetingsListViewModel, isShowDeleteMeetingNotificationPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteMeetingNotificationPopup,
+							title: Text("meeting_schedule_delete_dialog_title"),
+							content: !sharedMainViewModel.disableChatFeature ? Text("meeting_schedule_delete_dialog_message") : Text(""),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
+							actionSecondButton: {
+								sharedMainViewModel.displayedMeeting = nil
+								meetingsListVM.deleteSelectedMeeting()
+								self.isShowDeleteMeetingNotificationPopup.toggle()
+							},
+							titleThirdButton: nil,
+							actionThirdButton: {}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowDeleteMeetingNotificationPopup.toggle()
+						}
+					}
+					
 					if isShowTrustLevelPopup {
 						if let displayedFriend = sharedMainViewModel.displayedFriend {
 							PopupView(
@@ -2135,6 +2160,7 @@ struct ConversationsContainer: View {
 struct MeetingsContainer: View {
 	@Binding var meetingsListViewModel: MeetingsListViewModel?
 	@Binding var isShowScheduleMeetingFragment: Bool
+	@Binding var isShowDeleteMeetingNotificationPopup: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	@Binding var text: String
 	var orientation: UIDeviceOrientation
@@ -2144,6 +2170,7 @@ struct MeetingsContainer: View {
 			if let meetingsListVM = meetingsListViewModel {
 				MeetingsView(
 					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+					isShowDeleteMeetingNotificationPopup: $isShowDeleteMeetingNotificationPopup,
 					isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
 					text: $text
 				)
