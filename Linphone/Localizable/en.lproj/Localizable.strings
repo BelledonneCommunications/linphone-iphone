@@ -268,24 +268,18 @@
 "conversation_info_participant_is_admin_label" = "Admin";
 "conversation_info_participants_list_title" = "Group members (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Can't create conversation with a participant not on the same domain due to security restrictions!";
-
-
 "conversation_info_dialog_delete_all_call_logs_title" = "Do you really want to delete all messages?";
 "conversation_info_dialog_delete_all_message" = "All messages will be removed from the history";
 "conversation_info_delete_history_confirm" = "Delete";
 "conversation_info_history_deleted_toast" = "History has been successfully deleted";
-
 "conversation_info_dialog_leave_chatroom_title" = "Leave this conversation?";
 "conversation_info_dialog_leave_chatroom_message" = "You will leave this conversation. You can be added again later.";
 "conversation_info_leave_chatroom_confirm" = "Leave";
 "conversation_info_left_chatroom_toast" = "You have left the conversation";
-
 "conversation_info_dialog_delete_chatroom_title" = "Delete this conversation?";
 "conversation_info_dialog_delete_chatroom_message" = "This conversation will be permanently deleted for you.";
 "conversation_info_delete_chatroom_confirm" = "Delete";
 "conversation_info_chatroom_deleted_toast" = "Conversation deleted";
-
-
 "conversation_menu_search_in_messages" = "Search";
 "conversation_menu_go_to_info" = "Conversation info";
 "conversation_menu_configure_ephemeral_messages" = "Ephemeral messages";

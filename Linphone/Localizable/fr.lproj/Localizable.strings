@@ -265,24 +265,18 @@
 "conversation_info_participant_is_admin_label" = "Administrateur";
 "conversation_info_participants_list_title" = "Participants (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé.";
-
-
 "conversation_info_dialog_delete_all_call_logs_title" = "Supprimer l'historique ?";
 "conversation_info_dialog_delete_all_message" = "Tous les messages de cette conversation seront supprimés.";
 "conversation_info_delete_history_confirm" = "Supprimer";
 "conversation_info_history_deleted_toast" = "Historique supprimé";
-
 "conversation_info_dialog_leave_chatroom_title" = "Quitter la conversation ?";
 "conversation_info_dialog_leave_chatroom_message" = "Vous allez quitter cette conversation. Vous pourrez y être ajouté à nouveau plus tard.";
 "conversation_info_leave_chatroom_confirm" = "Quitter";
 "conversation_info_left_chatroom_toast" = "Vous avez quitté la conversation";
-
 "conversation_info_dialog_delete_chatroom_title" = "Supprimer la conversation ?";
 "conversation_info_dialog_delete_chatroom_message" = "Cette conversation sera définitivement supprimée pour vous.";
 "conversation_info_delete_chatroom_confirm" = "Supprimer";
 "conversation_info_chatroom_deleted_toast" = "Conversation supprimée";
-
-
 "conversation_menu_search_in_messages" = "Chercher";
 "conversation_menu_go_to_info" = "Informations";
 "conversation_menu_configure_ephemeral_messages" = "Messages éphémères";
