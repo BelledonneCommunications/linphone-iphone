@@ -53,6 +53,8 @@ struct MeetingsListBottomSheet: View {
 				.padding(.trailing)
 			}
 			
+			Spacer()
+			
 			Button {
 				CoreContext.shared.doOnCoreQueue { core in
 					if let organizerUri = self.meetingsListViewModel.selectedMeetingToDelete?.confInfo.organizer {
