@@ -209,11 +209,11 @@ final class ContactsManager: ObservableObject {
 		let textToDisplay: String
 
 		if !firstInitial.isEmpty && !secondInitial.isEmpty {
-			textToDisplay = firstInitial + secondInitial
+			textToDisplay = firstInitial.uppercased() + secondInitial.uppercased()
 		} else if !firstInitial.isEmpty {
-			textToDisplay = firstInitial + lastInitial
+			textToDisplay = firstInitial.uppercased() + lastInitial.uppercased()
 		} else {
-			textToDisplay = lastInitial
+			textToDisplay = lastInitial.uppercased()
 		}
 
 		let size = CGSize(width: 200, height: 200)
