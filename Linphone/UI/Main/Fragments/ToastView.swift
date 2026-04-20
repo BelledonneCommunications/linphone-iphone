@@ -72,6 +72,13 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_remove_contact":
+						Text("contact_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_remove_call_logs":
 						Text("call_history_deleted_toast")
 							.multilineTextAlignment(.center)

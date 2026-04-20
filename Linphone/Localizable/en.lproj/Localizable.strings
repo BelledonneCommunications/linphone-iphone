@@ -173,6 +173,7 @@
 "conference_share_link_title" = "Share invitation";
 "connection_error_for_non_default_account" = "Account(s) connection error";
 "contact_call_action" = "Call";
+"contact_deleted_toast" = "Contact has been removed";
 "contact_details_actions_title" = "Other actions";
 "contact_details_add_to_favourites" = "Add to favourites";
 "contact_details_delete" = "Delete";

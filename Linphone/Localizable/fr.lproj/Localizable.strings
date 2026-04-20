@@ -170,6 +170,7 @@
 "conference_share_link_title" = "Partager le lien";
 "connection_error_for_non_default_account" = "Compte(s) non connecté(s)";
 "contact_call_action" = "Appel";
+"contact_deleted_toast" = "Contact supprimé";
 "contact_details_actions_title" = "Autres actions";
 "contact_details_add_to_favourites" = "Ajouter aux favoris";
 "contact_details_delete" = "Supprimer";
