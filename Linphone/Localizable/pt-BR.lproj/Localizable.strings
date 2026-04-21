@@ -569,3 +569,13 @@
 "settings_developer_enabled_toast" = "Configurações de desenvolvedor ativadas";
 "settings_developer_already_enabled_toast" = "Configurações de desenvolvedor já ativadas";
 "settings_developer_clear_native_friends_in_database_title" = "Limpar contatos importados da agenda nativa";
+"dialog_understood" = "Entendido";
+"early_push_missed_call_title" = "Chamada perdida";
+"contact_deleted_toast" = "O contato foi removido";
+"conversation_info_dialog_delete_all_call_logs_title" = "Você realmente quer excluir todas as mensagens?";
+"conversation_info_dialog_delete_all_message" = "Todas as mensagens serão removidas do histórico";
+"conversation_info_delete_history_confirm" = "Excluir";
+"conversation_info_history_deleted_toast" = "O histórico foi excluído com sucesso";
+"conversation_info_delete_chatroom_confirm" = "Excluir";
+"meeting_schedule_delete_dialog_title" = "Excluir a reunião?";
+"meeting_schedule_delete_dialog_message" = "Você quer excluir a reunião?";

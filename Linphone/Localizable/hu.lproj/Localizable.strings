@@ -87,3 +87,6 @@
 "dialog_do_not_show_anymore" = "Ne mutassa többet ezt az ablakot";
 "dialog_confirm" = "Megerősít";
 "settings_developer_clear_native_friends_in_database_title" = "Importált névjegyek törlése a telefon névjegyzékéből";
+"early_push_missed_call_title" = "Nem fogadott hívás";
+"conversation_info_delete_history_confirm" = "Törlés";
+"conversation_info_delete_chatroom_confirm" = "Törlés";

@@ -70,3 +70,6 @@
 "welcome_page_title" = "Witamy";
 "dialog_confirm" = "Potwierdź";
 "dialog_do_not_show_anymore" = "Nie pokazuj więcej tego okna dialogowego";
+"early_push_missed_call_title" = "Nieodebrane połączenie";
+"conversation_info_delete_history_confirm" = "Usuń";
+"conversation_info_delete_chatroom_confirm" = "Usuń";

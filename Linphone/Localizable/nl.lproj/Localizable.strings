@@ -459,3 +459,12 @@
 "settings_developer_already_enabled_toast" = "Ontwikkelaarsinstellingen zijn al ingeschakeld";
 "settings_developer_clear_native_friends_in_database_title" = "Geïmporteerde contacten uit het lokale adresboek verwijderen";
 "welcome_carousel_skip" = "Sla over";
+"early_push_missed_call_title" = "Gemiste oproep";
+"contact_deleted_toast" = "Contact is verwijderd";
+"conversation_info_dialog_delete_all_call_logs_title" = "Wil je echt alle berichten verwijderen?";
+"conversation_info_dialog_delete_all_message" = "Alle berichten worden uit de geschiedenis verwijderd";
+"conversation_info_delete_history_confirm" = "Verwijderen";
+"conversation_info_history_deleted_toast" = "Geschiedenis is succesvol verwijderd";
+"conversation_info_delete_chatroom_confirm" = "Verwijderen";
+"meeting_schedule_delete_dialog_title" = "Vergadering verwijderen?";
+"meeting_schedule_delete_dialog_message" = "Wil je de vergadering verwijderen?";

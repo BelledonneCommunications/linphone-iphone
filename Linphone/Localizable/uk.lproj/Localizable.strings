@@ -575,3 +575,12 @@
 "settings_developer_enable_vu_meters_title" = "Увімкнути індикатори гучності запису/відтворення під час дзвінка";
 "settings_developer_enable_advanced_call_stats_title" = "Показати розширену статистику викликів";
 "settings_developer_clear_native_friends_in_database_title" = "Очистити імпортовані контакти з власної адресної книги";
+"early_push_missed_call_title" = "Пропущений виклик";
+"contact_deleted_toast" = "Контакт було видалено";
+"conversation_info_dialog_delete_all_call_logs_title" = "Ви дійсно хочете видалити всі повідомлення?";
+"conversation_info_dialog_delete_all_message" = "Усі повідомлення будуть видалені з історії";
+"conversation_info_delete_history_confirm" = "Видалити";
+"conversation_info_history_deleted_toast" = "Історію успішно видалено";
+"conversation_info_delete_chatroom_confirm" = "Видалити";
+"meeting_schedule_delete_dialog_title" = "Видалити нараду?";
+"meeting_schedule_delete_dialog_message" = "Ви хочете видалити нараду?";

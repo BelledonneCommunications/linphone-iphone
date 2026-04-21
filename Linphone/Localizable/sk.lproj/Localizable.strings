@@ -432,3 +432,12 @@
 "settings_developer_enabled_toast" = "Vývojárske nastavenia povolené";
 "settings_developer_already_enabled_toast" = "Vývojárske nastavenia sú už povolené";
 "settings_developer_clear_native_friends_in_database_title" = "Vymazať importované kontakty zo systémového adresára";
+"early_push_missed_call_title" = "Zmeškaný hovor";
+"contact_deleted_toast" = "Kontakt bol odstránený";
+"conversation_info_dialog_delete_all_call_logs_title" = "Skutočne chcete vymazať všetky správy?";
+"conversation_info_dialog_delete_all_message" = "Z histórie budú odstránené všetky správy";
+"conversation_info_delete_history_confirm" = "Vymazať";
+"conversation_info_history_deleted_toast" = "História bola úspešne vymazaná";
+"conversation_info_delete_chatroom_confirm" = "Vymazať";
+"meeting_schedule_delete_dialog_title" = "Vymazať schôdzku?";
+"meeting_schedule_delete_dialog_message" = "Želáte si vymazať schôdzku?";

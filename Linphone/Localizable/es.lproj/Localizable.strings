@@ -174,3 +174,6 @@
 "settings_developer_enabled_toast" = "Configuración de desarrollador habilitada";
 "settings_developer_already_enabled_toast" = "Configuración de desarrollador ya habilitada";
 "settings_developer_clear_native_friends_in_database_title" = "Borrar contactos importados de la libreta de direcciones nativa";
+"early_push_missed_call_title" = "Llamada perdida";
+"conversation_info_delete_history_confirm" = "Eliminar";
+"conversation_info_delete_chatroom_confirm" = "Eliminar";

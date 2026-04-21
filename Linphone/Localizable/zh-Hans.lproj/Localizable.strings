@@ -415,3 +415,12 @@
 "settings_developer_enabled_toast" = "开发人员设置已启用";
 "settings_developer_already_enabled_toast" = "开发人员设置已启用";
 "settings_developer_clear_native_friends_in_database_title" = "从本地通讯簿中清除导入的联系人";
+"early_push_missed_call_title" = "未接来电";
+"contact_deleted_toast" = "联系人已删除";
+"conversation_info_dialog_delete_all_call_logs_title" = "您真的要删除所有邮件吗？";
+"conversation_info_dialog_delete_all_message" = "所有消息都将从历史记录中删除";
+"conversation_info_delete_history_confirm" = "删除";
+"conversation_info_history_deleted_toast" = "历史记录已成功删除";
+"conversation_info_delete_chatroom_confirm" = "删除";
+"meeting_schedule_delete_dialog_title" = "删除会议？";
+"meeting_schedule_delete_dialog_message" = "您想删除会议吗？";
