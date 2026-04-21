@@ -88,6 +88,8 @@ struct ConversationFragment: View {
 	@Binding var showDeleteConversationPopup: Bool
 	@Binding var showDeleteConversationHistoryPopup: Bool
 	
+	@Binding var securitySheet: Bool
+	
 	@State var searchText: String = ""
 	@State var messageText: String = ""
 	
@@ -624,11 +626,12 @@ struct ConversationFragment: View {
 							UIList(
 								geometryProxy: geometry,
                                 sections: conversationViewModel.conversationMessagesSection,
+								securitySheet: $securitySheet,
                                 isMessageTextFocused: Binding(get: {
                                     isMessageTextFocused
                                 }, set: { newValue in
                                     isMessageTextFocused = newValue
-                                })
+								})
                             )
 							.environmentObject(conversationViewModel)
 							.environmentObject(conversationsListViewModel)

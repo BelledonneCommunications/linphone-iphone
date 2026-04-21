@@ -232,6 +232,8 @@
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
 "conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Guaranteed confidentiality";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Thanks to end-to-end encryption technology in Linphone, messages, calls and meetings confidentiality are guaranteed. No-one can decrypt exchanged data, not even ourselves.";
 "conversation_ephemeral_messages_duration_disabled" = "Disabled";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d days";
 "conversation_ephemeral_messages_duration_one_day" = "1 day";

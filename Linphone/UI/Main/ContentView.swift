@@ -96,6 +96,8 @@ struct ContentView: View {
 	@State var showDeleteConversationPopup: Bool = false
 	@State var showDeleteConversationHistoryPopup: Bool = false
 	
+	@State private var securitySheet = false
+	
 	var body: some View {
 		GeometryReader { geometry in
 			VStack(spacing: 0) {
@@ -1200,7 +1202,8 @@ struct ContentView: View {
 									conversationInfoPopupText: $conversationInfoPopupText,
 									showLeaveConversationPopup: $showLeaveConversationPopup,
 									showDeleteConversationPopup: $showDeleteConversationPopup,
-									showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
+									showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
+									securitySheet: $securitySheet
 								)
 								.environmentObject(conversationsListVM)
 								.environmentObject(accountProfileViewModel)
@@ -1962,6 +1965,38 @@ struct ContentView: View {
 				isShowUpdatePasswordPopup = true
 			}
 		}
+		.sheet(isPresented: $securitySheet, onDismiss: {
+			securitySheet = false
+		}, content: {
+			if #available(iOS 16.0, *) {
+				VStack {
+					Text("conversation_end_to_end_encrypted_bottom_sheet_title")
+						.default_text_style_700(styleSize: 18)
+						.multilineTextAlignment(.center)
+					
+					Spacer()
+					
+					Image("profile-secure-logo")
+							  .resizable()
+							  .frame(width: 100, height: 100)
+					
+					Spacer()
+					
+					Text("conversation_end_to_end_encrypted_bottom_sheet_message")
+						.default_text_style(styleSize: 14)
+						.multilineTextAlignment(.center)
+					
+					Spacer()
+					
+					Text("conversation_end_to_end_encrypted_bottom_sheet_link")
+						.default_text_style(styleSize: 14)
+						.underline()
+				}
+				.padding(.vertical, 20)
+				.padding(.horizontal, 30)
+				.presentationDetents([.medium])
+			}
+		})
 		.overlay {
 			if isMenuOpen {
 				Color.white.opacity(0.001)
