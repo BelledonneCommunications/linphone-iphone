@@ -79,7 +79,7 @@ class CoreContext: ObservableObject {
 
 	@objc private func onMDMConfigurationApplied(_ notification: Notification) {
 		Log.info("[CoreContext] MDM configuration applied, refreshing configuration")
-		CoreContext.shared.performActionOnCoreQueueWhenCoreIsStarted { core in
+		CoreContext.shared.doOnCoreQueue { core in
 			self.handleConfigurationChanged(status: .Successful)
 		}
 	}
@@ -122,7 +122,7 @@ class CoreContext: ObservableObject {
 		}
 	}
 	
-	func doOnCoreQueue(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
+	func doOnCoreQueueCoreStarted(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
 		let isOnQueue = DispatchQueue.getSpecific(key: coreQueueKey) != nil
 
 		let execute = {
@@ -132,7 +132,7 @@ class CoreContext: ObservableObject {
 			}
 			lambda(self.mCore)
 		}
-
+		
 		switch (synchronous, isOnQueue) {
 		case (true, true), (false, true):
 			// Already on the queue → run directly
@@ -567,9 +567,9 @@ class CoreContext: ObservableObject {
 		fatalError("Crashing app to test crashlytics")
 	}
 	
-	func performActionOnCoreQueueWhenCoreIsStarted(action: @escaping (_ core: Core) -> Void ) {
+	func doOnCoreQueue(synchronous: Bool = false, action: @escaping (_ core: Core) -> Void ) {
 		if coreIsStarted {
-			doOnCoreQueue { core in
+			doOnCoreQueueCoreStarted(synchronous: synchronous) { core in
 				action(core)
 			}
 		} else {
