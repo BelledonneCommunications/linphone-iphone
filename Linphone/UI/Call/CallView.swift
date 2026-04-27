@@ -54,7 +54,7 @@ struct CallView: View {
 	@State var angleDegree = 0.0
 	@State var showingDialer = false
     @State var topBarHeight: CGFloat = 45.0
-    @State var minBottomSheetHeight: CGFloat = 0.25
+    // @State var minBottomSheetHeight: CGFloat = 0.27
 	@State var maxBottomSheetHeight: CGFloat = 0.6
 	@State private var pointingUp: CGFloat = 0.0
 	@State private var currentOffset: CGFloat = 0.0
@@ -74,6 +74,8 @@ struct CallView: View {
 	@Binding var isShowEditContactFragment: Bool
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
+	
+	@State private var didInit = false
 	
 	var body: some View {
 		GeometryReader { geo in
@@ -209,9 +211,7 @@ struct CallView: View {
 				
 				if callViewModel.zrtpPopupDisplayed == true {
 					if idiom != .pad 
-						&& (orientation == .landscapeLeft
-							|| orientation == .landscapeRight
-							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+						&& geo.size.width > geo.size.height
 						&& buttonSize != 45 {
 						ZRTPPopup(callViewModel: callViewModel, resizeView: 1.5)
 							.background(.black.opacity(0.65))
@@ -251,6 +251,9 @@ struct CallView: View {
 	
 	@ViewBuilder
 	func innerView(geometry: GeometryProxy) -> some View {
+		let isLandscape = geometry.size.width > geometry.size.height
+		let minBottomSheetHeight = isLandscape ? 0.25 : 0.27
+		
 		ZStack(alignment: .bottom) {
 			VStack {
 				if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
@@ -420,7 +423,7 @@ struct CallView: View {
                     .frame(height: topBarHeight)
 				}
 				
-				simpleCallView(geometry: geometry)
+				simpleCallView(geometry: geometry, minBottomSheetHeight: minBottomSheetHeight)
 					.frame(
 						width: geometry.size.width,
 						height: geometry.size.height + geometry.safeAreaInsets.bottom + (callViewModel.calls.count > 1 ? 40 : geometry.safeAreaInsets.top)
@@ -432,7 +435,7 @@ struct CallView: View {
 					let minHeight = (minBottomSheetHeight * geometry.size.height) + topBarHeight
                     let maxHeight = (maxBottomSheetHeight * geometry.size.height) + topBarHeight
 					BottomSheetView(
-						content: bottomSheetContent(geo: geometry),
+						content: bottomSheetContent(geo: geometry, minBottomSheetHeight: minBottomSheetHeight),
 						minHeight: minHeight,
 						maxHeight: maxHeight,
 						currentOffset: $currentOffset,
@@ -457,7 +460,7 @@ struct CallView: View {
 	}
 	
 	// swiftlint:disable:next cyclomatic_complexity
-	func simpleCallView(geometry: GeometryProxy) -> some View {
+	func simpleCallView(geometry: GeometryProxy, minBottomSheetHeight: Double) -> some View {
 		ZStack() {
 			if callViewModel.isOneOneCall {
 				VStack {
@@ -614,11 +617,19 @@ struct CallView: View {
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
 				let heightValue = (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
 				if optionsChangeLayout == 1 && callViewModel.participantList.count <= 5 && callViewModel.activeSpeakerParticipant?.isScreenSharing == false {
-					mosaicMode(geometry: geometry, height: heightValue)
+					mosaicMode(geometry: geometry, height: heightValue, minBottomSheetHeight: minBottomSheetHeight)
 				} else if optionsChangeLayout == 3 && callViewModel.activeSpeakerParticipant?.isScreenSharing == false {
 					audioOnlyMode(geometry: geometry, height: heightValue)
 				} else {
 					activeSpeakerMode(geometry: geometry)
+						.onAppear {
+							guard !didInit else { return }
+							didInit = true
+							
+							DispatchQueue.main.async {
+								callViewModel.resetCallView()
+							}
+						}
 				}
 			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.participantList.isEmpty {
 				VStack {
@@ -667,6 +678,13 @@ struct CallView: View {
 				}
 				.onAppear {
 					fullscreenVideo = false
+					
+					guard !didInit && geometry.safeAreaInsets.bottom > 0 else { return }
+					didInit = true
+					
+					DispatchQueue.main.async {
+						callViewModel.resetCallView()
+					}
 				}
 				
 				HStack {
@@ -755,17 +773,16 @@ struct CallView: View {
 			orientation = newOrientation
 			if orientation == .portrait || orientation == .portraitUpsideDown {
 				angleDegree = 0
-			} else {
-				if orientation == .landscapeLeft {
-					angleDegree = -90
-				} else if orientation == .landscapeRight {
-					angleDegree = 90
-				} else if UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-					angleDegree = 90
-				}
+			} else if orientation == .landscapeLeft {
+				angleDegree = -90
+			} else if orientation == .landscapeRight {
+				angleDegree = 90
+			} else if geometry.size.width > geometry.size.height {
+				angleDegree = 90
 			}
 			
-			if (oldOrientation != orientation && oldOrientation != .faceUp) || (oldOrientation == .faceUp && (orientation == .landscapeLeft || orientation == .landscapeRight)) {
+			if oldOrientation != orientation &&
+			   (oldOrientation != .faceUp || orientation.isLandscape) {
 				telecomManager.callStarted = false
 				
 				DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -776,16 +793,14 @@ struct CallView: View {
 			callViewModel.orientationUpdate(orientation: orientation)
 		}
 		.onAppear {
-			if orientation == .portrait && orientation == .portraitUpsideDown {
+			if orientation == .portrait || orientation == .portraitUpsideDown {
 				angleDegree = 0
-			} else {
-				if orientation == .landscapeLeft {
-					angleDegree = -90
-				} else if orientation == .landscapeRight {
-					angleDegree = 90
-				} else if UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
-					angleDegree = 90
-				}
+			} else if orientation == .landscapeLeft {
+				angleDegree = -90
+			} else if orientation == .landscapeRight {
+				angleDegree = 90
+			} else if geometry.size.width > geometry.size.height {
+				angleDegree = 90
 			}
 			
 			callViewModel.orientationUpdate(orientation: orientation)
@@ -800,7 +815,7 @@ struct CallView: View {
 	// swiftlint:disable:next cyclomatic_complexity
 	func activeSpeakerMode(geometry: GeometryProxy) -> some View {
 		ZStack {
-			let isLandscapeMode = (orientation == .landscapeLeft || orientation == .landscapeRight || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
+			let isLandscapeMode = geometry.size.width > geometry.size.height
 			if callViewModel.activeSpeakerParticipant!.onPause {
 				VStack {
 					VStack {
@@ -1287,7 +1302,7 @@ struct CallView: View {
 	}
 	
 	// swiftlint:disable:next cyclomatic_complexity
-	func mosaicMode(geometry: GeometryProxy, height: Double) -> some View {
+	func mosaicMode(geometry: GeometryProxy, height: Double, minBottomSheetHeight: Double) -> some View {
 		VStack {
 			if geometry.size.width < geometry.size.height {
 				let maxValue = max(
@@ -1881,7 +1896,7 @@ struct CallView: View {
 	}
 	
 	// swiftlint:disable:next cyclomatic_complexity
-    func bottomSheetContent(geo: GeometryProxy) -> some View {
+	func bottomSheetContent(geo: GeometryProxy, minBottomSheetHeight: Double) -> some View {
         VStack(spacing: 0) {
             let minHeight = (minBottomSheetHeight * geo.size.height) + topBarHeight
             let maxHeight = (maxBottomSheetHeight * geo.size.height) + topBarHeight
@@ -2015,7 +2030,7 @@ struct CallView: View {
             .padding(.horizontal, 20)
             .padding(.top, -5)
             
-            if orientation != .landscapeLeft && orientation != .landscapeRight {
+			if !orientation.isLandscape {
                 HStack(spacing: 0) {
                     if callViewModel.isOneOneCall {
                         VStack {
