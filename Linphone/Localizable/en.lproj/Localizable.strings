@@ -229,6 +229,7 @@
 "conversation_dialog_delete_for_everyone_label" = "Delete for everyone";
 "conversation_message_content_deleted_label" = "This message has been deleted";
 "conversation_message_content_deleted_by_us_label" = "You have deleted this message";
+"conversation_message_deleted_toast" = "Message has been deleted";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
 "conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";

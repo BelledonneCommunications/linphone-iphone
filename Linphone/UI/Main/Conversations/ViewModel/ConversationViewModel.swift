@@ -3011,6 +3011,7 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					self.selectedMessage = nil
+					ToastViewModel.shared.show("Success_message_deleted")
 				}
 			}
 		}

@@ -86,6 +86,13 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_message_deleted":
+						Text("conversation_message_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_remove_conversation_history":
 						Text("conversation_info_history_deleted_toast")
 							.multilineTextAlignment(.center)
