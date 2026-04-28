@@ -34,6 +34,7 @@ struct ParticipantsListFragment: View {
 	
 	@Binding var isShowParticipantsListFragment: Bool
 	
+	@State private var isAdmin = false
 	@State private var isShowPopup = false
 	@State private var indexToRemove = -1
 	
@@ -81,7 +82,7 @@ struct ParticipantsListFragment: View {
 					HStack {
 						Spacer()
 						
-						if callViewModel.myParticipantModel != nil && callViewModel.myParticipantModel!.isAdmin {
+						if isAdmin {
 							NavigationLink(destination: {
 								AddParticipantsFragment(addParticipantsViewModel: addParticipantsViewModel, confirmAddParticipantsFunc: callViewModel.addParticipants, dismissOnCheckClick: true)
 									.onAppear {
@@ -131,6 +132,9 @@ struct ParticipantsListFragment: View {
 				}
 			}
 			.navigationBarHidden(true)
+		}
+		.onAppear {
+			isAdmin = callViewModel.myParticipantModel?.isAdmin ?? false
 		}
 	}
 	
