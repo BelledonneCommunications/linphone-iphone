@@ -1272,6 +1272,24 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
+	func attendedTransferCallTo(to: Call) {
+		if self.currentCall != nil && self.currentCall!.remoteAddress != nil {
+			Log.info(
+				"[CallViewModel] Call \(self.currentCall!.remoteAddress!.asStringUriOnly()) is being transferred to \(to.remoteAddress?.asStringUriOnly() ?? "")"
+			)
+			
+			do {
+				try self.currentCall!.transferToAnother(dest: to)
+				Log.info("[CallViewModel] Blind call transfer is successful")
+			} catch _ {
+				DispatchQueue.main.async {
+					ToastViewModel.shared.show("Failed_toast_call_transfer_failed")
+				}
+				Log.error("[CallViewModel] Failed to make blind call transfer!")
+			}
+		}
+	}
+	
 	func toggleAdminParticipant(index: Int) {
 		coreContext.doOnCoreQueue { _ in
 			self.currentCall?.conference?.participantList.forEach({ participant in

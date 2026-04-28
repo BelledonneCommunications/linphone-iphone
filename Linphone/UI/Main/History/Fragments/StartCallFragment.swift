@@ -35,9 +35,11 @@ struct StartCallFragment: View {
 	
 	@State private var contactAvatarModel: ContactAvatarModel? = nil
 	
+	@State private var transferCall: Call? = nil
 	@State private var transferAddress: Address? = nil
 	@State private var isShowTransferPopup: Bool = false
 	@State private var isShowSipAddressesPopup: Bool = false
+	@State private var isTransferFromExistingCall: Bool = false
 	
 	@Binding var showingDialer: Bool
 	@Binding var isShowStartCallFragment: Bool
@@ -572,12 +574,19 @@ struct StartCallFragment: View {
 							withAnimation {
 								isShowStartCallFragment.toggle()
 								if let transferAddress = self.transferAddress {
-									callViewModel.blindTransferCallTo(toAddress: transferAddress)
+									if let transferCall = self.transferCall, isTransferFromExistingCall {
+										callViewModel.attendedTransferCallTo(to: transferCall)
+									} else {
+										callViewModel.blindTransferCallTo(toAddress: transferAddress)
+									}
+									
+									self.transferCall = nil
 									self.transferAddress = nil
 								}
 							}
 							
-							self.isShowTransferPopup.toggle()
+							self.isTransferFromExistingCall = false
+							self.isShowTransferPopup = false
 						},
 						titleThirdButton: Text("dialog_cancel"),
 						actionThirdButton: {
@@ -618,7 +627,9 @@ struct StartCallFragment: View {
 		ForEach(0..<callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false }).count, id: \.self) { index in
 			Button {
 				if callViewModel.isTransferInsteadCall {
-					self.transferAddress = callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false })[index].remoteAddress
+					self.transferCall = callViewModel.calls.filter({ $0.remoteAddress?.equal(address2: remoteAddress) == false })[index]
+					self.transferAddress = transferCall?.remoteAddress
+					self.isTransferFromExistingCall = true
 					self.isShowTransferPopup = true
 				}
 			} label: {
@@ -656,6 +667,14 @@ struct StartCallFragment: View {
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.foregroundStyle(Color.orangeMain500)
 						}
+						
+						Image("phone-transfer")
+							.renderingMode(.template)
+							.resizable()
+							.foregroundStyle(Color.grayMain2c600)
+							.frame(width: 25, height: 25)
+							.padding(.trailing, 10)
+						
 					} else {
 						Image("profil-picture-default")
 							.resizable()
