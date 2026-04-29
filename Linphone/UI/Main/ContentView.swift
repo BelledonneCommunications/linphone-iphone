@@ -1887,6 +1887,10 @@ struct ContentView: View {
 						.transition(.scale.combined(with: .move(edge: .top)))
 						.onAppear {
 							UIApplication.shared.isIdleTimerDisabled = true
+                            
+                            isShowStartCallFragment = false
+                            isShowStartConversationFragment = false
+                            
 							callViewModel.resetCallView()
 							if callViewModel.callsCounter >= 1 {
 								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
