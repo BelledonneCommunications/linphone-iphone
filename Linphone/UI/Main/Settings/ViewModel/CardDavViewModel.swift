@@ -183,6 +183,14 @@ class CardDavViewModel: ObservableObject {
 			if self.isEdit && self.friendList != nil {
 				Log.info("\(CardDavViewModel.TAG) Changes were made to CardDAV friend list \(name), synchronizing it")
 				self.addFriendListDelegate(friendList: self.friendList!)
+				if let friendList = self.friendList {
+					friendList.displayName = name
+					friendList.uri = if (server.hasPrefix("http://") || server.hasPrefix("https://")) {
+						server
+					} else {
+						"https://$server"
+					}
+				}
 			} else {
 				self.friendList = try? core.createFriendList()
 				
