@@ -53,9 +53,9 @@ struct CallView: View {
 	@State var imageAudioRoute: String = ""
 	@State var angleDegree = 0.0
 	@State var showingDialer = false
-    @State var topBarHeight: CGFloat = 45.0
-    // @State var minBottomSheetHeight: CGFloat = 0.27
-	@State var maxBottomSheetHeight: CGFloat = 0.6
+	@State var topBarHeight: CGFloat = 50.0
+    @State var minBottomSheetHeight: CGFloat = 0.15
+	@State var maxBottomSheetHeight: CGFloat = 0.35
 	@State private var pointingUp: CGFloat = 0.0
 	@State private var currentOffset: CGFloat = 0.0
 	@State var displayVideo = false
@@ -196,7 +196,6 @@ struct CallView: View {
 					CallsListFragment(callViewModel: callViewModel, isShowCallsListFragment: $isShowCallsListFragment)
 						.zIndex(4)
 						.transition(.move(edge: .bottom))
-						.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 				}
 				
 				if isShowParticipantsListFragment {
@@ -206,7 +205,6 @@ struct CallView: View {
 						.onAppear {
 							addParticipantsViewModel = AddParticipantsViewModel()
 						}
-						.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 				}
 				
 				if callViewModel.zrtpPopupDisplayed == true {
@@ -215,11 +213,9 @@ struct CallView: View {
 						&& buttonSize != 45 {
 						ZRTPPopup(callViewModel: callViewModel, resizeView: 1.5)
 							.background(.black.opacity(0.65))
-							.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 					} else {
 						ZRTPPopup(callViewModel: callViewModel, resizeView: buttonSize == 45 ? 1.5 : 1)
 							.background(.black.opacity(0.65))
-							.padding(.bottom, geo.safeAreaInsets.top + geo.safeAreaInsets.bottom)
 					}
 				}
 				
@@ -251,11 +247,12 @@ struct CallView: View {
 	
 	@ViewBuilder
 	func innerView(geometry: GeometryProxy) -> some View {
-		let isLandscape = geometry.size.width > geometry.size.height
-		let minBottomSheetHeight = isLandscape ? 0.25 : 0.27
+		// let isLandscape = geometry.size.width > geometry.size.height
+		// let minBottomSheetHeight = isLandscape ? 0.10 : 0.25
+		let minHeight = minBottomSheetHeight * UIScreen.main.bounds.height
 		
 		ZStack(alignment: .bottom) {
-			VStack {
+			VStack(spacing: 0) {
 				if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 					ZStack {
 						HStack {
@@ -341,8 +338,6 @@ struct CallView: View {
 							}
 						}
 						.frame(height: topBarHeight)
-                        .padding(.leading, geometry.safeAreaInsets.leading)
-                        .padding(.trailing, geometry.safeAreaInsets.trailing)
 						.zIndex(1)
 						
 						if !telecomManager.outgoingCallStarted && telecomManager.callInProgress {
@@ -416,31 +411,33 @@ struct CallView: View {
 								mediaEncryptedSheet = true
 							}
 							.frame(height: topBarHeight)
-							.padding(.leading, geometry.safeAreaInsets.leading)
 							.zIndex(1)
 						}
 					}
                     .frame(height: topBarHeight)
+					.background(Color.gray900)
 				}
 				
 				simpleCallView(geometry: geometry, minBottomSheetHeight: minBottomSheetHeight)
-					.frame(
-						width: geometry.size.width,
-						height: geometry.size.height + geometry.safeAreaInsets.bottom + (callViewModel.calls.count > 1 ? 40 : geometry.safeAreaInsets.top)
-					)
+					.background(Color.gray900)
+					.safeAreaInset(edge: .bottom) {
+						Color.clear.frame(height: minHeight)
+					}
+				
+				Color.gray600
+					.frame(height: 1)
 			}
 			
 			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
 				if telecomManager.callStarted {
-					let minHeight = (minBottomSheetHeight * geometry.size.height) + topBarHeight
-                    let maxHeight = (maxBottomSheetHeight * geometry.size.height) + topBarHeight
+					let maxHeight = maxBottomSheetHeight * UIScreen.main.bounds.height
+					
 					BottomSheetView(
 						content: bottomSheetContent(geo: geometry, minBottomSheetHeight: minBottomSheetHeight),
 						minHeight: minHeight,
 						maxHeight: maxHeight,
 						currentOffset: $currentOffset,
-						pointingUp: $pointingUp,
-						bottomSafeArea: geometry.safeAreaInsets.bottom
+						pointingUp: $pointingUp
 					)
 					.onAppear {
 						currentOffset = minHeight
@@ -450,13 +447,10 @@ struct CallView: View {
 						currentOffset = minHeight
 						pointingUp = -(((currentOffset - minHeight) / (maxHeight - minHeight)) - 0.5) * 2
 					}
-                    .padding(.leading, geometry.safeAreaInsets.leading)
-                    .padding(.trailing, geometry.safeAreaInsets.trailing)
 				}
 			}
 		}
-        .background(Color.gray900)
-        .ignoresSafeArea()
+		.background(Color.gray600)
 	}
 	
 	// swiftlint:disable:next cyclomatic_complexity
@@ -614,7 +608,7 @@ struct CallView: View {
 					}
 					.background(.clear)
 				}
-			} else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
+			}/* else if callViewModel.isConference && !telecomManager.outgoingCallStarted && callViewModel.activeSpeakerParticipant != nil {
 				let heightValue = (fullscreenVideo && !telecomManager.isPausedByRemote ? geometry.size.height : geometry.size.height - (minBottomSheetHeight * geometry.size.height > 80 ? minBottomSheetHeight * geometry.size.height : 78) - 40 - 20 + geometry.safeAreaInsets.bottom)
 				if optionsChangeLayout == 1 && callViewModel.participantList.count <= 5 && callViewModel.activeSpeakerParticipant?.isScreenSharing == false {
 					mosaicMode(geometry: geometry, height: heightValue, minBottomSheetHeight: minBottomSheetHeight)
@@ -725,7 +719,7 @@ struct CallView: View {
 					.padding(10)
 					.padding(.trailing, abs(angleDegree/2))
 				}
-			} else if telecomManager.outgoingCallStarted {
+			}*/ else if telecomManager.outgoingCallStarted {
 				ProgressView()
 					.progressViewStyle(CircularProgressViewStyle(tint: .white))
 					.frame(width: 60, height: 60, alignment: .center)
@@ -752,22 +746,10 @@ struct CallView: View {
 				}
 			}
 		}
+		.frame(maxWidth: .infinity)
 		.background(Color.gray900)
-		.frame(
-            width: geometry.size.width + (
-                fullscreenVideo
-                ? geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing
-                : 0
-            ),
-            height: geometry.size.height + geometry.safeAreaInsets.bottom + geometry.safeAreaInsets.top - (
-                fullscreenVideo
-                ? 0
-                : (minBottomSheetHeight * geometry.size.height) + topBarHeight + 5
-            )
-		)
 		.cornerRadius(fullscreenVideo ? 0 : 20)
-        .padding(.leading, fullscreenVideo ? geometry.safeAreaInsets.leading + geometry.safeAreaInsets.trailing : 0)
-        .padding(.bottom, fullscreenVideo ? 0 : (minBottomSheetHeight * geometry.size.height) + topBarHeight + 5)
+		.padding(.all, fullscreenVideo ? 0 : 10)
 		.onRotate { newOrientation in
 			let oldOrientation = orientation
 			orientation = newOrientation
@@ -812,6 +794,7 @@ struct CallView: View {
 		})
 	}
 	
+	/*
 	// swiftlint:disable:next cyclomatic_complexity
 	func activeSpeakerMode(geometry: GeometryProxy) -> some View {
 		ZStack {
@@ -1894,19 +1877,17 @@ struct CallView: View {
 			.frame(width: geometry.size.width, height: height)
 		}
 	}
+	*/
 	
 	// swiftlint:disable:next cyclomatic_complexity
 	func bottomSheetContent(geo: GeometryProxy, minBottomSheetHeight: Double) -> some View {
         VStack(spacing: 0) {
-            let minHeight = (minBottomSheetHeight * geo.size.height) + topBarHeight
-            let maxHeight = (maxBottomSheetHeight * geo.size.height) + topBarHeight
+			let minHeight = minBottomSheetHeight * UIScreen.main.bounds.height
+			let maxHeight = maxBottomSheetHeight * UIScreen.main.bounds.height
+			
             Button {
                 withAnimation {
-                    if currentOffset < maxHeight {
-                        currentOffset = maxHeight
-                    } else {
-                        currentOffset = minHeight
-                    }
+					currentOffset = min(max(currentOffset, minHeight), maxHeight)
                     
                     pointingUp = -(((currentOffset - minHeight) / (maxHeight - minHeight)) - 0.5) * 2
                 }
@@ -2026,7 +2007,6 @@ struct CallView: View {
                         callViewModel.enforceEarpieceIfNeeded()
                     }
             }
-            .frame(height: geo.size.height * 0.15)
             .padding(.horizontal, 20)
             .padding(.top, -5)
             
@@ -2272,7 +2252,6 @@ struct CallView: View {
 						.frame(width: geo.size.width * 0.24, height: geo.size.width * 0.24)
                     }
                 }
-                .frame(height: geo.size.height * 0.15)
                 
                 HStack(spacing: 0) {
 					if !AppServices.corePreferences.disableChatFeature && callViewModel.chatEnabled {
@@ -2460,7 +2439,6 @@ struct CallView: View {
                         .hidden()
                     }
                 }
-                .frame(height: geo.size.height * 0.15)
             } else {
                 HStack {
                     if callViewModel.isOneOneCall {
@@ -2836,7 +2814,6 @@ struct CallView: View {
 						.frame(width: geo.size.width * 0.125, height: geo.size.width * 0.125)
                     }
                 }
-                .frame(height: geo.size.height * 0.15)
                 .padding(.horizontal, 20)
                 .padding(.top, 30)
             }
@@ -2844,7 +2821,6 @@ struct CallView: View {
             Spacer()
         }
         .background(Color.gray600)
-        .frame(maxHeight: .infinity, alignment: .top)
     }
 	
 	func getAudioRouteImage() {
@@ -2869,8 +2845,6 @@ struct BottomSheetView<Content: View>: View {
 	
 	@Binding var currentOffset: CGFloat
 	@Binding var pointingUp: CGFloat
-	
-	@State var bottomSafeArea: CGFloat
 	
 	var body: some View {
 		GeometryReader { geometry in
