@@ -424,3 +424,5 @@
 "conversation_info_delete_chatroom_confirm" = "删除";
 "meeting_schedule_delete_dialog_title" = "删除会议？";
 "meeting_schedule_delete_dialog_message" = "您想删除会议吗？";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "保证机密性";
+"conversation_message_deleted_toast" = "消息已被删除";

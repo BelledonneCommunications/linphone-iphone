@@ -468,3 +468,5 @@
 "conversation_info_delete_chatroom_confirm" = "Verwijderen";
 "meeting_schedule_delete_dialog_title" = "Vergadering verwijderen?";
 "meeting_schedule_delete_dialog_message" = "Wil je de vergadering verwijderen?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Gewaarborgde vertrouwelijkheid";
+"conversation_message_deleted_toast" = "Bericht is verwijderd";
