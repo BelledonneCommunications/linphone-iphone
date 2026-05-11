@@ -28,8 +28,6 @@ struct BottomSheetContent: View {
 	
 	let pub = NotificationCenter.default.publisher(for: AVAudioSession.routeChangeNotification)
 	
-	@State private var orientation = UIDevice.current.orientation
-	
 	let geo: GeometryProxy
 	
 	@Binding var buttonSize: Double
@@ -197,7 +195,7 @@ struct BottomSheetContent: View {
             
 			ZStack(alignment: .top) {
 				VStack(spacing: 0) {
-					if !orientation.isLandscape {
+					if geo.size.width < geo.size.height {
 						HStack(spacing: 0) {
 							if callViewModel.isOneOneCall {
 								VStack {
