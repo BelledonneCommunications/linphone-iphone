@@ -143,7 +143,7 @@ class MDMChatFeatureUITests: XCTestCase {
 		</config>
 		"""
 
-		launchWithMDM(["xml-config": xmlConfig])
+		launchWithMDM(["xmlConfig": xmlConfig])
 		skipOnboardingIfShown()
 
 		let landed = waitForMainPage(timeout: 30)
@@ -158,11 +158,11 @@ class MDMChatFeatureUITests: XCTestCase {
 	func testConfigUriMDMLandsOnMainPage() {
 		let configUri = requiredEnv("LINPHONE_TEST_CONFIG_URI")
 
-		launchWithMDM(["config-uri": configUri])
+		launchWithMDM(["configUri": configUri])
 		skipOnboardingIfShown()
 
 		let landed = waitForMainPage(timeout: 60)
-		if !landed { dumpOnFailure("main screen not reached with config-uri \(configUri)") }
+		if !landed { dumpOnFailure("main screen not reached with configUri \(configUri)") }
 		XCTAssertTrue(landed,
 					  "Should have landed on the main screen after remote provisioning from \(configUri)")
 	}

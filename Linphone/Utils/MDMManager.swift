@@ -74,23 +74,23 @@ class MDMManager {
 
 	func loadXMLConfigFromMdm(config: Config) {
 		guard let mdmConfig = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"),
-			  let xmlConfig = mdmConfig["xml-config"] as? String else {
+			  let xmlConfig = mdmConfig["xmlConfig"] as? String else {
 			lastXMLConfigSHA256 = nil
 			return
 		}
 
-		let hash = sha256Hash(of: ["xml-config": xmlConfig])
+		let hash = sha256Hash(of: ["xmlConfig": xmlConfig])
 		if hash == lastXMLConfigSHA256 {
-			Log.info("[MDMManager] xml-config unchanged (SHA256: \(hash)), skipping")
+			Log.info("[MDMManager] xmlConfig unchanged (SHA256: \(hash)), skipping")
 			return
 		}
 		lastXMLConfigSHA256 = hash
 
 		do {
 			try config.loadFromXmlString(buffer: xmlConfig)
-			Log.info("[MDMManager] xml-config applied (\(xmlConfig.count) chars)")
+			Log.info("[MDMManager] xmlConfig applied (\(xmlConfig.count) chars)")
 		} catch let error {
-			Log.error("[MDMManager] Failed loading xml-config: error = \(error) xml = \(xmlConfig)")
+			Log.error("[MDMManager] Failed loading xmlConfig: error = \(error) xml = \(xmlConfig)")
 		}
 	}
 
@@ -120,12 +120,12 @@ class MDMManager {
 		hasMDMConfig = true
 
 		let subset: [String: Any] = [
-			"root-ca": mdmConfig["root-ca"] ?? "",
-			"config-uri": mdmConfig["config-uri"] ?? ""
+			"rootCa": mdmConfig["rootCa"] ?? "",
+			"configUri": mdmConfig["configUri"] ?? ""
 		]
 		let hash = sha256Hash(of: subset)
 		if hash == lastCoreConfigSHA256 {
-			Log.info("[MDMManager] root-ca/config-uri unchanged (SHA256: \(hash)), skipping")
+			Log.info("[MDMManager] rootCa/configUri unchanged (SHA256: \(hash)), skipping")
 			NotificationCenter.default.post(name: MDMManager.configurationAppliedNotification, object: self, userInfo: ["config": mdmConfig])
 			return
 		}
@@ -133,15 +133,15 @@ class MDMManager {
 
 		let currentProvisioningUri = core.provisioningUri
 
-		if let rootCa = mdmConfig["root-ca"] as? String {
+		if let rootCa = mdmConfig["rootCa"] as? String {
 			core.rootCaData = rootCa
-			Log.info("[MDMManager] root-ca applied (\(rootCa.count) chars)")
+			Log.info("[MDMManager] rootCa applied (\(rootCa.count) chars)")
 		}
-		if let configUri = mdmConfig["config-uri"] as? String {
+		if let configUri = mdmConfig["configUri"] as? String {
 			do {
 				if configUri != currentProvisioningUri {
 					try core.setProvisioninguri(newValue: configUri)
-					Log.info("[MDMManager] config-uri applied \(configUri)")
+					Log.info("[MDMManager] configUri applied \(configUri)")
 				}
 			} catch let error {
 				Log.error("[MDMManager] Failed setting provisioning URI: error = \(error) configUri = \(configUri)")

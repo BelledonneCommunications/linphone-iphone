@@ -145,15 +145,15 @@ The following keys are supported:
 
 | Key           | Type   | Description                                                                                     |
 |---------------|--------|-------------------------------------------------------------------------------------------------|
-| `xml-config`  | String | A Linphone configuration in XML format (same schema as `linphonerc`). Applied via `Config.loadFromXmlString`. |
-| `root-ca`     | String | A PEM-encoded root CA certificate used by the Linphone SDK for TLS operations (SIPS, HTTPS provisioning, …). Applied to `core.rootCaData`. |
-| `config-uri`  | String | URI to a remote provisioning file. When set, it takes precedence over any `config-uri` that may be defined inside `xml-config`, and triggers a core restart to fetch the remote configuration. |
+| `xmlConfig`  | String | A Linphone configuration in XML format (same schema as `linphonerc`). Applied via `Config.loadFromXmlString`. |
+| `rootCa`     | String | A PEM-encoded root CA certificate used by the Linphone SDK for TLS operations (SIPS, HTTPS provisioning, …). Applied to `core.rootCaData`. |
+| `configUri`  | String | URI to a remote provisioning file. When set, it takes precedence over any `config-uri` that may be defined inside `xmlConfig`, and triggers a core restart to fetch the remote configuration. |
 
 Notes:
 - All three keys are optional and can be combined.
-- If `config-uri` is present, it is set last and the core is restarted so that
+- If `configUri` is present, it is set last and the core is restarted so that
   remote provisioning takes effect; any `config-uri` value embedded in
-  `xml-config` is therefore overridden.
+  `xmlConfig` is therefore overridden.
 - Applying and removing the managed configuration at runtime is supported:
   removing it resets the core to its default configuration and returns to the
   assistant/login screen.
@@ -182,10 +182,10 @@ The wrapper script `scripts/run-mdm-tests.sh` does this for you.
 
 The tests need a real SIP account to reach the main screen (the MDM XML
 embeds proxy + auth_info sections) and a remote provisioning URL for the
-config-uri test. Credentials can be provided three ways — the script
+configUri test. Credentials can be provided three ways — the script
 resolves them in this order, highest first:
 
-1. CLI flags: `--username`, `--ha1`, `--domain`, `--config-uri` (and
+1. CLI flags: `--username`, `--ha1`, `--domain`, `--configUri` (and
    `--device` for the sim UUID)
 2. Shell env vars: `LINPHONE_TEST_USERNAME`, `LINPHONE_TEST_HA1`,
    `LINPHONE_TEST_DOMAIN`, `LINPHONE_TEST_CONFIG_URI`
@@ -194,7 +194,7 @@ resolves them in this order, highest first:
 Examples:
 
 ```bash
-scripts/run-mdm-tests.sh --device <uuid> --username alice --ha1 <md5-hash> --config-uri https://example.com/provisioning.xml
+scripts/run-mdm-tests.sh --device <uuid> --username alice --ha1 <md5-hash> --configUri https://example.com/provisioning.xml
 ```
 
 ```bash
@@ -218,20 +218,20 @@ Xcode spinning up multiple simulator clones in parallel (the test-runner app
 can fail to launch on a clone under pressure).
 
 Covered cases:
-- `testChatButtonHiddenWithMDMDisableChat` — MDM `xml-config` with
+- `testChatButtonHiddenWithMDMDisableChat` — MDM `xmlConfig` with
   `disable_chat_feature=1`; the test reaches the main screen and asserts the
   chat button is hidden.
-- `testConfigUriMDMLandsOnMainPage` — MDM `config-uri` pointing at the URL
-  supplied via `--config-uri` / `LINPHONE_TEST_CONFIG_URI`; the test verifies
+- `testConfigUriMDMLandsOnMainPage` — MDM `configUri` pointing at the URL
+  supplied via `--configUri` / `LINPHONE_TEST_CONFIG_URI`; the test verifies
   that remote provisioning completes and the app lands on the main screen.
 
 ### Unit tests (MDMManager)
 
 Located in `LinphoneAppTests/MDMManagerTests.swift`. The unit test covers
-only `root-ca` application: it calls
+only `rootCa` application: it calls
 `MDMManager.shared.applyMdmConfigToCore(core:)` directly on a throwaway
 `Core` and asserts `core.rootCaData` matches the MDM-provided certificate.
-The `config-uri` and `xml-config` paths are exercised end-to-end by the UI
+The `configUri` and `xmlConfig` paths are exercised end-to-end by the UI
 tests above.
 
 This requires a **Unit Testing Bundle** target in Xcode (separate from the UI

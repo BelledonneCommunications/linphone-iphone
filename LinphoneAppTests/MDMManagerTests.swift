@@ -45,7 +45,7 @@ class MDMManagerTests: XCTestCase {
 	}
 
 	func testApplyMdmConfigSetsRootCa() throws {
-		let mdmConfig: [String: Any] = ["root-ca": dummyRootCa]
+		let mdmConfig: [String: Any] = ["rootCa": dummyRootCa]
 		UserDefaults.standard.set(mdmConfig, forKey: managedKey)
 
 		let config = Config.newForSharedCore(
@@ -58,7 +58,7 @@ class MDMManagerTests: XCTestCase {
 
 		let appliedExpectation = expectation(forNotification: MDMManager.configurationAppliedNotification, object: nil) { notification in
 			guard let config = notification.userInfo?["config"] as? [String: Any] else { return false }
-			return (config["root-ca"] as? String) == self.dummyRootCa
+			return (config["rootCa"] as? String) == self.dummyRootCa
 		}
 
 		MDMManager.shared.applyMdmConfigToCore(core: core)
@@ -66,7 +66,7 @@ class MDMManagerTests: XCTestCase {
 		wait(for: [appliedExpectation], timeout: 5)
 
 		XCTAssertEqual(core.rootCaData, dummyRootCa,
-					   "core.rootCaData should equal the MDM-provided root-ca after applyMdmConfigToCore")
+					   "core.rootCaData should equal the MDM-provided rootCa after applyMdmConfigToCore")
 	}
 
 }
