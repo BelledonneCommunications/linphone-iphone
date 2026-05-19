@@ -178,25 +178,6 @@ class CoreContext: ObservableObject {
 			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (SharedMainViewModel.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
-			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
-			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
-				.appendingPathComponent("Library/Preferences/linphone") {
-				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
-				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
-					do {
-						try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
-						if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
-							try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
-							Log.info("Successfully copied linphonerc-default configuration")
-						}
-					} catch let error {
-						Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
-					}
-				} else {
-					Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
-				}
-			}
-
 			MDMManager.shared.loadXMLConfigFromMdm(config: AppServices.config)
 
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
@@ -637,6 +618,9 @@ enum AppServices {
 		if let existing = _config {
 			return existing
 		}
+		
+		setupConfigIfNeeded()
+		
 		_config = Config.newForSharedCore(
 			appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
 			?? {
@@ -645,6 +629,7 @@ enum AppServices {
 			configFilename: "linphonerc",
 			factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
 		)
+		
 		return _config
 	}
 
@@ -653,6 +638,27 @@ enum AppServices {
 			fatalError("AppServices.config accessed before it was available")
 		}
 		return config
+	}
+	
+	static func setupConfigIfNeeded() {
+		Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
+			.appendingPathComponent("Library/Preferences/linphone") {
+			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+			if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
+				do {
+					try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
+					if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
+						try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
+						Log.info("Successfully copied linphonerc-default configuration")
+					}
+				} catch let error {
+					Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
+				}
+			} else {
+				Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
+			}
+		}
 	}
 	
 	static func resetConfig() {

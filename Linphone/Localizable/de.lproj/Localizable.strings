@@ -610,3 +610,13 @@
 "conversation_info_delete_chatroom_confirm" = "Löschen";
 "meeting_schedule_delete_dialog_title" = "Besprechung löschen?";
 "meeting_schedule_delete_dialog_message" = "Möchten Sie die Besprechung löschen?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Garantierte Vertraulichkeit";
+"conversation_info_dialog_leave_chatroom_title" = "Diesen Chat verlassen?";
+"conversation_info_leave_chatroom_confirm" = "Verlassen";
+"conversation_info_left_chatroom_toast" = "Sie haben den Chat verlassen";
+"conversation_info_dialog_delete_chatroom_title" = "Diesen Chat löschen?";
+"conversation_info_chatroom_deleted_toast" = "Chat gelöscht";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Dank der End-to-End Verschlüsselungstechnologie in &appName; ist die Vertraulichkeit von Nachrichten, Anrufen und Meetings gewährleistet. Niemand kann die ausgetauschten Daten entschlüsseln, nicht einmal wir selbst.";
+"conversation_info_dialog_delete_chatroom_message" = "Dieser Chat wird für Sie dauerhaft gelöscht.";
+"conversation_info_dialog_leave_chatroom_message" = "Sie verlassen diesen Chat. Sie können später wieder hinzugefügt werden.";
+"conversation_message_deleted_toast" = "Nachricht wurde gelöscht";

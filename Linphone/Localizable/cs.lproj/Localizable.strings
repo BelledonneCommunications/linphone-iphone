@@ -614,3 +614,15 @@
 "conversation_info_delete_chatroom_confirm" = "Smazat";
 "meeting_schedule_delete_dialog_title" = "Smazat schůzku?";
 "meeting_schedule_delete_dialog_message" = "Přejete si smazat schůzku?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Zaručená důvěrnost";
+"conversation_info_dialog_leave_chatroom_message" = "Tato konverzace byla opuštěna. Můžete se později znovu přidat.";
+"conversation_info_leave_chatroom_confirm" = "Opustit";
+"conversation_info_left_chatroom_toast" = "Konverzace byla opuštěna";
+"conversation_info_dialog_delete_chatroom_title" = "Smazat tuto konverzaci?";
+"conversation_info_dialog_leave_chatroom_title" = "Opustit tuto konverzaci?";
+"conversation_info_chatroom_deleted_toast" = "Konverzace smazána";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Díky technologii koncového šifrování v aplikaci Linphone je zaručena důvěrnost zpráv, hovorů a schůzek. Vyměňovaná data nedokáže dešifrovat nikdo, ani my sami.";
+"conversation_info_dialog_delete_chatroom_message" = "Tato konverzace bude pro vás trvale smazána.";
+"early_push_missed_call_body" = "Zatímco bylo vaše zařízení uzamčené, přišel vám hovor. Odemkněte zařízení a znovu otevřete aplikaci.";
+"early_push_unknown_caller" = "Neznámé";
+"conversation_message_deleted_toast" = "Zpráva byla smazána";

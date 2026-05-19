@@ -479,3 +479,5 @@
 "conversation_info_delete_chatroom_confirm" = "Удалить";
 "meeting_schedule_delete_dialog_title" = "Удалить встречу?";
 "meeting_schedule_delete_dialog_message" = "Вы хотите удалить встречу?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Гарантированная конфиденциальность";
+"conversation_message_deleted_toast" = "Сообщение удалено";

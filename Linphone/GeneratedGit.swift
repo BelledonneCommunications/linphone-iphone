@@ -1,7 +1,7 @@
 import Foundation
 
 public enum AppGitInfo {
-    public static let branch = "fix/callview"
-    public static let commit = "11c2cf7a0"
+    public static let branch = "release/6.2"
+    public static let commit = "8e59a33ce"
     public static let tag = "6.2.0-beta"
 }

@@ -441,3 +441,5 @@
 "conversation_info_delete_chatroom_confirm" = "Vymazať";
 "meeting_schedule_delete_dialog_title" = "Vymazať schôdzku?";
 "meeting_schedule_delete_dialog_message" = "Želáte si vymazať schôdzku?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Zaručená dôvernosť";
+"conversation_message_deleted_toast" = "Správa bola vymazaná";

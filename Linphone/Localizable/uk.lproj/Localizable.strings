@@ -584,3 +584,5 @@
 "conversation_info_delete_chatroom_confirm" = "Видалити";
 "meeting_schedule_delete_dialog_title" = "Видалити нараду?";
 "meeting_schedule_delete_dialog_message" = "Ви хочете видалити нараду?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Гарантована конфіденційність";
+"conversation_message_deleted_toast" = "Повідомлення було видалено";

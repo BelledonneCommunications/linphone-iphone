@@ -579,3 +579,5 @@
 "conversation_info_delete_chatroom_confirm" = "Excluir";
 "meeting_schedule_delete_dialog_title" = "Excluir a reunião?";
 "meeting_schedule_delete_dialog_message" = "Você quer excluir a reunião?";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Confidencialidade garantida";
+"conversation_message_deleted_toast" = "A mensagem foi excluída";
