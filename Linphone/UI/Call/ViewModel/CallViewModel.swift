@@ -127,8 +127,11 @@ class CallViewModel: ObservableObject {
 
 	func isRouteAllowed() -> Bool {
 		guard AppServices.corePreferences.onlyAllowEarpieceDuringCall else { return true }
-		let output = AVAudioSession.sharedInstance().currentRoute.outputs.first
-		return output?.portType == .builtInReceiver
+		guard let portType = AVAudioSession.sharedInstance().currentRoute.outputs.first?.portType else { return false }
+		return portType == .builtInReceiver
+			|| portType == .headphones
+			|| portType == .usbAudio
+			|| portType == .lineOut
 	}
 
 	func enforceEarpieceIfNeeded() {
