@@ -207,18 +207,22 @@ class CoreContext: ObservableObject {
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
 			
-			// Migration
-			/*
-			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
-			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
-			self.mCore.config!.setString(section: "misc", key: "log_collection_upload_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
-			self.mCore.config!.setString(section: "misc", key: "file_transfer_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
-			self.mCore.config!.setString(section: "misc", key: "version_check_url_root", value: "https://download.linphone.org/releases")
+			let filesDirectoriesURL = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images")
+			self.mCore.chatMessageFilesDirectories = [filesDirectoriesURL.path]
 			
-			self.mCore.imdnToEverybodyThreshold = 1
-			self.imdnToEverybodyThreshold = self.mCore.imdnToEverybodyThreshold == 1
 			//self.copyDatabaseFileToDocumentsDirectory()
-			*/
+			
+			// Migration
+			let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+			let lastMigration = UserDefaults.standard.string(forKey: "lastMigrationVersion") ?? "0"
+
+			if lastMigration.compare("6.2.0", options: .numeric) == .orderedAscending &&
+			   currentVersion.compare("6.2.0", options: .numeric) != .orderedAscending {
+
+				self.runMigration620()
+
+				UserDefaults.standard.set("6.2.0", forKey: "lastMigrationVersion")
+			}
 			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
 			if shortcutsCount > 0 {
@@ -608,7 +612,32 @@ class CoreContext: ObservableObject {
 		}
 	}
 
+	func migrateIfNeeded(from old: String, to new: String, block: () -> Void) {
+		let last = UserDefaults.standard.string(forKey: "lastMigrationVersion") ?? "0"
 
+		if last.compare(new, options: .numeric) == .orderedAscending {
+			block()
+			UserDefaults.standard.set(new, forKey: "lastMigrationVersion")
+		}
+	}
+	
+	func runMigration600() {
+		self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
+		self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
+		self.mCore.config!.setString(section: "misc", key: "log_collection_upload_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
+		self.mCore.config!.setString(section: "misc", key: "file_transfer_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
+		self.mCore.config!.setString(section: "misc", key: "version_check_url_root", value: "https://download.linphone.org/releases")
+		
+		self.mCore.imdnToEverybodyThreshold = 1
+		self.imdnToEverybodyThreshold = self.mCore.imdnToEverybodyThreshold == 1
+	}
+	
+	func runMigration620() {
+		if (!self.mCore.chatMessageFilesDeletionEnabled) {
+			self.mCore.chatMessageFilesDeletionEnabled = true
+			Log.info("[CoreContext] Core is allowed to automatically delete files from previously logged directories when a chat message is deleted")
+		}
+	}
 }
 
 enum AppServices {
