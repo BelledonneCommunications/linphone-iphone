@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import linphonesw
 import Foundation
 import SwiftUI
 import AVFoundation
@@ -47,8 +48,13 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 	@Binding var scanResult: String
 	private var lastResult: String = ""
 	
+	private var mCoreDelegate: CoreDelegate?
+	
 	init(_ scanResult: Binding<String>) {
 		self._scanResult = scanResult
+		super.init()
+		
+		addDelegate()
 	}
 	
 	func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
@@ -75,9 +81,6 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 							core.stop()
 							try? core.start()
 						}
-						DispatchQueue.main.async {
-							ToastViewModel.shared.show("Success_qr_code_validated")
-						}
 					} else {
 						DispatchQueue.main.async {
 							ToastViewModel.shared.show("Invalide URI")
@@ -89,6 +92,36 @@ class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
 					}
 				}
 			}
+		}
+	}
+	
+	func addDelegate() {
+		mCoreDelegate = CoreDelegateStub(
+			onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
+				Log.info("New configuration state is \(status) = \(message)")
+				self.handleConfigurationChanged(status: status)
+			}
+		)
+		
+		if let delegate = mCoreDelegate {
+			coreContext.doOnCoreQueue { core in
+				core.addDelegate(delegate: delegate)
+			}
+		}
+	}
+	
+	func handleConfigurationChanged(status: ConfiguringState) {
+		switch status {
+		case .Successful:
+			DispatchQueue.main.async {
+				ToastViewModel.shared.show("Success_qr_code_validated")
+			}
+		case .Failed:
+			DispatchQueue.main.async {
+				ToastViewModel.shared.show("Invalide URI")
+			}
+		default:
+			break
 		}
 	}
 }

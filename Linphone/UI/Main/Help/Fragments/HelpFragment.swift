@@ -28,7 +28,8 @@ struct HelpFragment: View {
 	@State var clickCounter: Int = 0
 	
 	var showAssistant: Bool {
-		(CoreContext.shared.coreIsStarted && CoreContext.shared.accounts.isEmpty)
+		(CoreContext.shared.codeScannerIsOpen && CoreContext.shared.accounts.isEmpty)
+		|| (CoreContext.shared.coreIsStarted && CoreContext.shared.accounts.isEmpty)
 		|| SharedMainViewModel.shared.displayProfileMode
 	}
 	

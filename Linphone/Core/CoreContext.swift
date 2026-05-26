@@ -42,6 +42,7 @@ class CoreContext: ObservableObject {
 	@Published var loggingInProgress: Bool = false
 	@Published var coreHasStartedOnce: Bool = false
 	@Published var coreIsStarted: Bool = false
+	@Published var codeScannerIsOpen: Bool = false
 	@Published var accounts: [AccountModel] = []
 	@Published var shortcuts: [ShortcutModel] = []
 	var mCore: Core!
