@@ -623,6 +623,6 @@
 "conversation_info_chatroom_deleted_toast" = "Konverzace smazána";
 "conversation_end_to_end_encrypted_bottom_sheet_message" = "Díky technologii koncového šifrování v aplikaci Linphone je zaručena důvěrnost zpráv, hovorů a schůzek. Vyměňovaná data nedokáže dešifrovat nikdo, ani my sami.";
 "conversation_info_dialog_delete_chatroom_message" = "Tato konverzace bude pro vás trvale smazána.";
-"early_push_missed_call_body" = "Zatímco bylo vaše zařízení uzamčené, přišel vám hovor. Odemkněte zařízení a znovu otevřete aplikaci.";
+"early_push_missed_call_body" = "Zatímco bylo vaše zařízení uzamčené, přišel vám hovor.";
 "early_push_unknown_caller" = "Neznámé";
 "conversation_message_deleted_toast" = "Zpráva byla smazána";

@@ -601,7 +601,7 @@
 "Voicemail" = "Anrufbeantworter";
 "early_push_missed_call_title" = "Verpasster Anruf";
 "early_push_unknown_caller" = "Unbekannt";
-"early_push_missed_call_body" = "Sie haben einen Anruf erhalten, während Ihr Gerät gesperrt war. Bitte entsperren Sie es und öffnen Sie die App erneut.";
+"early_push_missed_call_body" = "Sie haben einen Anruf erhalten, während Ihr Gerät gesperrt war.";
 "contact_deleted_toast" = "Kontakt wurde entfernt";
 "conversation_info_dialog_delete_all_call_logs_title" = "Möchten Sie wirklich alle Nachrichten löschen?";
 "conversation_info_dialog_delete_all_message" = "Alle Nachrichten werden aus dem Verlauf gelöscht";

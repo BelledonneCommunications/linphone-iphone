@@ -635,4 +635,4 @@
 "ZRTP" = "ZRTP";
 "early_push_unknown_caller" = "Unknown";
 "early_push_missed_call_title" = "Missed call";
-"early_push_missed_call_body" = "You received a call while your device was locked. Please unlock and reopen the app.";
+"early_push_missed_call_body" = "You received a call while your device was locked.";
