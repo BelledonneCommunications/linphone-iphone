@@ -213,18 +213,6 @@ class CoreContext: ObservableObject {
 			
 			//self.copyDatabaseFileToDocumentsDirectory()
 			
-			// Migration
-			let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
-			let lastMigration = UserDefaults.standard.string(forKey: "lastMigrationVersion") ?? "0"
-
-			if lastMigration.compare("6.2.0", options: .numeric) == .orderedAscending &&
-			   currentVersion.compare("6.2.0", options: .numeric) != .orderedAscending {
-
-				self.runMigration620()
-
-				UserDefaults.standard.set("6.2.0", forKey: "lastMigrationVersion")
-			}
-			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
 			if shortcutsCount > 0 {
 				var shortcuts: [ShortcutModel] = []
@@ -317,6 +305,9 @@ class CoreContext: ObservableObject {
 					for account in self.mCore.accountList {
 						accountModels.append(AccountModel(account: account, core: self.mCore))
 					}
+					
+					self.runMigration()
+					
 					DispatchQueue.main.async {
 						self.coreHasStartedOnce = true
 						self.coreIsStarted = true
@@ -622,6 +613,20 @@ class CoreContext: ObservableObject {
 		}
 	}
 	
+	func runMigration() {
+		// Migration
+		let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+		let lastMigration = UserDefaults.standard.string(forKey: "lastMigrationVersion") ?? "0"
+		
+		if lastMigration.compare("6.2.0", options: .numeric) == .orderedAscending &&
+			currentVersion.compare("6.2.0", options: .numeric) != .orderedAscending {
+			
+			self.runMigration620()
+			
+			UserDefaults.standard.set("6.2.0", forKey: "lastMigrationVersion")
+		}
+	}
+	
 	func runMigration600() {
 		self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
 		self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
@@ -634,7 +639,7 @@ class CoreContext: ObservableObject {
 	}
 	
 	func runMigration620() {
-		if (!self.mCore.chatMessageFilesDeletionEnabled) {
+		doOnCoreQueueCoreStarted { core in
 			self.mCore.chatMessageFilesDeletionEnabled = true
 			Log.info("[CoreContext] Core is allowed to automatically delete files from previously logged directories when a chat message is deleted")
 		}
