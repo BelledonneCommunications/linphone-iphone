@@ -1281,6 +1281,9 @@ struct ContentView: View {
 							)
 							.frame(height: geometry.size.height)
 							.onAppear {
+								if focusedField {
+									resetFilter()
+								}
 								sharedMainViewModel.displayedFriend = nil
 								isShowEditContactFragmentAddress = ""
 							}
@@ -1297,6 +1300,30 @@ struct ContentView: View {
 							isShowStartCallFragment: $isShowStartCallFragment,
 							resetCallView: {callViewModel.resetCallView()}
 						)
+						.onAppear {
+							if focusedField {
+								withAnimation {
+									self.focusedField = false
+									searchIsActive.toggle()
+								}
+								
+								text = ""
+								
+								if sharedMainViewModel.indexView != 3 {
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
+								}
+								
+								if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+									historyListVM.resetFilterCallLogs()
+								} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+									conversationsListVM.resetFilterConversations()
+								} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+									meetingsListVM.currentFilter = ""
+									meetingsListVM.computeMeetingsList()
+								}
+							}
+						}
 						.environmentObject(callViewModel)
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -1306,6 +1333,30 @@ struct ContentView: View {
 						StartConversationFragment(
 							isShowStartConversationFragment: $isShowStartConversationFragment
 						)
+						.onAppear {
+							if focusedField {
+								withAnimation {
+									self.focusedField = false
+									searchIsActive.toggle()
+								}
+								
+								text = ""
+								
+								if sharedMainViewModel.indexView != 3 {
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
+								}
+								
+								if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+									historyListVM.resetFilterCallLogs()
+								} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+									conversationsListVM.resetFilterConversations()
+								} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+									meetingsListVM.currentFilter = ""
+									meetingsListVM.computeMeetingsList()
+								}
+							}
+						}
 						.environmentObject(conversationsListVM)
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -1579,6 +1630,29 @@ struct ContentView: View {
 						.zIndex(3)
 						.transition(.move(edge: .bottom))
 						.onAppear {
+							if focusedField {
+								withAnimation {
+									self.focusedField = false
+									searchIsActive.toggle()
+								}
+								
+								text = ""
+								
+								if sharedMainViewModel.indexView != 3 {
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
+								}
+								
+								if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+									historyListVM.resetFilterCallLogs()
+								} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+									conversationsListVM.resetFilterConversations()
+								} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+									meetingsListVM.currentFilter = ""
+									meetingsListVM.computeMeetingsList()
+								}
+							}
+							
 							isShowScheduleMeetingFragmentSubject = ""
 							isShowScheduleMeetingFragmentParticipants = []
 						}
