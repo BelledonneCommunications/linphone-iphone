@@ -992,6 +992,12 @@ class CallViewModel: ObservableObject {
 				let isRecordingTmp = self.currentCall!.params!.isRecording
 				DispatchQueue.main.async {
 					self.isRecording = isRecordingTmp
+					
+					if isRecordingTmp {
+						ToastViewModel.shared.show("Success_call_is_being_recorded")
+					} else {
+						ToastViewModel.shared.show("Success_call_has_been_recorded")
+					}
 				}
 			}
 		}

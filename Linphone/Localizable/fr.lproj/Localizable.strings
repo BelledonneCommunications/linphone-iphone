@@ -127,6 +127,8 @@
 "call_dialog_zrtp_validate_trust_warning_message" = "Pour garantir le chiffrement, nous avons besoin de réauthentifier l’appareil de votre correspondant. Veuillez ré-échanger vos codes :";
 "call_do_zrtp_sas_validation_again" = "Faire la vérification à nouveau";
 "call_history_deleted_toast" = "Historique supprimé";
+"call_is_being_recorded" = "L'appel est enregistré";
+"call_has_been_recorded" = "Enregistrement sauvegardé";
 "call_not_encrypted" = "Appel non chiffré";
 "call_outgoing" = "Appel sortant";
 "call_state_connected" = "Actif";

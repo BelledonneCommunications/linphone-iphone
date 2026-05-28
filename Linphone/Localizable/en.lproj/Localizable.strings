@@ -128,6 +128,8 @@
 "call_dialog_zrtp_validate_trust_warning_message" = "For your safety, we need to re-authenticate your correspondent device. Please re-exchange your codes:";
 "call_do_zrtp_sas_validation_again" = "Validate ZRTP SAS again";
 "call_history_deleted_toast" = "History has been deleted";
+"call_is_being_recorded" = "Call is being recorded";
+"call_has_been_recorded" = "Call recording has been saved";
 "call_not_encrypted" = "Call is not encrypted";
 "call_outgoing" = "Outgoing call";
 "call_state_connected" = "Active";
