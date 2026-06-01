@@ -426,3 +426,4 @@
 "meeting_schedule_delete_dialog_message" = "您想删除会议吗？";
 "conversation_end_to_end_encrypted_bottom_sheet_title" = "保证机密性";
 "conversation_message_deleted_toast" = "消息已被删除";
+"call_is_being_recorded" = "通话正在录音";

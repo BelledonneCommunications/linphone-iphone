@@ -470,3 +470,4 @@
 "meeting_schedule_delete_dialog_message" = "Wil je de vergadering verwijderen?";
 "conversation_end_to_end_encrypted_bottom_sheet_title" = "Gewaarborgde vertrouwelijkheid";
 "conversation_message_deleted_toast" = "Bericht is verwijderd";
+"call_is_being_recorded" = "Oproep wordt opgenomen";

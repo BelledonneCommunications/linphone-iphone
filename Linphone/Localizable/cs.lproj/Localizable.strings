@@ -626,3 +626,5 @@
 "early_push_missed_call_body" = "Zatímco bylo vaše zařízení uzamčené, přišel vám hovor.";
 "early_push_unknown_caller" = "Neznámé";
 "conversation_message_deleted_toast" = "Zpráva byla smazána";
+"call_is_being_recorded" = "Hovor se nahrává";
+"call_has_been_recorded" = "Záznam hovoru byl uložen";

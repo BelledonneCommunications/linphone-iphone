@@ -581,3 +581,4 @@
 "meeting_schedule_delete_dialog_message" = "Você quer excluir a reunião?";
 "conversation_end_to_end_encrypted_bottom_sheet_title" = "Confidencialidade garantida";
 "conversation_message_deleted_toast" = "A mensagem foi excluída";
+"call_is_being_recorded" = "A chamada está sendo gravada";

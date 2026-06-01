@@ -620,3 +620,5 @@
 "conversation_info_dialog_delete_chatroom_message" = "Dieser Chat wird für Sie dauerhaft gelöscht.";
 "conversation_info_dialog_leave_chatroom_message" = "Sie verlassen diesen Chat. Sie können später wieder hinzugefügt werden.";
 "conversation_message_deleted_toast" = "Nachricht wurde gelöscht";
+"call_is_being_recorded" = "Anruf wird aufgezeichnet";
+"call_has_been_recorded" = "Aufnahme wurde gespeichert";

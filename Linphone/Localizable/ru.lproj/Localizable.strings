@@ -481,3 +481,4 @@
 "meeting_schedule_delete_dialog_message" = "Вы хотите удалить встречу?";
 "conversation_end_to_end_encrypted_bottom_sheet_title" = "Гарантированная конфиденциальность";
 "conversation_message_deleted_toast" = "Сообщение удалено";
+"call_is_being_recorded" = "Звонок записывается";
