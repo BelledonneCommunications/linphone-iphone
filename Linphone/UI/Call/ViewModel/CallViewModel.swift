@@ -1398,22 +1398,21 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func createConversation() {
-		if currentCall != nil {
-			self.operationInProgress = true
-			CoreContext.shared.doOnCoreQueue { _ in
-				let existingConversation = self.lookupCurrentCallConversation(call: self.currentCall!)
-				if existingConversation != nil {
-					Log.info("\(CallViewModel.TAG) Found existing conversation \(LinphoneUtils.getConversationId(chatRoom: existingConversation!)), going to it")
-					
-					let model = ConversationModel(chatRoom: existingConversation!)
-					DispatchQueue.main.async {
-						SharedMainViewModel.shared.displayedConversation = model
-						self.operationInProgress = false
-					}
-				} else {
-					Log.info("\(CallViewModel.TAG) No existing conversation was found, let's create it")
-					self.createCurrentCallConversation(call: self.currentCall!)
+		guard let call = currentCall else { return }
+		
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { _ in
+			if let existingConversation = self.lookupCurrentCallConversation(call: call) {
+				Log.info("\(CallViewModel.TAG) Found existing conversation \(LinphoneUtils.getConversationId(chatRoom: existingConversation)), going to it")
+				
+				let model = ConversationModel(chatRoom: existingConversation)
+				DispatchQueue.main.async {
+					SharedMainViewModel.shared.displayedConversation = model
+					self.operationInProgress = false
 				}
+			} else {
+				Log.info("\(CallViewModel.TAG) No existing conversation was found, let's create it")
+				self.createCurrentCallConversation(call: call)
 			}
 		}
 	}
