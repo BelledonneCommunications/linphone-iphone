@@ -59,6 +59,7 @@ struct ContentView: View {
 	@State var isShowStartCallFragment = false
 	@State var isShowStartConversationFragment = false
 	@State var isShowDismissPopup = false
+	@State var isShowDeleteMeetingNotificationPopup = false
 	@State var isShowSendCancelMeetingNotificationPopup = false
 	@State var isShowTrustLevelPopup = false
 	@State var isShowIncreaseTrustLevelPopup = false
@@ -90,6 +91,12 @@ struct ContentView: View {
 	
 	@State var isShowUpdatePasswordPopup: Bool = false
 	@State var passwordUpdateAddress: String = ""
+	
+	@State var showLeaveConversationPopup: Bool = false
+	@State var showDeleteConversationPopup: Bool = false
+	@State var showDeleteConversationHistoryPopup: Bool = false
+	
+	@State private var securitySheet = false
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -370,7 +377,7 @@ struct ContentView: View {
 											
 											Button(action: {
 												resetFilter()
-												
+
 												sharedMainViewModel.changeIndexView(indexViewInt: 1)
 												sharedMainViewModel.displayedFriend = nil
 												sharedMainViewModel.displayedConversation = nil
@@ -395,6 +402,7 @@ struct ContentView: View {
 												}
 											})
 											.padding(.top)
+											.accessibilityIdentifier("bottom_bar_calls_button")
 										}
 										
 										Spacer()
@@ -435,7 +443,7 @@ struct ContentView: View {
                                                             .resizable()
                                                             .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
                                                             .frame(width: 25, height: 25)
-                                                        
+
                                                         if sharedMainViewModel.indexView == 2 {
                                                             Text("bottom_navigation_conversations_label")
                                                                 .default_text_style_700(styleSize: 10)
@@ -446,6 +454,7 @@ struct ContentView: View {
                                                     }
                                                 })
                                                 .padding(.top)
+                                                .accessibilityIdentifier("bottom_bar_chat_button")
                                             }
 											
 											Spacer()
@@ -919,6 +928,9 @@ struct ContentView: View {
 											ConversationsContainer(
 												conversationsListViewModel: $conversationsListViewModel,
 												isShowStartConversationFragment: $isShowStartConversationFragment,
+												showLeaveConversationPopup: $showLeaveConversationPopup,
+						   						showDeleteConversationPopup: $showDeleteConversationPopup,
+						   						showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
 												text: $text,
 												orientation: orientation
 											)
@@ -926,6 +938,7 @@ struct ContentView: View {
 											MeetingsContainer(
 												meetingsListViewModel: $meetingsListViewModel,
 												isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+												isShowDeleteMeetingNotificationPopup: $isShowDeleteMeetingNotificationPopup,
 												isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
 												text: $text,
 												orientation: orientation
@@ -1186,7 +1199,11 @@ struct ContentView: View {
 									isShowScheduleMeetingFragmentSubject: $isShowScheduleMeetingFragmentSubject,
 									isShowScheduleMeetingFragmentParticipants: $isShowScheduleMeetingFragmentParticipants,
 									isShowConversationInfoPopup: $isShowConversationInfoPopup,
-									conversationInfoPopupText: $conversationInfoPopupText
+									conversationInfoPopupText: $conversationInfoPopupText,
+									showLeaveConversationPopup: $showLeaveConversationPopup,
+									showDeleteConversationPopup: $showDeleteConversationPopup,
+									showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
+									securitySheet: $securitySheet
 								)
 								.environmentObject(conversationsListVM)
 								.environmentObject(accountProfileViewModel)
@@ -1264,6 +1281,9 @@ struct ContentView: View {
 							)
 							.frame(height: geometry.size.height)
 							.onAppear {
+								if focusedField {
+									resetFilter()
+								}
 								sharedMainViewModel.displayedFriend = nil
 								isShowEditContactFragmentAddress = ""
 							}
@@ -1280,6 +1300,30 @@ struct ContentView: View {
 							isShowStartCallFragment: $isShowStartCallFragment,
 							resetCallView: {callViewModel.resetCallView()}
 						)
+						.onAppear {
+							if focusedField {
+								withAnimation {
+									self.focusedField = false
+									searchIsActive.toggle()
+								}
+								
+								text = ""
+								
+								if sharedMainViewModel.indexView != 3 {
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
+								}
+								
+								if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+									historyListVM.resetFilterCallLogs()
+								} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+									conversationsListVM.resetFilterConversations()
+								} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+									meetingsListVM.currentFilter = ""
+									meetingsListVM.computeMeetingsList()
+								}
+							}
+						}
 						.environmentObject(callViewModel)
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -1289,6 +1333,30 @@ struct ContentView: View {
 						StartConversationFragment(
 							isShowStartConversationFragment: $isShowStartConversationFragment
 						)
+						.onAppear {
+							if focusedField {
+								withAnimation {
+									self.focusedField = false
+									searchIsActive.toggle()
+								}
+								
+								text = ""
+								
+								if sharedMainViewModel.indexView != 3 {
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
+								}
+								
+								if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+									historyListVM.resetFilterCallLogs()
+								} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+									conversationsListVM.resetFilterConversations()
+								} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+									meetingsListVM.currentFilter = ""
+									meetingsListVM.computeMeetingsList()
+								}
+							}
+						}
 						.environmentObject(conversationsListVM)
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
@@ -1337,6 +1405,7 @@ struct ContentView: View {
 								if let historyListVM = historyListViewModel {
 									historyListVM.removeCallLogs()
 								}
+								
 								self.isShowDeleteAllHistoryPopup.toggle()
 								sharedMainViewModel.displayedCall = nil
 								
@@ -1354,6 +1423,87 @@ struct ContentView: View {
 						.zIndex(3)
 						.onTapGesture {
 							self.isShowDeleteAllHistoryPopup.toggle()
+						}
+					}
+					
+					if showLeaveConversationPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("conversation_info_dialog_leave_chatroom_title"),
+							content: Text("conversation_info_dialog_leave_chatroom_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("conversation_info_leave_chatroom_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel, let targetConversation = conversationsListVM.targetConversation {
+									targetConversation.leaveChatRoom()
+								}
+								self.showLeaveConversationPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.showLeaveConversationPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.showLeaveConversationPopup.toggle()
+						}
+					}
+					
+					if showDeleteConversationPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("conversation_info_dialog_delete_chatroom_title"),
+							content: Text("conversation_info_dialog_delete_chatroom_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("conversation_info_delete_chatroom_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel, let targetConversation = conversationsListVM.targetConversation {
+									targetConversation.deleteChatRoom()
+									SharedMainViewModel.shared.displayedConversation = nil
+								}
+								self.showDeleteConversationPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.showDeleteConversationPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.showDeleteConversationPopup.toggle()
+						}
+					}
+					
+					if showDeleteConversationHistoryPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteContactPopup,
+							title: Text("conversation_info_dialog_delete_all_call_logs_title"),
+							content: Text("conversation_info_dialog_delete_all_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("conversation_info_delete_history_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel, let targetConversation = conversationsListVM.targetConversation {
+									targetConversation.deleteHistory()
+									conversationsListVM.displayedConversation = nil
+									SharedMainViewModel.shared.displayedConversation = nil
+								}
+								self.showDeleteConversationHistoryPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: {
+								self.showDeleteConversationHistoryPopup.toggle()
+							}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.showDeleteConversationHistoryPopup.toggle()
 						}
 					}
 					
@@ -1480,6 +1630,29 @@ struct ContentView: View {
 						.zIndex(3)
 						.transition(.move(edge: .bottom))
 						.onAppear {
+							if focusedField {
+								withAnimation {
+									self.focusedField = false
+									searchIsActive.toggle()
+								}
+								
+								text = ""
+								
+								if sharedMainViewModel.indexView != 3 {
+									magicSearch.currentFilter = ""
+									magicSearch.searchForContacts()
+								}
+								
+								if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+									historyListVM.resetFilterCallLogs()
+								} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+									conversationsListVM.resetFilterConversations()
+								} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+									meetingsListVM.currentFilter = ""
+									meetingsListVM.computeMeetingsList()
+								}
+							}
+							
 							isShowScheduleMeetingFragmentSubject = ""
 							isShowScheduleMeetingFragmentParticipants = []
 						}
@@ -1542,6 +1715,29 @@ struct ContentView: View {
 						.zIndex(3)
 						.onTapGesture {
 							self.isShowSendCancelMeetingNotificationPopup.toggle()
+						}
+					}
+					
+					if let meetingsListVM = meetingsListViewModel, isShowDeleteMeetingNotificationPopup {
+						PopupView(
+							isShowPopup: $isShowDeleteMeetingNotificationPopup,
+							title: Text("meeting_schedule_delete_dialog_title"),
+							content: !sharedMainViewModel.disableChatFeature ? Text("meeting_schedule_delete_dialog_message") : Text(""),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
+							actionSecondButton: {
+								sharedMainViewModel.displayedMeeting = nil
+								meetingsListVM.deleteSelectedMeeting()
+								self.isShowDeleteMeetingNotificationPopup.toggle()
+							},
+							titleThirdButton: nil,
+							actionThirdButton: {}
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowDeleteMeetingNotificationPopup.toggle()
 						}
 					}
 					
@@ -1765,6 +1961,10 @@ struct ContentView: View {
 						.transition(.scale.combined(with: .move(edge: .top)))
 						.onAppear {
 							UIApplication.shared.isIdleTimerDisabled = true
+                            
+                            isShowStartCallFragment = false
+                            isShowStartConversationFragment = false
+                            
 							callViewModel.resetCallView()
 							if callViewModel.callsCounter >= 1 {
 								DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -1843,6 +2043,38 @@ struct ContentView: View {
 				isShowUpdatePasswordPopup = true
 			}
 		}
+		.sheet(isPresented: $securitySheet, onDismiss: {
+			securitySheet = false
+		}, content: {
+			if #available(iOS 16.0, *) {
+				VStack {
+					Text("conversation_end_to_end_encrypted_bottom_sheet_title")
+						.default_text_style_700(styleSize: 18)
+						.multilineTextAlignment(.center)
+					
+					Spacer()
+					
+					Image("profile-secure-logo")
+							  .resizable()
+							  .frame(width: 100, height: 100)
+					
+					Spacer()
+					
+					Text("conversation_end_to_end_encrypted_bottom_sheet_message")
+						.default_text_style(styleSize: 14)
+						.multilineTextAlignment(.center)
+					
+					Spacer()
+					
+					Text("conversation_end_to_end_encrypted_bottom_sheet_link")
+						.default_text_style(styleSize: 14)
+						.underline()
+				}
+				.padding(.vertical, 20)
+				.padding(.horizontal, 30)
+				.presentationDetents([.medium])
+			}
+		})
 		.overlay {
 			if isMenuOpen {
 				Color.white.opacity(0.001)
@@ -1986,8 +2218,15 @@ struct HistoryContainer: View {
 
 struct ConversationsContainer: View {
 	@Binding var conversationsListViewModel: ConversationsListViewModel?
+	
 	@Binding var isShowStartConversationFragment: Bool
+	
+	@Binding var showLeaveConversationPopup: Bool
+	@Binding var showDeleteConversationPopup: Bool
+	@Binding var showDeleteConversationHistoryPopup: Bool
+	
 	@Binding var text: String
+	
 	var orientation: UIDeviceOrientation
 
 	var body: some View {
@@ -1995,7 +2234,10 @@ struct ConversationsContainer: View {
 			if let conversationsListVM = conversationsListViewModel {
 				ConversationsView(
 					text: $text,
-					isShowStartConversationFragment: $isShowStartConversationFragment
+					isShowStartConversationFragment: $isShowStartConversationFragment,
+					showLeaveConversationPopup: $showLeaveConversationPopup,
+					showDeleteConversationPopup: $showDeleteConversationPopup,
+					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 				)
 				.environmentObject(conversationsListVM)
 				.roundedCorner(25, corners: [.topRight, .topLeft])
@@ -2031,6 +2273,7 @@ struct ConversationsContainer: View {
 struct MeetingsContainer: View {
 	@Binding var meetingsListViewModel: MeetingsListViewModel?
 	@Binding var isShowScheduleMeetingFragment: Bool
+	@Binding var isShowDeleteMeetingNotificationPopup: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	@Binding var text: String
 	var orientation: UIDeviceOrientation
@@ -2040,6 +2283,7 @@ struct MeetingsContainer: View {
 			if let meetingsListVM = meetingsListViewModel {
 				MeetingsView(
 					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
+					isShowDeleteMeetingNotificationPopup: $isShowDeleteMeetingNotificationPopup,
 					isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup,
 					text: $text
 				)

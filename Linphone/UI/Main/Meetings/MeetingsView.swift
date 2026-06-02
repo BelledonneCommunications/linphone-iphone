@@ -25,6 +25,7 @@ struct MeetingsView: View {
     @EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
+	@Binding var isShowDeleteMeetingNotificationPopup: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	
 	@State private var showingSheet = false
@@ -39,6 +40,7 @@ struct MeetingsView: View {
 						.sheet(isPresented: $showingSheet) {
 							MeetingsListBottomSheet(
 								showingSheet: $showingSheet,
+								isShowDeleteMeetingNotificationPopup: $isShowDeleteMeetingNotificationPopup,
 								isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
 							)
 							.environmentObject(meetingsListViewModel)
@@ -49,6 +51,7 @@ struct MeetingsView: View {
 						.halfSheet(showSheet: $showingSheet) {
 							MeetingsListBottomSheet(
 								showingSheet: $showingSheet,
+								isShowDeleteMeetingNotificationPopup: $isShowDeleteMeetingNotificationPopup,
 								isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup
 							)
 							.environmentObject(meetingsListViewModel)
@@ -79,6 +82,7 @@ struct MeetingsView: View {
 #Preview {
 	MeetingsView(
 		isShowScheduleMeetingFragment: .constant(false),
+		isShowDeleteMeetingNotificationPopup: .constant(false),
 		isShowSendCancelMeetingNotificationPopup: .constant(false),
 		text: .constant("")
 	)

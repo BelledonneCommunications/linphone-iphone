@@ -39,6 +39,12 @@ struct ToastView: View {
 							.renderingMode(.template)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.foregroundStyle(toast.message.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
+					} else if toast.message.contains("call_is_being_recorded") || toast.message.contains("call_has_been_recorded") {
+						Image("record-fill")
+							.resizable()
+							.renderingMode(.template)
+							.frame(width: 25, height: 25, alignment: .leading)
+							.foregroundStyle(toast.message.contains("Success") ? Color.greenSuccess500 : Color.redDanger500)
 					} else if toast.message.contains("is recording") {
 						Image("record-fill")
 							.resizable()
@@ -72,8 +78,43 @@ struct ToastView: View {
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						
+					case "Success_remove_contact":
+						Text("contact_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
 					case "Success_remove_call_logs":
 						Text("call_history_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_message_deleted":
+						Text("conversation_message_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_remove_conversation_history":
+						Text("conversation_info_history_deleted_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_left_chatroom":
+						Text("conversation_info_left_chatroom_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_chatroom_deleted":
+						Text("conversation_info_chatroom_deleted_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
@@ -118,6 +159,20 @@ struct ToastView: View {
 						Text("call_can_be_trusted_toast")
 							.multilineTextAlignment(.center)
 							.foregroundStyle(Color.blueInfo500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_call_is_being_recorded":
+						Text("call_is_being_recorded")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+						
+					case "Success_call_has_been_recorded":
+						Text("call_has_been_recorded")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
 						

@@ -127,8 +127,11 @@ class CallViewModel: ObservableObject {
 
 	func isRouteAllowed() -> Bool {
 		guard AppServices.corePreferences.onlyAllowEarpieceDuringCall else { return true }
-		let output = AVAudioSession.sharedInstance().currentRoute.outputs.first
-		return output?.portType == .builtInReceiver
+		guard let portType = AVAudioSession.sharedInstance().currentRoute.outputs.first?.portType else { return false }
+		return portType == .builtInReceiver
+			|| portType == .headphones
+			|| portType == .usbAudio
+			|| portType == .lineOut
 	}
 
 	func enforceEarpieceIfNeeded() {
@@ -989,6 +992,12 @@ class CallViewModel: ObservableObject {
 				let isRecordingTmp = self.currentCall!.params!.isRecording
 				DispatchQueue.main.async {
 					self.isRecording = isRecordingTmp
+					
+					if isRecordingTmp {
+						ToastViewModel.shared.show("Success_call_is_being_recorded")
+					} else {
+						ToastViewModel.shared.show("Success_call_has_been_recorded")
+					}
 				}
 			}
 		}
@@ -1272,6 +1281,24 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
+	func attendedTransferCallTo(to: Call) {
+		if self.currentCall != nil && self.currentCall!.remoteAddress != nil {
+			Log.info(
+				"[CallViewModel] Call \(self.currentCall!.remoteAddress!.asStringUriOnly()) is being transferred to \(to.remoteAddress?.asStringUriOnly() ?? "")"
+			)
+			
+			do {
+				try self.currentCall!.transferToAnother(dest: to)
+				Log.info("[CallViewModel] Blind call transfer is successful")
+			} catch _ {
+				DispatchQueue.main.async {
+					ToastViewModel.shared.show("Failed_toast_call_transfer_failed")
+				}
+				Log.error("[CallViewModel] Failed to make blind call transfer!")
+			}
+		}
+	}
+	
 	func toggleAdminParticipant(index: Int) {
 		coreContext.doOnCoreQueue { _ in
 			self.currentCall?.conference?.participantList.forEach({ participant in
@@ -1371,22 +1398,21 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func createConversation() {
-		if currentCall != nil {
-			self.operationInProgress = true
-			CoreContext.shared.doOnCoreQueue { _ in
-				let existingConversation = self.lookupCurrentCallConversation(call: self.currentCall!)
-				if existingConversation != nil {
-					Log.info("\(CallViewModel.TAG) Found existing conversation \(LinphoneUtils.getConversationId(chatRoom: existingConversation!)), going to it")
-					
-					let model = ConversationModel(chatRoom: existingConversation!)
-					DispatchQueue.main.async {
-						SharedMainViewModel.shared.displayedConversation = model
-						self.operationInProgress = false
-					}
-				} else {
-					Log.info("\(CallViewModel.TAG) No existing conversation was found, let's create it")
-					self.createCurrentCallConversation(call: self.currentCall!)
+		guard let call = currentCall else { return }
+		
+		self.operationInProgress = true
+		CoreContext.shared.doOnCoreQueue { _ in
+			if let existingConversation = self.lookupCurrentCallConversation(call: call) {
+				Log.info("\(CallViewModel.TAG) Found existing conversation \(LinphoneUtils.getConversationId(chatRoom: existingConversation)), going to it")
+				
+				let model = ConversationModel(chatRoom: existingConversation)
+				DispatchQueue.main.async {
+					SharedMainViewModel.shared.displayedConversation = model
+					self.operationInProgress = false
 				}
+			} else {
+				Log.info("\(CallViewModel.TAG) No existing conversation was found, let's create it")
+				self.createCurrentCallConversation(call: call)
 			}
 		}
 	}

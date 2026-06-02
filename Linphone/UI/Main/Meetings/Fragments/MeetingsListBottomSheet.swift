@@ -31,6 +31,7 @@ struct MeetingsListBottomSheet: View {
 	@EnvironmentObject var meetingsListViewModel: MeetingsListViewModel
 	
 	@Binding var showingSheet: Bool
+	@Binding var isShowDeleteMeetingNotificationPopup: Bool
 	@Binding var isShowSendCancelMeetingNotificationPopup: Bool
 	
 	var body: some View {
@@ -53,6 +54,8 @@ struct MeetingsListBottomSheet: View {
 				.padding(.trailing)
 			}
 			
+			Spacer()
+			
 			Button {
 				CoreContext.shared.doOnCoreQueue { core in
 					if let organizerUri = self.meetingsListViewModel.selectedMeetingToDelete?.confInfo.organizer {
@@ -63,7 +66,7 @@ struct MeetingsListBottomSheet: View {
 							}
 						} else { 
 							// If we are not the organizer, delete meeting locally without popup
-							meetingsListViewModel.deleteSelectedMeeting()
+							self.isShowDeleteMeetingNotificationPopup = true
 						}
 					}
 				}

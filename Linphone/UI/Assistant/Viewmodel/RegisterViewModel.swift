@@ -153,8 +153,8 @@ class RegisterViewModel: ObservableObject {
 						do {
 							try core.addAccount(account: account!)
 							core.defaultAccount = account
-							request.removeDelegate(delegate: self.requestDelegate!)
-							self.requestDelegate = nil
+							// request.removeDelegate(delegate: self.requestDelegate!)
+							// self.requestDelegate = nil
 						} catch {
 						}
 					}

@@ -81,7 +81,7 @@ class URIHandler {
 	}
 	
 	private static func initiateCall(url: URL, withScheme newScheme: String) {
-		CoreContext.shared.performActionOnCoreQueueWhenCoreIsStarted { core in
+		CoreContext.shared.doOnCoreQueue { core in
 			if let newSchemeUrl = url.withNewScheme(newScheme),
 			   let address = core.interpretUrl(url: newSchemeUrl.absoluteString,
 											   applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {

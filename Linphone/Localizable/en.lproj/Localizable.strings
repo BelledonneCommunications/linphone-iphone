@@ -50,7 +50,6 @@
 "account_settings_apply_international_prefix_title" = "Format phone numbers using international prefix";
 "account_settings_replace_plus_by_00_title" = "Replace + by 00 when formatting phone numbers";
 "account_settings_nat_policy_title" = "NAT policy settings";
-"account_settings_outbound_proxy_title" = "Outbound proxy";
 "account_settings_push_notification_not_available_title" = "Push notifications aren't available!";
 "account_settings_push_notification_title" = "Allow push notifications";
 "account_settings_sip_proxy_url_title" = "Registrar URI";
@@ -129,6 +128,8 @@
 "call_dialog_zrtp_validate_trust_warning_message" = "For your safety, we need to re-authenticate your correspondent device. Please re-exchange your codes:";
 "call_do_zrtp_sas_validation_again" = "Validate ZRTP SAS again";
 "call_history_deleted_toast" = "History has been deleted";
+"call_is_being_recorded" = "Call is being recorded";
+"call_has_been_recorded" = "Call recording has been saved";
 "call_not_encrypted" = "Call is not encrypted";
 "call_outgoing" = "Outgoing call";
 "call_state_connected" = "Active";
@@ -174,6 +175,7 @@
 "conference_share_link_title" = "Share invitation";
 "connection_error_for_non_default_account" = "Account(s) connection error";
 "contact_call_action" = "Call";
+"contact_deleted_toast" = "Contact has been removed";
 "contact_details_actions_title" = "Other actions";
 "contact_details_add_to_favourites" = "Add to favourites";
 "contact_details_delete" = "Delete";
@@ -229,9 +231,12 @@
 "conversation_dialog_delete_for_everyone_label" = "Delete for everyone";
 "conversation_message_content_deleted_label" = "This message has been deleted";
 "conversation_message_content_deleted_by_us_label" = "You have deleted this message";
+"conversation_message_deleted_toast" = "Message has been deleted";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "End-to-end encrypted conversation";
 "conversation_end_to_end_encrypted_event_subtitle" = "Messages in this conversation are e2e encrypted. Only your correspondent can decrypt them.";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "Guaranteed confidentiality";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Thanks to end-to-end encryption technology in Linphone, messages, calls and meetings confidentiality are guaranteed. No-one can decrypt exchanged data, not even ourselves.";
 "conversation_ephemeral_messages_duration_disabled" = "Disabled";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d days";
 "conversation_ephemeral_messages_duration_one_day" = "1 day";
@@ -269,6 +274,18 @@
 "conversation_info_participant_is_admin_label" = "Admin";
 "conversation_info_participants_list_title" = "Group members (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Can't create conversation with a participant not on the same domain due to security restrictions!";
+"conversation_info_dialog_delete_all_call_logs_title" = "Do you really want to delete all messages?";
+"conversation_info_dialog_delete_all_message" = "All messages will be removed from the history";
+"conversation_info_delete_history_confirm" = "Delete";
+"conversation_info_history_deleted_toast" = "History has been successfully deleted";
+"conversation_info_dialog_leave_chatroom_title" = "Leave this conversation?";
+"conversation_info_dialog_leave_chatroom_message" = "You will leave this conversation. You can be added again later.";
+"conversation_info_leave_chatroom_confirm" = "Leave";
+"conversation_info_left_chatroom_toast" = "You have left the conversation";
+"conversation_info_dialog_delete_chatroom_title" = "Delete this conversation?";
+"conversation_info_dialog_delete_chatroom_message" = "This conversation will be permanently deleted for you.";
+"conversation_info_delete_chatroom_confirm" = "Delete";
+"conversation_info_chatroom_deleted_toast" = "Conversation deleted";
 "conversation_menu_search_in_messages" = "Search";
 "conversation_menu_go_to_info" = "Conversation info";
 "conversation_menu_configure_ephemeral_messages" = "Ephemeral messages";
@@ -410,6 +427,8 @@
 "meeting_schedule_add_participants_title" = "Add participants";
 "meeting_schedule_cancel_dialog_message" = "Do you want to cancel the meeting and send a notification to all participants?";
 "meeting_schedule_cancel_dialog_title" = "Cancel the meeting?";
+"meeting_schedule_delete_dialog_title" = "Delete the meeting?";
+"meeting_schedule_delete_dialog_message" = "Do you want to delete the meeting?";
 "meeting_schedule_description_hint" = "Add description";
 "meeting_schedule_description_title" = "Description";
 "meeting_schedule_edit_title" = "Edit meeting";
@@ -618,4 +637,4 @@
 "ZRTP" = "ZRTP";
 "early_push_unknown_caller" = "Unknown";
 "early_push_missed_call_title" = "Missed call";
-"early_push_missed_call_body" = "You received a call while your device was locked. Please unlock and reopen the app.";
+"early_push_missed_call_body" = "You received a call while your device was locked.";

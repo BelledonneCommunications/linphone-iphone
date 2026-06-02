@@ -22,7 +22,7 @@ import CallKit
 import UserNotifications
 
 class EarlyPushkitDelegate: NSObject, PKPushRegistryDelegate, CXProviderDelegate {
-	private var activeCalls: [UUID: CXProvider] = [:]
+	private var activeCalls: [String: (uuid: UUID, provider: CXProvider)] = [:]
 
 	func providerDidReset(_ provider: CXProvider) {}
 
@@ -30,8 +30,8 @@ class EarlyPushkitDelegate: NSObject, PKPushRegistryDelegate, CXProviderDelegate
 		Log.info("[EarlyPushkitDelegate] User tried to answer, ending call as device is locked")
 		action.fail()
 		provider.reportCall(with: action.callUUID, endedAt: .init(), reason: .unanswered)
-		activeCalls.removeValue(forKey: action.callUUID)
-		postMissedCallNotification()
+		activeCalls = activeCalls.filter { $0.value.uuid != action.callUUID }
+		postMissedCallNotification(trigger: nil)
 	}
 
 	func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
@@ -40,38 +40,45 @@ class EarlyPushkitDelegate: NSObject, PKPushRegistryDelegate, CXProviderDelegate
 
 	func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
 		Log.info("[EarlyPushkitDelegate] Received incoming push while core is not ready, reporting call to CallKit")
+		let signature = String(describing: payload.dictionaryPayload as NSDictionary)
+
+		if let existing = activeCalls[signature] {
+			existing.provider.reportCall(with: existing.uuid, updated: makeCallUpdate())
+			completion()
+			return
+		}
+
 		let providerConfig = CXProviderConfiguration()
 		providerConfig.supportsVideo = false
 		let provider = CXProvider(configuration: providerConfig)
 		provider.setDelegate(self, queue: .main)
 
-		let update = CXCallUpdate()
-		update.remoteHandle = CXHandle(type: .generic, value: NSLocalizedString("early_push_unknown_caller", comment: ""))
-		update.hasVideo = false
 		let uuid = UUID()
-		activeCalls[uuid] = provider
+		activeCalls[signature] = (uuid, provider)
 
-		provider.reportNewIncomingCall(with: uuid, update: update) { error in
+		provider.reportNewIncomingCall(with: uuid, update: makeCallUpdate()) { error in
 			if let error = error {
 				Log.error("[EarlyPushkitDelegate] Failed to report call to CallKit: \(error.localizedDescription)")
 			}
-			completion()
 		}
 
-		DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
-			guard let self = self, let provider = self.activeCalls.removeValue(forKey: uuid) else { return }
-			Log.info("[EarlyPushkitDelegate] Ending unanswered call after timeout")
-			provider.reportCall(with: uuid, endedAt: .init(), reason: .unanswered)
-			self.postMissedCallNotification()
-		}
+		postMissedCallNotification(trigger: UNTimeIntervalNotificationTrigger(timeInterval: 4, repeats: false))
+		completion()
 	}
 
-	private func postMissedCallNotification() {
+	private func makeCallUpdate() -> CXCallUpdate {
+		let update = CXCallUpdate()
+		update.remoteHandle = CXHandle(type: .generic, value: NSLocalizedString("early_push_unknown_caller", comment: ""))
+		update.hasVideo = false
+		return update
+	}
+
+	private func postMissedCallNotification(trigger: UNNotificationTrigger?) {
 		let content = UNMutableNotificationContent()
 		content.title = NSLocalizedString("early_push_missed_call_title", comment: "")
 		content.body = NSLocalizedString("early_push_missed_call_body", comment: "")
 		content.sound = .default
-		let request = UNNotificationRequest(identifier: "early_push_missed_call", content: content, trigger: nil)
+		let request = UNNotificationRequest(identifier: "early_push_missed_call", content: content, trigger: trigger)
 		UNUserNotificationCenter.current().add(request) { error in
 			if let error = error {
 				Log.error("[EarlyPushkitDelegate] Failed to post missed call notification: \(error.localizedDescription)")

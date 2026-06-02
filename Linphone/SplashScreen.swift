@@ -35,7 +35,8 @@ struct SplashScreen: View {
 				.foregroundColor(ThemeManager.shared.currentTheme.main500)
 
 			if showSpinner {
-				ProgressView()
+				PopupLoadingView()
+					.background(.black.opacity(0.65))
 			}
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity)

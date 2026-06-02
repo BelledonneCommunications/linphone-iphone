@@ -63,7 +63,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 		// Set up notifications
 		UNUserNotificationCenter.current().delegate = self
-		
+
 		return true
 	}
 	
@@ -125,7 +125,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 		
 		Log.info("[AppDelegate][INStartCallIntent] Generic call intent received for number: \(number) isVideo: \(isVideo)")
 
-		CoreContext.shared.performActionOnCoreQueueWhenCoreIsStarted { core in
+		CoreContext.shared.doOnCoreQueue { core in
 			if let address = core.interpretUrl(url: number, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 				TelecomManager.shared.doCallOrJoinConf(address: address, isVideo: isVideo)
 			}
@@ -159,6 +159,9 @@ struct LinphoneApp: App {
 	private let voipRegistry = PKPushRegistry(queue: coreQueue)
 
 	init() {
+#if DEBUG
+		LinphoneApp.applyUITestMDMConfigIfNeeded()
+#endif
 		if !configAvailable {
 			voipRegistry.delegate = earlyPushDelegate
 			voipRegistry.desiredPushTypes = [.voIP]
@@ -167,6 +170,26 @@ struct LinphoneApp: App {
 			let _ = CoreContext.shared
 		}
 	}
+
+#if DEBUG
+	/// UI-test hook: reads `UITEST_MDM_CONFIG` (JSON) or `UITEST_MDM_CONFIG_CLEAR=1` from
+	/// the launch environment and writes it to the managed config key before MDMManager runs.
+	/// Only active in DEBUG builds.
+	private static func applyUITestMDMConfigIfNeeded() {
+		let env = ProcessInfo.processInfo.environment
+		let key = "com.apple.configuration.managed"
+		if env["UITEST_MDM_CONFIG_CLEAR"] == "1" {
+			UserDefaults.standard.removeObject(forKey: key)
+			return
+		}
+		guard let json = env["UITEST_MDM_CONFIG"],
+			  let data = json.data(using: .utf8),
+			  let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+			return
+		}
+		UserDefaults.standard.set(dict, forKey: key)
+	}
+#endif
 
 	var body: some Scene {
 		WindowGroup {
@@ -314,7 +337,7 @@ struct RootView: View {
 			
 			Log.info("[INStartCallIntent] Generic call intent received for number: \(number) isVideo: \(isVideo)")
 			
-			coreContext.performActionOnCoreQueueWhenCoreIsStarted { core in
+			coreContext.doOnCoreQueue { core in
 				if let address = core.interpretUrl(url: number, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 					telecomManager.doCallOrJoinConf(address: address, isVideo: isVideo)
 				}
@@ -328,7 +351,8 @@ struct RootView: View {
 	}
 
 	var showAssistant: Bool {
-		(coreContext.coreIsStarted && coreContext.accounts.isEmpty)
+		(coreContext.codeScannerIsOpen && coreContext.accounts.isEmpty)
+		|| (coreContext.coreIsStarted && coreContext.accounts.isEmpty)
 		|| sharedMainViewModel.displayProfileMode
 	}
 }

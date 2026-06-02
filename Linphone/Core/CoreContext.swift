@@ -42,6 +42,7 @@ class CoreContext: ObservableObject {
 	@Published var loggingInProgress: Bool = false
 	@Published var coreHasStartedOnce: Bool = false
 	@Published var coreIsStarted: Bool = false
+	@Published var codeScannerIsOpen: Bool = false
 	@Published var accounts: [AccountModel] = []
 	@Published var shortcuts: [ShortcutModel] = []
 	var mCore: Core!
@@ -65,11 +66,64 @@ class CoreContext: ObservableObject {
 		do {
 			try initialiseCore()
 		} catch {
-			
+
+		}
+		observeMDMNotifications()
+	}
+
+	// MARK: - MDM notifications
+
+	private func observeMDMNotifications() {
+		NotificationCenter.default.addObserver(self, selector: #selector(onMDMConfigurationApplied(_:)), name: MDMManager.configurationAppliedNotification, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(onMDMConfigurationRemoved), name: MDMManager.configurationRemovedNotification, object: nil)
+	}
+
+	@objc private func onMDMConfigurationApplied(_ notification: Notification) {
+		Log.info("[CoreContext] MDM configuration applied, refreshing configuration")
+		CoreContext.shared.doOnCoreQueue { core in
+			self.handleConfigurationChanged(status: .Successful)
+		}
+	}
+
+	@objc private func onMDMConfigurationRemoved() {
+		doOnCoreQueue { core in
+			Log.info("[CoreContext] MDM configuration removed, re-initializing app to default state")
+			var startCore = false
+			if core.globalState == .On {
+				core.stop()
+				startCore = true
+			}
+			AppServices.resetConfig()
+			self.mCore.config?.reload()
+			if startCore {
+				try?core.start()
+			}
+			self.handleConfigurationChanged(status: .Successful)
+		}
+	}
+
+	/// Shared handler for configuration changes (both from core provisioning and MDM).
+	private func handleConfigurationChanged(status: ConfiguringState) {
+		let themeMainColor = AppServices.corePreferences.themeMainColor
+		SharedMainViewModel.shared.updateConfigChanges()
+		if status == .Successful {
+			var accountModels: [AccountModel] = []
+			for account in self.mCore.accountList {
+				accountModels.append(AccountModel(account: account, core: self.mCore))
+			}
+			DispatchQueue.main.async {
+					self.accounts = accountModels
+					if accountModels.isEmpty {
+						self.loggingInProgress = false
+						self.loggedIn = false
+					}
+					ThemeManager.shared.applyTheme(named: themeMainColor)
+					self.reloadID = UUID()
+			}
 		}
 	}
 	
-	func doOnCoreQueue(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
+	func doOnCoreQueueCoreStarted(synchronous: Bool = false, lambda: @escaping (Core) -> Void) {
 		let isOnQueue = DispatchQueue.getSpecific(key: coreQueueKey) != nil
 
 		let execute = {
@@ -79,7 +133,7 @@ class CoreContext: ObservableObject {
 			}
 			lambda(self.mCore)
 		}
-
+		
 		switch (synchronous, isOnQueue) {
 		case (true, true), (false, true):
 			// Already on the queue → run directly
@@ -125,26 +179,13 @@ class CoreContext: ObservableObject {
 			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (SharedMainViewModel.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 			
-			Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
-			if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
-				.appendingPathComponent("Library/Preferences/linphone") {
-				let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
-				if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
-					do {
-						try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
-						if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
-							try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
-							Log.info("Successfully copied linphonerc-default configuration")
-						}
-					} catch let error {
-						Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
-					}
-				} else {
-					Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
-				}
-			}
-			
+			MDMManager.shared.loadXMLConfigFromMdm(config: AppServices.config)
+
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
+
+			MDMManager.shared.applyMdmConfigToCore(core: self.mCore)
+			self.startObservingMDMConfigurationUpdates()
+			
 			
 			self.mCore.callkitEnabled = true
 			self.mCore.pushNotificationEnabled = true
@@ -152,8 +193,8 @@ class CoreContext: ObservableObject {
 			let appGitVersion = AppGitInfo.commit
 			let appGitBranch = AppGitInfo.branch
 			let appGitTag = AppGitInfo.tag
-			let sdkGitVersion = linphonesw.sdkVersion
-			var sdkGitBranch = linphonesw.sdkBranch
+			let sdkGitVersion = linphonesw.LinphoneSdkInfos.version
+			var sdkGitBranch = linphonesw.LinphoneSdkInfos.branch
 			
 			if sdkGitBranch.hasPrefix("remotes/origin/") {
 				sdkGitBranch = String(sdkGitBranch.dropFirst("remotes/origin/".count))
@@ -167,18 +208,10 @@ class CoreContext: ObservableObject {
 			self.mCore.videoPreviewEnabled = false
 			self.mCore.fecEnabled = true
 			
-			// Migration
-			/*
-			self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
-			self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
-			self.mCore.config!.setString(section: "misc", key: "log_collection_upload_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
-			self.mCore.config!.setString(section: "misc", key: "file_transfer_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
-			self.mCore.config!.setString(section: "misc", key: "version_check_url_root", value: "https://download.linphone.org/releases")
+			let filesDirectoriesURL = FileUtil.sharedContainerUrl().appendingPathComponent("Library/Images")
+			self.mCore.chatMessageFilesDirectories = [filesDirectoriesURL.path]
 			
-			self.mCore.imdnToEverybodyThreshold = 1
-			self.imdnToEverybodyThreshold = self.mCore.imdnToEverybodyThreshold == 1
 			//self.copyDatabaseFileToDocumentsDirectory()
-			*/
 			
 			let shortcutsCount = self.mCore.config!.getInt(section: "ui", key: "shortcut_count", defaultValue: 0)
 			if shortcutsCount > 0 {
@@ -272,6 +305,9 @@ class CoreContext: ObservableObject {
 					for account in self.mCore.accountList {
 						accountModels.append(AccountModel(account: account, core: self.mCore))
 					}
+					
+					self.runMigration()
+					
 					DispatchQueue.main.async {
 						self.coreHasStartedOnce = true
 						self.coreIsStarted = true
@@ -348,19 +384,7 @@ class CoreContext: ObservableObject {
 				}
 			}, onConfiguringStatus: { (_: Core, status: ConfiguringState, message: String) in
 				Log.info("New configuration state is \(status) = \(message)\n")
-				let themeMainColor = AppServices.corePreferences.themeMainColor
-				SharedMainViewModel.shared.updateConfigChanges()
-				DispatchQueue.main.async {
-					if status == ConfiguringState.Successful {
-						var accountModels: [AccountModel] = []
-						for account in self.mCore.accountList {
-							accountModels.append(AccountModel(account: account, core: self.mCore))
-						}
-						self.accounts = accountModels
-						ThemeManager.shared.applyTheme(named: themeMainColor)
-						self.reloadID = UUID()
-					}
-				}
+				self.handleConfigurationChanged(status: status)
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in
 				if info.starts(with: "https") {
 					DispatchQueue.main.async {
@@ -520,9 +544,9 @@ class CoreContext: ObservableObject {
 		fatalError("Crashing app to test crashlytics")
 	}
 	
-	func performActionOnCoreQueueWhenCoreIsStarted(action: @escaping (_ core: Core) -> Void ) {
+	func doOnCoreQueue(synchronous: Bool = false, action: @escaping (_ core: Core) -> Void ) {
 		if coreIsStarted {
-			doOnCoreQueue { core in
+			doOnCoreQueueCoreStarted(synchronous: synchronous) { core in
 				action(core)
 			}
 		} else {
@@ -563,6 +587,63 @@ class CoreContext: ObservableObject {
 			}
 		}
 	}
+
+	func startObservingMDMConfigurationUpdates() {
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(mdmConfigDidChange),
+			name: UserDefaults.didChangeNotification,
+			object: nil
+		)
+	}
+
+	@objc private func mdmConfigDidChange() {
+		guard MDMManager.shared.managedConfigChangedSinceLastCheck() else { return }
+		CoreContext.shared.doOnCoreQueue { core in
+			MDMManager.shared.applyMdmConfigToCore(core: core)
+		}
+	}
+
+	func migrateIfNeeded(from old: String, to new: String, block: () -> Void) {
+		let last = UserDefaults.standard.string(forKey: "lastMigrationVersion") ?? "0"
+
+		if last.compare(new, options: .numeric) == .orderedAscending {
+			block()
+			UserDefaults.standard.set(new, forKey: "lastMigrationVersion")
+		}
+	}
+	
+	func runMigration() {
+		// Migration
+		let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+		let lastMigration = UserDefaults.standard.string(forKey: "lastMigrationVersion") ?? "0"
+		
+		if lastMigration.compare("6.2.0", options: .numeric) == .orderedAscending &&
+			currentVersion.compare("6.2.0", options: .numeric) != .orderedAscending {
+			
+			self.runMigration620()
+			
+			UserDefaults.standard.set("6.2.0", forKey: "lastMigrationVersion")
+		}
+	}
+	
+	func runMigration600() {
+		self.mCore.config!.setBool(section: "sip", key: "auto_answer_replacing_calls", value: false)
+		self.mCore.config!.setBool(section: "sip", key: "deliver_imdn", value: false)
+		self.mCore.config!.setString(section: "misc", key: "log_collection_upload_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
+		self.mCore.config!.setString(section: "misc", key: "file_transfer_server_url", value: "https://files.linphone.org:443/http-file-transfer-server/hft.php")
+		self.mCore.config!.setString(section: "misc", key: "version_check_url_root", value: "https://download.linphone.org/releases")
+		
+		self.mCore.imdnToEverybodyThreshold = 1
+		self.imdnToEverybodyThreshold = self.mCore.imdnToEverybodyThreshold == 1
+	}
+	
+	func runMigration620() {
+		doOnCoreQueueCoreStarted { core in
+			self.mCore.chatMessageFilesDeletionEnabled = true
+			Log.info("[CoreContext] Core is allowed to automatically delete files from previously logged directories when a chat message is deleted")
+		}
+	}
 }
 
 enum AppServices {
@@ -572,6 +653,9 @@ enum AppServices {
 		if let existing = _config {
 			return existing
 		}
+		
+		setupConfigIfNeeded()
+		
 		_config = Config.newForSharedCore(
 			appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
 			?? {
@@ -580,6 +664,7 @@ enum AppServices {
 			configFilename: "linphonerc",
 			factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
 		)
+		
 		return _config
 	}
 
@@ -589,8 +674,51 @@ enum AppServices {
 		}
 		return config
 	}
+	
+	static func setupConfigIfNeeded() {
+		Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
+			.appendingPathComponent("Library/Preferences/linphone") {
+			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+			if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
+				do {
+					try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
+					if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
+						try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
+						Log.info("Successfully copied linphonerc-default configuration")
+					}
+				} catch let error {
+					Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
+				}
+			} else {
+				Log.info("Found existing linphonerc file, skip copying of linphonerc-default configuration")
+			}
+		}
+	}
+	
+	static func resetConfig() {
+		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
+			.appendingPathComponent("Library/Preferences/linphone") {
+			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
+			do {
+				try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)
+				if let pathToDefaultConfig = Bundle.main.path(forResource: "linphonerc-default", ofType: nil) {
+					if FileManager.default.fileExists(atPath: rcFileUrl.path) {
+						try FileManager.default.removeItem(at: rcFileUrl)
+					}
+					try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
+					Log.info("Successfully copied linphonerc-default configuration")
+					_config = nil
+					let _ = configIfAvailable
+					corePreferences = CorePreferences(config: config)
+				}
+			} catch let error {
+				Log.error("Failed to copy default linphonerc file: \(error.localizedDescription)")
+			}
+		}
+	}
 
-	static let corePreferences = CorePreferences(config: config)
+	static var corePreferences = CorePreferences(config: config)
 }
 
 // swiftlint:enable line_length

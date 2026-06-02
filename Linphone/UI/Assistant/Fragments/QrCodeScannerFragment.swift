@@ -55,6 +55,12 @@ struct QrCodeScannerFragment: View {
 		}
 		.edgesIgnoringSafeArea(.all)
 		.navigationBarHidden(true)
+		.onAppear {
+			coreContext.codeScannerIsOpen = true
+		}
+		.onDisappear {
+			coreContext.codeScannerIsOpen = false
+		}
 		
 		/*
 		if $isShowToast {

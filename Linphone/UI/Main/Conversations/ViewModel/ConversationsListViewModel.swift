@@ -37,6 +37,7 @@ class ConversationsListViewModel: ObservableObject {
 	@Published var displayedConversation: ConversationModel?
 	@Published var conversationsList: [ConversationModel] = []
 	
+	var targetConversation: ConversationModel?
 	var selectedConversation: ConversationModel?
 	
 	private var chatRoomDelegate: ChatRoomDelegate?

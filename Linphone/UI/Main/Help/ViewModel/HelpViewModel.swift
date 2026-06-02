@@ -41,8 +41,8 @@ class HelpViewModel: ObservableObject {
 		let appGitVersion = AppGitInfo.commit
 		let appGitBranch = AppGitInfo.branch
 		let appGitTag = AppGitInfo.tag
-		let sdkGitVersion = linphonesw.sdkVersion
-		var sdkGitBranch = linphonesw.sdkBranch
+		let sdkGitVersion = linphonesw.LinphoneSdkInfos.version
+		var sdkGitBranch = linphonesw.LinphoneSdkInfos.branch
 		
 		if sdkGitBranch.hasPrefix("remotes/origin/") {
 			sdkGitBranch = String(sdkGitBranch.dropFirst("remotes/origin/".count))

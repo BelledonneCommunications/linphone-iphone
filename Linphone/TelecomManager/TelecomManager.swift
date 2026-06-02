@@ -389,7 +389,11 @@ class TelecomManager: ObservableObject {
 		guard AppServices.corePreferences.onlyAllowEarpieceDuringCall else { return true }
 		let output = AVAudioSession.sharedInstance().currentRoute.outputs.first
 		Log.info("Current audio route output is \(output?.portType.rawValue ?? "Unknown")")
-		return output?.portType == .builtInReceiver
+		guard let portType = output?.portType else { return false }
+		return portType == .builtInReceiver
+			|| portType == .headphones
+			|| portType == .usbAudio
+			|| portType == .lineOut
 	}
 
 	static func callKitEnabled(core: Core) -> Bool {

@@ -254,11 +254,16 @@ class ContactsListViewModel: ObservableObject {
 					}
 				}
 				self.selectedFriendToDelete!.friend!.remove()
+				
+				DispatchQueue.main.async {
+					ToastViewModel.shared.show("Success_remove_contact")
+				}
 			} else if SharedMainViewModel.shared.displayedFriend != nil {
 				DispatchQueue.main.async {
 					withAnimation {
 						SharedMainViewModel.shared.displayedFriend = nil
 					}
+					ToastViewModel.shared.show("Success_remove_contact")
 				}
 				SharedMainViewModel.shared.displayedFriend!.friend!.remove()
 			}

@@ -153,6 +153,11 @@ class LdapViewModel: ObservableObject {
 				ldapParams.server = server
 				ldapParams.bindDn = self.bindDn
 				ldapParams.password = self.password
+				if !self.password.isEmpty {
+					ldapParams.password = self.password
+				} else {
+					ldapParams.password = self.ldapToEdit?.params?.password ?? ""
+				}
 				ldapParams.authMethod = Ldap.AuthMethod.Simple
 				ldapParams.tlsEnabled = self.useTls == true
 				ldapParams.serverCertificatesVerificationMode = Ldap.CertVerificationMode.Default

@@ -131,7 +131,3 @@ struct ConversationDeleteMessageBottomSheet: View {
 		}
 	}
 }
-
-#Preview {
-	ConversationsListBottomSheet(showingSheet: .constant(true))
-}

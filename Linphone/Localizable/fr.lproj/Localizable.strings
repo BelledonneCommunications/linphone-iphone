@@ -4,7 +4,6 @@
   
 */
 
-"" = "";
 ": %@" = ": %@";
 "[https://sip.linphone.org](https://sip.linphone.org)" = "[https://sip.linphone.org](https://sip.linphone.org)";
 "[linphone.org/contact](https://linphone.org/contact)" = "[linphone.org/contact](https://linphone.org/contact)";
@@ -50,7 +49,6 @@
 "account_settings_apply_international_prefix_title" = "Formater les numéros en utilisant l'indicatif international";
 "account_settings_replace_plus_by_00_title" = "Remplacer + par 00 lors du formatage des numéros de téléphone";
 "account_settings_nat_policy_title" = "Paramètres de politique NAT";
-"account_settings_outbound_proxy_title" = "Serveur mandataire sortant";
 "account_settings_push_notification_not_available_title" = "Notifications push non disponibles";
 "account_settings_push_notification_title" = "Activer les notifications";
 "account_settings_sip_proxy_url_title" = "Registrar URI";
@@ -129,6 +127,8 @@
 "call_dialog_zrtp_validate_trust_warning_message" = "Pour garantir le chiffrement, nous avons besoin de réauthentifier l’appareil de votre correspondant. Veuillez ré-échanger vos codes :";
 "call_do_zrtp_sas_validation_again" = "Faire la vérification à nouveau";
 "call_history_deleted_toast" = "Historique supprimé";
+"call_is_being_recorded" = "L'appel est enregistré";
+"call_has_been_recorded" = "Enregistrement sauvegardé";
 "call_not_encrypted" = "Appel non chiffré";
 "call_outgoing" = "Appel sortant";
 "call_state_connected" = "Actif";
@@ -147,12 +147,10 @@
 "call_transfer_in_progress_toast" = "Transfert en cours";
 "call_transfer_successful_toast" = "Appel transféré";
 "call_waiting_for_encryption_info" = "En attente du chiffrement…";
-
 "call_conference_end_to_end_encrypted" = "Conférence chiffrée de bout en bout";
 "call_zrtp_point_to_point_encrypted" = "Appel chiffré de point à point";
 "call_srtp_point_to_point_encrypted" = "Appel chiffré de point à point";
 "call_zrtp_end_to_end_encrypted" = "Appel chiffré de bout en bout";
-
 "call_zrtp_sas_validation_required" = "Vérification nécessaire";
 "call_zrtp_sas_validation_skip" = "Passer";
 "calls_count_label" = "%@ appels";
@@ -174,6 +172,7 @@
 "conference_share_link_title" = "Partager le lien";
 "connection_error_for_non_default_account" = "Compte(s) non connecté(s)";
 "contact_call_action" = "Appel";
+"contact_deleted_toast" = "Contact supprimé";
 "contact_details_actions_title" = "Autres actions";
 "contact_details_add_to_favourites" = "Ajouter aux favoris";
 "contact_details_delete" = "Supprimer";
@@ -229,9 +228,12 @@
 "conversation_dialog_delete_for_everyone_label" = "Supprimer pour tout le monde";
 "conversation_message_content_deleted_label" = "Le message a été supprimé";
 "conversation_message_content_deleted_by_us_label" = "Vous avez supprimé le message";
+"conversation_message_deleted_toast" = "Message supprimé";
 "conversation_end_to_end_encrypted_bottom_sheet_link" = "https://linphone.org/en/features/#security";
 "conversation_end_to_end_encrypted_event_title" = "Conversation chiffrée de bout en bout";
 "conversation_end_to_end_encrypted_event_subtitle" = "Les messages de cette conversation sont chiffrés de bout en bout. Seul votre correspondant peut les déchiffrer.";
+"conversation_end_to_end_encrypted_bottom_sheet_title" = "La confidentialité de vos échanges garantie";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Grâce à la technologie de chiffrement de bout en bout de Linphone, la confidentialité de vos messages, appels et réunions avec vos correspondants est garantie. Personne ne pourra déchiffrer vos conversations, pas même Linphone.";
 "conversation_ephemeral_messages_duration_disabled" = "Désactiver";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d jours";
 "conversation_ephemeral_messages_duration_one_day" = "1 jour";
@@ -269,6 +271,18 @@
 "conversation_info_participant_is_admin_label" = "Administrateur";
 "conversation_info_participants_list_title" = "Participants (%d)";
 "conversation_invalid_participant_due_to_security_mode_toast" = "Pour des raisons de sécurité, la création d'une conversation avec un participant d'un domaine tiers est désactivé.";
+"conversation_info_dialog_delete_all_call_logs_title" = "Supprimer l'historique ?";
+"conversation_info_dialog_delete_all_message" = "Tous les messages de cette conversation seront supprimés.";
+"conversation_info_delete_history_confirm" = "Supprimer";
+"conversation_info_history_deleted_toast" = "Historique supprimé";
+"conversation_info_dialog_leave_chatroom_title" = "Quitter la conversation ?";
+"conversation_info_dialog_leave_chatroom_message" = "Vous allez quitter cette conversation. Vous pourrez y être ajouté à nouveau plus tard.";
+"conversation_info_leave_chatroom_confirm" = "Quitter";
+"conversation_info_left_chatroom_toast" = "Vous avez quitté la conversation";
+"conversation_info_dialog_delete_chatroom_title" = "Supprimer la conversation ?";
+"conversation_info_dialog_delete_chatroom_message" = "Cette conversation sera définitivement supprimée pour vous.";
+"conversation_info_delete_chatroom_confirm" = "Supprimer";
+"conversation_info_chatroom_deleted_toast" = "Conversation supprimée";
 "conversation_menu_search_in_messages" = "Chercher";
 "conversation_menu_go_to_info" = "Informations";
 "conversation_menu_configure_ephemeral_messages" = "Messages éphémères";
@@ -409,6 +423,8 @@
 "meeting_schedule_add_participants_title" = "Ajouter des participants";
 "meeting_schedule_cancel_dialog_message" = "Voulez-vous annuler la réunion et envoyer une notification aux participants ?";
 "meeting_schedule_cancel_dialog_title" = "Annuler la réunion ?";
+"meeting_schedule_delete_dialog_title" = "Supprimer la réunion ?";
+"meeting_schedule_delete_dialog_message" = "Voulez-vous supprimer la réunion ?";
 "meeting_schedule_description_hint" = "Ajouter une description";
 "meeting_schedule_description_title" = "Description";
 "meeting_schedule_edit_title" = "Modifier la réunion";
@@ -561,8 +577,6 @@
 "settings_developer_cleared_native_friends_in_database_toast" = "Contacts importés supprimés";
 "settings_developer_clear_orphan_auth_info_title" = "Supprimer les informations d'authentification orphelines";
 "settings_developer_no_auth_info_removed_toast" = "Aucune information d'authentification orpheline trouvée";
-"settings_developer_cleared_auth_info_toast_single" = "%@ information d'authentification supprimée";
-"settings_developer_cleared_auth_info_toast_multiple" = "%@ informations d'authentification supprimées";
 "settings_meetings_default_layout_title" = "Disposition par défaut";
 "settings_meetings_layout_active_speaker_label" = "Intervenant actif";
 "settings_meetings_layout_mosaic_label" = "Mosaïque";
@@ -583,8 +597,8 @@
 "sip.linphone.org" = "sip.linphone.org";
 "SRTP" = "SRTP";
 "start" = "Commencer";
-"TCP" ="TCP";
-"Temp Help" ="Temp Help";
+"TCP" = "TCP";
+"Temp Help" = "Temp Help";
 "text_copied_to_clipboard_toast" = "Texte copié dans le presse-papier";
 "TLS" = "TLS";
 "UDP" = "UDP";
@@ -618,4 +632,4 @@
 "ZRTP" = "ZRTP";
 "early_push_unknown_caller" = "Inconnu";
 "early_push_missed_call_title" = "Appel manqué";
-"early_push_missed_call_body" = "Vous avez reçu un appel alors que votre appareil était verrouillé. Veuillez déverrouiller et rouvrir l'application.";
+"early_push_missed_call_body" = "Vous avez reçu un appel alors que votre appareil était verrouillé.";

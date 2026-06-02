@@ -108,7 +108,8 @@ struct UIList: UIViewRepresentable {
 	
 	let geometryProxy: GeometryProxy
 	let sections: [MessagesSection]
-    
+	
+	@Binding var securitySheet: Bool
     @Binding var isMessageTextFocused: Bool
 	
 	@State private var isScrolledToTop = false
@@ -136,7 +137,9 @@ struct UIList: UIViewRepresentable {
 		tableView.scrollsToTop = true
 		
 		if SharedMainViewModel.shared.displayedConversation != nil {
-			let footerView = Self.makeFooterView()
+			let footerView = Self.makeFooterView {
+				securitySheet = true
+			}
 			footerView.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 80)
 			footerView.transform = CGAffineTransformMakeScale(1, -1)
 			tableView.tableFooterView = footerView
@@ -179,7 +182,7 @@ struct UIList: UIViewRepresentable {
 		return containerView
 	}
 	
-	static func makeFooterView() -> UIView {
+	static func makeFooterView(onTap: @escaping () -> Void) -> UIView {
 		let encryptionEnabled = SharedMainViewModel.shared.displayedConversation!.encryptionEnabled
 		let host = UIHostingController(
 			rootView:
@@ -214,6 +217,9 @@ struct UIList: UIViewRepresentable {
 							.stroke(encryptionEnabled ? Color.blueInfo500 : Color.orangeWarning600, lineWidth: 0.5)
 					)
                     .padding(.horizontal, 10)
+				}
+				.onTapGesture {
+					onTap()
 				}
 				.frame(height: 80)
 		)

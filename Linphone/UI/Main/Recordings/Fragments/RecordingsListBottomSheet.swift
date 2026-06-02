@@ -170,7 +170,3 @@ struct RecordingsListBottomSheet: View {
 		}
 	}
 }
-
-#Preview {
-	ConversationsListBottomSheet(showingSheet: .constant(true))
-}

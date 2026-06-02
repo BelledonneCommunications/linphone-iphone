@@ -691,7 +691,15 @@ class ConversationViewModel: ObservableObject {
 			self.computeComposingLabel()
 			self.getEphemeralTime()
 			
-			self.peerAddress = self.sharedMainViewModel.displayedConversation!.chatRoom.peerAddress?.asStringUriOnly() ?? ""
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
+				let isReadOnlyTmp = displayedConversation.chatRoom.isReadOnly || displayedConversation.isDisabledBecauseNotSecured
+				let peerAddressTmp = displayedConversation.chatRoom.peerAddress?.asStringUriOnly() ?? ""
+				
+				DispatchQueue.main.async {
+					displayedConversation.isReadOnly = isReadOnlyTmp
+					self.peerAddress = peerAddressTmp
+				}
+			}
 			
 			if self.sharedMainViewModel.displayedConversation != nil {
 				let historyEvents = self.sharedMainViewModel.displayedConversation!.chatRoom.getHistoryRangeEvents(begin: 0, end: 30)
@@ -3011,6 +3019,7 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 					self.selectedMessage = nil
+					ToastViewModel.shared.show("Success_message_deleted")
 				}
 			}
 		}
