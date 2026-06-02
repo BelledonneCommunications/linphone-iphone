@@ -11,9 +11,13 @@ Group changes to describe their impact on the project, as follows:
 	Security to invite users to upgrade in case of vulnerabilities.
 	
 	
-## [6.1.0] - Unreleased
+## [6.2.0] - Unreleased
 
 ### Added
+- Added the ability to edit/delete chat messages sent less than 24 hours ago
+- Added media/documents access from contact page if a 1-1 conversation with any of the contact SIP addresses is found
+- Use user-input to filter participants list after typing "@" in conversation send area
+- Core will now automatically delete from device files that were sent/received in a chat message when it is deleted (because it's ephemeral or has been manually deleted)
 - Support for LDAP and CardDAV accounts
 - Advanced settings for third-party SIP accounts, including outbound proxy configuration
 - Display of contacts, suggestions, media, and document lists in history, conversation, and contact detail views
@@ -21,12 +25,11 @@ Group changes to describe their impact on the project, as follows:
 - Trusted/untrusted devices visualization and list management
 - Pending notifications banner
 - Option to show or hide chat message content in notifications
-- Message editing and deletion features
 - Screen-sharing video preview in call view
-- SipAddressesPopup added to StartCallFragment, StartConversationFragment, and AddParticipantsFragment
-- Deleted message bottom sheet when message is not retractable
-- Bottom sheet to display message deletion choice
-- Settings to show past meetings and limit max width in settings views
+- Call transfer to an existing call or SIP address
+- Security information bottom sheet
+- Conversation history deletion feature
+- Copy SIP address to clipboard from participants list
 - Siri intent example phrases for all localizations
 
 ### Changed
@@ -38,21 +41,24 @@ Group changes to describe their impact on the project, as follows:
 - Updated last message text display in conversation list
 - Updated Settings UI
 - New colors and theme adjustments to only use two main colors
+- Refactored call view and fullscreen call experience
+- MDM configuration keys updated to camelCase
 
 ### Fixed
 - Reaction refresh issues
 - Media list UI and message bubble paths
 - Various contact and phone number handling issues
-- Fix phoneListsEqual to return false when both lists are empty
-- Chatroom disabled when insecure
-- Call transfer logic updated
-- Debug print statements removed
-- CorePreferences and SSO improvements
-- Display peer address in conversation
-- Several minor crashes and UI inconsistencies resolved
+- Chat room disabled when insecure or read-only
 - Fix document preview
 - Fix media encryption state in CallView and mediaEncryption settings for friends with multiple addresses
 - Ignore authentication requests while offline
+- Fix QR code scanner
+- Fix CardDAV account editing in settings
+- Fix LDAP password editing in settings
+- Fix missed call notifications with Early PushKit delegate
+- Handle VoIP/APNs pushes received before shared filesystem is available
+- Fix add participants view disappearing on refresh
+- Fix phoneListsEqual to return false when both lists are empty
 
 
 ## [6.0.3] – 2026-01-29
