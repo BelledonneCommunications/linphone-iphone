@@ -178,7 +178,7 @@ class CoreContext: ObservableObject {
 			LoggingService.Instance.logLevel = LogLevel.Debug
 			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (SharedMainViewModel.appGroupName as NSString).utf8String))
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
-			
+
 			MDMManager.shared.loadXMLConfigFromMdm(config: AppServices.config)
 
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
@@ -648,14 +648,18 @@ class CoreContext: ObservableObject {
 
 enum AppServices {
 	private static var _config: Config?
+	private static let configLock = NSLock()
 
 	static var configIfAvailable: Config? {
+		configLock.lock()
+		defer { configLock.unlock() }
+
 		if let existing = _config {
 			return existing
 		}
-		
+
 		setupConfigIfNeeded()
-		
+
 		_config = Config.newForSharedCore(
 			appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
 			?? {
@@ -664,7 +668,7 @@ enum AppServices {
 			configFilename: "linphonerc",
 			factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
 		)
-		
+
 		return _config
 	}
 
@@ -708,7 +712,9 @@ enum AppServices {
 					}
 					try FileManager.default.copyItem(at: URL(fileURLWithPath: pathToDefaultConfig), to: rcFileUrl)
 					Log.info("Successfully copied linphonerc-default configuration")
+					configLock.lock()
 					_config = nil
+					configLock.unlock()
 					let _ = configIfAvailable
 					corePreferences = CorePreferences(config: config)
 				}
