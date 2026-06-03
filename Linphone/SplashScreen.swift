@@ -34,10 +34,11 @@ struct SplashScreen: View {
 				.frame(width: 240, height: 128)
 				.foregroundColor(ThemeManager.shared.currentTheme.main500)
 
-			if showSpinner {
-				PopupLoadingView()
-					.background(.black.opacity(0.65))
-			}
+			ProgressView()
+				.controlSize(.small)
+				.progressViewStyle(CircularProgressViewStyle(tint: Color.orangeMain500))
+				.offset(y: 96)
+				.opacity(showSpinner ? 1 : 0)
 		}
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.ignoresSafeArea(.all)
