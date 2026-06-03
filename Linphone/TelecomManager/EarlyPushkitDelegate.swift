@@ -64,6 +64,13 @@ class EarlyPushkitDelegate: NSObject, PKPushRegistryDelegate, CXProviderDelegate
 
 		postMissedCallNotification(trigger: UNTimeIntervalNotificationTrigger(timeInterval: 4, repeats: false))
 		completion()
+
+		DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
+			guard let self = self, let existing = self.activeCalls[signature], existing.uuid == uuid else { return }
+			Log.info("[EarlyPushkitDelegate] Ending unanswered call after timeout")
+			existing.provider.reportCall(with: uuid, endedAt: .init(), reason: .unanswered)
+			self.activeCalls.removeValue(forKey: signature)
+		}
 	}
 
 	private func makeCallUpdate() -> CXCallUpdate {
