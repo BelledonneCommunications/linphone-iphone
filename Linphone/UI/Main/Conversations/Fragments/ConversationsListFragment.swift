@@ -276,7 +276,7 @@ struct ConversationRow: View {
 							.frame(width: 18, height: 18, alignment: .trailing)
 					}
 					
-					if !conversation.encryptionEnabled {
+					if !conversation.encryptionEnabled && conversation.isEndToEndEncryptionAvailable {
 						Image("lock-simple-open")
 							.renderingMode(.template)
 							.resizable()

@@ -136,7 +136,7 @@ struct UIList: UIViewRepresentable {
 		tableView.backgroundColor = UIColor(.white)
 		tableView.scrollsToTop = true
 		
-		if SharedMainViewModel.shared.displayedConversation != nil {
+		if let displayedConversation = SharedMainViewModel.shared.displayedConversation, displayedConversation.isEndToEndEncryptionAvailable {
 			let footerView = Self.makeFooterView {
 				securitySheet = true
 			}

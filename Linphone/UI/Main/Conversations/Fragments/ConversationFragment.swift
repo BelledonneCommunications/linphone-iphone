@@ -353,7 +353,7 @@ struct ConversationFragment: View {
 									.padding(.top, 4)
 									.lineLimit(1)
 								
-								if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") || ((SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false) {
+								if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") || ((SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false && (SharedMainViewModel.shared.displayedConversation?.isEndToEndEncryptionAvailable ?? cachedConversation!.isEndToEndEncryptionAvailable) == true) {
 									HStack {
 										if isMuted {
 											Image("bell-slash")
@@ -377,7 +377,8 @@ struct ConversationFragment: View {
 												.lineLimit(1)
 										}
 										
-										if (SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false {
+										if (SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false
+											&& (SharedMainViewModel.shared.displayedConversation?.isEndToEndEncryptionAvailable ?? cachedConversation!.isEndToEndEncryptionAvailable) == true {
 											HStack {
 												Image("lock-simple-open")
 													.renderingMode(.template)
