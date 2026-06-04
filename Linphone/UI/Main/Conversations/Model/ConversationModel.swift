@@ -45,6 +45,7 @@ class ConversationModel: ObservableObject, Identifiable {
 	@Published var lastUpdateTime: time_t
 	@Published var isMuted: Bool
 	@Published var isEphemeral: Bool
+	@Published var isEndToEndEncryptionAvailable: Bool
 	@Published var encryptionEnabled: Bool
 	@Published var lastMessagePrefixText: String
 	@Published var lastMessageText: String
@@ -148,6 +149,8 @@ class ConversationModel: ObservableObject, Identifiable {
 
 		self.isEphemeral = chatRoom.ephemeralEnabled
 		
+		self.isEndToEndEncryptionAvailable = true
+		
 		self.encryptionEnabled = chatRoom.currentParams != nil && chatRoom.currentParams!.encryptionEnabled
 		
 		self.lastMessage = nil
@@ -165,6 +168,15 @@ class ConversationModel: ObservableObject, Identifiable {
 		self.lastMessageInItalic = false
 
 		self.unreadMessagesCount = chatRoom.unreadMessagesCount
+		
+		
+		coreContext.doOnCoreQueue { core in
+			let isEndToEndEncryptionAvailableTmp = LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core)
+			
+			DispatchQueue.main.async {
+				self.isEndToEndEncryptionAvailable = isEndToEndEncryptionAvailableTmp
+			}
+		}
 		
 		getContentTextMessage(chatRoom: chatRoom)
 	}
