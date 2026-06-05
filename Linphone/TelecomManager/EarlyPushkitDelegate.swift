@@ -85,6 +85,7 @@ class EarlyPushkitDelegate: NSObject, PKPushRegistryDelegate, CXProviderDelegate
 		content.title = NSLocalizedString("early_push_missed_call_title", comment: "")
 		content.body = NSLocalizedString("early_push_missed_call_body", comment: "")
 		content.sound = .default
+		content.interruptionLevel = .timeSensitive
 		let request = UNNotificationRequest(identifier: "early_push_missed_call", content: content, trigger: trigger)
 		UNUserNotificationCenter.current().add(request) { error in
 			if let error = error {
