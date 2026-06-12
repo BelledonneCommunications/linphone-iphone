@@ -511,8 +511,8 @@ class CallViewModel: ObservableObject {
 				
 				var participantListTmp: [ParticipantModel] = []
 				conf.participantDeviceList.forEach({ participantDevice in
-					if participantDevice.address != nil && !conf.isMe(uri: participantDevice.address!.clone()!) {
-						if !conf.isMe(uri: participantDevice.address!.clone()!) {
+                    if participantDevice.address != nil && !conf.isMe(URI: participantDevice.address!.clone()!) {
+                        if !conf.isMe(URI: participantDevice.address!.clone()!) {
 							let isAdmin = conf.participantList.first(where: {$0.address!.equal(address2: participantDevice.address!.clone()!)})?.isAdmin
 							participantListTmp.append(
 								ParticipantModel(
@@ -570,8 +570,8 @@ class CallViewModel: ObservableObject {
 				if participantDevice.address != nil {
 					var participantListTmp: [ParticipantModel] = []
 					conference.participantDeviceList.forEach({ pDevice in
-						if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
-							if !conference.isMe(uri: pDevice.address!.clone()!) {
+                        if pDevice.address != nil && !conference.isMe(URI: pDevice.address!.clone()!) {
+                            if !conference.isMe(URI: pDevice.address!.clone()!) {
 								let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
 								participantListTmp.append(
 									ParticipantModel(
@@ -650,8 +650,8 @@ class CallViewModel: ObservableObject {
 				if participantDevice.address != nil {
 					var participantListTmp: [ParticipantModel] = []
 					conference.participantDeviceList.forEach({ pDevice in
-						if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
-							if !conference.isMe(uri: pDevice.address!.clone()!) {
+                        if pDevice.address != nil && !conference.isMe(URI: pDevice.address!.clone()!) {
+                            if !conference.isMe(URI: pDevice.address!.clone()!) {
 								let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
 								participantListTmp.append(
 									ParticipantModel(
@@ -736,8 +736,8 @@ class CallViewModel: ObservableObject {
                 
                 var participantListTmp: [ParticipantModel] = []
                 conference.participantDeviceList.forEach({ pDevice in
-                    if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
-                        if !conference.isMe(uri: pDevice.address!.clone()!) {
+                    if pDevice.address != nil && !conference.isMe(URI: pDevice.address!.clone()!) {
+                        if !conference.isMe(URI: pDevice.address!.clone()!) {
                             let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
                             
                             participantListTmp.append(
@@ -817,8 +817,8 @@ class CallViewModel: ObservableObject {
 						|| ( activeSpeakerParticipantBis == nil) {
 						
 						conference.participantDeviceList.forEach({ pDevice in
-							if pDevice.address != nil && !conference.isMe(uri: pDevice.address!.clone()!) {
-								if !conference.isMe(uri: pDevice.address!.clone()!) {
+                            if pDevice.address != nil && !conference.isMe(URI: pDevice.address!.clone()!) {
+                                if !conference.isMe(URI: pDevice.address!.clone()!) {
 									let isAdmin = conference.participantList.first(where: {$0.address!.equal(address2: pDevice.address!.clone()!)})?.isAdmin
 									participantListTmp.append(
 										ParticipantModel(

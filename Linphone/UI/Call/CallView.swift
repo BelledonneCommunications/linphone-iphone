@@ -1366,7 +1366,7 @@ struct CallView: View {
 					let rows = ceil(participantCount / 2.0)
 
 					let optionA = (height - (participantCount - 1) * 10) / participantCount
-					let optionB = min((width - 10) / 2, (height - (rows - 1) * 10) / rows)
+                    let optionB = min((width - 10) / 2.0, (height - (rows - 1) * 10) / rows)
 
 					let maxValue = max(optionA, optionB)
 					
@@ -1612,7 +1612,7 @@ struct CallView: View {
 					let rows = ceil(participantCount / 2.0)
 
 					let optionA = min(height, (width - (participantCount - 1) * 10) / participantCount)
-					let optionB = min((height - 10) / 2, (width - (rows - 1) * 10) / rows)
+                    let optionB = min((height - 10) / 2.0, (width - (rows - 1) * 10) / rows)
 
 					let maxValue = max(optionA, optionB)
 					
