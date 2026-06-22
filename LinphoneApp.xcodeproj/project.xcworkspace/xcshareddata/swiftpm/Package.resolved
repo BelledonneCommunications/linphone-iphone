@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BelledonneCommunications/linphone-sdk-swift-ios.git",
       "state" : {
-        "branch" : "stable",
-        "revision" : "8ebb889fd59a3ea0cbd65ac3547f5ea348a0eac1"
+        "revision" : "6d81a65d5fee9d06a8008787e873ff1dc392a19a",
+        "version" : "5.5.5"
       }
     },
     {

@@ -1478,7 +1478,7 @@
 				D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
-				D7388B072FDC5A3A0045C32D /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D7127F822FE995D400631F65 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -2577,12 +2577,12 @@
 				kind = branch;
 			};
 		};
-		D7388B072FDC5A3A0045C32D /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
+		D7127F822FE995D400631F65 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/BelledonneCommunications/linphone-sdk-swift-ios.git";
 			requirement = {
-				branch = stable;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.5.5;
 			};
 		};
 		D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
