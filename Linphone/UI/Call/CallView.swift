@@ -281,7 +281,7 @@ struct CallView: View {
 				}
 			}
 		}
-		.id("\(telecomManager.callInProgress)-\(telecomManager.callDisplayed)-\(callViewModel.callsCounter)-\(fullscreenVideo)-\(isShowConversationFragment)")
+		.id("\(telecomManager.callInProgress)-\(telecomManager.callDisplayed)-\(callViewModel.callsCounter)-\(isShowConversationFragment)")
 	}
 	
 	@ViewBuilder
@@ -588,7 +588,9 @@ struct CallView: View {
 						}
 						.onDisappear {
 							coreContext.doOnCoreQueue { core in
-								core.nativeVideoWindow = nil
+                                if !telecomManager.remoteConfVideo {
+                                    core.nativeVideoWindow = nil
+                                }
 							}
 							
 							if callViewModel.videoDisplayed {
@@ -956,7 +958,9 @@ struct CallView: View {
 						}
 						.onDisappear {
 							coreContext.doOnCoreQueue { core in
-								core.nativeVideoWindow = nil
+                                if !telecomManager.remoteConfVideo {
+                                    core.nativeVideoWindow = nil
+                                }
 							}
 							if !callViewModel.isPaused && TelecomManager.shared.callInProgress
 								&& !(coreContext.pipViewModel.pipController?.isPictureInPictureActive ?? false) {
