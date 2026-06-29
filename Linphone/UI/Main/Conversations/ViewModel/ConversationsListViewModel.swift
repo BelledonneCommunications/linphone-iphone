@@ -436,25 +436,48 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func getChatRoomWithStringAddress(stringAddr: String) {
-		CoreContext.shared.doOnCoreQueue { _ in
+		CoreContext.shared.doOnCoreQueue { core in
 			do {
 				let stringAddrCleaned = stringAddr.components(separatedBy: ";gr=")
 				let address = try Factory.Instance.createAddress(addr: stringAddrCleaned[0])
 				if let dispChatRoom = self.conversationsList.first(where: {$0.chatRoom.peerAddress != nil && $0.chatRoom.peerAddress!.equal(address2: address)}) {
 					if self.sharedMainViewModel.displayedConversation != nil {
 						if dispChatRoom.id != self.sharedMainViewModel.displayedConversation!.id {
-							DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-								self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
-							}
+							self.changeDisplayedChatRoomWithoutCore(core: core, conversationModel: dispChatRoom)
 						}
 					} else {
-						DispatchQueue.main.async {
-							self.changeDisplayedChatRoom(conversationModel: dispChatRoom)
-						}
+						self.changeDisplayedChatRoomWithoutCore(core: core, conversationModel: dispChatRoom)
 					}
 				}
 			} catch {
 			}
+		}
+	}
+	
+	func changeDisplayedChatRoomWithoutCore(core: Core, conversationModel: ConversationModel) {
+		if let newChatRoom = core.searchChatRoomByIdentifier(identifier: conversationModel.id) {
+			// Rebuild the conversation model from the freshly searched chat room:
+			// after a core stop/start (background/foreground) the given model's
+			// ChatRoom reference is dead and would yield an empty history.
+			let freshConversation = ConversationModel(chatRoom: newChatRoom)
+			if self.sharedMainViewModel.displayedConversation == nil {
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+					withAnimation {
+						self.sharedMainViewModel.displayedConversation = freshConversation
+					}
+				}
+			} else {
+				DispatchQueue.main.async {
+					self.sharedMainViewModel.displayedConversation = nil
+					DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+						withAnimation {
+							self.sharedMainViewModel.displayedConversation = freshConversation
+						}
+					}
+				}
+			}
+		} else {
+			Log.warn("\(ConversationsListViewModel.TAG) changeDisplayedChatRoom: no chat room found for identifier \(conversationModel.id)")
 		}
 	}
 	
