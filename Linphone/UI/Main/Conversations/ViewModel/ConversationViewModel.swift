@@ -2983,17 +2983,6 @@ class ConversationViewModel: ObservableObject {
 		}
 	}
 	
-	func removeParticipant(address: String) {
-		if self.sharedMainViewModel.displayedConversation != nil {
-			coreContext.doOnCoreQueue { _ in
-				if let participant = self.sharedMainViewModel.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == address}) {
-					self.sharedMainViewModel.displayedConversation!.chatRoom.removeParticipant(participant: participant)
-				}
-				
-			}
-		}
-	}
-	
 	func getAttachmentIndex(attachment: Attachment) -> Int {
 		return self.attachments.firstIndex(where: {$0.id == attachment.id}) ?? -1
 	}

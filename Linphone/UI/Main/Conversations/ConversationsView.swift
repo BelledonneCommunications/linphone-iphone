@@ -30,6 +30,7 @@ struct ConversationsView: View {
 	@Binding var showLeaveConversationPopup: Bool
 	@Binding var showDeleteConversationPopup: Bool
 	@Binding var showDeleteConversationHistoryPopup: Bool
+	@Binding var isShowRemoveParticipantPopup: Bool
 	
 	var body: some View {
 		NavigationView {
@@ -38,7 +39,8 @@ struct ConversationsView: View {
 					text: $text,
 					showLeaveConversationPopup: $showLeaveConversationPopup,
 					showDeleteConversationPopup: $showDeleteConversationPopup,
-					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
+					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
+					isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup
 				)
 				
 				Button {

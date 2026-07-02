@@ -40,6 +40,7 @@ struct ConversationInfoFragment: View {
 	@Binding var isShowInfoConversationFragment: Bool
 	@Binding var isShowEditContactFragment: Bool
 	@Binding var isShowEditContactFragmentAddress: String
+	@Binding var isShowRemoveParticipantPopup: Bool
 	
 	@Binding var isShowScheduleMeetingFragment: Bool
 	
@@ -515,7 +516,8 @@ struct ConversationInfoFragment: View {
 																	}
 																	
 																	Button(role: .destructive) {
-																		conversationViewModel.removeParticipant(address: participantConversationModel.address)
+																		SharedMainViewModel.shared.participantAddressToRemove = participantConversationModel.address
+																		self.isShowRemoveParticipantPopup.toggle()
 																	} label: {
 																		HStack {
 																			Text("conversation_info_admin_menu_remove_participant")
@@ -863,6 +865,7 @@ struct ConversationInfoFragment: View {
 		isShowInfoConversationFragment: .constant(true),
 		isShowEditContactFragment: .constant(false),
 		isShowEditContactFragmentAddress: .constant(""),
+		isShowRemoveParticipantPopup: .constant(false),
 		isShowScheduleMeetingFragment: .constant(false),
 		isShowScheduleMeetingFragmentSubject: .constant(""),
 		isShowScheduleMeetingFragmentParticipants: .constant([]),

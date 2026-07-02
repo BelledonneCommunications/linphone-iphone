@@ -641,5 +641,16 @@ class ConversationsListViewModel: ObservableObject {
 		})
 		chatRoom.addDelegate(delegate: self.chatRoomDelegate!)
 	}
+	
+	func removeParticipant() {
+		if self.sharedMainViewModel.displayedConversation != nil && !SharedMainViewModel.shared.participantAddressToRemove.isEmpty {
+			coreContext.doOnCoreQueue { _ in
+				if let participant = self.sharedMainViewModel.displayedConversation!.chatRoom.participants.first(where: {$0.address?.asStringUriOnly() == SharedMainViewModel.shared.participantAddressToRemove}) {
+					self.sharedMainViewModel.displayedConversation!.chatRoom.removeParticipant(participant: participant)
+				}
+				
+			}
+		}
+	}
 }
 // swiftlint:enable line_length

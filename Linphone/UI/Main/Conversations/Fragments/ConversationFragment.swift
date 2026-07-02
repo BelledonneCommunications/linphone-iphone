@@ -84,6 +84,8 @@ struct ConversationFragment: View {
 	@Binding var isShowConversationInfoPopup: Bool
 	@Binding var conversationInfoPopupText: String
 	
+	@Binding var isShowRemoveParticipantPopup: Bool
+	
 	@Binding var showLeaveConversationPopup: Bool
 	@Binding var showDeleteConversationPopup: Bool
 	@Binding var showDeleteConversationHistoryPopup: Bool
@@ -1604,6 +1606,7 @@ struct ConversationFragment: View {
 					isShowInfoConversationFragment: $isShowInfoConversationFragment,
 					isShowEditContactFragment: $isShowEditContactFragment,
 					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress,
+					isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup,
 					isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment,
 					isShowScheduleMeetingFragmentSubject: $isShowScheduleMeetingFragmentSubject,
 					isShowScheduleMeetingFragmentParticipants: $isShowScheduleMeetingFragmentParticipants,
