@@ -32,6 +32,7 @@ struct ConversationsFragment: View {
 	@Binding var showLeaveConversationPopup: Bool
 	@Binding var showDeleteConversationPopup: Bool
 	@Binding var showDeleteConversationHistoryPopup: Bool
+	@Binding var isShowRemoveParticipantPopup: Bool
 	
 	var body: some View {
 		ZStack {
