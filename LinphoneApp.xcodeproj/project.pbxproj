@@ -136,6 +136,7 @@
 		D759CB662C3FBE1D00AC35E8 /* StartConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D759CB652C3FBE1D00AC35E8 /* StartConversationViewModel.swift */; };
 		D76005F62B0798B00054B79A /* IntExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76005F52B0798B00054B79A /* IntExtension.swift */; };
 		D762102C2E97FDFD002E7999 /* CardDavAddressBookConfigurationFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D762102B2E97FDF8002E7999 /* CardDavAddressBookConfigurationFragment.swift */; };
+		D76D3BD22FFCED2600D2CDC8 /* RecoverAccountFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76D3BD12FFCED2400D2CDC8 /* RecoverAccountFragment.swift */; };
 		D7702EF22AC7205000557C00 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7702EF12AC7205000557C00 /* WelcomeView.swift */; };
 		D777DBB32AE12C5900565A99 /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D777DBB22AE12C5900565A99 /* ContactsManager.swift */; };
 		D77A080E2CB6BCAF0095D589 /* MessageConferenceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */; };
@@ -428,6 +429,7 @@
 		D759CB652C3FBE1D00AC35E8 /* StartConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartConversationViewModel.swift; sourceTree = "<group>"; };
 		D76005F52B0798B00054B79A /* IntExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntExtension.swift; sourceTree = "<group>"; };
 		D762102B2E97FDF8002E7999 /* CardDavAddressBookConfigurationFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDavAddressBookConfigurationFragment.swift; sourceTree = "<group>"; };
+		D76D3BD12FFCED2400D2CDC8 /* RecoverAccountFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverAccountFragment.swift; sourceTree = "<group>"; };
 		D7702EF12AC7205000557C00 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		D777DBB22AE12C5900565A99 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		D77A080D2CB6BCA10095D589 /* MessageConferenceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageConferenceInfo.swift; sourceTree = "<group>"; };
@@ -1218,6 +1220,7 @@
 		D7DA67602ACCB2D700E95002 /* Fragments */ = {
 			isa = PBXGroup;
 			children = (
+				D76D3BD12FFCED2400D2CDC8 /* RecoverAccountFragment.swift */,
 				D7DA67612ACCB2FA00E95002 /* LoginFragment.swift */,
 				D7EAACCE2AD6ED8000AA6A8A /* PermissionsFragment.swift */,
 				D7DA67632ACCB31700E95002 /* ProfileModeFragment.swift */,
@@ -1660,6 +1663,7 @@
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,
 				D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */,
 				D7D1F5282EDD939E0034EEB0 /* RecordingMediaPlayerViewModel.swift in Sources */,
+				D76D3BD22FFCED2600D2CDC8 /* RecoverAccountFragment.swift in Sources */,
 				D7DC096F2CFA1D7600A6D47C /* AccountProfileFragment.swift in Sources */,
 				D7BC10D42F4EF18600F09BDA /* SoundPlayer.swift in Sources */,
 				D717A10E2CEB772300849D92 /* ShareSheetController.swift in Sources */,

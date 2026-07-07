@@ -257,13 +257,15 @@ struct LoginFragment: View {
 				.disabled(accountLoginViewModel.username.isEmpty || accountLoginViewModel.passwd.isEmpty)
 				.padding(.bottom)
 				
-				HStack {
-					Text(.init(String(format: ("[%@](%@)"), String(localized: "assistant_forgotten_password"), "https://subscribe.linphone.org/")))
+				NavigationLink(destination: {
+					RecoverAccountFragment()
+				}, label: {
+					Text(String(localized: "assistant_forgotten_password"))
 						.underline()
 						.tint(Color.grayMain2c600)
 						.default_text_style_600(styleSize: 15)
 						.foregroundStyle(Color.grayMain2c500)
-				}
+				})
 				.frame(maxWidth: .infinity)
 				.padding(.bottom, 30)
 				

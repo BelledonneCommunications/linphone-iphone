@@ -75,7 +75,13 @@
 "assistant_dialog_general_terms_and_privacy_policy_title" = "Conditions de service & politique de confidentialité";
 "assistant_dialog_general_terms_label" = "conditions de service";
 "assistant_dialog_privacy_policy_label" = "politique de confidentialité";
-"assistant_forgotten_password" = "Mot de passe oublié ?";
+"assistant_forgotten_password" = "Mot de passe oublié ou inconnu ?";
+"assistant_forgotten_password_title" = "Récupération de compte";
+"assistant_forgotten_password_subtitle" = "Choisissez comment récupérer votre compte.";
+"assistant_forgotten_password_message" = "Vous avez créé votre compte avec :";
+"assistant_recover_email_account_label" = "Un email";
+"assistant_recover_phone_number_account_label" = "Un numéro de téléphone";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Les notifications push ne semblent pas être disponibles sur votre appareil. Celles-ci sont nécessaires à la récupération d’un compte sur l’application mobile avec un numéro de téléphone.";
 "assistant_invalid_uri_toast" = "URI invalide";
 "assistant_login_third_party_sip_account" = "J’ai un compte SIP tiers";
 "assistant_no_account_yet" = "Pas encore de compte ?";
