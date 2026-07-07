@@ -326,7 +326,6 @@
 "dialog_install" = "Installer";
 "dialog_do_not_show_anymore" = "Ne plus me montrer ce message";
 "dialog_no" = "Non";
-"dialog_yes" = "Oui";
 "dialog_remove" = "Retirer";
 "dialog_confirm" = "Confirmer";
 "dialog_understood" = "J'ai compris";
