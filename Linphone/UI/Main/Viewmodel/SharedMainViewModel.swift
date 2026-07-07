@@ -39,6 +39,7 @@ class SharedMainViewModel: ObservableObject {
 	@Published var increaseTrustLevelPopupAccepted = false
 	@Published var increaseTrustLevelPopupDeviceName = ""
 	@Published var increaseTrustLevelPopupDeviceAddress: Address?
+	@Published var participantAddressToRemove = ""
 	
 	@Published var displayedFriend: ContactAvatarModel?
 	@Published var displayedCall: HistoryModel?

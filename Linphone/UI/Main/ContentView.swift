@@ -65,6 +65,7 @@ struct ContentView: View {
 	@State var isShowIncreaseTrustLevelPopup = false
 	@State var increaseTrustLevelPopupAcceptedTmp = false
 	@State var isShowStartCallGroupPopup = false
+	@State var isShowRemoveParticipantPopup = false
 	@State var isShowDeleteMessagePopup = false
 	@State var isShowSipAddressesPopup = false
 	@State var isShowSipAddressesPopupType = 0 // 0 to call, 1  to message, 2 to video call
@@ -602,7 +603,6 @@ struct ContentView: View {
                                                     ProgressView()
                                                         .frame(width: avatarSize, height: avatarSize)
                                                 }
-
 												
 												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
 													.default_text_style_white_800(styleSize: 20)
@@ -931,6 +931,7 @@ struct ContentView: View {
 												showLeaveConversationPopup: $showLeaveConversationPopup,
 						   						showDeleteConversationPopup: $showDeleteConversationPopup,
 						   						showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
+												isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup,
 												text: $text,
 												orientation: orientation
 											)
@@ -1200,6 +1201,7 @@ struct ContentView: View {
 									isShowScheduleMeetingFragmentParticipants: $isShowScheduleMeetingFragmentParticipants,
 									isShowConversationInfoPopup: $isShowConversationInfoPopup,
 									conversationInfoPopupText: $conversationInfoPopupText,
+									isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup,
 									showLeaveConversationPopup: $showLeaveConversationPopup,
 									showDeleteConversationPopup: $showDeleteConversationPopup,
 									showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
@@ -1890,6 +1892,30 @@ struct ContentView: View {
 						}
 					}
 					
+					if isShowRemoveParticipantPopup {
+						PopupView(
+							isShowPopup: $isShowRemoveParticipantPopup,
+							title: Text("conversation_info_confirm_participant_removal_dialog_title"),
+							content: Text("conversation_info_confirm_participant_removal_dialog_message"),
+							titleFirstButton: nil,
+							actionFirstButton: {},
+							titleSecondButton: Text("dialog_confirm"),
+							actionSecondButton: {
+								if let conversationsListVM = conversationsListViewModel {
+									conversationsListVM.removeParticipant()
+								}
+								self.isShowRemoveParticipantPopup.toggle()
+							},
+							titleThirdButton: Text("dialog_cancel"),
+							actionThirdButton: { self.isShowRemoveParticipantPopup.toggle() }
+						)
+						.background(.black.opacity(0.65))
+						.zIndex(3)
+						.onTapGesture {
+							self.isShowRemoveParticipantPopup.toggle()
+						}
+					}
+					
 					/*
 					if isShowDeleteMessagePopup {
 						PopupView(
@@ -2224,6 +2250,7 @@ struct ConversationsContainer: View {
 	@Binding var showLeaveConversationPopup: Bool
 	@Binding var showDeleteConversationPopup: Bool
 	@Binding var showDeleteConversationHistoryPopup: Bool
+	@Binding var isShowRemoveParticipantPopup: Bool
 	
 	@Binding var text: String
 	
@@ -2237,7 +2264,8 @@ struct ConversationsContainer: View {
 					isShowStartConversationFragment: $isShowStartConversationFragment,
 					showLeaveConversationPopup: $showLeaveConversationPopup,
 					showDeleteConversationPopup: $showDeleteConversationPopup,
-					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
+					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
+					isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup
 				)
 				.environmentObject(conversationsListVM)
 				.roundedCorner(25, corners: [.topRight, .topLeft])

@@ -274,6 +274,8 @@
 "conversation_info_admin_menu_unset_participant_admin" = "Remove admin rights";
 "conversation_info_confirm_start_group_call_dialog_message" = "All participants will receive a call.";
 "conversation_info_confirm_start_group_call_dialog_title" = "Start a group call?";
+"conversation_info_confirm_participant_removal_dialog_title" = "Remove participant?";
+"conversation_info_confirm_participant_removal_dialog_message" = "This participant will be removed from the group conversation.";
 "conversation_info_delete_history_action" = "Delete history";
 "conversation_info_menu_add_to_contacts" = "Add to contacts";
 "conversation_info_menu_go_to_contact" = "See contact profile";
@@ -333,6 +335,8 @@
 "dialog_install" = "Install";
 "dialog_do_not_show_anymore" = "Do not show this dialog anymore";
 "dialog_no" = "No";
+"dialog_yes" = "Yes";
+"dialog_remove" = "Remove";
 "dialog_confirm" = "Confirm";
 "dialog_understood" = "Understood";
 "dialog_yes" = "Yes";
