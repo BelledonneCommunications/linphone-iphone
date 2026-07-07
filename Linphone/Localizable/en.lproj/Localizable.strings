@@ -76,7 +76,13 @@
 "assistant_dialog_general_terms_and_privacy_policy_title" = "General terms & privacy policy";
 "assistant_dialog_general_terms_label" = "general terms";
 "assistant_dialog_privacy_policy_label" = "privacy policy";
-"assistant_forgotten_password" = "Forgotten password?";
+"assistant_forgotten_password" = "Forgotten or unknown password?";
+"assistant_forgotten_password_title" = "Account recovery";
+"assistant_forgotten_password_subtitle" = "Choose how to recover your account.";
+"assistant_forgotten_password_message" = "You created your account using:";
+"assistant_recover_email_account_label" = "An email";
+"assistant_recover_phone_number_account_label" = "A phone number";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Push notifications do not seem to be available on your device, but they are mandatory for recovering a phone number account in the mobile app.";
 "assistant_invalid_uri_toast" = "Invalid URI";
 "assistant_login_third_party_sip_account" = "Use a third party SIP account";
 "assistant_no_account_yet" = "No account yet?";
