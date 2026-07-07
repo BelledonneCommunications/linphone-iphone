@@ -622,3 +622,6 @@
 "conversation_message_deleted_toast" = "Nachricht wurde gelöscht";
 "call_is_being_recorded" = "Anruf wird aufgezeichnet";
 "call_has_been_recorded" = "Aufnahme wurde gespeichert";
+"conversation_info_confirm_participant_removal_dialog_message" = "Dieser Teilnehmer wird aus dem Gruppenchat entfernt.";
+"dialog_remove" = "Entfernen";
+"conversation_info_confirm_participant_removal_dialog_title" = "Teilnehmer entfernen?";

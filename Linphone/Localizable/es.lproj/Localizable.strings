@@ -177,3 +177,4 @@
 "early_push_missed_call_title" = "Llamada perdida";
 "conversation_info_delete_history_confirm" = "Eliminar";
 "conversation_info_delete_chatroom_confirm" = "Eliminar";
+"dialog_remove" = "Remover";

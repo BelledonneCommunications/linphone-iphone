@@ -628,3 +628,6 @@
 "conversation_message_deleted_toast" = "Zpráva byla smazána";
 "call_is_being_recorded" = "Hovor se nahrává";
 "call_has_been_recorded" = "Záznam hovoru byl uložen";
+"conversation_info_confirm_participant_removal_dialog_title" = "Odstranit účastníka?";
+"dialog_remove" = "Odstranit";
+"conversation_info_confirm_participant_removal_dialog_message" = "Tento účastník byl odstraněn ze skupinové konverzace.";

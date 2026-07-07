@@ -73,3 +73,4 @@
 "early_push_missed_call_title" = "Nieodebrane połączenie";
 "conversation_info_delete_history_confirm" = "Usuń";
 "conversation_info_delete_chatroom_confirm" = "Usuń";
+"dialog_remove" = "Usuń";

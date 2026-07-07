@@ -444,3 +444,4 @@
 "conversation_end_to_end_encrypted_bottom_sheet_title" = "Zaručená dôvernosť";
 "conversation_message_deleted_toast" = "Správa bola vymazaná";
 "call_is_being_recorded" = "Hovor sa nahráva";
+"dialog_remove" = "Odstrániť";
