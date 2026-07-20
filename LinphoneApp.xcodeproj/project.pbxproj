@@ -98,11 +98,11 @@
 		D72343322ACEFF58009AA24E /* QRScannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343312ACEFF58009AA24E /* QRScannerController.swift */; };
 		D72343342ACEFFC3009AA24E /* QRScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343332ACEFFC3009AA24E /* QRScanner.swift */; };
 		D72343362AD037AF009AA24E /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72343352AD037AF009AA24E /* ToastView.swift */; };
+		D72404C33018AAA50076743E /* Features in Resources */ = {isa = PBXBuildFile; fileRef = D72404C23018AAA50076743E /* Features */; };
 		D726E4392B16440C0083C415 /* ContactAvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E4382B16440C0083C415 /* ContactAvatarModel.swift */; };
 		D726E43D2B19E4FE0083C415 /* StartCallFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E43C2B19E4FE0083C415 /* StartCallFragment.swift */; };
 		D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */; };
 		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
-		D72A1673300E050D00C1E1E6 /* CucumberSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D72A1672300E050D00C1E1E6 /* CucumberSwift */; };
 		D72A9A052B9750A1000DC093 /* UIList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72A9A042B9750A1000DC093 /* UIList.swift */; };
 		D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */ = {isa = PBXBuildFile; fileRef = D732A90A2B0376F500DB42BA /* linphonerc-default */; };
 		D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
@@ -147,6 +147,7 @@
 		D783C77C2B1089B200622CC2 /* assistant_linphone_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77A2B1089B200622CC2 /* assistant_linphone_default_values */; };
 		D783C77D2B1089B200622CC2 /* assistant_third_party_default_values in Resources */ = {isa = PBXBuildFile; fileRef = D783C77B2B1089B200622CC2 /* assistant_third_party_default_values */; };
 		D78607712D36CB8A009E6A7E /* SettingsAdvancedFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78607702D36CB87009E6A7E /* SettingsAdvancedFragment.swift */; };
+		D789E4DD3017697C00C50846 /* CucumberSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D789E4DC3017697C00C50846 /* CucumberSwift */; };
 		D78E06282BE3811D00CE3783 /* CallStatsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E06272BE3811D00CE3783 /* CallStatsModel.swift */; };
 		D78E062A2BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E06292BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift */; };
 		D78E062C2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E062B2BEA69BC00CE3783 /* CallStatisticsSheetBottomSheet.swift */; };
@@ -382,6 +383,7 @@
 		D72343312ACEFF58009AA24E /* QRScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerController.swift; sourceTree = "<group>"; };
 		D72343332ACEFFC3009AA24E /* QRScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScanner.swift; sourceTree = "<group>"; };
 		D72343352AD037AF009AA24E /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		D72404C23018AAA50076743E /* Features */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Features; path = TestsFeatures/Features; sourceTree = "<group>"; };
 		D726E4382B16440C0083C415 /* ContactAvatarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatarModel.swift; sourceTree = "<group>"; };
 		D726E43C2B19E4FE0083C415 /* StartCallFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallFragment.swift; sourceTree = "<group>"; };
 		D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartCallViewModel.swift; sourceTree = "<group>"; };
@@ -543,6 +545,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D720742730175EF3000917A8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C652710B2F88D1CA00FF248C /* LinphoneAppUITests */;
+		};
 		D7458F3C2E0BDCF4000C957A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -560,7 +569,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		C652710D2F88D1CA00FF248C /* LinphoneAppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LinphoneAppUITests; sourceTree = "<group>"; };
+		C652710D2F88D1CA00FF248C /* LinphoneAppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D720742730175EF3000917A8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LinphoneAppUITests; sourceTree = "<group>"; };
 		C6E408B02F8E1A33003E0F8C /* LinphoneAppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LinphoneAppTests; sourceTree = "<group>"; };
 		D7458F302E0BDCF4000C957A /* linphoneExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D7458F3C2E0BDCF4000C957A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = linphoneExtension; sourceTree = "<group>"; };
 		D792F15B2F02BCC2002E3225 /* intentsExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D792F1642F02BCC2002E3225 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = intentsExtension; sourceTree = "<group>"; };
@@ -581,7 +590,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D72A1673300E050D00C1E1E6 /* CucumberSwift in Frameworks */,
+				D789E4DD3017697C00C50846 /* CucumberSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -767,6 +776,7 @@
 		D719ABAA2ABC67BF00B41C10 = {
 			isa = PBXGroup;
 			children = (
+				D72404C23018AAA50076743E /* Features */,
 				D7D67B692F601F6100DD9976 /* AppIntentVocabulary.plist */,
 				660D8A702B517D260092694D /* GoogleService-Info.plist */,
 				D719ABB52ABC67BF00B41C10 /* Linphone */,
@@ -1326,7 +1336,7 @@
 			);
 			name = LinphoneAppUITests;
 			packageProductDependencies = (
-				D72A1672300E050D00C1E1E6 /* CucumberSwift */,
+				D789E4DC3017697C00C50846 /* CucumberSwift */,
 			);
 			productName = LinphoneAppUITests;
 			productReference = C652710C2F88D1CA00FF248C /* LinphoneAppUITests.xctest */;
@@ -1485,7 +1495,7 @@
 				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
 				D7127F822FE995D400631F65 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
-				D72A1671300E050D00C1E1E6 /* XCRemoteSwiftPackageReference "CucumberSwift" */,
+				D789E4DB3017697C00C50846 /* XCRemoteSwiftPackageReference "CucumberSwift" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -1516,6 +1526,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D72404C33018AAA50076743E /* Features in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2020,6 +2031,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LinphoneAppUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
@@ -2048,6 +2060,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LinphoneAppUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
@@ -2593,7 +2606,7 @@
 				minimumVersion = 5.5.5;
 			};
 		};
-		D72A1671300E050D00C1E1E6 /* XCRemoteSwiftPackageReference "CucumberSwift" */ = {
+		D789E4DB3017697C00C50846 /* XCRemoteSwiftPackageReference "CucumberSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Tyler-Keith-Thompson/CucumberSwift";
 			requirement = {
@@ -2638,9 +2651,9 @@
 			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
 			productName = linphonesw;
 		};
-		D72A1672300E050D00C1E1E6 /* CucumberSwift */ = {
+		D789E4DC3017697C00C50846 /* CucumberSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D72A1671300E050D00C1E1E6 /* XCRemoteSwiftPackageReference "CucumberSwift" */;
+			package = D789E4DB3017697C00C50846 /* XCRemoteSwiftPackageReference "CucumberSwift" */;
 			productName = CucumberSwift;
 		};
 		D7D5AD7E2DD34F0E00016721 /* AppAuth */ = {
