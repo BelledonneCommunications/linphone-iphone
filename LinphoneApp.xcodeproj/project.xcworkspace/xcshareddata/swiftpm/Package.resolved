@@ -1,5 +1,5 @@
 {
-  "originHash" : "0723e67e40a80f96e4065f36f2f443484897e1eea9214a361511d89b0587315c",
+  "originHash" : "d800a98e3387894319c62f4f5b3369f96258b42768e0e910b385fa8192ef4549",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,6 +26,24 @@
       "state" : {
         "revision" : "145104f5ea9d58ae21b60add007c33c1cc0c948e",
         "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "cucumberswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Tyler-Keith-Thompson/CucumberSwift",
+      "state" : {
+        "revision" : "1d16dcd943a35eb8ecf274caf85ea827b4018d4d",
+        "version" : "5.0.10"
+      }
+    },
+    {
+      "identity" : "cucumberswiftexpressions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cucumberswift/CucumberSwiftExpressions.git",
+      "state" : {
+        "revision" : "5200dc2c5d7cd31f07a13f030ab0027224d2dbea",
+        "version" : "0.0.8"
       }
     },
     {

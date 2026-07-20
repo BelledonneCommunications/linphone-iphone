@@ -1,0 +1,3 @@
+[submodule "linphone-test-specs"]
+	path = linphone-test-specs
+	url = git@gitlab.linphone.org:BC/private/linphone-test-specs.git

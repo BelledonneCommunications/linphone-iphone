@@ -1,7 +1,7 @@
 import Foundation
 
 public enum AppGitInfo {
-    public static let branch = "fix/recover_account"
-    public static let commit = "b8e6d543d"
+    public static let branch = "master"
+    public static let commit = "e6563d0ab"
     public static let tag = "6.3.0-alpha"
 }

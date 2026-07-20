@@ -102,6 +102,7 @@
 		D726E43D2B19E4FE0083C415 /* StartCallFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E43C2B19E4FE0083C415 /* StartCallFragment.swift */; };
 		D726E43F2B19E56F0083C415 /* StartCallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D726E43E2B19E56F0083C415 /* StartCallViewModel.swift */; };
 		D72992392ADD7F68003AF125 /* HistoryContactFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72992382ADD7F68003AF125 /* HistoryContactFragment.swift */; };
+		D72A1673300E050D00C1E1E6 /* CucumberSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D72A1672300E050D00C1E1E6 /* CucumberSwift */; };
 		D72A9A052B9750A1000DC093 /* UIList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72A9A042B9750A1000DC093 /* UIList.swift */; };
 		D732A90C2B0376F500DB42BA /* linphonerc-default in Resources */ = {isa = PBXBuildFile; fileRef = D732A90A2B0376F500DB42BA /* linphonerc-default */; };
 		D732A90D2B0376F500DB42BA /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
@@ -580,6 +581,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D72A1673300E050D00C1E1E6 /* CucumberSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1324,6 +1326,7 @@
 			);
 			name = LinphoneAppUITests;
 			packageProductDependencies = (
+				D72A1672300E050D00C1E1E6 /* CucumberSwift */,
 			);
 			productName = LinphoneAppUITests;
 			productReference = C652710C2F88D1CA00FF248C /* LinphoneAppUITests.xctest */;
@@ -1482,6 +1485,7 @@
 				D7D5AD7C2DD34E7C00016721 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D7DF8BE42E2104D0003A3BC7 /* XCRemoteSwiftPackageReference "Elegant-Emoji-Picker" */,
 				D7127F822FE995D400631F65 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */,
+				D72A1671300E050D00C1E1E6 /* XCRemoteSwiftPackageReference "CucumberSwift" */,
 			);
 			productRefGroup = D719ABB42ABC67BF00B41C10 /* Products */;
 			projectDirPath = "";
@@ -2589,6 +2593,14 @@
 				minimumVersion = 5.5.5;
 			};
 		};
+		D72A1671300E050D00C1E1E6 /* XCRemoteSwiftPackageReference "CucumberSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Tyler-Keith-Thompson/CucumberSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.10;
+			};
+		};
 		D7D5AD7B2DD34E4D00016721 /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
@@ -2625,6 +2637,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C618BF542D75CA03005A00E0 /* XCRemoteSwiftPackageReference "linphone-sdk-swift-ios" */;
 			productName = linphonesw;
+		};
+		D72A1672300E050D00C1E1E6 /* CucumberSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D72A1671300E050D00C1E1E6 /* XCRemoteSwiftPackageReference "CucumberSwift" */;
+			productName = CucumberSwift;
 		};
 		D7D5AD7E2DD34F0E00016721 /* AppAuth */ = {
 			isa = XCSwiftPackageProductDependency;
