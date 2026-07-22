@@ -98,8 +98,10 @@ class CallViewModel: ObservableObject {
 	private var chatRoomDelegate: ChatRoomDelegate?
 
 	private static let earpieceNotificationIdentifier = "linphone-earpiece-enforcement"
+	private static let earpieceNotificationDelay = 0.8
 	private var isEnforcingEarpiece: Bool = false
 	private var routeChangeObserver: Any?
+	private var pendingEarpieceNotification: DispatchWorkItem?
 
 	init() {
 		hasAudioRouteRestriction = AppServices.corePreferences.onlyAllowEarpieceDuringCall
@@ -120,6 +122,7 @@ class CallViewModel: ObservableObject {
 	}
 
 	deinit {
+		pendingEarpieceNotification?.cancel()
 		if let observer = routeChangeObserver {
 			NotificationCenter.default.removeObserver(observer)
 		}
@@ -134,10 +137,26 @@ class CallViewModel: ObservableObject {
 			|| portType == .lineOut
 	}
 
+	private func isCallActiveForEnforcement() -> Bool {
+		return currentCall != nil && (telecomManager.callInProgress || telecomManager.callStarted)
+	}
+
 	func enforceEarpieceIfNeeded() {
 		guard hasAudioRouteRestriction else { return }
 
+		guard isCallActiveForEnforcement() else {
+			isEnforcingEarpiece = false
+			cancelEarpieceNotification()
+			if audioMutedByEarpieceEnforcement {
+				DispatchQueue.main.async {
+					self.audioMutedByEarpieceEnforcement = false
+				}
+			}
+			return
+		}
+
 		if isRouteAllowed() {
+			cancelPendingEarpieceNotification()
 			if audioMutedByEarpieceEnforcement {
 				coreContext.doOnCoreQueue { core in
 					if let call = self.currentCall {
@@ -165,7 +184,7 @@ class CallViewModel: ObservableObject {
 			}
 
 			self.forceEarpiece()
-			self.postEarpieceEnforcementNotification()
+			self.scheduleEarpieceEnforcementNotification()
 
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
 				if !self.isRouteAllowed() {
@@ -198,6 +217,25 @@ class CallViewModel: ObservableObject {
 		}
 	}
 
+	private func scheduleEarpieceEnforcementNotification() {
+		pendingEarpieceNotification?.cancel()
+
+		let workItem = DispatchWorkItem { [weak self] in
+			guard let self = self else { return }
+			self.pendingEarpieceNotification = nil
+			guard self.isCallActiveForEnforcement(), !self.isRouteAllowed() else { return }
+			self.postEarpieceEnforcementNotification()
+		}
+
+		pendingEarpieceNotification = workItem
+		DispatchQueue.main.asyncAfter(deadline: .now() + CallViewModel.earpieceNotificationDelay, execute: workItem)
+	}
+
+	private func cancelPendingEarpieceNotification() {
+		pendingEarpieceNotification?.cancel()
+		pendingEarpieceNotification = nil
+	}
+
 	private func postEarpieceEnforcementNotification() {
 		let content = UNMutableNotificationContent()
 		content.title = "Linphone"
@@ -218,6 +256,7 @@ class CallViewModel: ObservableObject {
 	}
 
 	private func cancelEarpieceNotification() {
+		cancelPendingEarpieceNotification()
 		UNUserNotificationCenter.current().removeDeliveredNotifications(
 			withIdentifiers: [CallViewModel.earpieceNotificationIdentifier]
 		)
