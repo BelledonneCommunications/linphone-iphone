@@ -155,12 +155,15 @@ class StartCallViewModel: ObservableObject {
 	}
 	
 	func interpretAndStartCall() {
+		let numberToCall = self.searchField
 		CoreContext.shared.doOnCoreQueue { core in
-			let address = core.interpretUrl(url: self.searchField, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core))
+			let address = core.interpretUrl(url: numberToCall, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core))
 			if address != nil {
+				AppServices.corePreferences.lastManuallyDialedNumber = numberToCall
 				TelecomManager.shared.doCallOrJoinConf(address: address!)
 			}
 		}
 	}
+
 }
 // swiftlint:enable line_length

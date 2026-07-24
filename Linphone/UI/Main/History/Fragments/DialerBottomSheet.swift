@@ -406,7 +406,12 @@ struct DialerBottomSheet: View {
 						Spacer()
 						
 						Button {
-							if !startCallViewModel.searchField.isEmpty {
+							switch RedialHelper.onCallButtonPressed(currentInput: startCallViewModel.searchField, lastManuallyDialedNumber: AppServices.corePreferences.lastManuallyDialedNumber) {
+							case .displayLastDialedNumber(let number):
+								startCallViewModel.searchField = number
+							case .doNothing:
+								break
+							case .call:
 								if callViewModel.isTransferInsteadCall {
 									CoreContext.shared.doOnCoreQueue { core in
 										if let transferAddressTmp = core.interpretUrl(url: startCallViewModel.searchField, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
@@ -419,22 +424,22 @@ struct DialerBottomSheet: View {
 									}
 								} else {
 									showingDialer = false
-									
+
 									magicSearch.currentFilter = ""
-									
+
 									magicSearch.searchForContacts()
-									
+
 									if callViewModel.isTransferInsteadCall == true {
 										callViewModel.isTransferInsteadCall = false
 									}
-									
+
 										callViewModel.resetCallView()
-									
+
 									withAnimation {
 										isShowStartCallFragment.toggle()
 										startCallViewModel.interpretAndStartCall()
 									}
-									
+
 									startCallViewModel.searchField = ""
 								}
 							}
