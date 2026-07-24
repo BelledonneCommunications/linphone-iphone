@@ -129,6 +129,7 @@
 		D74C9CFF2ACAEC5E0021626A /* PopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9CFE2ACAEC5E0021626A /* PopupView.swift */; };
 		D74C9D012ACB098C0021626A /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C9D002ACB098C0021626A /* PermissionManager.swift */; };
 		D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74DA0112C047F0700A8561D /* HistoryModel.swift */; };
+		D74DA0FE2C047F0700A85602 /* RedialHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74DA0FE2C047F0700A85601 /* RedialHelper.swift */; };
 		D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */; };
 		D756C8152D34FF9200A58F2F /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D756C8142D34FF8900A58F2F /* SettingsViewModel.swift */; };
 		D756C8182D352C5F00A58F2F /* CorePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D756C8162D352C5600A58F2F /* CorePreferences.swift */; };
@@ -424,6 +425,7 @@
 		D74C9CFE2ACAEC5E0021626A /* PopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupView.swift; sourceTree = "<group>"; };
 		D74C9D002ACB098C0021626A /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		D74DA0112C047F0700A8561D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
+		D74DA0FE2C047F0700A85601 /* RedialHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedialHelper.swift; sourceTree = "<group>"; };
 		D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupLoadingView.swift; sourceTree = "<group>"; };
 		D756C8142D34FF8900A58F2F /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		D756C8162D352C5600A58F2F /* CorePreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorePreferences.swift; sourceTree = "<group>"; };
@@ -996,6 +998,7 @@
 			isa = PBXGroup;
 			children = (
 				D74DA0112C047F0700A8561D /* HistoryModel.swift */,
+				D74DA0FE2C047F0700A85601 /* RedialHelper.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1808,6 +1811,7 @@
 				D714DE602C1B3B34006C1F1D /* RegisterViewModel.swift in Sources */,
 				D70C82A72C85F5910087F43F /* ConversationForwardMessageViewModel.swift in Sources */,
 				D74DA0122C047F0700A8561D /* HistoryModel.swift in Sources */,
+				D74DA0FE2C047F0700A85602 /* RedialHelper.swift in Sources */,
 				66D382052CEB7E0A0063E1C5 /* ShortcutModel.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
 				D7AEB9A02F3E219600298546 /* ContactDeviceModel.swift in Sources */,

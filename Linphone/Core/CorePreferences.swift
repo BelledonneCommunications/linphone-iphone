@@ -93,6 +93,16 @@ class CorePreferences: ObservableObject {
 		}
 	}
 	
+	var lastManuallyDialedNumber: String {
+		get {
+			let raw = config.getString(section: "ui", key: "last_manually_dialed_number", defaultString: "")
+			return safeString(raw, defaultValue: "")
+		}
+		set {
+			config.setString(section: "ui", key: "last_manually_dialed_number", value: newValue)
+		}
+	}
+
 	var darkMode: Int {
 		get {
 			if !darkModeAllowed { return 0 }
