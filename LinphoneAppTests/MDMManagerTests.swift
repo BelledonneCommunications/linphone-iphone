@@ -34,13 +34,15 @@ class MDMManagerTests: XCTestCase {
 		super.setUp()
 		UserDefaults.standard.removeObject(forKey: managedKey)
 		UserDefaults.standard.removeObject(forKey: "MDMManager.hasMDMConfig")
-		UserDefaults.standard.removeObject(forKey: "MDMManager.lastConfigSHA256")
+		UserDefaults.standard.removeObject(forKey: "MDMManager.lastXMLConfigSHA256")
+		UserDefaults.standard.removeObject(forKey: "MDMManager.lastCoreConfigSHA256")
 	}
 
 	override func tearDown() {
 		UserDefaults.standard.removeObject(forKey: managedKey)
 		UserDefaults.standard.removeObject(forKey: "MDMManager.hasMDMConfig")
-		UserDefaults.standard.removeObject(forKey: "MDMManager.lastConfigSHA256")
+		UserDefaults.standard.removeObject(forKey: "MDMManager.lastXMLConfigSHA256")
+		UserDefaults.standard.removeObject(forKey: "MDMManager.lastCoreConfigSHA256")
 		super.tearDown()
 	}
 
