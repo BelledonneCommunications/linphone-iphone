@@ -625,3 +625,9 @@
 "conversation_info_confirm_participant_removal_dialog_message" = "Dieser Teilnehmer wird aus dem Gruppenchat entfernt.";
 "dialog_remove" = "Entfernen";
 "conversation_info_confirm_participant_removal_dialog_title" = "Teilnehmer entfernen?";
+"assistant_recover_email_account_label" = "Einer E-Mail";
+"assistant_recover_phone_number_account_label" = "Einer Telefonnummer";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Benachrichtigungen scheinen auf Ihrem Gerät nicht verfügbar zu sein, sind aber für die Wiederherstellung eines Rufnummernkontos in der mobilen App zwingend erforderlich.";
+"assistant_forgotten_password_title" = "Passwort vergessen";
+"assistant_forgotten_password_subtitle" = "Wählen Sie aus, wie Sie Ihr Konto wiederherstellen möchten.";
+"assistant_forgotten_password_message" = "Sie haben Ihren Account erstellt mit:";

@@ -91,3 +91,4 @@
 "conversation_info_delete_history_confirm" = "Törlés";
 "conversation_info_delete_chatroom_confirm" = "Törlés";
 "dialog_remove" = "Eltávolít";
+"assistant_forgotten_password_title" = "Elfelejtett jelszó";

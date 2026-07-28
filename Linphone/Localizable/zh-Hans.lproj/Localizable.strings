@@ -453,3 +453,9 @@
 "dialog_remove" = "移除";
 "conversation_editing_message_title" = "消息正在编辑";
 "conversation_message_edited_label" = "已编辑";
+"assistant_forgotten_password_title" = "忘记密码";
+"assistant_forgotten_password_subtitle" = "选择如何恢复您的账户。";
+"assistant_forgotten_password_message" = "您使用以下方式创建了账户：";
+"assistant_recover_email_account_label" = "电子邮箱";
+"assistant_recover_phone_number_account_label" = "电话号码";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "推送通知似乎在您的设备上不可用，但它们是在移动应用程序中恢复电话号码账户所必需的。";

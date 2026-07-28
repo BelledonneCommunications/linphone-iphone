@@ -583,3 +583,9 @@
 "conversation_message_deleted_toast" = "A mensagem foi excluída";
 "call_is_being_recorded" = "A chamada está sendo gravada";
 "dialog_remove" = "Remover";
+"assistant_forgotten_password_message" = "Você criou sua conta usando:";
+"assistant_forgotten_password_title" = "Senha esquecida";
+"assistant_forgotten_password_subtitle" = "Escolha como recuperar sua conta.";
+"assistant_recover_email_account_label" = "Um e-mail";
+"assistant_recover_phone_number_account_label" = "Um número de telefone";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "As notificações push não parecem estar disponíveis no seu dispositivo, mas são obrigatórias para recuperar uma conta de número de telefone no aplicativo móvel.";

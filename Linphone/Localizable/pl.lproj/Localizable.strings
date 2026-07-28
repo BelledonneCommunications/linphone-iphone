@@ -74,3 +74,8 @@
 "conversation_info_delete_history_confirm" = "Usuń";
 "conversation_info_delete_chatroom_confirm" = "Usuń";
 "dialog_remove" = "Usuń";
+"assistant_forgotten_password_subtitle" = "Wybierz sposób odzyskania konta.";
+"assistant_forgotten_password_message" = "Konto zostało utworzone przy użyciu:";
+"assistant_recover_email_account_label" = "E-mail";
+"assistant_recover_phone_number_account_label" = "Numer telefonu";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Powiadomienia push nie wydają się być dostępne na Twoim urządzeniu, ale są one obowiązkowe do odzyskania konta numeru telefonu w aplikacji mobilnej.";

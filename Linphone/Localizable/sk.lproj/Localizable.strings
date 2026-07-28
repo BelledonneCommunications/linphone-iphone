@@ -445,3 +445,9 @@
 "conversation_message_deleted_toast" = "Správa bola vymazaná";
 "call_is_being_recorded" = "Hovor sa nahráva";
 "dialog_remove" = "Odstrániť";
+"assistant_forgotten_password_title" = "Zabudnuté heslo";
+"assistant_forgotten_password_subtitle" = "Zvoľte spôsob obnovy svojho účtu.";
+"assistant_forgotten_password_message" = "Váš účet bol vytvorený pomocou:";
+"assistant_recover_email_account_label" = "E-mailu";
+"assistant_recover_phone_number_account_label" = "Telefónneho čísla";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Push notifikácie sú na Vašom zariadení nedostupné, avšak sú nevyhnutné pre obnovu účtu s telefónnym číslom v mobilnej aplikácii.";

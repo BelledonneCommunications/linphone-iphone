@@ -472,3 +472,9 @@
 "conversation_message_deleted_toast" = "Bericht is verwijderd";
 "call_is_being_recorded" = "Oproep wordt opgenomen";
 "dialog_remove" = "Weghalen";
+"assistant_forgotten_password_title" = "Wachtwoord vergeten";
+"assistant_forgotten_password_subtitle" = "Kies hoe u uw account wilt herstellen.";
+"assistant_forgotten_password_message" = "U heeft uw account aangemaakt met:";
+"assistant_recover_email_account_label" = "Een e-mail";
+"assistant_recover_phone_number_account_label" = "Een telefoonnummer";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Pushmeldingen lijken niet beschikbaar te zijn op uw apparaat, maar ze zijn verplicht om een telefoonnummeraccount in de mobiele app te herstellen.";

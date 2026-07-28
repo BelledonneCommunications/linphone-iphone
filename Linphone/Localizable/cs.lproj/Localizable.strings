@@ -387,7 +387,7 @@
 "assistant_dialog_general_terms_and_privacy_policy_message" = "Pokračováním přijímáte naše %@ a %@.";
 "assistant_account_creation_sms_confirmation_explanation" = "Poslali jsme vám ověřovací kód na vaše telefonní číslo %@. Zadejte prosím níže ověřovací kód:";
 "assistant_dialog_confirm_phone_number_message" = "Jste si jistý(á), že chcete použít telefonní číslo %@?";
-"assistant_forgotten_password" = "Zapomenuté heslo?";
+"assistant_forgotten_password" = "Zapomenuté nebo neznámé heslo?";
 "assistant_invalid_uri_toast" = "Neplatná URI";
 "assistant_permissions_access_camera_title" = "**Přístup ke kameře:** Pro zachycení videa během videohovorů a konferencí.";
 "assistant_permissions_read_contacts_title" = "**Čtení kontaktů:** Pro zobrazení vašich kontaktů a zjištění, kdo používá %@.";
@@ -631,3 +631,9 @@
 "conversation_info_confirm_participant_removal_dialog_title" = "Odstranit účastníka?";
 "dialog_remove" = "Odstranit";
 "conversation_info_confirm_participant_removal_dialog_message" = "Tento účastník byl odstraněn ze skupinové konverzace.";
+"assistant_forgotten_password_message" = "Váš účet byl vytvořen pomocí:";
+"assistant_recover_email_account_label" = "Emailu";
+"assistant_recover_phone_number_account_label" = "Telefonního čísla";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Push notifikace se na vašem zařízení nezdají být dostupné, ale jsou nezbytné pro obnovení účtu s telefonním číslem v mobilní aplikaci.";
+"assistant_forgotten_password_title" = "Zapomenuté heslo";
+"assistant_forgotten_password_subtitle" = "Zvolte způsob obnovy svého účtu.";

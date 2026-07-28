@@ -178,3 +178,9 @@
 "conversation_info_delete_history_confirm" = "Eliminar";
 "conversation_info_delete_chatroom_confirm" = "Eliminar";
 "dialog_remove" = "Remover";
+"assistant_forgotten_password_title" = "Contraseña olvidada";
+"assistant_forgotten_password_subtitle" = "Elige cómo recuperar tu cuenta.";
+"assistant_forgotten_password_message" = "Usted creó su cuenta usando:";
+"assistant_recover_email_account_label" = "Un correo electrónico";
+"assistant_recover_phone_number_account_label" = "Un numero de teléfono";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Las notificaciones push no parecen estar disponibles en su dispositivo, pero son obligatorias para recuperar una cuenta de número de teléfono en la aplicación móvil.";

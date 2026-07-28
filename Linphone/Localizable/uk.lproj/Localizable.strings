@@ -588,3 +588,9 @@
 "conversation_message_deleted_toast" = "Повідомлення було видалено";
 "call_is_being_recorded" = "Дзвінок записується";
 "dialog_remove" = "Видалити";
+"assistant_forgotten_password_title" = "Забули пароль?";
+"assistant_forgotten_password_message" = "Ви створили свій обліковий запис, використовуючи:";
+"assistant_forgotten_password_subtitle" = "Оберіть, як відновити свій обліковий запис.";
+"assistant_recover_email_account_label" = "Електронна пошта";
+"assistant_recover_phone_number_account_label" = "Номер телефону";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Схоже, push-сповіщення недоступні на вашому пристрої, але вони обов’язкові для відновлення облікового запису номера телефону в мобільному застосунку.";

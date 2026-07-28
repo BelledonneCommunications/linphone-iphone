@@ -483,3 +483,9 @@
 "conversation_message_deleted_toast" = "Сообщение удалено";
 "call_is_being_recorded" = "Звонок записывается";
 "dialog_remove" = "Удалить";
+"assistant_forgotten_password_title" = "Пароль забыт";
+"assistant_forgotten_password_subtitle" = "Выберите способ восстановления вашей учетной записи.";
+"assistant_forgotten_password_message" = "Вы создали свой аккаунт, используя:";
+"assistant_recover_email_account_label" = "Электронная почта";
+"assistant_recover_phone_number_account_label" = "Номер телефона";
+"assistant_recover_phone_number_account_unavailable_no_push_warning" = "Похоже, что push-уведомления недоступны на вашем устройстве, но они необходимы для восстановления номера телефона аккаунта в мобильном приложении.";
