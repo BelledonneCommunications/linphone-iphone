@@ -1,3 +1,4 @@
 [submodule "TestsFeatures"]
 	path = TestsFeatures
 	url = git@gitlab.linphone.org:BC/private/linphone-test-specs.git
+	branch = feature/call_forwarding_call_group_redial

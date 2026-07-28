@@ -188,6 +188,10 @@ struct LinphoneApp: App {
 			return
 		}
 		UserDefaults.standard.set(dict, forKey: key)
+
+		if let lastDialed = env["UITEST_LAST_DIALED"] {
+			AppServices.corePreferences.lastManuallyDialedNumber = lastDialed
+		}
 	}
 #endif
 

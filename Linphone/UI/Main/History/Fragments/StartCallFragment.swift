@@ -178,6 +178,8 @@ struct StartCallFragment: View {
 							.frame(height: 25)
 							.focused($isSearchFieldFocused)
 							.padding(.horizontal, 30)
+							.accessibilityIdentifier("dialer_input")
+							.accessibilityValue(startCallViewModel.searchField)
 							.onChange(of: startCallViewModel.searchField) { newValue in
 								magicSearch.currentFilter = newValue
 								magicSearch.searchForContacts()
@@ -220,6 +222,7 @@ struct StartCallFragment: View {
 										.foregroundStyle(Color.grayMain2c500)
 										.frame(width: 25, height: 25)
 								})
+								.accessibilityIdentifier("dialer_keypad_toggle")
 							} else {
 								Button(action: {
 									startCallViewModel.searchField = ""

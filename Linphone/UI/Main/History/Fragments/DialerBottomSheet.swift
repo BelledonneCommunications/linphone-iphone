@@ -455,6 +455,7 @@ struct DialerBottomSheet: View {
 						.background(Color.greenSuccess500)
 						.cornerRadius(40)
 						.shadow(color: .black.opacity(0.2), radius: 4)
+						.accessibilityIdentifier("dialer_call_button")
 						
 						Spacer()
 						
@@ -464,9 +465,10 @@ struct DialerBottomSheet: View {
 							Image("backspace-fill")
 								.resizable()
 								.frame(width: 32, height: 32)
-							
+
 						}
 						.frame(width: 100, height: 60)
+						.accessibilityIdentifier("dialer_backspace")
 					}
 					.padding(.horizontal, 60)
 					.padding(.top, 20)

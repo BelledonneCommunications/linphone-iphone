@@ -50,8 +50,9 @@ struct HistoryView: View {
 						.background(Color.orangeMain500)
 						.clipShape(Circle())
 						.shadow(color: .black.opacity(0.2), radius: 4)
-					
+
 				}
+				.accessibilityIdentifier("start_call_fab")
 				.padding()
 			}
 		}

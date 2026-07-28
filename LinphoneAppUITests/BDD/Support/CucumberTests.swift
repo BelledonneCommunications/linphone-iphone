@@ -29,5 +29,10 @@ extension Cucumber: @retroactive StepImplementation {
 
 	public func setupSteps() {
 		loginSteps()
+		redialSteps()
+	}
+
+	public func shouldRunWith(scenario: Scenario?, tags: [String]) -> Bool {
+		tags.contains("ios")
 	}
 }
