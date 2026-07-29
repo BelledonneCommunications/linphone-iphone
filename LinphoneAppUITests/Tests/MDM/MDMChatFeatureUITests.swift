@@ -56,10 +56,11 @@ class MDMChatFeatureUITests: XCTestCase {
 		super.tearDown()
 	}
 
-	private func requiredEnv(_ name: String) -> String {
+	private func requiredEnv(_ name: String) throws -> String {
 		guard let value = ProcessInfo.processInfo.environment[name], !value.isEmpty else {
-			XCTFail("Missing required env var \(name). Export TEST_RUNNER_\(name) before running scripts/run-mdm-tests.sh")
-			return ""
+			let message = "Skipping MDM UI test: missing env var \(name). Export TEST_RUNNER_\(name) (or run scripts/run-mdm-tests.sh) to enable it."
+			print("⚠️ \(message)")
+			throw XCTSkip(message)
 		}
 		return value
 	}
@@ -115,9 +116,9 @@ class MDMChatFeatureUITests: XCTestCase {
 		print("=======================================================")
 	}
 
-	func testChatButtonHiddenWithMDMDisableChat() {
-		let username = requiredEnv("LINPHONE_TEST_USERNAME")
-		let ha1 = requiredEnv("LINPHONE_TEST_HA1")
+	func testChatButtonHiddenWithMDMDisableChat() throws {
+		let username = try requiredEnv("LINPHONE_TEST_USERNAME")
+		let ha1 = try requiredEnv("LINPHONE_TEST_HA1")
 		let domain = ProcessInfo.processInfo.environment["LINPHONE_TEST_DOMAIN"] ?? "sip.linphone.org"
 
 		let xmlConfig = """
@@ -155,8 +156,8 @@ class MDMChatFeatureUITests: XCTestCase {
 					   "Chat button should NOT be visible when MDM disables chat feature")
 	}
 
-	func testConfigUriMDMLandsOnMainPage() {
-		let configUri = requiredEnv("LINPHONE_TEST_CONFIG_URI")
+	func testConfigUriMDMLandsOnMainPage() throws {
+		let configUri = try requiredEnv("LINPHONE_TEST_CONFIG_URI")
 
 		launchWithMDM(["configUri": configUri])
 		skipOnboardingIfShown()
