@@ -164,11 +164,9 @@ class CallViewModel: ObservableObject {
 			if audioMutedByEarpieceEnforcement {
 				coreContext.doOnCoreQueue { core in
 					if let call = self.currentCall {
-						call.microphoneMuted = false
-						core.micEnabled = true
-						let micMuttedTmp = call.microphoneMuted || !core.micEnabled
+						self.telecomManager.setMicMuted(core: core, call: call, muted: false)
 						DispatchQueue.main.async {
-							self.micMutted = micMuttedTmp
+							self.micMutted = false
 							self.audioMutedByEarpieceEnforcement = false
 						}
 						Log.info("\(CallViewModel.TAG) Earpiece restored, unmuting audio")
@@ -205,7 +203,7 @@ class CallViewModel: ObservableObject {
 	private func forceEarpiece() {
 		coreContext.doOnCoreQueue { core in
 			if let call = self.currentCall {
-				call.microphoneMuted = true
+				self.telecomManager.setMicMuted(core: core, call: call, muted: true)
 				AudioRouteUtils.routeAudioToEarpiece(core: core, call: call)
 			}
 		}

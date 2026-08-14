@@ -238,10 +238,9 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 	
 	func joinMeeting() {
 		if self.telecomManager.meetingWaitingRoomSelected != nil {
-			if self.micMutted {
-				coreContext.doOnCoreQueue { core in
-					core.micEnabled = false
-				}
+			let mutedOnJoin = self.micMutted
+			coreContext.doOnCoreQueue { core in
+				core.micEnabled = !mutedOnJoin
 			}
 			
 			let audioSession = imageAudioRoute

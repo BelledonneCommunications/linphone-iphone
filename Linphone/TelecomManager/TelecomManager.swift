@@ -625,6 +625,11 @@ class TelecomManager: ObservableObject {
 							callInfo!.connected = true
 							providerDelegate.callInfos.updateValue(callInfo!, forKey: uuid!)
 						}
+
+						if call.microphoneMuted || !core.micEnabled {
+							applyMicMuted(core: core, call: call, muted: true)
+							requestTransaction(CXTransaction(action: CXSetMutedCallAction(call: uuid!, muted: true)), action: "setMuted")
+						}
 					}
 				}
 				
