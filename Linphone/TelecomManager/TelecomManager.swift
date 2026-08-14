@@ -157,6 +157,22 @@ class TelecomManager: ObservableObject {
 #endif
 	}
 	
+	func setMicMuted(core: Core, call: Call?, muted: Bool) {
+		if TelecomManager.callKitEnabled(core: core), let uuid = providerDelegate.uuids["\(call?.callLog?.callId ?? "")"] {
+			requestTransaction(CXTransaction(action: CXSetMutedCallAction(call: uuid, muted: muted)), action: "setMuted")
+		} else {
+			applyMicMuted(core: core, call: call, muted: muted)
+		}
+	}
+
+	func applyMicMuted(core: Core, call: Call?, muted: Bool) {
+		core.micEnabled = !muted
+		call?.microphoneMuted = muted
+		DispatchQueue.main.async {
+			NotificationCenter.default.post(name: Notification.Name("CallMicMutedChanged"), object: muted)
+		}
+	}
+	
 	func startCall(core: Core, addr: String, isSas: Bool = false, isVideo: Bool, isConference: Bool = false) {
 		do {
 			let address = try Factory.Instance.createAddress(addr: addr)

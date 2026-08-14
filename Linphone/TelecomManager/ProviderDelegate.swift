@@ -356,8 +356,9 @@ extension ProviderDelegate: CXProviderDelegate {
 		let uuid = action.callUUID
 		let callId = callInfos[uuid]?.callId
 		CoreContext.shared.doOnCoreQueue { core in
-			Log.info( "CallKit: Call muted with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
-			core.micEnabled = !core.micEnabled
+			Log.info( "CallKit: Call \(action.isMuted ? "muted" : "unmuted") with call-id: \(String(describing: callId)) an UUID: \(uuid.description).")
+			let call = callId != nil ? core.getCallByCallid(callId: callId!) : nil
+			TelecomManager.shared.applyMicMuted(core: core, call: call ?? core.currentCall, muted: action.isMuted)
 			action.fulfill()
 		}
 	}

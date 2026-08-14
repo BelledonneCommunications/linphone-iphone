@@ -108,6 +108,10 @@ class CallViewModel: ObservableObject {
 			self.resetCallView()
 		}
 
+		NotificationCenter.default.addObserver(forName: Notification.Name("CallMicMutedChanged"), object: nil, queue: .main) { notification in
+			self.micMutted = notification.object as? Bool ?? self.micMutted
+		}
+
 		if hasAudioRouteRestriction {
 			routeChangeObserver = NotificationCenter.default.addObserver(
 				forName: AVAudioSession.routeChangeNotification,
@@ -884,19 +888,15 @@ class CallViewModel: ObservableObject {
 	func toggleMuteMicrophone() {
 		coreContext.doOnCoreQueue { core in
 			if self.currentCall != nil {
-				if !core.micEnabled && !self.currentCall!.microphoneMuted {
-					core.micEnabled = true
-				} else {
-					self.currentCall!.microphoneMuted = !self.currentCall!.microphoneMuted
-				}
+				let micMuttedTmp = !(self.currentCall!.microphoneMuted || !core.micEnabled)
+				self.telecomManager.setMicMuted(core: core, call: self.currentCall!, muted: micMuttedTmp)
 				
-				let micMuttedTmp = self.currentCall!.microphoneMuted || !core.micEnabled
 				DispatchQueue.main.async {
 					self.micMutted = micMuttedTmp
 				}
 				
 				Log.info(
-					"[CallViewModel] Microphone mute switch \(self.micMutted)"
+					"[CallViewModel] Microphone mute switch \(micMuttedTmp)"
 				)
 			}
 		}
