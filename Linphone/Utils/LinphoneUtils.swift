@@ -103,6 +103,34 @@ class LinphoneUtils: NSObject {
 		return conferenceScheduler
 	}
 	
+	public class func getChatRoomParamsForMeetingInvitationsAndUpdates(core: Core) -> ConferenceParams? {
+		if let chatRoomParams = try? core.createConferenceParams(conference: nil) {
+			chatRoomParams.chatEnabled = true
+			chatRoomParams.groupEnabled = false
+			chatRoomParams.subject = "Meeting invitation" // Won't be used
+
+			if let chatParams = chatRoomParams.chatParams {
+				chatParams.ephemeralLifetime = 0 // Make sure ephemeral messages are disabled by default
+
+				if isEndToEndEncryptedChatAvailable(core: core) {
+					Log.info("\(#function) LIME is available, sending invitation through 1-1 E2E-encrypted chat rooms with each participant")
+
+					chatParams.backend = ChatRoom.Backend.FlexisipChat
+					chatRoomParams.securityLevel = Conference.SecurityLevel.EndToEnd
+				} else {
+					Log.warn("\(#function) LIME is not available, sending invitation through 1-1 clear-text chat rooms with each participant")
+
+					chatParams.backend = ChatRoom.Backend.Basic
+					chatRoomParams.securityLevel = Conference.SecurityLevel.None
+				}
+			}
+
+			return chatRoomParams
+		}
+
+		return nil
+	}
+	
 	public class func createGroupCall(core: Core, account: Account?, subject: String) -> Conference? {
 		do {
 			let conferenceParams = try core.createConferenceParams(conference: nil)
