@@ -66,7 +66,7 @@ class HelpViewModel: ObservableObject {
 							state: Core.LogCollectionUploadState,
 							info: String
 						) in
-					if info.starts(with: "https") {
+					if info.starts(with: "http") || info.starts(with: "https") {
 						DispatchQueue.main.async {
 							self.logsUploadInProgress = false
 							self.logText = info

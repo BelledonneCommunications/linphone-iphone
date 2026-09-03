@@ -99,7 +99,13 @@ class StartConversationViewModel: ObservableObject {
 				
 				if let chatParams = chatRoomParams.chatParams {
 					chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
-					chatParams.backend = ChatRoom.Backend.FlexisipChat
+					
+					if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
+						chatRoomParams.securityLevel = Conference.SecurityLevel.EndToEnd
+					} else {
+						chatRoomParams.securityLevel = Conference.SecurityLevel.None
+					}
+					
 				}
 				
 				var participantsTmp: [Address] = []

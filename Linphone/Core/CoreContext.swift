@@ -386,7 +386,7 @@ class CoreContext: ObservableObject {
 				Log.info("New configuration state is \(status) = \(message)\n")
 				self.handleConfigurationChanged(status: status)
 			}, onLogCollectionUploadStateChanged: { (_: Core, _: Core.LogCollectionUploadState, info: String) in
-				if info.starts(with: "https") {
+				if info.starts(with: "http") || info.starts(with: "https") {
 					DispatchQueue.main.async {
 						UIPasteboard.general.setValue(info, forPasteboardType: UTType.plainText.identifier)
 						ToastViewModel.shared.show("Success_send_logs")
