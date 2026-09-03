@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>TFInternalTestingOnly</key>
-	<false/>
+	<key>APP_GROUP_NAME</key>
+	<string>$(APP_GROUP_NAME)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -129,6 +129,8 @@
 	</array>
 	<key>NSSupportsSuddenTermination</key>
 	<false/>
+	<key>TFInternalTestingOnly</key>
+	<false/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSans-Light.ttf</string>
@@ -146,7 +148,5 @@
 	</array>
 	<key>UILaunchScreen</key>
 	<false/>
-	<key>APP_GROUP_NAME</key>
-	<string>$(APP_GROUP_NAME)</string>
 </dict>
 </plist>
