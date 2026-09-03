@@ -191,12 +191,8 @@ class MeetingsListViewModel: ObservableObject {
 	}
 	
 	private func sendIcsInvitation(core: Core, conferenceScheduler: ConferenceScheduler?) {
-		if let chatRoomParams = try? core.createDefaultChatRoomParams() {
-			chatRoomParams.groupEnabled = false
-			chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
-			chatRoomParams.encryptionEnabled = true
-			chatRoomParams.subject = "Meeting ics"
-			conferenceScheduler?.sendInvitations(chatRoomParams: chatRoomParams)
+		if let chatRoomParams = LinphoneUtils.getChatRoomParamsForMeetingInvitationsAndUpdates(core: core) {
+			conferenceScheduler?.sendInvitations(conferenceParams: chatRoomParams)
 		} else {
 			Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
 		}

@@ -165,23 +165,8 @@ class MeetingViewModel: ObservableObject {
 	}
 	
 	private func sendIcsInvitation(core: Core) {
-		if let chatRoomParams = try? core.createDefaultChatRoomParams() {
-			chatRoomParams.groupEnabled = false
-			chatRoomParams.backend = ChatRoom.Backend.FlexisipChat
-			chatRoomParams.encryptionEnabled = true
-			chatRoomParams.subject = "Meeting ics"
-			
-			if self.conferenceScheduler == nil {
-				Log.info("\(MeetingViewModel.TAG) ConferenceScheduler is nil, resetting...")
-				self.resetConferenceSchedulerAndListeners(core: core)
-			}
-			
-			guard let scheduler = self.conferenceScheduler else {
-				Log.error("\(MeetingViewModel.TAG) ConferenceScheduler still nil after reset")
-				return
-			}
-			
-			scheduler.sendInvitations(chatRoomParams: chatRoomParams)
+		if let chatRoomParams = LinphoneUtils.getChatRoomParamsForMeetingInvitationsAndUpdates(core: core) {
+			conferenceScheduler?.sendInvitations(conferenceParams: chatRoomParams)
 		} else {
 			Log.error("\(MeetingViewModel.TAG) Failed to create default chatroom parameters. This should not happen")
 		}
