@@ -106,12 +106,16 @@ struct PopupViewWithTextField: View {
 			}
 			
 			displayedConversation.subject = self.conversationInfoPopupText
+			let oldAvatarModel = displayedConversation.avatarModel
 			displayedConversation.avatarModel = ContactAvatarModel(
-				friend: displayedConversation.avatarModel.friend,
+				friend: oldAvatarModel.friend,
 				name: self.conversationInfoPopupText,
-				address: displayedConversation.avatarModel.address,
+				address: oldAvatarModel.address,
 				withPresence: false
 			)
+			CoreContext.shared.doOnCoreQueue { _ in
+				_ = oldAvatarModel
+			}
 		}
 	}
 }

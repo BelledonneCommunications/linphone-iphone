@@ -58,7 +58,19 @@ class ConversationModel: ObservableObject, Identifiable {
 	
 	private var conferenceDelegate: ConferenceDelegate?
 	private var chatMessageDelegate: ChatMessageDelegate?
-	
+
+	deinit {
+		let chatMessageDelegate = self.chatMessageDelegate
+		let lastMessage = self.lastMessage
+		DispatchQueue.main.async {
+			CoreContext.shared.doOnCoreQueue { _ in
+				if let chatMessageDelegate = chatMessageDelegate, let lastMessage = lastMessage {
+					lastMessage.removeDelegate(delegate: chatMessageDelegate)
+				}
+			}
+		}
+	}
+
 	init(chatRoom: ChatRoom) {
 		self.chatRoom = chatRoom
 		
@@ -256,7 +268,8 @@ class ConversationModel: ObservableObject, Identifiable {
 	}
 	
 	func conferenceAddDelegate(core: Core, conference: Conference) {
-		self.conferenceDelegate = ConferenceDelegateStub(onStateChanged: { (conference: Conference, state: Conference.State) in
+		self.conferenceDelegate = ConferenceDelegateStub(onStateChanged: { [weak self] (conference: Conference, state: Conference.State) in
+			guard let self = self else { return }
 			Log.info("\(ConversationModel.TAG) Conference state is \(state)")
 			if state == .Created {
 				NotificationCenter.default.post(name: Notification.Name("CallViewModelReset"), object: self)
@@ -278,10 +291,10 @@ class ConversationModel: ObservableObject, Identifiable {
 			self.lastMessage!.removeDelegate(delegate: self.chatMessageDelegate!)
 		}
 		
-		self.chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { (message: ChatMessage, msgState: ChatMessage.State) in
+		self.chatMessageDelegate = ChatMessageDelegateStub(onMsgStateChanged: { [weak self] (message: ChatMessage, msgState: ChatMessage.State) in
 			let lastMessageStateTmp = msgState.rawValue
 			DispatchQueue.main.async {
-				self.lastMessageState = lastMessageStateTmp
+				self?.lastMessageState = lastMessageStateTmp
 			}
 		})
 		
@@ -407,8 +420,12 @@ class ConversationModel: ObservableObject, Identifiable {
 						let subjectTmp = avatarModelTmp.name
 						
 						DispatchQueue.main.async {
+							let oldModel = self.avatarModel
 							self.avatarModel = avatarModelTmp
 							self.subject = subjectTmp
+							CoreContext.shared.doOnCoreQueue { _ in
+								_ = oldModel
+							}
 						}
 					}
 				}

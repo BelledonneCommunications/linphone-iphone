@@ -57,9 +57,11 @@ class AccountModel: ObservableObject {
 		self.computeNotificationsCount()
 		
 		accountDelegate = AccountDelegateStub(
-			onRegistrationStateChanged: { (_: Account, _: RegistrationState, _: String) in
+			onRegistrationStateChanged: { [weak self] (_: Account, _: RegistrationState, _: String) in
+				guard let self = self else { return }
 				self.update()
-			}, onMessageWaitingIndicationChanged: { (account: Account, mwi: MessageWaitingIndication) in
+			}, onMessageWaitingIndicationChanged: { [weak self] (account: Account, mwi: MessageWaitingIndication) in
+				guard let self = self else { return }
 				Log.info("\(AccountModel.TAG) Account \(account.params?.identityAddress?.asStringUriOnly() ?? "Error") has received a MWI NOTIFY. \(mwi.hasMessageWaiting() ? "Message(s) are waiting." : "No message is waiting.")")
 				let showMwiTmp = mwi.hasMessageWaiting()
 				var voicemailCountTmp = 0
@@ -83,13 +85,17 @@ class AccountModel: ObservableObject {
 		account.addDelegate(delegate: accountDelegate!)
 		
 		coreDelegate = CoreDelegateStub(
-			onCallStateChanged: { (_: Core, _: Call, _: Call.State, _: String) in
+			onCallStateChanged: { [weak self] (_: Core, _: Call, _: Call.State, _: String) in
+				guard let self = self else { return }
 				self.computeNotificationsCount()
-			}, onMessagesReceived: { (_: Core, _: ChatRoom, _: [ChatMessage]) in
+			}, onMessagesReceived: { [weak self] (_: Core, _: ChatRoom, _: [ChatMessage]) in
+				guard let self = self else { return }
 				self.computeNotificationsCount()
-			}, onChatRoomRead: { (_: Core, _: ChatRoom) in
+			}, onChatRoomRead: { [weak self] (_: Core, _: ChatRoom) in
+				guard let self = self else { return }
 				self.computeNotificationsCount()
-			}, onMessageRetracted: { (_: Core, _: ChatRoom, _: ChatMessage) in
+			}, onMessageRetracted: { [weak self] (_: Core, _: ChatRoom, _: ChatMessage) in
+				guard let self = self else { return }
 				self.computeNotificationsCount()
 			}
 		)
@@ -101,12 +107,17 @@ class AccountModel: ObservableObject {
 	}
 	
 	deinit {
-		if let delegate = accountDelegate {
-			account.removeDelegate(delegate: delegate)
-		}
-		if let delegate = coreDelegate {
+		let account = self.account
+		let accountDelegate = self.accountDelegate
+		let coreDelegate = self.coreDelegate
+		DispatchQueue.main.async {
 			CoreContext.shared.doOnCoreQueue { core in
-				core.removeDelegate(delegate: delegate)
+				if let accountDelegate = accountDelegate {
+					account.removeDelegate(delegate: accountDelegate)
+				}
+				if let coreDelegate = coreDelegate {
+					core.removeDelegate(delegate: coreDelegate)
+				}
 			}
 		}
 	}
@@ -231,21 +242,26 @@ class AccountModel: ObservableObject {
 	
 	func addDelegate(request: AccountManagerServicesRequest) {
 		self.requestDelegate = AccountManagerServicesRequestDelegateStub(
-			onRequestSuccessful: { (request: AccountManagerServicesRequest, data: String) in
+			onRequestSuccessful: { [weak self] (request: AccountManagerServicesRequest, data: String) in
+				guard let self = self else { return }
 				Log.info("\(AccountModel.TAG) Request \(request) was successful, data is \(data)")
-			}, onRequestError: { (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+			}, onRequestError: { [weak self] (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+				guard let self = self else { return }
 				Log.error(
 					"\(AccountModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
 				)
 				// TODO Display Error Toast
-			}, onDevicesListFetched: { (request: AccountManagerServicesRequest, accountDevices: [AccountDevice]) in
+			}, onDevicesListFetched: { [weak self] (request: AccountManagerServicesRequest, accountDevices: [AccountDevice]) in
+				guard let self = self else { return }
 				Log.info("\(AccountModel.TAG) Fetched \(accountDevices.count) devices for our account")
 				var devicesList: [AccountDeviceModel] = []
 				accountDevices.forEach { accountDevice in
 					devicesList.append(AccountDeviceModel(accountDevice: accountDevice))
 				}
-				
-				request.removeDelegate(delegate: self.requestDelegate!)
+
+				if let requestDelegate = self.requestDelegate {
+					request.removeDelegate(delegate: requestDelegate)
+				}
 				DispatchQueue.main.async {
 					self.devices = devicesList
 				}

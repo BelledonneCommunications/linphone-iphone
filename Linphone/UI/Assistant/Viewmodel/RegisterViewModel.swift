@@ -53,6 +53,18 @@ class RegisterViewModel: ObservableObject {
 	private var normalizedPhoneNumber: String?
 	
 	private var requestDelegate: AccountManagerServicesRequestDelegate?
+
+	deinit {
+		let requestDelegate = self.requestDelegate
+		let accountManagerServicesRequest = self.accountManagerServicesRequest
+		DispatchQueue.main.async {
+			self.coreContext.doOnCoreQueue { _ in
+				if let requestDelegate = requestDelegate, let request = accountManagerServicesRequest {
+					request.removeDelegate(delegate: requestDelegate)
+				}
+			}
+		}
+	}
 	
 	@Published var isLinkActive: Bool = false
 	@Published var createInProgress: Bool = false
@@ -145,7 +157,9 @@ class RegisterViewModel: ObservableObject {
 	}
 	func addDelegate(request: AccountManagerServicesRequest) {
 		coreContext.doOnCoreQueue { core in
-			self.requestDelegate = AccountManagerServicesRequestDelegateStub(onRequestSuccessful: { (request: AccountManagerServicesRequest, data: String) in
+			self.accountManagerServicesRequest = request
+			self.requestDelegate = AccountManagerServicesRequestDelegateStub(onRequestSuccessful: { [weak self] (request: AccountManagerServicesRequest, data: String) in
+				guard let self = self else { return }
 				Log.info("\(RegisterViewModel.TAG) Request \(request) was successful, data is \(data)")
 				switch request.type {
 				case .CreateAccountUsingToken:
@@ -180,15 +194,18 @@ class RegisterViewModel: ObservableObject {
 						do {
 							try core.addAccount(account: account!)
 							core.defaultAccount = account
-							// request.removeDelegate(delegate: self.requestDelegate!)
-							// self.requestDelegate = nil
+							if let requestDelegate = self.requestDelegate {
+								request.removeDelegate(delegate: requestDelegate)
+							}
+							self.requestDelegate = nil
 						} catch {
 						}
 					}
 					
 				default: break
 				}
-			}, onRequestError: { (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+			}, onRequestError: { [weak self] (request: AccountManagerServicesRequest, statusCode: Int, errorMessage: String, parameterErrors: Dictionary?) in
+				guard let self = self else { return }
 				Log.error(
 					"\(RegisterViewModel.TAG) Request \(request) returned an error with status code \(statusCode) and message \(errorMessage)"
 				)

@@ -111,12 +111,16 @@ class AccountProfileViewModel: ObservableObject {
 				let defaultAccountModelIndexTmp = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
 				
 				DispatchQueue.main.async {
+					let oldModel = accountTmp.avatarModel
 					accountTmp.avatarModel = ContactAvatarModel(
 						friend: nil,
 						name: displayNameTmp.isEmpty ? accountDisplayName : displayNameTmp,
 						address: contactAddressTmp,
 						withPresence: false
 					)
+					CoreContext.shared.doOnCoreQueue { _ in
+						_ = oldModel
+					}
 					
 					self.defaultAccountModelIndex = defaultAccountModelIndexTmp
 					

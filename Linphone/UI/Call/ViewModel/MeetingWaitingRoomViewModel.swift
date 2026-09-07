@@ -130,7 +130,11 @@ class MeetingWaitingRoomViewModel: ObservableObject {
 						}
 						
 						self.userName = userNameTmp
+						let oldModel = self.avatarModel
 						self.avatarModel = avatarModelTmp
+						CoreContext.shared.doOnCoreQueue { _ in
+							_ = oldModel
+						}
 						self.micMutted = micMuttedTmp
 						self.meetingDate = meetingDateTmp
 					}
