@@ -298,8 +298,9 @@ class CoreContext: ObservableObject {
 						}
 					}
 					
-					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.forEach {	$0(core) }
+					let pendingActions = self.actionsToPerformOnCoreQueueWhenCoreIsStarted
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
+					pendingActions.forEach { $0(core) }
 					
 					var accountModels: [AccountModel] = []
 					for account in self.mCore.accountList {
