@@ -21,11 +21,45 @@ import Foundation
 import linphonesw
 
 class CorePreferences: ObservableObject {
-	
+
 	private let config: Config
-	
+
+	private var _onlyAllowEarpieceDuringCall: Bool
+	private var _hideSipAddresses: Bool
+	private var _showDeveloperSettings: Bool
+	private var _disableCallRecordings: Bool
+	private var _disableChatFeature: Bool
+	private var _disableAddContact: Bool
+	private var _hideContactEdition: Bool
+	private var _friendListInWhichStoreNewlyCreatedFriends: String
+	private var _defaultDomain: String
+	private var _themeAboutPictureUrl: String?
+
 	init(config: Config) {
 		self.config = config
+		self._onlyAllowEarpieceDuringCall = config.getBool(section: "ui", key: "only_allow_earpiece_during_call", defaultValue: false)
+		self._hideSipAddresses = config.getBool(section: "ui", key: "hide_sip_addresses", defaultValue: false)
+		self._showDeveloperSettings = config.getBool(section: "ui", key: "show_developer_settings", defaultValue: false)
+		self._disableCallRecordings = config.getBool(section: "ui", key: "disable_call_recordings_feature", defaultValue: false)
+		self._disableChatFeature = config.getBool(section: "ui", key: "disable_chat_feature", defaultValue: false)
+		self._disableAddContact = config.getBool(section: "ui", key: "disable_add_contact", defaultValue: false)
+		self._hideContactEdition = config.getBool(section: "ui", key: "hide_contact_edition", defaultValue: false)
+		self._friendListInWhichStoreNewlyCreatedFriends = config.getString(section: "app", key: "friend_list_to_store_newly_created_contacts", defaultString: "Linphone address-book")
+		self._defaultDomain = config.getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
+		self._themeAboutPictureUrl = config.getString(section: "ui", key: "theme_about_picture_url", defaultString: nil)
+	}
+
+	func reloadFromConfig() {
+		_onlyAllowEarpieceDuringCall = config.getBool(section: "ui", key: "only_allow_earpiece_during_call", defaultValue: false)
+		_hideSipAddresses = config.getBool(section: "ui", key: "hide_sip_addresses", defaultValue: false)
+		_showDeveloperSettings = config.getBool(section: "ui", key: "show_developer_settings", defaultValue: false)
+		_disableCallRecordings = config.getBool(section: "ui", key: "disable_call_recordings_feature", defaultValue: false)
+		_disableChatFeature = config.getBool(section: "ui", key: "disable_chat_feature", defaultValue: false)
+		_disableAddContact = config.getBool(section: "ui", key: "disable_add_contact", defaultValue: false)
+		_hideContactEdition = config.getBool(section: "ui", key: "hide_contact_edition", defaultValue: false)
+		_friendListInWhichStoreNewlyCreatedFriends = config.getString(section: "app", key: "friend_list_to_store_newly_created_contacts", defaultString: "Linphone address-book")
+		_defaultDomain = config.getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
+		_themeAboutPictureUrl = config.getString(section: "ui", key: "theme_about_picture_url", defaultString: nil)
 	}
 	
 	var acceptEarlyMedia: Bool {
@@ -113,13 +147,8 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var defaultDomain: String {
-		get {
-			let raw = config.getString(section: "app", key: "default_domain", defaultString: "sip.linphone.org")
-			return safeString(raw, defaultValue: "sip.linphone.org")
-		}
-		set {
-			config.setString(section: "app", key: "default_domain", value: newValue)
-		}
+		get { _defaultDomain }
+		set { _defaultDomain = newValue; config.setString(section: "app", key: "default_domain", value: newValue) }
 	}
 	
 	var defaultPass: String {
@@ -151,39 +180,23 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var hideContactEdition: Bool {
-		get {
-			config.getBool(section: "ui", key: "hide_contact_edition", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "hide_contact_edition", value: newValue)
-		}
+		get { _hideContactEdition }
+		set { _hideContactEdition = newValue; config.setBool(section: "ui", key: "hide_contact_edition", value: newValue) }
 	}
 
 	var disableAddContact: Bool {
-		get {
-			config.getBool(section: "ui", key: "disable_add_contact", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "disable_add_contact", value: newValue)
-		}
+		get { _disableAddContact }
+		set { _disableAddContact = newValue; config.setBool(section: "ui", key: "disable_add_contact", value: newValue) }
 	}
-	
+
 	var disableCallRecordings: Bool {
-		get {
-			config.getBool(section: "ui", key: "disable_call_recordings_feature", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "disable_call_recordings_feature", value: newValue)
-		}
+		get { _disableCallRecordings }
+		set { _disableCallRecordings = newValue; config.setBool(section: "ui", key: "disable_call_recordings_feature", value: newValue) }
 	}
-	
+
 	var disableChatFeature: Bool {
-		get {
-			config.getBool(section: "ui", key: "disable_chat_feature", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "disable_chat_feature", value: newValue)
-		}
+		get { _disableChatFeature }
+		set { _disableChatFeature = newValue; config.setBool(section: "ui", key: "disable_chat_feature", value: newValue) }
 	}
 	
 	var disableMeetings: Bool {
@@ -223,12 +236,8 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var friendListInWhichStoreNewlyCreatedFriends: String {
-		get {
-			config.getString(section: "app", key: "friend_list_to_store_newly_created_contacts", defaultString: "Linphone address-book")
-		}
-		set {
-			config.setString(section: "app", key: "friend_list_to_store_newly_created_contacts", value: newValue)
-		}
+		get { _friendListInWhichStoreNewlyCreatedFriends }
+		set { _friendListInWhichStoreNewlyCreatedFriends = newValue; config.setString(section: "app", key: "friend_list_to_store_newly_created_contacts", value: newValue) }
 	}
 	
 	var hideSettings: Bool {
@@ -241,12 +250,8 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var hideSipAddresses: Bool {
-		get {
-			config.getBool(section: "ui", key: "hide_sip_addresses", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "hide_sip_addresses", value: newValue)
-		}
+		get { _hideSipAddresses }
+		set { _hideSipAddresses = newValue; config.setBool(section: "ui", key: "hide_sip_addresses", value: newValue) }
 	}
 	
 	var keepServiceAlive: Bool {
@@ -286,12 +291,8 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var onlyAllowEarpieceDuringCall: Bool {
-		get {
-			config.getBool(section: "ui", key: "only_allow_earpiece_during_call", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "only_allow_earpiece_during_call", value: newValue)
-		}
+		get { _onlyAllowEarpieceDuringCall }
+		set { _onlyAllowEarpieceDuringCall = newValue; config.setBool(section: "ui", key: "only_allow_earpiece_during_call", value: newValue) }
 	}
 
 	var printLogsInLogcat: Bool {
@@ -349,12 +350,8 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var showDeveloperSettings: Bool {
-		get {
-			config.getBool(section: "ui", key: "show_developer_settings", defaultValue: false)
-		}
-		set {
-			config.setBool(section: "ui", key: "show_developer_settings", value: newValue)
-		}
+		get { _showDeveloperSettings }
+		set { _showDeveloperSettings = newValue; config.setBool(section: "ui", key: "show_developer_settings", value: newValue) }
 	}
 	
 	var showDialogWhenCallingDeviceUuidDirectly: Bool {
@@ -406,12 +403,8 @@ class CorePreferences: ObservableObject {
 	}
 	
 	var themeAboutPictureUrl: String? {
-		get {
-			config.getString(section: "ui", key: "theme_about_picture_url", defaultString: nil)
-		}
-		set {
-			config.setString(section: "ui", key: "theme_about_picture_url", value: newValue)
-		}
+		get { _themeAboutPictureUrl }
+		set { _themeAboutPictureUrl = newValue; config.setString(section: "ui", key: "theme_about_picture_url", value: newValue) }
 	}
 	
 	var themeMainColor: String {

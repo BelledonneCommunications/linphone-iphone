@@ -520,8 +520,9 @@ class CoreContext: ObservableObject {
 	func onEnterForeground() {
 		coreQueue.async {
 			Log.info("[onEnterForegroundOrBackground] Entering foreground")
-			
+
 			try? self.mCore.start()
+			AppServices.corePreferences.reloadFromConfig()
 		}
 	}
 
