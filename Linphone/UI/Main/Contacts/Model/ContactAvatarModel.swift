@@ -49,7 +49,19 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	@Published var trustedFriend: Bool = false
 	
 	private var friendDelegate: FriendDelegate?
-	
+
+	deinit {
+		let friend = self.friend
+		let delegate = self.friendDelegate
+		DispatchQueue.main.async {
+			CoreContext.shared.doOnCoreQueue { _ in
+				if let delegate = delegate, let friend = friend {
+					friend.removeDelegate(delegate: delegate)
+				}
+			}
+		}
+	}
+
 	init(friend: Friend?, name: String, address: String, withPresence: Bool?) {
 		self.name = name
 	 	self.address = address
@@ -140,10 +152,11 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	}
 	
 	func addFriendDelegate() {
-		friendDelegate = FriendDelegateStub(onPresenceReceived: { (friend: Friend) in
+		friendDelegate = FriendDelegateStub(onPresenceReceived: { [weak self] (friend: Friend) in
 			let latestActivityTimestamp = friend.presenceModel?.latestActivityTimestamp ?? -1
 			let consolidatedPresenceTmp = friend.consolidatedPresence
 			DispatchQueue.main.async {
+				guard let self = self else { return }
 				self.presenceStatus = consolidatedPresenceTmp
 				if consolidatedPresenceTmp == .Online || consolidatedPresenceTmp == .Busy {
 					if consolidatedPresenceTmp == .Online || latestActivityTimestamp != -1 {

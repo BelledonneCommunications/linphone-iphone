@@ -116,15 +116,19 @@ class HistoryModel: ObservableObject, Identifiable {
 	func refreshAvatarModel() {
 		guard let address = (self.callLog.dir == .Outgoing ? self.callLog.toAddress : self.callLog.fromAddress) else {
 			DispatchQueue.main.async {
+				let oldModel = self.avatarModel
 				self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+				CoreContext.shared.doOnCoreQueue { _ in
+					_ = oldModel
+				}
 			}
 			return
 		}
-		
+
 		let addressFriendTmp = ContactsManager.shared.getFriendWithAddress(address: address)
 		if let addressFriendTmp = addressFriendTmp {
 			let addressNameTmp = self.addressName
-			
+
 			let avatarModelTmp = ContactsManager.shared.avatarListModel.first(where: {
 				guard let friend = $0.friend else { return false }
 				return friend.name == addressFriendTmp.name &&
@@ -135,17 +139,27 @@ class HistoryModel: ObservableObject, Identifiable {
 				address: self.address,
 				withPresence: false
 			)
-			
+
 			let addressFriendNameTmp = addressFriendTmp.name ?? addressNameTmp
-			
+
 			DispatchQueue.main.async {
 				self.isFriend = true
 				self.addressName = addressFriendNameTmp
-				self.avatarModel = avatarModelTmp
+				if self.avatarModel !== avatarModelTmp {
+					let oldModel = self.avatarModel
+					self.avatarModel = avatarModelTmp
+					CoreContext.shared.doOnCoreQueue { _ in
+						_ = oldModel
+					}
+				}
 			}
 		} else {
 			DispatchQueue.main.async {
+				let oldModel = self.avatarModel
 				self.avatarModel = ContactAvatarModel(friend: nil, name: self.addressName, address: self.address, withPresence: false)
+				CoreContext.shared.doOnCoreQueue { _ in
+					_ = oldModel
+				}
 			}
 		}
 	}
