@@ -27,7 +27,7 @@ final class MagicSearchSingleton: ObservableObject {
 	private var coreContext = CoreContext.shared
 	private var contactsManager = ContactsManager.shared
 	
-	private var magicSearch: MagicSearch?
+	var magicSearch: MagicSearch?
 	
 	var currentFilter: String = ""
 	var previousFilter: String?
@@ -55,65 +55,62 @@ final class MagicSearchSingleton: ObservableObject {
 		magicSearch = nil
 	}
 	
-	private init() {
-		allContact = AppServices.corePreferences.contactsFilter == ""
+	func recreateMagicSearch(core: Core) {
+		self.linphoneDomain = AppServices.corePreferences.defaultDomain == core.defaultAccount?.params?.domain
+		self.domainDefaultAccount = AppServices.corePreferences.contactsFilter
 		
-		coreContext.doOnCoreQueue { core in
-			self.linphoneDomain = AppServices.corePreferences.defaultDomain == core.defaultAccount?.params?.domain
-			self.domainDefaultAccount = AppServices.corePreferences.contactsFilter
+		self.magicSearch = try? core.createMagicSearch()
+		
+		guard let magicSearch = self.magicSearch else {
+			return
+		}
+		
+		magicSearch.limitedSearch = false
+		
+		self.searchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
+			print("[MagicSearchSingleton] [onSearchResultsReceived] Received search results")
+			self.needUpdateLastSearchContacts = true
 			
-			self.magicSearch = try? core.createMagicSearch()
+			var lastSearchFriend: [SearchResult] = []
+			var lastSearchSuggestions: [SearchResult] = []
 			
-			guard let magicSearch = self.magicSearch else {
-				return
+			magicSearch.lastSearch.forEach { searchResult in
+                    if searchResult.friend != nil && (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
+					if let address = searchResult.address,
+					   !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
+						lastSearchFriend.append(searchResult)
+					} else if let phoneNumber = searchResult.phoneNumber,
+							  !lastSearchFriend.contains(where: { $0.phoneNumber == phoneNumber }) {
+						lastSearchFriend.append(searchResult)
+					}
+				} else if searchResult.friend != nil && (searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV || searchResult.hasSourceFlag(source: .LdapServers)) {
+					lastSearchFriend.append(searchResult)
+				} else {
+					lastSearchSuggestions.append(searchResult)
+				}
 			}
 			
-			magicSearch.limitedSearch = false
+			lastSearchSuggestions.sort(by: {
+				($0.address?.asStringUriOnly() ?? "") < ($1.address?.asStringUriOnly() ?? "")
+			})
 			
-			self.searchDelegate = MagicSearchDelegateStub(onSearchResultsReceived: { (magicSearch: MagicSearch) in
-				print("[MagicSearchSingleton] [onSearchResultsReceived] Received search results")
-				self.needUpdateLastSearchContacts = true
-				
-				var lastSearchFriend: [SearchResult] = []
-				var lastSearchSuggestions: [SearchResult] = []
-				
-				magicSearch.lastSearch.forEach { searchResult in
-                    if searchResult.friend != nil && (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
-						if let address = searchResult.address,
-						   !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
-							lastSearchFriend.append(searchResult)
-						} else if let phoneNumber = searchResult.phoneNumber,
-								  !lastSearchFriend.contains(where: { $0.phoneNumber == phoneNumber }) {
-							lastSearchFriend.append(searchResult)
-						}
-					} else if searchResult.friend != nil && (searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV || searchResult.hasSourceFlag(source: .LdapServers)) {
-						lastSearchFriend.append(searchResult)
-					} else {
-						lastSearchSuggestions.append(searchResult)
-					}
+			if let defaultAccount = core.defaultAccount, let contactAddress = defaultAccount.params?.identityAddress {
+				lastSearchSuggestions.removeAll {
+					$0.address?.weakEqual(address2: contactAddress) ?? false
 				}
-				
-				lastSearchSuggestions.sort(by: {
-					($0.address?.asStringUriOnly() ?? "") < ($1.address?.asStringUriOnly() ?? "")
-				})
-				
-				if let defaultAccount = core.defaultAccount, let contactAddress = defaultAccount.params?.identityAddress {
-					lastSearchSuggestions.removeAll {
-						$0.address?.weakEqual(address2: contactAddress) ?? false
-					}
-				}
-				
-				let sortedLastSearch = lastSearchFriend.sorted {
-					let name1 = $0.friend?.name?.lowercased()
-						.folding(options: .diacriticInsensitive, locale: .current) ?? ""
-					let name2 = $1.friend?.name?.lowercased()
-						.folding(options: .diacriticInsensitive, locale: .current) ?? ""
-					return name1 < name2
-				}
-				
-				var addedAvatarListModel: [ContactAvatarModel] = []
-				sortedLastSearch.forEach { searchResult in
-					if searchResult.friend != nil {
+			}
+			
+			let sortedLastSearch = lastSearchFriend.sorted {
+				let name1 = $0.friend?.name?.lowercased()
+					.folding(options: .diacriticInsensitive, locale: .current) ?? ""
+				let name2 = $1.friend?.name?.lowercased()
+					.folding(options: .diacriticInsensitive, locale: .current) ?? ""
+				return name1 < name2
+			}
+			
+			var addedAvatarListModel: [ContactAvatarModel] = []
+			sortedLastSearch.forEach { searchResult in
+				if searchResult.friend != nil {
                         if (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
                             addedAvatarListModel.append(
                                 ContactAvatarModel(
@@ -123,36 +120,42 @@ final class MagicSearchSingleton: ObservableObject {
                                     withPresence: true
                                 )
                             )
-						} else if searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV {
-							addedAvatarListModel.append(
-								ContactAvatarModel(
-									friend: searchResult.friend!,
-									name: searchResult.friend?.name ?? "",
-									address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
-									withPresence: true
-								)
+					} else if searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV {
+						addedAvatarListModel.append(
+							ContactAvatarModel(
+								friend: searchResult.friend!,
+								name: searchResult.friend?.name ?? "",
+								address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+								withPresence: true
 							)
-						} else if searchResult.hasSourceFlag(source: .LdapServers) {
-							addedAvatarListModel.append(
-								ContactAvatarModel(
-									friend: searchResult.friend!,
-									name: searchResult.friend?.name ?? "",
-									address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
-									withPresence: false
-								)
+						)
+					} else if searchResult.hasSourceFlag(source: .LdapServers) {
+						addedAvatarListModel.append(
+							ContactAvatarModel(
+								friend: searchResult.friend!,
+								name: searchResult.friend?.name ?? "",
+								address: searchResult.friend?.address?.clone()?.asStringUriOnly() ?? "",
+								withPresence: false
 							)
-						}
+						)
 					}
 				}
-				
-				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
-					contactAvatarModel.removeFriendDelegate()
-				}
+			}
+			
+			self.contactsManager.avatarListModel.forEach { contactAvatarModel in
+				contactAvatarModel.removeFriendDelegate()
+			}
                 
                 self.updateContacts(sortedLastSearch: sortedLastSearch, lastSearchSuggestions: lastSearchSuggestions, addedAvatarListModel: addedAvatarListModel)
-			})
-			
-			magicSearch.addDelegate(delegate: self.searchDelegate!)
+		})
+		
+		magicSearch.addDelegate(delegate: self.searchDelegate!)
+	}
+
+	private init() {
+		allContact = AppServices.corePreferences.contactsFilter == ""
+		coreContext.doOnCoreQueue { core in
+			self.recreateMagicSearch(core: core)
 		}
 	}
 	

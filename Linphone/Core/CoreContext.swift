@@ -287,6 +287,11 @@ class CoreContext: ObservableObject {
 #else
 					let pushEnvironment = ""
 #endif
+
+					if MagicSearchSingleton.shared.magicSearch == nil {
+						MagicSearchSingleton.shared.recreateMagicSearch(core: core)
+					}
+
 					for account in core.accountList {
 						if account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
 							let newParams = account.params?.clone()
@@ -315,6 +320,7 @@ class CoreContext: ObservableObject {
 						self.accounts = accountModels
 					}
 				} else {
+					MagicSearchSingleton.shared.destroyMagicSearch()
 					DispatchQueue.main.async {
 						self.coreIsStarted = state == GlobalState.On
 					}
