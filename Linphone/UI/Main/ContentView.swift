@@ -544,7 +544,8 @@ struct ContentView: View {
                                                     
                                                     let account = coreContext.accounts[index]
                                                     let imagePath = account.getImagePath()
-                                                    let finalUrl = imagePath.appendingQueryItem("v", value: UUID().uuidString)
+                                                    let modDate = (try? FileManager.default.attributesOfItem(atPath: imagePath.path)[.modificationDate] as? Date)?.timeIntervalSince1970 ?? 0
+                                                    let finalUrl = imagePath.appendingQueryItem("v", value: String(modDate))
 
                                                     AsyncImage(url: finalUrl)
                                                         { image in
