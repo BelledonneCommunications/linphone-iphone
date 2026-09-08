@@ -11,7 +11,51 @@ Group changes to describe their impact on the project, as follows:
 	Security to invite users to upgrade in case of vulnerabilities.
 	
 	
-## [6.2.0] - Unreleased
+## [6.2.3] - 2026-09-08
+
+### Changed
+- App extension now waits for IMDNs to be sent before exiting cleanly (with Flexisip 2.4 or older, a delay applies before the IMDN is sent and the notification is displayed)
+- Microphone mute writes routed through CallKit
+- Accept HTTP log upload URLs (in addition to HTTPS)
+- Set chat security level based on E2E availability
+
+### Fixed
+- Microphone mute desync between app and CallKit dialog
+- Meeting invitations not sent if LIME isn't enabled
+- Avatar flash by using file modification date instead of UUID for cache busting
+- ContactAvatarModel crash by releasing linphonesw objects on core queue
+- CorePreferences crash by caching values read from SwiftUI
+- Reentrant crash in doOnCoreQueue by snapshotting pending actions before iteration
+- MagicSearch zombie reference after core restart (recreated)
+- Group chat invite notification flood at first login
+
+
+## [6.2.2] - 2026-08-06
+
+### Changed
+- Updated translations from Weblate (Italian)
+
+### Fixed
+- Earpiece enforcement popup no longer shown when no call is active or on transient route changes
+
+
+## [6.2.1] - 2026-07-07
+
+### Added
+- New account recovery process
+- Confirmation popup before removing a participant from a conversation
+- Notifications received or generated in BFU mode displayed with timeSensitive interruption level
+
+### Changed
+- Updated translations from Weblate
+- Check E2EE availability before displaying encryption option
+
+### Fixed
+- Remote video not displayed after video activation
+- BFU mode: protected access to config, incoming call stopped after 4 seconds, PopupLoadingView no longer used (shared view model creating core)
+
+
+## [6.2.0] - 2026-06-02
 
 ### Added
 - Added the ability to edit/delete chat messages sent less than 24 hours ago
