@@ -132,13 +132,10 @@ class NotificationService: UNNotificationServiceExtension {
                 if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
                     bestAttemptContent.body = String(localized: "GC_MSG")
                     Log.info("fetch chat room for invite, addr: \(chatRoomInviteAddr)")
-                    if let chatRoom = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr) {
-                        Log.info("chat room invite received from: \(chatRoom.subject ?? "unknown")")
-                        if let subject = chatRoom.subject, !subject.isEmpty {
-                            bestAttemptContent.title = subject
-                        }
-                    }
-                    stopCoreThenDisplay(bestAttemptContent, notLaterThan: timeStart.addingTimeInterval(25))
+                    let chatRoom = lc?.getNewChatRoomFromConfAddr(chatRoomAddr: chatRoomInviteAddr)
+                    Log.info("chat room invite received from: \(chatRoom?.subject ?? "unknown")")
+                    stopCore()
+                    contentHandler(UNNotificationContent())
                     return
 
                 } else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
@@ -214,7 +211,7 @@ class NotificationService: UNNotificationServiceExtension {
             bestAttemptContent.categoryIdentifier = "app_active"
             if let chatRoomInviteAddr = bestAttemptContent.userInfo["chat-room-addr"] as? String, !chatRoomInviteAddr.isEmpty {
                 stopCore()
-                contentHandler(bestAttemptContent)
+                contentHandler(UNNotificationContent())
                 return
             } else if let callId = bestAttemptContent.userInfo["call-id"] as? String {
                 stopCore()
