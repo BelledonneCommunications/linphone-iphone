@@ -67,10 +67,12 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func updateChatRoomsList() {
+		let conversationsListSnapshot = self.conversationsList
+		let avatarListModelSnapshot = self.contactsManager.avatarListModel
 		CoreContext.shared.doOnCoreQueue { _ in
-			if !self.conversationsList.isEmpty {
-				self.contactsManager.avatarListModel.forEach { contactAvatarModel in
-					self.conversationsList.forEach { conversationModel in
+			if !conversationsListSnapshot.isEmpty {
+				avatarListModelSnapshot.forEach { contactAvatarModel in
+					conversationsListSnapshot.forEach { conversationModel in
 						if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
 							if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
 								if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAvatarModel.address) {
@@ -94,26 +96,22 @@ class ConversationsListViewModel: ObservableObject {
 									
 									let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
 									
-									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
-										DispatchQueue.main.async {
+									DispatchQueue.main.async {
+										if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 											conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 											self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
-										}
-									} else {
-										DispatchQueue.main.async {
+										} else {
 											conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 										}
 									}
 								}
 							} else if !conversationModel.isGroup, let firstParticipantAddress = conversationModel.participantsAddress.first, firstParticipantAddress.contains(contactAvatarModel.address) {
-								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
-									DispatchQueue.main.async {
+								DispatchQueue.main.async {
+									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 										conversationModel.avatarModel = contactAvatarModel
 										conversationModel.subject = contactAvatarModel.name
 										self.conversationsList[index].avatarModel = contactAvatarModel
-									}
-								} else {
-									DispatchQueue.main.async {
+									} else {
 										conversationModel.avatarModel = contactAvatarModel
 										conversationModel.subject = contactAvatarModel.name
 									}
@@ -127,9 +125,11 @@ class ConversationsListViewModel: ObservableObject {
 	}
 	
 	func updateChatRoom(address: String) {
+		let conversationsListSnapshot = self.conversationsList
+		let avatarListModelSnapshot = self.contactsManager.avatarListModel
 		CoreContext.shared.doOnCoreQueue { _ in
-			if let contactAvatarModel = self.contactsManager.avatarListModel.first(where: { $0.addresses.contains(address) }) {
-				self.conversationsList.forEach { conversationModel in
+			if let contactAvatarModel = avatarListModelSnapshot.first(where: { $0.addresses.contains(address) }) {
+				conversationsListSnapshot.forEach { conversationModel in
 					if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
 						if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
 							if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAvatarModel.address) {
@@ -153,26 +153,22 @@ class ConversationsListViewModel: ObservableObject {
 								
 								let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
 								
-								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
-									DispatchQueue.main.async {
+								DispatchQueue.main.async {
+									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 										self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
-									}
-								} else {
-									DispatchQueue.main.async {
+									} else {
 										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 									}
 								}
 							}
 						} else if !conversationModel.isGroup, let firstParticipantAddress = conversationModel.participantsAddress.first, firstParticipantAddress.contains(contactAvatarModel.address) {
-							if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
-								DispatchQueue.main.async {
+							DispatchQueue.main.async {
+								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 									conversationModel.avatarModel = contactAvatarModel
 									conversationModel.subject = contactAvatarModel.name
 									self.conversationsList[index].avatarModel = contactAvatarModel
-								}
-							} else {
-								DispatchQueue.main.async {
+								} else {
 									conversationModel.avatarModel = contactAvatarModel
 									conversationModel.subject = contactAvatarModel.name
 								}

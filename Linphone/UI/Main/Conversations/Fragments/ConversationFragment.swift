@@ -548,7 +548,7 @@ struct ConversationFragment: View {
 									.padding(.top, 4)
 									.onChange(of: isMuted) { _ in }
 									.onAppear {
-										isMuted = SharedMainViewModel.shared.displayedConversation!.isMuted
+										isMuted = SharedMainViewModel.shared.displayedConversation?.isMuted ?? cachedConversation?.isMuted ?? false
 									}
 							}
 							.onTapGesture {
