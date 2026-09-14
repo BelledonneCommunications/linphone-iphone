@@ -276,7 +276,7 @@ struct ConversationFragment: View {
 			}
 			.onChange(of: scenePhase) { newPhase in
 				if newPhase == .active {
-					if SharedMainViewModel.shared.displayedConversation != nil && (navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(SharedMainViewModel.shared.displayedConversation!.remoteSipUri)) {
+					if let displayed = SharedMainViewModel.shared.displayedConversation, navigationManager.peerAddr == nil || navigationManager.peerAddr!.contains(displayed.remoteSipUri) {
 						conversationViewModel.resetDisplayedChatRoom()
 					}
 				} else {
@@ -412,10 +412,12 @@ struct ConversationFragment: View {
 							
 							if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
 								Button {
-									if SharedMainViewModel.shared.displayedConversation!.isGroup {
-										isShowStartCallGroupPopup.toggle()
-									} else {
-										SharedMainViewModel.shared.displayedConversation!.call()
+									if let displayed = SharedMainViewModel.shared.displayedConversation {
+										if displayed.isGroup {
+											isShowStartCallGroupPopup.toggle()
+										} else {
+											displayed.call()
+										}
 									}
 								} label: {
 									Image("phone")
@@ -469,8 +471,10 @@ struct ConversationFragment: View {
 								if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
 									Button {
 										isMenuOpen = false
-										SharedMainViewModel.shared.displayedConversation!.toggleMute()
-										isMuted = !isMuted
+										if let displayed = SharedMainViewModel.shared.displayedConversation {
+											displayed.toggleMute()
+											isMuted = !isMuted
+										}
 									} label: {
 										HStack {
 											Text(isMuted ? "conversation_action_unmute" : "conversation_action_mute")
@@ -1045,7 +1049,7 @@ struct ConversationFragment: View {
 							.transition(.move(edge: .bottom))
 						}
 						
-						if mentionIsOpen && SharedMainViewModel.shared.displayedConversation!.isGroup {
+						if mentionIsOpen && (SharedMainViewModel.shared.displayedConversation?.isGroup ?? cachedConversation?.isGroup ?? false) {
 							ZStack(alignment: .top) {
 								ScrollView {
 									LazyVStack(alignment: .leading, spacing: 0) {
@@ -1256,8 +1260,8 @@ struct ConversationFragment: View {
 			}
 			.blur(radius: conversationViewModel.selectedMessage != nil ? 8 : 0)
 			
-			if conversationViewModel.selectedMessage != nil && SharedMainViewModel.shared.displayedConversation != nil {
-				let iconSize = ((geometry.size.width - (SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 10) - 10) / 6) - 30
+			if conversationViewModel.selectedMessage != nil, let displayed = SharedMainViewModel.shared.displayedConversation {
+				let iconSize = ((geometry.size.width - (displayed.isGroup ? 43 : 10) - 10) / 6) - 30
 				
 				ScrollView {
 					VStack {
@@ -1347,7 +1351,7 @@ struct ConversationFragment: View {
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.horizontal, 10)
-								.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
+								.padding(.leading, displayed.isGroup ? 43 : 0)
 								.shadow(color: .black.opacity(0.1), radius: 10)
 							}
 							
@@ -1550,7 +1554,7 @@ struct ConversationFragment: View {
 								.frame(maxWidth: .infinity)
 								.padding(.horizontal, 10)
 								.padding(.bottom, 20)
-								.padding(.leading, SharedMainViewModel.shared.displayedConversation!.isGroup ? 43 : 0)
+								.padding(.leading, displayed.isGroup ? 43 : 0)
 								.shadow(color: .black.opacity(0.1), radius: 10)
 							}
 						}
