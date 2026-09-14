@@ -255,31 +255,25 @@ class ConversationForwardMessageViewModel: ObservableObject {
 	}
 	
 	func forwardMessage() {
-		CoreContext.shared.doOnCoreQueue { _ in
-			if self.displayedConversation != nil && self.selectedMessage != nil {
-				if let messageToForward = self.selectedMessage!.eventModel.eventLog.chatMessage {
-					DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-						do {
-							let forwardedMessage = try self.displayedConversation!.chatRoom.createForwardMessage(message: messageToForward)
-							Log.info("\(ConversationForwardMessageViewModel.TAG) Sending forwarded message")
-							forwardedMessage.send()
-							
-						} catch let error {
-							print("\(#function) - Failed to create forward message: \(error)")
-						}
-						
-						self.selectedMessage = nil
-						self.displayedConversation = nil
-					}
-					/*
-					showGreenToastEvent.postValue(
-						Event(Pair(R.string.conversation_message_forwarded_toast, R.drawable.forward))
-					)
-					 */
+		guard let displayedConv = self.displayedConversation,
+			  let selectedMsg = self.selectedMessage else { return }
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+			CoreContext.shared.doOnCoreQueue { _ in
+				guard let messageToForward = selectedMsg.eventModel.eventLog.chatMessage else { return }
+				do {
+					let forwardedMessage = try displayedConv.chatRoom.createForwardMessage(message: messageToForward)
+					Log.info("\(ConversationForwardMessageViewModel.TAG) Sending forwarded message")
+					forwardedMessage.send()
+				} catch let error {
+					print("\(#function) - Failed to create forward message: \(error)")
+				}
+				DispatchQueue.main.async {
+					self.selectedMessage = nil
+					self.displayedConversation = nil
 				}
 			}
 		}
- }
+	}
 }
 
 // swiftlint:enable line_length
