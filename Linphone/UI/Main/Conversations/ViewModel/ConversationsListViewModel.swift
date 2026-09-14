@@ -69,13 +69,16 @@ class ConversationsListViewModel: ObservableObject {
 	func updateChatRoomsList() {
 		let conversationsListSnapshot = self.conversationsList
 		let avatarListModelSnapshot = self.contactsManager.avatarListModel
+		// Snapshot @Published element properties to avoid reading them on the core queue
+		let participantsByConversation = conversationsListSnapshot.map { (model: $0, participants: $0.participantsAddress) }
+		let avatarAddresses = avatarListModelSnapshot.map { (avatar: $0, address: $0.address) }
 		CoreContext.shared.doOnCoreQueue { _ in
-			if !conversationsListSnapshot.isEmpty {
-				avatarListModelSnapshot.forEach { contactAvatarModel in
-					conversationsListSnapshot.forEach { conversationModel in
-						if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
-							if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
-								if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAvatarModel.address) {
+			if !participantsByConversation.isEmpty {
+				avatarAddresses.forEach { contactAvatarModel, contactAddress in
+					participantsByConversation.forEach { conversationModel, participantsAddress in
+						if participantsAddress.contains(contactAddress) {
+							if conversationModel.isGroup && participantsAddress.count > 1 {
+								if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAddress) {
 									var fromAddressFriend = self.contactsManager.getFriendWithAddress(address: fromAddress)?.name
 									
 									if !lastMessage.isOutgoing && lastMessage.chatRoom != nil && !lastMessage.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
@@ -105,7 +108,7 @@ class ConversationsListViewModel: ObservableObject {
 										}
 									}
 								}
-							} else if !conversationModel.isGroup, let firstParticipantAddress = conversationModel.participantsAddress.first, firstParticipantAddress.contains(contactAvatarModel.address) {
+							} else if !conversationModel.isGroup, let firstParticipantAddress = participantsAddress.first, firstParticipantAddress.contains(contactAddress) {
 								DispatchQueue.main.async {
 									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
 										conversationModel.avatarModel = contactAvatarModel
@@ -116,8 +119,8 @@ class ConversationsListViewModel: ObservableObject {
 										conversationModel.subject = contactAvatarModel.name
 									}
 								}
-                            }
-                        }
+							}
+						}
 					}
 				}
 			}
@@ -127,51 +130,53 @@ class ConversationsListViewModel: ObservableObject {
 	func updateChatRoom(address: String) {
 		let conversationsListSnapshot = self.conversationsList
 		let avatarListModelSnapshot = self.contactsManager.avatarListModel
+		// Snapshot @Published element properties to avoid reading them on the core queue
+		let participantsByConversation = conversationsListSnapshot.map { (model: $0, participants: $0.participantsAddress) }
+		guard let contactAvatarModel = avatarListModelSnapshot.first(where: { $0.addresses.contains(address) }) else { return }
+		let contactAddress = contactAvatarModel.address
 		CoreContext.shared.doOnCoreQueue { _ in
-			if let contactAvatarModel = avatarListModelSnapshot.first(where: { $0.addresses.contains(address) }) {
-				conversationsListSnapshot.forEach { conversationModel in
-					if conversationModel.participantsAddress.contains(contactAvatarModel.address) {
-						if conversationModel.isGroup && conversationModel.participantsAddress.count > 1 {
-							if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAvatarModel.address) {
-								var fromAddressFriend = self.contactsManager.getFriendWithAddress(address: fromAddress)?.name
-								
-								if !lastMessage.isOutgoing && lastMessage.chatRoom != nil && !lastMessage.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
-									if fromAddressFriend == nil {
-										if let displayName = fromAddress.displayName {
-											fromAddressFriend = displayName + ": "
-										} else if let username = fromAddress.username {
-											fromAddressFriend = username + ": "
-										} else {
-											fromAddressFriend = String(fromAddress.asStringUriOnly().dropFirst(4)) + ": "
-										}
+			participantsByConversation.forEach { conversationModel, participantsAddress in
+				if participantsAddress.contains(contactAddress) {
+					if conversationModel.isGroup && participantsAddress.count > 1 {
+						if let lastMessage = conversationModel.chatRoom.lastMessageInHistory, let fromAddress = lastMessage.fromAddress, fromAddress.asStringUriOnly().contains(contactAddress) {
+							var fromAddressFriend = self.contactsManager.getFriendWithAddress(address: fromAddress)?.name
+							
+							if !lastMessage.isOutgoing && lastMessage.chatRoom != nil && !lastMessage.chatRoom!.hasCapability(mask: ChatRoom.Capabilities.OneToOne.rawValue) {
+								if fromAddressFriend == nil {
+									if let displayName = fromAddress.displayName {
+										fromAddressFriend = displayName + ": "
+									} else if let username = fromAddress.username {
+										fromAddressFriend = username + ": "
 									} else {
-										fromAddressFriend! += ": "
+										fromAddressFriend = String(fromAddress.asStringUriOnly().dropFirst(4)) + ": "
 									}
 								} else {
-									fromAddressFriend = nil
+									fromAddressFriend! += ": "
 								}
-								
-								let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
-								
-								DispatchQueue.main.async {
-									if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
-										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
-										self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
-									} else {
-										conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
-									}
-								}
+							} else {
+								fromAddressFriend = nil
 							}
-						} else if !conversationModel.isGroup, let firstParticipantAddress = conversationModel.participantsAddress.first, firstParticipantAddress.contains(contactAvatarModel.address) {
+							
+							let lastMessagePrefixTextTmp = (fromAddressFriend ?? "")
+							
 							DispatchQueue.main.async {
 								if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
-									conversationModel.avatarModel = contactAvatarModel
-									conversationModel.subject = contactAvatarModel.name
-									self.conversationsList[index].avatarModel = contactAvatarModel
+									conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
+									self.conversationsList[index].lastMessagePrefixText = lastMessagePrefixTextTmp
 								} else {
-									conversationModel.avatarModel = contactAvatarModel
-									conversationModel.subject = contactAvatarModel.name
+									conversationModel.lastMessagePrefixText = lastMessagePrefixTextTmp
 								}
+							}
+						}
+					} else if !conversationModel.isGroup, let firstParticipantAddress = participantsAddress.first, firstParticipantAddress.contains(contactAddress) {
+						DispatchQueue.main.async {
+							if let index = self.conversationsList.firstIndex(where: { $0.chatRoom === conversationModel.chatRoom }) {
+								conversationModel.avatarModel = contactAvatarModel
+								conversationModel.subject = contactAvatarModel.name
+								self.conversationsList[index].avatarModel = contactAvatarModel
+							} else {
+								conversationModel.avatarModel = contactAvatarModel
+								conversationModel.subject = contactAvatarModel.name
 							}
 						}
 					}
@@ -188,12 +193,11 @@ class ConversationsListViewModel: ObservableObject {
 					   let localAddress = chatRoom.localAddress,
 					   defaultAddress.weakEqual(address2: localAddress) {
 						let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-						let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+						let model = ConversationModel(chatRoom: chatRoom)
 						model.getContentTextMessage(chatRoom: chatRoom)
-						let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
 						DispatchQueue.main.async {
-							if index != nil {
-								self.conversationsList.remove(at: index!)
+							if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
+								self.conversationsList.remove(at: index)
 							}
 							self.conversationsList.insert(model, at: 0)
 						}
@@ -204,15 +208,13 @@ class ConversationsListViewModel: ObservableObject {
 					   let localAddress = chatRoom.localAddress,
 					   defaultAddress.weakEqual(address2: localAddress) {
 						let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-						let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+						let model = ConversationModel(chatRoom: chatRoom)
 						model.getContentTextMessage(chatRoom: chatRoom)
-						let index = self.conversationsList.firstIndex(where: { $0.id == idTmp })
-						if index != nil {
-							self.conversationsList[index!].chatMessageRemoveDelegate()
-						}
+						model.chatMessageRemoveDelegate()
 						DispatchQueue.main.async {
-							if index != nil {
-								self.conversationsList.remove(at: index!)
+							if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
+								self.conversationsList[index].chatMessageRemoveDelegate()
+								self.conversationsList.remove(at: index)
 							}
 							self.conversationsList.insert(model, at: 0)
 						}
@@ -220,10 +222,10 @@ class ConversationsListViewModel: ObservableObject {
 					}
 				}, onChatRoomRead: { (_: Core, chatRoom: ChatRoom) in
 					let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-					let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+					let model = ConversationModel(chatRoom: chatRoom)
 					model.getContentTextMessage(chatRoom: chatRoom)
-					if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
-						DispatchQueue.main.async {
+					DispatchQueue.main.async {
+						if let index = self.conversationsList.firstIndex(where: { $0.id == idTmp }) {
 							self.conversationsList.remove(at: index)
 							self.conversationsList.insert(model, at: index)
 						}
@@ -247,8 +249,10 @@ class ConversationsListViewModel: ObservableObject {
 					}
 				}, onMessageRetracted: { (core: Core, chatRoom: ChatRoom, message: ChatMessage) in
 					let idTmp = LinphoneUtils.getChatRoomId(room: chatRoom)
-					let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
-					model.getContentTextMessage(chatRoom: chatRoom)
+					DispatchQueue.main.async {
+						let model = self.conversationsList.first(where: { $0.id == idTmp }) ?? ConversationModel(chatRoom: chatRoom)
+						model.getContentTextMessage(chatRoom: chatRoom)
+					}
 					SharedMainViewModel.shared.updateUnreadMessagesCount()
 				}
 			)
@@ -275,49 +279,49 @@ class ConversationsListViewModel: ObservableObject {
 			return
 		}
 		
-		let currentList = conversationsList
-		let found = currentList.first(where: {$0.chatRoom.identifier == identifier})
-		if (found != nil) {
-			Log.warn("\(ConversationsListViewModel.TAG) Created chat room with identifier \(identifier ?? "Identifier error") is already in the list, skipping")
-			return
-		}
-		
-		if !currentFilter.isEmpty {
-			let filteredRooms = defaultAccount!.filterChatRooms(filter: currentFilter)
-			let found = filteredRooms.first(where: {$0.identifier == chatRoom.identifier})
-			if found == nil {
+		DispatchQueue.main.async {
+			let currentList = self.conversationsList
+			let found = currentList.first(where: {$0.chatRoom.identifier == identifier})
+			if (found != nil) {
+				Log.warn("\(ConversationsListViewModel.TAG) Created chat room with identifier \(identifier ?? "Identifier error") is already in the list, skipping")
 				return
 			}
-		}
-		
-		var newList: [ConversationModel] = []
-		let model = ConversationModel(chatRoom: chatRoom)
-		newList.append(model)
-		newList.append(contentsOf: currentList)
-		Log.info("\(ConversationsListViewModel.TAG) Adding chat room with identifier \(identifier ?? "Identifier error") to list")
-		
-		DispatchQueue.main.async {
+			
+			if !self.currentFilter.isEmpty {
+				let filteredRooms = defaultAccount!.filterChatRooms(filter: self.currentFilter)
+				let found = filteredRooms.first(where: {$0.identifier == chatRoom.identifier})
+				if found == nil {
+					return
+				}
+			}
+			
+			var newList: [ConversationModel] = []
+			let model = ConversationModel(chatRoom: chatRoom)
+			newList.append(model)
+			newList.append(contentsOf: currentList)
+			Log.info("\(ConversationsListViewModel.TAG) Adding chat room with identifier \(identifier ?? "Identifier error") to list")
+			
 			self.conversationsList = newList
 		}
 	}
-	
+
 	private func removeChatRoom(chatRoom: ChatRoom) {
-		let currentList = conversationsList
 		let identifier = chatRoom.identifier
-		let foundIndex = currentList.firstIndex(where: {$0.chatRoom.identifier == identifier})
-		if foundIndex != nil {
-			var newList: [ConversationModel] = []
-			newList.append(contentsOf: currentList)
-			newList.remove(at: foundIndex!)
-			Log.info("\(ConversationsListViewModel.TAG) Removing chat room with identifier \(identifier ?? "Identifier error") from list")
-			
-			DispatchQueue.main.async {
+		DispatchQueue.main.async {
+			let currentList = self.conversationsList
+			let foundIndex = currentList.firstIndex(where: {$0.chatRoom.identifier == identifier})
+			if foundIndex != nil {
+				var newList: [ConversationModel] = []
+				newList.append(contentsOf: currentList)
+				newList.remove(at: foundIndex!)
+				Log.info("\(ConversationsListViewModel.TAG) Removing chat room with identifier \(identifier ?? "Identifier error") from list")
+				
 				self.conversationsList = newList
+			} else {
+				Log.warn(
+					"\(ConversationsListViewModel.TAG) Failed to find item in list matching deleted chat room identifier \(identifier ?? "Identifier error")"
+				)
 			}
-		} else {
-			Log.warn(
-				"\(ConversationsListViewModel.TAG) Failed to find item in list matching deleted chat room identifier \(identifier ?? "Identifier error")"
-			)
 		}
 	}
 	
