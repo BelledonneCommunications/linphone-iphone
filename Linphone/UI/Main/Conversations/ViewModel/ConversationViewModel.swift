@@ -522,33 +522,28 @@ class ConversationViewModel: ObservableObject {
 						}
 					}
 				}, onFileTransferProgressIndication: { (message: ChatMessage, content: Content, offset: Int, total: Int) in
-					if let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) {
-						
-						let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
-						guard filePathSep.count > 1 else { return }
-						let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
-						if let contentTmp = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.first(where: {$0.full == path || ($0.name == content.name && $0.transferProgressIndication < 100)}) {
-							DispatchQueue.main.async {
-								self.attachmentTransferInProgress = contentTmp
-								self.attachmentTransferInProgress!.transferProgressIndication = ((offset * 100) / total)
-							}
-							
-							if ((offset * 100) / total) >= 100 {
-								DispatchQueue.main.async {
-									self.attachmentTransferInProgress = nil
-								}
+					let filePathSep = content.filePath!.components(separatedBy: "/Library/Images/")
+					guard filePathSep.count > 1 else { return }
+					let path = URL(string: self.getNewFilePath(name: filePathSep[1]))
+					let progress = (offset * 100) / total
+					DispatchQueue.main.async {
+						guard let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == message.messageId}) else { return }
+						if let attachmentIndex = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.firstIndex(where: {$0.full == path || ($0.name == content.name && $0.transferProgressIndication < 100)}) {
+							self.conversationMessagesSection[0].rows[indexMessage].message.attachments[attachmentIndex].transferProgressIndication = progress
+							if progress >= 100 {
+								self.attachmentTransferInProgress = nil
+							} else {
+								self.attachmentTransferInProgress = self.conversationMessagesSection[0].rows[indexMessage].message.attachments[attachmentIndex]
 							}
 						}
 					}
 				}, onEphemeralMessageTimerStarted: { (message: ChatMessage) in
-					if !self.conversationMessagesSection.isEmpty,
-					   !self.conversationMessagesSection[0].rows.isEmpty,
-					   let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.eventModel.eventLogId == message.messageId }),
-					   indexMessage < self.conversationMessagesSection[0].rows.count {
-						
-						let ephemeralExpireTimeTmp = message.ephemeralExpireTime
-						
-						DispatchQueue.main.async {
+					let ephemeralExpireTimeTmp = message.ephemeralExpireTime
+					DispatchQueue.main.async {
+						if !self.conversationMessagesSection.isEmpty,
+						   !self.conversationMessagesSection[0].rows.isEmpty,
+						   let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: { $0.eventModel.eventLogId == message.messageId }),
+						   indexMessage < self.conversationMessagesSection[0].rows.count {
 							self.conversationMessagesSection[0].rows[indexMessage].message.ephemeralExpireTime = ephemeralExpireTimeTmp
 						}
 					}
@@ -2321,6 +2316,21 @@ class ConversationViewModel: ObservableObject {
 		// Log.debug("[ConversationViewModel] Starting downloading content for file \(model.fileName)")
 		if self.sharedMainViewModel.displayedConversation != nil {
 			if let contentName = content.name {
+				if content.isFile {
+					Log.warn("[ConversationViewModel] Content \(contentName) is already a FileContent (downloaded by SDK), updating attachment. MessageID=\(chatMessage.messageId)")
+					self.markAttachmentAsDownloaded(chatMessage: chatMessage, content: content)
+					return
+				}
+				if let existingPath = content.filePath, !existingPath.isEmpty {
+					if FileManager.default.fileExists(atPath: existingPath) {
+						Log.warn("[ConversationViewModel] File \(contentName) already downloaded at \(existingPath), skipping re-download. MessageID=\(chatMessage.messageId)")
+						self.markAttachmentAsDownloaded(chatMessage: chatMessage, content: content)
+						return
+					}
+					Log.warn("[ConversationViewModel] File \(contentName) download already in progress (filePath set but file not yet on disk), skipping. MessageID=\(chatMessage.messageId)")
+					return
+				}
+
 				let baseURL = FileUtil.sharedContainerUrl()
 					.appendingPathComponent("Library")
 					.appendingPathComponent("Images")
@@ -2337,9 +2347,29 @@ class ConversationViewModel: ObservableObject {
 				Log.info(
 					"[ConversationViewModel] File \(contentName) will be downloaded at \(content.filePath ?? "NIL")"
 				)
+				// Core may have been stopped/started (background/foreground) since this message was
+				// displayed: re-attach the delegate so file transfer callbacks update the bubble.
+				self.addChatMessageDelegate(message: chatMessage)
 				self.sharedMainViewModel.displayedConversation!.downloadContent(chatMessage: chatMessage, content: content)
 			} else {
 				Log.error("[ConversationViewModel] Content name is null, can't download it!")
+			}
+		}
+	}
+	
+	private func markAttachmentAsDownloaded(chatMessage: ChatMessage, content: Content) {
+		let typeTmp = self.determineAttachmentType(content: content)
+		let filePathSep = content.filePath?.components(separatedBy: "/Library/Images/")
+		let fileName = filePathSep?.count ?? 0 > 1 ? filePathSep![1] : content.name ?? ""
+		let fullURL = URL(string: self.getNewFilePath(name: fileName))
+		DispatchQueue.main.async {
+			guard let indexMessage = self.conversationMessagesSection[0].rows.firstIndex(where: {$0.eventModel.eventLogId == chatMessage.messageId}) else { return }
+			if let attachmentIndex = self.conversationMessagesSection[0].rows[indexMessage].message.attachments.firstIndex(where: {$0.name == content.name}) {
+				self.conversationMessagesSection[0].rows[indexMessage].message.attachments[attachmentIndex].transferProgressIndication = 100
+				self.conversationMessagesSection[0].rows[indexMessage].message.attachments[attachmentIndex].type = typeTmp
+				if let url = fullURL {
+					self.conversationMessagesSection[0].rows[indexMessage].message.attachments[attachmentIndex].full = url
+				}
 			}
 		}
 	}
