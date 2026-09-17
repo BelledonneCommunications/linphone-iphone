@@ -81,8 +81,8 @@ public struct Attachment: Codable, Identifiable, Hashable {
 	public let id: String
 	public let name: String
 	public let thumbnail: URL
-	public let full: URL
-	public let type: AttachmentType
+	public var full: URL
+	public var type: AttachmentType
 	public let duration: Int
 	public let size: Int
 	public var transferProgressIndication: Int
