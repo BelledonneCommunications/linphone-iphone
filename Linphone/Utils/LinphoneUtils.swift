@@ -182,4 +182,8 @@ class LinphoneUtils: NSObject {
 	public class func isGroupChatAvailable(core: Core) -> Bool {
 		return core.defaultAccount?.params?.conferenceFactoryUri != nil
 	}
+	
+	public class func isCallLogMissed(callLog: CallLog) -> Bool {
+		return callLog.dir == .Incoming && (callLog.status == .Missed || callLog.status == .Aborted || callLog.status == .EarlyAborted)
+	}
 }

@@ -30,6 +30,8 @@ class HistoryModel: ObservableObject, Identifiable {
 	
 	var callLog: CallLog
 	
+	let isMissed: Bool
+	
 	@Published var callLogId: String
 	@Published var subject: String
 	@Published var isConf: Bool
@@ -45,6 +47,7 @@ class HistoryModel: ObservableObject, Identifiable {
 	
 	init(callLog: CallLog) {
 		self.callLog = callLog
+		self.isMissed = LinphoneUtils.isCallLogMissed(callLog: callLog)
 		self.callLogId = ""
 		self.subject = ""
 		self.isConf = false

@@ -388,6 +388,9 @@
 "history_group_call_start_dialog_subject_hint" = "Nom de l'appel de groupe";
 "history_list_empty_history" = "Aucun appel dans votre historique…";
 "history_list_empty_with_filter_history" = "Aucune entrée ne correspond à votre recherche";
+"history_list_empty_missed_history" = "Aucun appel manqué…";
+"history_list_filter_all" = "Tous les appels";
+"history_list_filter_missed" = "Manqués";
 "history_title" = "Historique d’appel";
 "IM_MSG" = "Vous avez reçu un message";
 "Interoperable" = "Interoperable";

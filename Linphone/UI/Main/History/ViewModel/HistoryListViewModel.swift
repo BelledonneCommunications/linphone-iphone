@@ -32,6 +32,7 @@ class HistoryListViewModel: ObservableObject {
 	var callLogCoreDelegate: CoreDelegate?
 	
 	@Published var callLogsFilter = ""
+	@Published var missedCallsOnly = false
 	
 	@Published var selectedCall: HistoryModel?
 	
@@ -54,42 +55,30 @@ class HistoryListViewModel: ObservableObject {
 				? (account?.callLogs ?? core.callLogs)
 				: core.callLogs
 			
-			var callLogsBis: [HistoryModel] = []
 			var callLogsTmpBis: [HistoryModel] = []
 			
 			logs.forEach { log in
-				let history = HistoryModel(callLog: log)
-				callLogsBis.append(history)
-				callLogsTmpBis.append(history)
+				callLogsTmpBis.append(HistoryModel(callLog: log))
 			}
 			
 			DispatchQueue.main.async {
-				self.callLogs.removeAll()
-				self.callLogsTmp.removeAll()
-				
-				self.callLogs = callLogsBis
 				self.callLogsTmp = callLogsTmpBis
+				self.applyCallLogsFilters()
 			}
 			
 			self.callLogCoreDelegate = CoreDelegateStub(onCallLogUpdated: { (_: Core, _: CallLog) in
 				let account = core.defaultAccount
 				let logs = account?.callLogs != nil ? account!.callLogs : core.callLogs
 				
-				var callLogsBis: [HistoryModel] = []
 				var callLogsTmpBis: [HistoryModel] = []
 				
 				logs.forEach { log in
-					let history = HistoryModel(callLog: log)
-					callLogsBis.append(history)
-					callLogsTmpBis.append(history)
+					callLogsTmpBis.append(HistoryModel(callLog: log))
 				}
 				
 				DispatchQueue.main.async {
-					self.callLogs.removeAll()
-					self.callLogsTmp.removeAll()
-					
-					self.callLogs = callLogsBis
 					self.callLogsTmp = callLogsTmpBis
+					self.applyCallLogsFilters()
 				}
 				
                 SharedMainViewModel.shared.updateMissedCallsCount()
@@ -174,17 +163,26 @@ class HistoryListViewModel: ObservableObject {
 	
 	func filterCallLogs(filter: String) {
 		callLogsFilter = filter
-		callLogs.removeAll()
-		callLogsTmp.forEach { callLog in
-			if callLog.addressName.lowercased().contains(filter.lowercased()) {
-				callLogs.append(callLog)
-			}
-		}
+		applyCallLogsFilters()
 	}
 	
 	func resetFilterCallLogs() {
 		callLogsFilter = ""
-		callLogs = callLogsTmp
+		applyCallLogsFilters()
+	}
+	
+	func setMissedCallsOnly(_ missedOnly: Bool) {
+		guard missedCallsOnly != missedOnly else { return }
+		missedCallsOnly = missedOnly
+		applyCallLogsFilters()
+	}
+	
+	func applyCallLogsFilters() {
+		let filter = callLogsFilter.lowercased()
+		let missedOnly = missedCallsOnly
+		callLogs = callLogsTmp.filter { callLog in
+			(!missedOnly || callLog.isMissed) && (filter.isEmpty || callLog.addressName.lowercased().contains(filter))
+		}
 	}
 	
 	func removeCallLogs() {
@@ -209,17 +207,14 @@ class HistoryListViewModel: ObservableObject {
 	}
 	
 	func removeCallLogsWithAddress() {
-		self.callLogs.filter { $0.address == callLogsAddressToDelete || $0.address == callLogsAddressToDelete }.forEach { historyModel in
+		self.callLogsTmp.filter { $0.address == callLogsAddressToDelete }.forEach { historyModel in
 			removeCallLog(historyModel: historyModel)
 		}
 	}
 	
 	func removeCallLog(historyModel: HistoryModel) {
-		let index = self.callLogs.firstIndex(where: {$0.id == historyModel.id})
-		self.callLogs.remove(at: index!)
-		
-		let indexTmp = self.callLogsTmp.firstIndex(where: {$0.id == historyModel.id})
-		self.callLogsTmp.remove(at: indexTmp!)
+		self.callLogsTmp.removeAll(where: { $0.id == historyModel.id })
+		self.callLogs.removeAll(where: { $0.id == historyModel.id })
 		
 		coreContext.doOnCoreQueue { core in
 			core.removeCallLog(callLog: historyModel.callLog)

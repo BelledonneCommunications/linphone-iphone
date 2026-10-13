@@ -391,6 +391,9 @@
 "history_group_call_start_dialog_subject_hint" = "Group call subject";
 "history_list_empty_history" = "No call for the moment…";
 "history_list_empty_with_filter_history" = "No entries match your search";
+"history_list_empty_missed_history" = "No missed call for the moment…";
+"history_list_filter_all" = "All calls";
+"history_list_filter_missed" = "Missed";
 "history_title" = "Call History";
 "IM_MSG" = "You have received a message";
 "Interoperable" = "Interoperable";
