@@ -33,13 +33,15 @@ struct HistoryListFragment: View {
 	@Binding var text: String
 	
 	var body: some View {
-		VStack {
+		VStack(spacing: 0) {
+			callLogsFilterTabs
+			
 			List {
 				ForEach(historyListViewModel.callLogs) { historyModel in
 					HistoryRow(historyModel: historyModel, showingSheet: $showingSheet)
 				}
 				
-				if !historyListViewModel.callLogsFilter.isEmpty {
+				if !historyListViewModel.callLogsFilter.isEmpty && !historyListViewModel.missedCallsOnly {
 					if !contactsManager.lastSearch.isEmpty {
 						HStack(alignment: .center) {
 							Text("contacts_list_all_contacts_title")
@@ -69,7 +71,7 @@ struct HistoryListFragment: View {
 			}
 			.safeAreaInset(edge: .top, content: {
 				Spacer()
-					.frame(height: 12)
+					.frame(height: 6)
 			})
 			.listStyle(.plain)
 			.overlay(
@@ -77,6 +79,7 @@ struct HistoryListFragment: View {
 					if historyListViewModel.callLogs.isEmpty &&
 						(
 							historyListViewModel.callLogsFilter.isEmpty ||
+							historyListViewModel.missedCallsOnly ||
 							(!historyListViewModel.callLogsFilter.isEmpty &&
 							 contactsManager.lastSearch.isEmpty &&
 							 contactsManager.lastSearchSuggestions.isEmpty)
@@ -87,7 +90,7 @@ struct HistoryListFragment: View {
 							.scaledToFit()
 							.clipped()
 							.padding(.all)
-						Text(!text.isEmpty ? "list_filter_no_result_found" : "history_list_empty_history")
+						Text(!text.isEmpty ? "list_filter_no_result_found" : (historyListViewModel.missedCallsOnly ? "history_list_empty_missed_history" : "history_list_empty_history"))
 							.default_text_style_800(styleSize: 16)
 							.multilineTextAlignment(.center)
 						Spacer()
@@ -100,10 +103,47 @@ struct HistoryListFragment: View {
 				if !historyListViewModel.callLogsFilter.isEmpty {
 					historyListViewModel.resetFilterCallLogs()
 				}
+				historyListViewModel.setMissedCallsOnly(false)
 			}
+		}
+		.onAppear {
+			historyListViewModel.setMissedCallsOnly(false)
 		}
 		.navigationTitle("")
 		.navigationBarHidden(true)
+	}
+	
+	var callLogsFilterTabs: some View {
+		HStack(spacing: 0) {
+			callLogsFilterTab(title: "history_list_filter_all", isSelected: !historyListViewModel.missedCallsOnly) {
+				historyListViewModel.setMissedCallsOnly(false)
+			}
+			
+			callLogsFilterTab(title: "history_list_filter_missed", isSelected: historyListViewModel.missedCallsOnly) {
+				historyListViewModel.setMissedCallsOnly(true)
+			}
+		}
+		.background(Color.grayMain2c100)
+		.clipShape(RoundedRectangle(cornerRadius: 6))
+		.padding(.horizontal, 20)
+		.padding(.top, 12)
+	}
+	
+	func callLogsFilterTab(title: LocalizedStringKey, isSelected: Bool, action: @escaping () -> Void) -> some View {
+		Button(action: action) {
+			Text(title)
+				.font(Font.custom("NotoSans-Bold", size: 14))
+				.foregroundStyle(isSelected ? Color.white : Color.grayMain2c600)
+				.lineLimit(1)
+				.minimumScaleFactor(0.8)
+				.frame(maxWidth: .infinity)
+				.frame(height: 32)
+				.background(isSelected ? Color.orangeMain500 : Color.clear)
+				.clipShape(RoundedRectangle(cornerRadius: 6))
+				.contentShape(Rectangle())
+		}
+		.buttonStyle(.plain)
+		.accessibilityAddTraits(isSelected ? .isSelected : [])
 	}
 	
 	var suggestionsList: some View {

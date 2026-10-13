@@ -351,7 +351,7 @@ struct HistoryContactFragment: View {
 							.background(Color.gray100)
 							
 							VStack(spacing: 0) {
-								let callLogsFilter = historyListViewModel.callLogs.filter({ $0.address == historyModel.address })
+								let callLogsFilter = historyListViewModel.callLogsTmp.filter({ $0.address == historyModel.address })
 								
 								ForEach(0..<callLogsFilter.count, id: \.self) { index in
 									HStack {
