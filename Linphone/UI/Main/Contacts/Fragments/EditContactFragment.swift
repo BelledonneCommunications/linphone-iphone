@@ -138,16 +138,32 @@ struct EditContactFragment: View {
 						.resizable()
 						.foregroundStyle(
 							editContactViewModel.firstName.isEmpty
-							? Color.orangeMain100
-							: Color.orangeMain500
+								&& editContactViewModel.lastName.isEmpty
+								&& editContactViewModel.company.isEmpty
+								? Color.orangeMain100
+								: Color.orangeMain500
 						)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 						.padding(.top, 2)
 						.onTapGesture {
-							guard !editContactViewModel.firstName.isEmpty else { return }
+							guard !editContactViewModel.firstName.isEmpty
+								|| !editContactViewModel.lastName.isEmpty
+								|| !editContactViewModel.company.isEmpty else {
+								ToastViewModel.shared.show("Failed_contact_needs_name", duration: 5.0)
+								return
+							}
+							let hasInvalidAddress = editContactViewModel.sipAddresses
+								.filter { !$0.isEmpty }
+								.contains { (try? Factory.Instance.createAddress(addr: $0)) == nil }
+							guard !hasInvalidAddress else {
+								ToastViewModel.shared.show("Failed_contact_invalid_sip_address", duration: 5.0)
+								return
+							}
 							addOrEditFriend()
 						}
+						.accessibilityIdentifier("contact_editor_save_button")
+						.accessibilityAddTraits(.isButton)
 				}
 				.frame(maxWidth: .infinity)
 				.frame(height: 50)
@@ -276,7 +292,7 @@ struct EditContactFragment: View {
 							.background(Color.gray100)
 							
 							VStack(alignment: .leading) {
-								Text(String(localized: "contact_editor_first_name") + "*")
+								Text("contact_editor_first_name")
 									.default_text_style_700(styleSize: 15)
 									.padding(.bottom, -5)
 								
@@ -294,6 +310,7 @@ struct EditContactFragment: View {
 									)
 									.padding(.bottom)
 									.focused($isFirstNameFocused)
+									.accessibilityIdentifier("contact_editor_first_name_field")
 							}
 							
 							VStack(alignment: .leading) {
@@ -315,6 +332,7 @@ struct EditContactFragment: View {
 									)
 									.padding(.bottom)
 									.focused($isLastNameFocused)
+									.accessibilityIdentifier("contact_editor_last_name_field")
 							}
 							
 							VStack(alignment: .leading) {
@@ -328,6 +346,7 @@ struct EditContactFragment: View {
 											.default_text_style(styleSize: 15)
 											.disableAutocorrection(true)
 											.autocapitalization(.none)
+											.keyboardType(.emailAddress)
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
@@ -339,10 +358,12 @@ struct EditContactFragment: View {
 													.stroke(isSIPAddressFocused == index ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
 											)
 											.focused($isSIPAddressFocused, equals: index)
+											.accessibilityIdentifier("contact_editor_sip_address_field_\(index)")
 											.onChange(of: editContactViewModel.sipAddresses[index]) { newValue in
 												if !newValue.isEmpty && index == editContactViewModel.sipAddresses.count - 1 {
 													editContactViewModel.sipAddresses.append("")
 												}
+												showInvalidAddressToastIfNeeded()
 											}
 										
 										Button(action: {
@@ -438,6 +459,7 @@ struct EditContactFragment: View {
 									)
 									.padding(.bottom)
 									.focused($isCompanyFocused)
+								.accessibilityIdentifier("contact_editor_company_field")
 							}
 							
 							VStack(alignment: .leading) {
@@ -504,6 +526,26 @@ struct EditContactFragment: View {
 			}
 		}
 	}
+
+	// Debounced check of the typed SIP addresses: typing a valid address
+	// goes through invalid intermediate states ("sip", "sip:alice", ...)
+	// that must not trigger the toast, so it only fires once typing has
+	// been still for a moment.
+	@State private var invalidAddressToastTask: Task<Void, Never>?
+
+	private func showInvalidAddressToastIfNeeded() {
+		invalidAddressToastTask?.cancel()
+		invalidAddressToastTask = Task {
+			try? await Task.sleep(nanoseconds: 800_000_000)
+			guard !Task.isCancelled else { return }
+			let hasInvalidAddress = editContactViewModel.sipAddresses
+				.filter { !$0.isEmpty }
+				.contains { (try? Factory.Instance.createAddress(addr: $0)) == nil }
+			if hasInvalidAddress {
+				ToastViewModel.shared.show("Failed_contact_invalid_sip_address", duration: 3.0)
+			}
+		}
+	}
 	
 	func addOrEditFriend() {
 		CoreContext.shared.doOnCoreQueue { core in
@@ -537,15 +579,21 @@ struct EditContactFragment: View {
 				
 			} else {
 				// Case: creating new friend or updating with a new image
+				let displayName = ContactsManager.contactDisplayName(
+					firstName: editContactViewModel.firstName,
+					lastName: editContactViewModel.lastName,
+					organization: editContactViewModel.company
+				)
 				let imageToSave = selectedImage ?? ContactsManager.shared.textToImage(
 					firstName: editContactViewModel.firstName,
-					lastName: editContactViewModel.lastName
+					lastName: editContactViewModel.lastName,
+					organization: editContactViewModel.company
 				)
 				let prefix = selectedImage == nil ? "-default" : ""
 				
 				saveImageThreadSafe(
 					image: imageToSave,
-					name: editContactViewModel.firstName + editContactViewModel.lastName,
+					name: displayName,
 					prefix: prefix,
 					contact: newContact,
 					existingFriend: existingFriend,

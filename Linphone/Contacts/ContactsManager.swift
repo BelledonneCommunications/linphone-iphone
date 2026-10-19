@@ -58,6 +58,21 @@ final class ContactsManager: ObservableObject {
 	private var magicSearchDelegate: MagicSearchDelegate?
 	
 	private init() {}
+
+	// Display name of a contact: first and last name when available,
+	// falling back to the organization name when neither is set.
+	static func contactDisplayName(firstName: String, lastName: String, organization: String) -> String {
+		let fullName = [firstName, lastName]
+			.map { $0.trimmingCharacters(in: .whitespaces) }
+			.filter { !$0.isEmpty }
+			.joined(separator: " ")
+
+		if !fullName.isEmpty {
+			return fullName
+		}
+
+		return organization.trimmingCharacters(in: .whitespaces)
+	}
 	
 	func fetchContacts() {
 		self.coreContext.doOnCoreQueue { core in
@@ -196,7 +211,7 @@ final class ContactsManager: ObservableObject {
 		}
 	}
 	
-	func textToImage(firstName: String?, lastName: String?) -> UIImage {
+	func textToImage(firstName: String?, lastName: String?, organization: String? = nil) -> UIImage {
 		let firstParts = firstName?
 			.split(separator: " ")
 			.map(String.init) ?? []
@@ -205,6 +220,7 @@ final class ContactsManager: ObservableObject {
 		let secondInitial = firstParts.count > 1 ? firstParts[1].first.map(String.init) ?? "" : ""
 
 		let lastInitial = lastName?.first.map(String.init) ?? ""
+		let organizationInitial = organization?.split(separator: " ").first?.first.map(String.init) ?? ""
 
 		let textToDisplay: String
 
@@ -212,8 +228,10 @@ final class ContactsManager: ObservableObject {
 			textToDisplay = firstInitial.uppercased() + secondInitial.uppercased()
 		} else if !firstInitial.isEmpty {
 			textToDisplay = firstInitial.uppercased() + lastInitial.uppercased()
-		} else {
+		} else if !lastInitial.isEmpty {
 			textToDisplay = lastInitial.uppercased()
+		} else {
+			textToDisplay = organizationInitial.uppercased()
 		}
 
 		let size = CGSize(width: 200, height: 200)
@@ -319,7 +337,12 @@ final class ContactsManager: ObservableObject {
 				friend.edit()
 				
 				friend.nativeUri = contact.identifier
-				try friend.setName(newValue: contact.firstName + " " + contact.lastName)
+				let displayName = ContactsManager.contactDisplayName(
+					firstName: contact.firstName,
+					lastName: contact.lastName,
+					organization: contact.organizationName
+				)
+				try friend.setName(newValue: displayName.isEmpty ? " " : displayName)
 				
 				// Safely update vCard
 				if let vcard = friend.vcard {

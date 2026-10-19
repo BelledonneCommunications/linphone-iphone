@@ -182,6 +182,8 @@
 "connection_error_for_non_default_account" = "Account(s) connection error";
 "contact_call_action" = "Call";
 "contact_deleted_toast" = "Contact has been removed";
+"contact_needs_name_toast" = "A contact must have a name";
+"contact_invalid_sip_address_toast" = "The SIP address is invalid";
 "contact_details_actions_title" = "Other actions";
 "contact_details_add_to_favourites" = "Add to favourites";
 "contact_details_delete" = "Delete";

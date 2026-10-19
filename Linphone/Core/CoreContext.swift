@@ -185,6 +185,10 @@ class CoreContext: ObservableObject {
 
 			MDMManager.shared.applyMdmConfigToCore(core: self.mCore)
 			self.startObservingMDMConfigurationUpdates()
+
+			// Contacts without any SIP address or phone number must still be
+			// returned by the magic search so they show up in the contacts list.
+			self.mCore.config?.setBool(section: "magic_search", key: "return_empty_friends", value: true)
 			
 			
 			self.mCore.callkitEnabled = true

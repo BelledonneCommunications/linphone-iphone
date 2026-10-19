@@ -49,6 +49,7 @@ struct ContactsView: View {
 						
 					}
 					.padding()
+					.accessibilityIdentifier("contacts_add_contact_button")
 				}
 				
 				// For testing crashlytics

@@ -74,11 +74,20 @@ final class MagicSearchSingleton: ObservableObject {
 			
 			magicSearch.lastSearch.forEach { searchResult in
                     if searchResult.friend != nil && (searchResult.friend?.friendList?.displayName == self.nativeAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.linphoneAddressBookFriendList || searchResult.friend?.friendList?.displayName == self.tempRemoteAddressBookFriendList) {
+					// Deduplicate per friend, not per address: distinct friends
+					// may share the same SIP address and must all be visible.
 					if let address = searchResult.address,
-					   !lastSearchFriend.contains(where: { $0.address?.weakEqual(address2: address) ?? false }) {
+					   !lastSearchFriend.contains(where: { $0.friend === searchResult.friend
+						&& ($0.address?.weakEqual(address2: address) ?? false) }) {
 						lastSearchFriend.append(searchResult)
 					} else if let phoneNumber = searchResult.phoneNumber,
-							  !lastSearchFriend.contains(where: { $0.phoneNumber == phoneNumber }) {
+							  !lastSearchFriend.contains(where: { $0.friend === searchResult.friend
+								&& $0.phoneNumber == phoneNumber }) {
+						lastSearchFriend.append(searchResult)
+					} else if searchResult.address == nil && searchResult.phoneNumber == nil
+						&& !lastSearchFriend.contains(where: { $0.friend === searchResult.friend }) {
+						// Friend matching the filter but without any address or phone
+						// number: keep it so it is still visible in the contacts list.
 						lastSearchFriend.append(searchResult)
 					}
 				} else if searchResult.friend != nil && (searchResult.hasSourceFlag(source: .RemoteCardDAV) || searchResult.friend?.friendList?.type == .CardDAV || searchResult.hasSourceFlag(source: .LdapServers)) {
