@@ -23,6 +23,28 @@ struct ToastView: View {
 	
 	@ObservedObject private var toastViewModel = ToastViewModel.shared
 	
+	// The toast container carries a tap gesture (tap to dismiss), which
+	// makes it a single accessibility element whose children are not
+	// exposed individually. The identifier is therefore set on the
+	// container so UI tests can find the toast.
+	static func toastAccessibilityIdentifier(for message: String) -> String {
+		switch message {
+		case "Failed_contact_needs_name":
+			return "toast_contact_needs_name"
+		case "Failed_contact_invalid_sip_address":
+			return "toast_invalid_sip_address"
+		case "Registration_failed":
+			return "login_error_label"
+		case "Failed_push_notification_not_received_error",
+			 "Failed_account_register_unexpected_error":
+			return "register_error_label"
+		case let msg where msg.contains("Error: "):
+			return "register_error_label"
+		default:
+			return "toast"
+		}
+	}
+	
 	var body: some View {
 		VStack {
 			if let toast = toastViewModel.toast {
@@ -84,6 +106,22 @@ struct ToastView: View {
 							.foregroundStyle(Color.greenSuccess500)
 							.default_text_style(styleSize: 15)
 							.padding(8)
+						
+					case "Failed_contact_needs_name":
+						Text("contact_needs_name_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+							.accessibilityIdentifier("toast_contact_needs_name")
+						
+					case "Failed_contact_invalid_sip_address":
+						Text("contact_invalid_sip_address_toast")
+							.multilineTextAlignment(.center)
+							.foregroundStyle(Color.redDanger500)
+							.default_text_style(styleSize: 15)
+							.padding(8)
+							.accessibilityIdentifier("toast_invalid_sip_address")
 						
 					case "Success_remove_call_logs":
 						Text("call_history_deleted_toast")
@@ -486,6 +524,8 @@ struct ToastView: View {
 						}
 					}
 				}
+				.accessibilityElement(children: .combine)
+				.accessibilityIdentifier(ToastView.toastAccessibilityIdentifier(for: toast.message))
 				
 				Spacer()
 			}

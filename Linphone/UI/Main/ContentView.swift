@@ -352,6 +352,7 @@ struct ContentView: View {
 											}
 										})
 										.padding(.top)
+										.accessibilityIdentifier("bottom_bar_contacts_button")
 										
 										Spacer()
 										
@@ -1000,6 +1001,7 @@ struct ContentView: View {
 									})
 									.padding(.top)
 									.frame(width: 66)
+									.accessibilityIdentifier("bottom_bar_contacts_button")
 									
 									Spacer()
 									

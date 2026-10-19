@@ -130,6 +130,7 @@ struct ContactInnerFragment: View {
 												.default_text_style(styleSize: 14)
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
+												.accessibilityIdentifier("contact_details_name")
 											
 											Text(contactAvatarModel.lastPresenceInfo)
 												.foregroundStyle(contactAvatarModel.lastPresenceInfo == "Online"
