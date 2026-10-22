@@ -98,34 +98,21 @@ struct EditContactFragment: View {
 						.padding(.top, 2)
 						.padding(.leading, -10)
 						.onTapGesture {
-							if editContactViewModel.selectedEditFriend == nil
-								&& editContactViewModel.firstName.isEmpty
-								&& editContactViewModel.lastName.isEmpty
-								&& editContactViewModel.sipAddresses.first?.isEmpty ?? true
-								&& editContactViewModel.phoneNumbers.first?.isEmpty ?? true
-								&& editContactViewModel.company.isEmpty
-								&& editContactViewModel.jobTitle.isEmpty {
+							if editContactViewModel.hasUnsavedChanges() {
+								isShowDismissPopup.toggle()
+							} else if editContactViewModel.selectedEditFriend == nil {
 								delayColorDismiss()
 								withAnimation {
 									isShowEditContactFragment.toggle()
 								}
-							} else if editContactViewModel.selectedEditFriend == nil {
-								isShowDismissPopup.toggle()
 							} else {
-								if editContactViewModel.firstName.isEmpty
-									&& editContactViewModel.lastName.isEmpty
-									&& editContactViewModel.sipAddresses.first?.isEmpty ?? true
-									&& editContactViewModel.phoneNumbers.first?.isEmpty ?? true
-									&& editContactViewModel.company.isEmpty
-									&& editContactViewModel.jobTitle.isEmpty {
-									withAnimation {
-										dismiss()
-									}
-								} else {
-									isShowDismissPopup.toggle()
+								withAnimation {
+									dismiss()
 								}
 							}
-						}
+							}
+							.accessibilityIdentifier("contact_editor_back_button")
+							.accessibilityAddTraits(.isButton)
 					
 					Text(editContactViewModel.selectedEditFriend == nil ? "contact_new_title" : "contact_edit_title")
 						.multilineTextAlignment(.leading)
@@ -382,6 +369,7 @@ struct EditContactFragment: View {
 												.padding(.all, 10)
 										}
 										.disabled(editContactViewModel.sipAddresses[index].isEmpty && index == editContactViewModel.sipAddresses.count - 1)
+										.accessibilityIdentifier("contact_editor_remove_sip_address_button_\(index)")
 									}
 								}
 							}

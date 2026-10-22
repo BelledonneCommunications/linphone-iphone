@@ -32,6 +32,16 @@ class EditContactViewModel: ObservableObject {
 	@Published var company: String = ""
 	@Published var jobTitle: String = ""
 	
+	// Values as loaded from the edited contact, used to tell an actual
+	// modification apart from the editor simply showing the existing
+	// contact (whose fields are never empty).
+	private var initialFirstName: String = ""
+	private var initialLastName: String = ""
+	private var initialCompany: String = ""
+	private var initialJobTitle: String = ""
+	private var initialSipAddresses: [String] = []
+	private var initialPhoneNumbers: [String] = []
+	
 	init(contactAvatarModel: ContactAvatarModel? = nil) {
 		self.selectedEditFriend = contactAvatarModel
 		resetValues()
@@ -72,7 +82,37 @@ class EditContactViewModel: ObservableObject {
 				
 				self.sipAddresses.append("")
 				self.phoneNumbers.append("")
+				
+				self.initialFirstName = self.firstName
+				self.initialLastName = self.lastName
+				self.initialCompany = self.company
+				self.initialJobTitle = self.jobTitle
+				self.initialSipAddresses = self.sipAddresses.filter { !$0.isEmpty }
+				self.initialPhoneNumbers = self.phoneNumbers.filter { !$0.isEmpty }
 			}
 		}
+	}
+	
+	// True when the user typed something since the editor was opened.
+	// For a contact being created, any filled field counts as a change.
+	// For an existing contact, the fields are compared with the values
+	// it was opened with, so that leaving an untouched contact does not
+	// count as unsaved changes.
+	func hasUnsavedChanges() -> Bool {
+		let hasContent = !firstName.isEmpty
+			|| !lastName.isEmpty
+			|| !company.isEmpty
+			|| !jobTitle.isEmpty
+			|| sipAddresses.contains(where: { !$0.isEmpty })
+			|| phoneNumbers.contains(where: { !$0.isEmpty })
+		
+		guard selectedEditFriend != nil else { return hasContent }
+		
+		return firstName != initialFirstName
+			|| lastName != initialLastName
+			|| company != initialCompany
+			|| jobTitle != initialJobTitle
+			|| sipAddresses.filter { !$0.isEmpty } != initialSipAddresses
+			|| phoneNumbers.filter { !$0.isEmpty } != initialPhoneNumbers
 	}
 }
