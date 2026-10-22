@@ -108,6 +108,7 @@ struct ContactInnerFragment: View {
 												isShowEditContactFragmentInContactDetails = true
 											}
 										)
+										.accessibilityIdentifier("contact_details_edit_button")
 								}
 							}
 						}
