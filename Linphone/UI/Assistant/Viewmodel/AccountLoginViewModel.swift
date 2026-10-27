@@ -47,16 +47,17 @@ class AccountLoginViewModel: ObservableObject {
 				return
 			}
 			do {
+				// Parse synchronously: the username can be entered as a full SIP address
+				// (username@domain) and the parsed values are used right below
+				var username = self.username
+				var domain = self.domain
 				let usernameWithDomain = self.username.split(separator: "@")
-				
 				if usernameWithDomain.count > 1 {
-					DispatchQueue.main.async {
-						self.domain = String(usernameWithDomain.last ?? "")
-						self.username = String(usernameWithDomain.first ?? "")
-					}
+					username = String(usernameWithDomain.first ?? "")
+					domain = String(usernameWithDomain.last ?? "")
 				}
-				
-				if self.domain != "sip.linphone.org" {
+
+				if domain != "sip.linphone.org" {
 					if let assistantLinphone = Bundle.main.path(forResource: "assistant_third_party_default_values", ofType: nil) {
 						core.loadConfigFromXml(xmlUri: assistantLinphone)
 					}
@@ -84,12 +85,12 @@ class AccountLoginViewModel: ObservableObject {
 				// ha1 is set to null as we are using the clear text password. Upon first register, the hash will be computed automatically.
 				// The realm will be determined automatically from the first register, as well as the algorithm
 				let authInfo = try Factory.Instance.createAuthInfo(
-					username: self.username,
+					username: username,
 					userid: self.authId,
 					passwd: self.passwd,
 					ha1: "",
 					realm: "",
-					domain: self.domain
+					domain: domain
 				)
 				
 				// Account object replaces deprecated ProxyConfig object
@@ -98,16 +99,29 @@ class AccountLoginViewModel: ObservableObject {
 				let accountParams = try core.createAccountParams()
 				
 				// A SIP account is identified by an identity address that we can construct from the username and domain
-				let identity = try Factory.Instance.createAddress(addr: String("sip:" + self.username + "@" + self.domain))
+				let identity = try Factory.Instance.createAddress(addr: String("sip:" + username + "@" + domain))
 				try accountParams.setIdentityaddress(newValue: identity)
+
+				if let existingAccount = core.accountList.first(where: { $0.params?.identityAddress?.weakEqual(address2: identity) == true }) {
+					Log.warn("Account with identity address [" + (existingAccount.params?.identityAddress?.asStringUriOnly() ?? "") + "] already exists, do not add it again")
+					DispatchQueue.main.async {
+						self.coreContext.loggingInProgress = false
+					}
+					return
+				}
 				
 				// We also need to configure where the proxy server is located
 				var serverAddress: Address
 				if (!self.sipProxyUrl.isEmpty) {
 					let server = self.sipProxyUrl.starts(with: "sip:") ? self.sipProxyUrl : String("sip:" + self.sipProxyUrl)
 					serverAddress = try Factory.Instance.createAddress(addr: server)
+				} else if (!self.outboundProxy.isEmpty) {
+					// Same behaviour as Android: when no SIP proxy is set, the outbound
+					// proxy is used as server address so the REGISTER goes through it
+					let server = self.outboundProxy.starts(with: "sip:") ? self.outboundProxy : String("sip:" + self.outboundProxy)
+					serverAddress = try Factory.Instance.createAddress(addr: server)
 				} else {
-					serverAddress = try Factory.Instance.createAddress(addr: String("sip:" + self.domain))
+					serverAddress = try Factory.Instance.createAddress(addr: String("sip:" + domain))
 				}
 				
 				// We use the Address object to easily set the transport protocol
