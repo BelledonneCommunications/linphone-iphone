@@ -105,7 +105,7 @@ class TelecomManager: ObservableObject {
 
 		if TelecomManager.callKitEnabled(core: core) {// && !nextCallIsTransfer != true {
 			let uuid = UUID()
-			let name = addr?.asStringUriOnly() ?? "Unknown"
+			let name = isConference ? (addr?.asStringUriOnly() ?? "Unknown") : outgoingDisplayName(addr: addr!)
 			let handle = CXHandle(type: .generic, value: addr?.asStringUriOnly() ?? "")
 			let startCallAction = CXStartCallAction(call: uuid, handle: handle)
 			let transaction = CXTransaction(action: startCallAction)
@@ -124,6 +124,19 @@ class TelecomManager: ObservableObject {
 		} else {
 			try doCall(core: core, addr: addr!, isSas: isSas, isVideo: isVideo, isConference: isConference)
 		}
+	}
+	
+	private func outgoingDisplayName(addr: Address) -> String {
+		if let name = ContactsManager.shared.getFriendWithAddress(address: addr)?.name, !name.isEmpty {
+			return name
+		}
+		if let name = addr.displayName, !name.isEmpty {
+			return name
+		}
+		if let username = addr.username, !username.isEmpty {
+			return username
+		}
+		return String(addr.asStringUriOnly().dropFirst(4))
 	}
 	
 	func setHeldOtherCalls(core: Core, exceptCallid: String) {
