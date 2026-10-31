@@ -1311,6 +1311,7 @@
 				660AAF772B839271004C0FA6 /* Sources */,
 				660AAF782B839271004C0FA6 /* Frameworks */,
 				660AAF792B839271004C0FA6 /* Resources */,
+				E1A5C0DE2F90000100000002 /* Merge English Strings */,
 			);
 			buildRules = (
 			);
@@ -1376,6 +1377,7 @@
 				D719ABB02ABC67BF00B41C10 /* Frameworks */,
 				660AAF802B839272004C0FA6 /* Embed Foundation Extensions */,
 				D719ABB12ABC67BF00B41C10 /* Resources */,
+				E1A5C0DE2F90000100000001 /* Merge English Strings */,
 				D72F04F52DDB2CB800F4C713 /* ShellScript */,
 				D7D1F5432EDDB9C20034EEB0 /* ShellScript */,
 			);
@@ -1616,6 +1618,44 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#!/bin/bash\n\nbranch=$(git symbolic-ref --short HEAD 2>/dev/null || echo \"detached\")\ncommit=$(git rev-parse --short HEAD)\ntag=$(git describe --tags --exact-match 2>/dev/null || git describe --tags --abbrev=0 2>/dev/null || echo \"no-tag\")\n\ncat <<EOF > \"$SRCROOT/Linphone/GeneratedGit.swift\"\nimport Foundation\n\npublic enum AppGitInfo {\n    public static let branch = \"$branch\"\n    public static let commit = \"$commit\"\n    public static let tag = \"$tag\"\n}\nEOF\n";
+		};
+		E1A5C0DE2F90000100000001 /* Merge English Strings */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Merge English Strings";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/scripts/merge-english-strings.sh\"\n";
+		};
+		E1A5C0DE2F90000100000002 /* Merge English Strings */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Merge English Strings";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/scripts/merge-english-strings.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
