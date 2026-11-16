@@ -2271,17 +2271,20 @@ class ConversationViewModel: ObservableObject {
 		self.resetMessage()
 		self.removeConversationDelegate()
 		CoreContext.shared.doOnCoreQueue { core in
-			let nilParams: ConferenceParams? = nil
-			if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: conversationModel.chatRoom.peerAddress, participants: nil) {
-				if LinphoneUtils.getChatRoomId(room: newChatRoom) == conversationModel.id {
-					self.addConversationDelegate(chatRoom: newChatRoom)
-					DispatchQueue.main.async {
-						withAnimation {
-							self.sharedMainViewModel.displayedConversation = conversationModel
-						}
-						self.getMessages()
+			// Search the room by identifier and rebuild the conversation model from it:
+			// the core may have been stopped/started (background/foreground) since the
+			// given model was created, in which case its ChatRoom reference is dead.
+			if let newChatRoom = core.searchChatRoomByIdentifier(identifier: conversationModel.id) {
+				self.addConversationDelegate(chatRoom: newChatRoom)
+				let conversation = ConversationModel(chatRoom: newChatRoom)
+				DispatchQueue.main.async {
+					withAnimation {
+						self.sharedMainViewModel.displayedConversation = conversation
 					}
+					self.getMessages()
 				}
+			} else {
+				Log.warn("\(ConversationViewModel.TAG) changeDisplayedChatRoom: no chat room found for identifier \(conversationModel.id)")
 			}
 		}
 	}
@@ -2289,22 +2292,25 @@ class ConversationViewModel: ObservableObject {
 	func resetDisplayedChatRoom() {
 		if let displayedConversation = self.sharedMainViewModel.displayedConversation {
 			CoreContext.shared.doOnCoreQueue { core in
-				let nilParams: ConferenceParams? = nil
-				if let newChatRoom = core.searchChatRoom(params: nilParams, localAddr: nil, remoteAddr: displayedConversation.chatRoom.peerAddress, participants: nil) {
-					if LinphoneUtils.getChatRoomId(room: newChatRoom) == displayedConversation.id {
-						self.addConversationDelegate(chatRoom: newChatRoom)
-						let conversation = ConversationModel(chatRoom: newChatRoom)
-						DispatchQueue.main.async {
-							self.sharedMainViewModel.displayedConversation = conversation
-						}
-						self.computeComposingLabel()
-						let historyEventsSizeTmp = newChatRoom.historyEventsSize
-						if self.displayedConversationHistorySize < historyEventsSizeTmp {
-							let eventLogList = newChatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
-							
-							if !eventLogList.isEmpty {
-								self.getNewMessages(eventLogs: eventLogList)
-							}
+				// Search by identifier rather than through the displayed conversation's ChatRoom:
+				// after a core stop/start (background/foreground) that reference is dead.
+				if let newChatRoom = core.searchChatRoomByIdentifier(identifier: displayedConversation.id) {
+					self.addConversationDelegate(chatRoom: newChatRoom)
+					let conversation = ConversationModel(chatRoom: newChatRoom)
+					DispatchQueue.main.async {
+						self.sharedMainViewModel.displayedConversation = conversation
+					}
+					self.computeComposingLabel()
+					let historyEventsSizeTmp = newChatRoom.historyEventsSize
+					if self.conversationMessagesSection.isEmpty {
+						// The message list is empty (e.g. it was reset while the core was stopped):
+						// getNewMessages can't fill an empty list, so do a full reload.
+						self.getMessages()
+					} else if self.displayedConversationHistorySize < historyEventsSizeTmp {
+						let eventLogList = newChatRoom.getHistoryRangeEvents(begin: 0, end: historyEventsSizeTmp - self.displayedConversationHistorySize)
+						
+						if !eventLogList.isEmpty {
+							self.getNewMessages(eventLogs: eventLogList)
 						}
 					}
 				}
@@ -2722,18 +2728,18 @@ class ConversationViewModel: ObservableObject {
 	}
 	
 	func compose(stop: Bool, cachedConversation: ConversationModel? = nil) {
-		coreContext.doOnCoreQueue { _ in
-			if let displayedConversation = self.sharedMainViewModel.displayedConversation {
-				if stop {
-					displayedConversation.chatRoom.stopComposing()
-				} else {
-					displayedConversation.chatRoom.composeTextMessage()
-				}
-			} else if let displayedConversation = cachedConversation {
-				if stop {
-					displayedConversation.chatRoom.stopComposing()
-				} else {
-					displayedConversation.chatRoom.composeTextMessage()
+		coreContext.doOnCoreQueue { core in
+			if let displayedConversation = self.sharedMainViewModel.displayedConversation ?? cachedConversation {
+				// The core may have been stopped/started (background/foreground) since this
+				// conversation was displayed: always act on the live chat room, the model's
+				// own reference may be dead. This action can also have been queued while the
+				// core was stopped and replayed after it restarted.
+				if let chatRoom = core.searchChatRoomByIdentifier(identifier: displayedConversation.id) {
+					if stop {
+						chatRoom.stopComposing()
+					} else {
+						chatRoom.composeTextMessage()
+					}
 				}
 			}
 		}

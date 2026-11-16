@@ -647,6 +647,12 @@ struct ConversationFragment: View {
 							if conversationViewModel.displayedConversationUnreadMessagesCount > 0 {
 								conversationViewModel.markAsRead()
 							}
+							if conversationViewModel.conversationMessagesSection.isEmpty {
+								// The message list is empty even though a conversation is displayed
+								// (e.g. a background/foreground cycle swallowed the initial load):
+								// reload it, otherwise the conversation shows up empty.
+								conversationViewModel.getMessages()
+							}
 					  	}
 						.onDisappear {
 							conversationViewModel.compose(stop: true, cachedConversation: cachedConversation)

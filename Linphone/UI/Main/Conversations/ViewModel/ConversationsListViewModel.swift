@@ -479,11 +479,15 @@ class ConversationsListViewModel: ObservableObject {
 	
 	func changeDisplayedChatRoom(conversationModel: ConversationModel) {
 		CoreContext.shared.doOnCoreQueue { core in
-			if let _ = core.searchChatRoomByIdentifier(identifier: conversationModel.id) {
+			if let newChatRoom = core.searchChatRoomByIdentifier(identifier: conversationModel.id) {
+				// Rebuild the conversation model from the freshly searched chat room:
+				// after a core stop/start (background/foreground) the given model's
+				// ChatRoom reference is dead and would yield an empty history.
+				let freshConversation = ConversationModel(chatRoom: newChatRoom)
 				if self.sharedMainViewModel.displayedConversation == nil {
 					DispatchQueue.main.async {
 						withAnimation {
-							self.sharedMainViewModel.displayedConversation = conversationModel
+							self.sharedMainViewModel.displayedConversation = freshConversation
 						}
 					}
 				} else {
@@ -491,7 +495,7 @@ class ConversationsListViewModel: ObservableObject {
 						self.sharedMainViewModel.displayedConversation = nil
 						DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 							withAnimation {
-								self.sharedMainViewModel.displayedConversation = conversationModel
+								self.sharedMainViewModel.displayedConversation = freshConversation
 							}
 						}
 					}
