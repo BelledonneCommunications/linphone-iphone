@@ -728,6 +728,7 @@ final class ContactsManager: ObservableObject {
 				}, onDefaultAccountChanged: { (_: Core, _: Account?) in
 					Log.info("\(ContactsManager.TAG) Default account changed, update all contacts' model showTrust value")
 					//updateContactsModelDependingOnDefaultAccountMode()
+					MagicSearchSingleton.shared.refreshLinphoneDomain(core: CoreContext.shared.mCore)
 				}
 			)
 			
