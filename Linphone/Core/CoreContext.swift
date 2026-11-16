@@ -553,12 +553,31 @@ class CoreContext: ObservableObject {
 	}
 	
 	func doOnCoreQueue(synchronous: Bool = false, action: @escaping (_ core: Core) -> Void ) {
-		if coreIsStarted {
+		if DispatchQueue.getSpecific(key: coreQueueKey) != nil {
+			// Already on the core queue: run directly, with the same semantics as before
+			// (the action is skipped if the core is off).
 			doOnCoreQueueCoreStarted(synchronous: synchronous) { core in
 				action(core)
 			}
+			return
+		}
+		// The execute-or-defer decision MUST be taken on the core queue, which owns the
+		// core lifecycle. Deciding on the calling thread from the `coreIsStarted` flag could
+		// strand an action: the flag is set on the main queue AFTER the pending actions have
+		// been replayed on the core turning On, so any action appended in that window would
+		// never run (until the next core restart). This is what made conversations open with
+		// an empty message list after a quick background/foreground cycle.
+		let decide: () -> Void = {
+			if self.mCore.globalState != .Off {
+				action(self.mCore)
+			} else {
+				self.actionsToPerformOnCoreQueueWhenCoreIsStarted.append(action)
+			}
+		}
+		if synchronous {
+			coreQueue.sync(execute: decide)
 		} else {
-			actionsToPerformOnCoreQueueWhenCoreIsStarted.append(action)
+			coreQueue.async(execute: decide)
 		}
 	}
 	
