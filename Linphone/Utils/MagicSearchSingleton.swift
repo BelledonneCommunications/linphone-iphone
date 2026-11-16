@@ -39,7 +39,6 @@ final class MagicSearchSingleton: ObservableObject {
 	@Published var allContact = true
 	
 	var linphoneDomain = true
-	var domainDefaultAccount = ""
 	
 	var searchDelegate: MagicSearchDelegate?
     
@@ -56,8 +55,7 @@ final class MagicSearchSingleton: ObservableObject {
 	}
 	
 	func recreateMagicSearch(core: Core) {
-		self.linphoneDomain = AppServices.corePreferences.defaultDomain == core.defaultAccount?.params?.domain
-		self.domainDefaultAccount = AppServices.corePreferences.contactsFilter
+		self.refreshLinphoneDomain(core: core)
 		
 		self.magicSearch = try? core.createMagicSearch()
 		
@@ -159,10 +157,36 @@ final class MagicSearchSingleton: ObservableObject {
 		}
 	}
 	
+	private func computeLinphoneDomain(core: Core) -> Bool {
+		guard let accountDomain = core.defaultAccount?.params?.domain, !accountDomain.isEmpty else { return false }
+		return accountDomain == AppServices.corePreferences.defaultDomain
+	}
+	
+	// The filter must be resolved against the current default account.
+	// The persisted value may have been saved while logged on another account
+	// (e.g. "sip.linphone.org" from a sip.linphone.org account), in which case
+	// it must not hide every contact of the account now in use.
+	private func filterDomain(core: Core) -> String {
+		guard !allContact else { return "" }
+		
+		let storedFilter = AppServices.corePreferences.contactsFilter
+		if storedFilter.isEmpty { return "" }
+		// Restricted mode always follows the current default account,
+		// whichever account it was toggled on: "Linphone contacts only"
+		// when logged on the default domain, "SIP contacts only" otherwise.
+		if storedFilter == "*" || storedFilter == AppServices.corePreferences.defaultDomain {
+			return computeLinphoneDomain(core: core) ? AppServices.corePreferences.defaultDomain : "*"
+		}
+		return storedFilter
+	}
+	
+	func refreshLinphoneDomain(core: Core) {
+		self.linphoneDomain = computeLinphoneDomain(core: core)
+	}
+	
 	func changeAllContact(allContactBool: Bool) {
 		allContact = allContactBool
-		domainDefaultAccount = allContactBool ? "" : (linphoneDomain ? AppServices.corePreferences.defaultDomain : "*")
-		AppServices.corePreferences.contactsFilter = domainDefaultAccount
+		AppServices.corePreferences.contactsFilter = allContactBool ? "" : (linphoneDomain ? AppServices.corePreferences.defaultDomain : "*")
 	}
     
     func updateContacts(
@@ -199,7 +223,7 @@ final class MagicSearchSingleton: ObservableObject {
     }
 	
 	func searchForContacts() {
-		coreContext.doOnCoreQueue { _ in
+		coreContext.doOnCoreQueue { core in
 			DispatchQueue.main.async {
 				self.isLoading = true
 			}
@@ -224,7 +248,7 @@ final class MagicSearchSingleton: ObservableObject {
 			
 			magicSearch.getContactsListAsync(
 				filter: self.currentFilter,
-				domain: self.allContact ? "" : self.domainDefaultAccount,
+				domain: self.filterDomain(core: core),
 				sourceFlags: MagicSearch.Source.All.rawValue, //MagicSearch.Source.Friends.rawValue | MagicSearch.Source.LdapServers.rawValue | MagicSearch.Source.RemoteCardDAV.rawValue,
 				aggregation: MagicSearch.Aggregation.Friend
 			)
