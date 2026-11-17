@@ -2041,7 +2041,7 @@ struct ContentView: View {
                 accountProfileViewModel.defaultAccountModelIndex = CoreContext.shared.accounts.firstIndex(where: {$0.isDefaultAccount})
 								
 				accountProfileViewModel.accountError = CoreContext.shared.accounts.contains {
-					($0.registrationState == .Cleared && $0.isDefaultAccount) ||
+					($0.registrationState == .Cleared && $0.isDefaultAccount && UIApplication.shared.applicationState == .active) ||
 					$0.registrationState == .Failed
 				}
 				

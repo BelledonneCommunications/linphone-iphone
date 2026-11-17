@@ -296,6 +296,16 @@ class CoreContext: ObservableObject {
 						MagicSearchSingleton.shared.recreateMagicSearch(core: core)
 					}
 
+					for authInfo in core.authInfoList {
+						guard let authDomain = authInfo.domain, !authDomain.isEmpty else { continue }
+						guard authDomain.contains(":") || authDomain.contains(";") else { continue }
+						if let parsedDomain = try? Factory.Instance.createAddress(addr: "sip:user@" + authDomain),
+						   let host = parsedDomain.domain, !host.isEmpty, host != authDomain {
+							Log.info("[CoreContext] Auth info [\(authInfo.username ?? "")]: normalizing domain [\(authDomain)] into [\(host)]")
+							authInfo.domain = host
+						}
+					}
+
 					for account in core.accountList {
 						if account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
 							let newParams = account.params?.clone()
@@ -445,14 +455,10 @@ class CoreContext: ObservableObject {
 					} else if state == .Cleared {
 						self.loggingInProgress = false
 						self.loggedIn = false
-					} else {
+					} else if state == .Failed {
 						self.loggingInProgress = false
 						self.loggedIn = false
-						if self.networkStatusIsConnected {
-							// If network is disconnected, a toast message with key "Unavailable_network" should already be displayed
-							ToastViewModel.shared.show("Registration_failed")
-						}
-						
+
 					}
 				}
 			}, onDefaultAccountChanged: { (_: Core, account: Account?) in
