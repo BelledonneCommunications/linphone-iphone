@@ -964,7 +964,16 @@ struct DynamicLinkText: View {
 			.fixedSize(horizontal: false, vertical: true)
 			.multilineTextAlignment(.leading)
 			.lineLimit(nil)
-			.default_text_style(styleSize: 14)
+			.default_text_style(styleSize: fontSize)
+			.padding(.vertical, isOnlyEmojis ? -4 : 0)
+	}
+
+	private var isOnlyEmojis: Bool {
+		return text.isOnlyEmojis
+	}
+	
+	private var fontSize: CGFloat {
+		return text.isOnlyEmojis ? 45 : 14
 	}
 	
 	// MARK: - Builder
