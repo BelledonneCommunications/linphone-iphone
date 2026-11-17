@@ -176,6 +176,7 @@
 		D7AEB9A02F3E219600298546 /* ContactDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5678D2B28888F00DE63EB /* CallView.swift */; };
+		C6BB1C1B2F9DE6E7003D1A01 /* LocalPreviewVideoHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */; };
 		D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */; };
 		D7B99E9B2B29F7C300BE7BF2 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E9A2B29F7C200BE7BF2 /* ActivityIndicator.swift */; };
 		D7BC10D42F4EF18600F09BDA /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */; };
@@ -471,6 +472,7 @@
 		D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDeviceModel.swift; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7B5678D2B28888F00DE63EB /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
+		C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPreviewVideoHolder.swift; sourceTree = "<group>"; };
 		D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
 		D7B99E9A2B29F7C200BE7BF2 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
@@ -1140,6 +1142,7 @@
 				D720E6AB2BAD81C800DDFD87 /* Model */,
 				D7B99E972B29B37F00BE7BF2 /* ViewModel */,
 				D7B5678D2B28888F00DE63EB /* CallView.swift */,
+				C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */,
 				D7479CE82FAA3C1F008EF474 /* BottomSheetContent.swift */,
 				D73449982BC6932A00778C56 /* MeetingWaitingRoomFragment.swift */,
 			);
@@ -1652,6 +1655,7 @@
 				D78E062A2BEA698E00CE3783 /* MediaEncryptedSheetBottomSheet.swift in Sources */,
 				66CD1E602CEBA19F00898718 /* SideMenuShortcut.swift in Sources */,
 				D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */,
+				C6BB1C1B2F9DE6E7003D1A01 /* LocalPreviewVideoHolder.swift in Sources */,
 				D71A0E192B485ADF0002C6CD /* ViewExtension.swift in Sources */,
 				D759CB642C3FBD4200AC35E8 /* StartConversationFragment.swift in Sources */,
 				D7DF8BE92E2104EC003A3BC7 /* EmojiPickerView.swift in Sources */,

@@ -618,16 +618,7 @@ struct CallView: View {
 						VStack {
 							Spacer()
 							HStack {
-								LinphoneVideoViewHolder { view in
-									coreContext.doOnCoreQueue { core in
-										core.nativePreviewWindow = view
-									}
-								}
-								.onDisappear {
-									coreContext.doOnCoreQueue { core in
-										core.nativePreviewWindow = nil
-									}
-								}
+								LocalPreviewVideoHolder()
 								.aspectRatio(callViewModel.callStatsModel.sentVideoWindow.widthFactor/callViewModel.callStatsModel.sentVideoWindow.heightFactor, contentMode: .fill)
 								.frame(maxWidth: callViewModel.callStatsModel.sentVideoWindow.widthFactor * 256,
 									   maxHeight: callViewModel.callStatsModel.sentVideoWindow.heightFactor * 256)
@@ -754,16 +745,7 @@ struct CallView: View {
 					VStack {
 						Spacer()
 						HStack {
-							LinphoneVideoViewHolder { view in
-								coreContext.doOnCoreQueue { core in
-									core.nativePreviewWindow = view
-								}
-							}
-							.onDisappear {
-								coreContext.doOnCoreQueue { core in
-									core.nativePreviewWindow = nil
-								}
-							}
+							LocalPreviewVideoHolder()
 							.aspectRatio(callViewModel.callStatsModel.sentVideoWindow.widthFactor/callViewModel.callStatsModel.sentVideoWindow.heightFactor, contentMode: .fill)
 							.frame(maxWidth: callViewModel.callStatsModel.sentVideoWindow.widthFactor * 256,
 								   maxHeight: callViewModel.callStatsModel.sentVideoWindow.heightFactor * 256)
@@ -1030,16 +1012,7 @@ struct CallView: View {
 										.frame(width: 140, height: 140)
 										
 										if callViewModel.videoDisplayed {
-											LinphoneVideoViewHolder { view in
-												coreContext.doOnCoreQueue { core in
-													core.nativePreviewWindow = view
-												}
-											}
-											.onDisappear {
-												coreContext.doOnCoreQueue { core in
-													core.nativePreviewWindow = nil
-												}
-											}
+											LocalPreviewVideoHolder()
 											.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
 											.scaledToFill()
 											.clipped()
@@ -1200,16 +1173,7 @@ struct CallView: View {
 									.frame(width: 140, height: 140)
 									
 									if callViewModel.videoDisplayed {
-										LinphoneVideoViewHolder { view in
-											coreContext.doOnCoreQueue { core in
-												core.nativePreviewWindow = view
-											}
-										}
-										.onDisappear {
-											coreContext.doOnCoreQueue { core in
-												core.nativePreviewWindow = nil
-											}
-										}
+										LocalPreviewVideoHolder()
 										.frame(width: angleDegree == 0 ? 120*1.2 : 160*1.2, height: angleDegree == 0 ? 160*1.2 : 120*1.2)
 										.scaledToFill()
 										.clipped()
@@ -1430,16 +1394,7 @@ struct CallView: View {
 									.frame(width: maxValue, height: maxValue)
 									
 									if callViewModel.videoDisplayed {
-										LinphoneVideoViewHolder { view in
-											coreContext.doOnCoreQueue { core in
-												core.nativePreviewWindow = view
-											}
-										}
-										.onDisappear {
-											coreContext.doOnCoreQueue { core in
-												core.nativePreviewWindow = nil
-											}
-										}
+										LocalPreviewVideoHolder()
 										.frame(
 											width: 120 * ceil(maxValue / 120),
 											height: 160 * ceil(maxValue / 120)
@@ -1676,16 +1631,7 @@ struct CallView: View {
 									.frame(width: maxValue, height: maxValue)
 									
 									if callViewModel.videoDisplayed {
-										LinphoneVideoViewHolder { view in
-											coreContext.doOnCoreQueue { core in
-												core.nativePreviewWindow = view
-											}
-										}
-										.onDisappear {
-											coreContext.doOnCoreQueue { core in
-												core.nativePreviewWindow = nil
-											}
-										}
+										LocalPreviewVideoHolder()
 										.frame(
 											width: 160 * ceil(maxValue / 120),
 											height: 120 * ceil(maxValue / 120)

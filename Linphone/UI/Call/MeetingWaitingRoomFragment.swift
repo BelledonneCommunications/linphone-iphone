@@ -206,11 +206,7 @@ struct MeetingWaitingRoomFragment: View {
 						: 120 * ceil((geometry.size.height - 160) / 160)
 					)
 					
-					LinphoneVideoViewHolder { view in
-						coreContext.doOnCoreQueue { core in
-							core.nativePreviewWindow = view
-						}
-					}
+					LocalPreviewVideoHolder()
 					.frame(
 						width:
 							angleDegree == 0
