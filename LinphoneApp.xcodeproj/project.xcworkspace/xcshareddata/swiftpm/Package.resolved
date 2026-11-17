@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Tyler-Keith-Thompson/CucumberSwift",
       "state" : {
-        "revision" : "1d16dcd943a35eb8ecf274caf85ea827b4018d4d",
-        "version" : "5.0.10"
+        "revision" : "ce328f414c5defd5ce2eb8096908310aba0a0bb1",
+        "version" : "5.0.13"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cucumberswift/CucumberSwiftExpressions.git",
       "state" : {
-        "revision" : "5200dc2c5d7cd31f07a13f030ab0027224d2dbea",
-        "version" : "0.0.8"
+        "revision" : "4583829986b87d2e295dcf1004754130436a2226",
+        "version" : "0.0.11"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BelledonneCommunications/linphone-sdk-swift-ios.git",
       "state" : {
-        "revision" : "cac684da1a45adcb33ab8c3198b88ae287241d67",
-        "version" : "5.5.18"
+        "revision" : "e60ec7bfc55f78eb0f0bbc8e847508b803b2d35f",
+        "version" : "5.5.39"
       }
     },
     {
