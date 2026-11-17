@@ -633,3 +633,4 @@
 "assistant_forgotten_password_message" = "Sie haben Ihren Account erstellt mit:";
 "history_list_filter_all" = "Alle Anrufe";
 "history_list_filter_missed" = "Verpasst";
+"history_list_empty_missed_history" = "Im Moment gibt es keine verpassten Anrufe…";

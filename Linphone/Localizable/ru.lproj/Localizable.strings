@@ -489,3 +489,13 @@
 "assistant_recover_email_account_label" = "Электронная почта";
 "assistant_recover_phone_number_account_label" = "Номер телефона";
 "assistant_recover_phone_number_account_unavailable_no_push_warning" = "Похоже, что push-уведомления недоступны на вашем устройстве, но они необходимы для восстановления номера телефона аккаунта в мобильном приложении.";
+"call_zrtp_sas_validation_skip" = "Пропустить";
+"contact_video_call_action" = "Видеозвонок";
+"dialog_close" = "Закрыть";
+"DTLS" = "Протокол безопасности транспортного уровня дейтаграмм (DTLS)";
+"Interoperable" = "Совместимый";
+"None" = "Никто";
+"settings_contacts_carddav_realm_title" = "Область аутентификации";
+"settings_contacts_carddav_use_as_default_title" = "Сохраняйте вновь созданные контакты здесь";
+"SRTP" = "Безопасный протокол транспорта в реальном времени (SRTP)";
+"welcome_carousel_skip" = "Пропустить";

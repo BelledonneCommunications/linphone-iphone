@@ -459,3 +459,13 @@
 "assistant_recover_email_account_label" = "电子邮箱";
 "assistant_recover_phone_number_account_label" = "电话号码";
 "assistant_recover_phone_number_account_unavailable_no_push_warning" = "推送通知似乎在您的设备上不可用，但它们是在移动应用程序中恢复电话号码账户所必需的。";
+"call_zrtp_sas_validation_skip" = "跳过";
+"contact_video_call_action" = "视频呼叫";
+"dialog_close" = "关闭";
+"DTLS" = "DTLS";
+"Interoperable" = "互操作性";
+"None" = "没有";
+"settings_contacts_carddav_realm_title" = "认证域";
+"settings_contacts_carddav_use_as_default_title" = "在此处存储新创建的联系人";
+"SRTP" = "SRTP";
+"welcome_carousel_skip" = "跳过";

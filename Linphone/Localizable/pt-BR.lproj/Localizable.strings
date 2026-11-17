@@ -591,3 +591,9 @@
 "assistant_recover_phone_number_account_unavailable_no_push_warning" = "As notificações push não parecem estar disponíveis no seu dispositivo, mas são obrigatórias para recuperar uma conta de número de telefone no aplicativo móvel.";
 "history_list_filter_all" = "Todas as chamadas";
 "history_list_filter_missed" = "Perdida";
+"conversation_message_edited_label" = "Editado";
+"conversation_dialog_delete_chat_message_title" = "Excluir essa mensagem?";
+"manage_account_dialog_outbound_proxy_help_message" = "Se este campo estiver preenchido, o proxy de saída será ativado automaticamente. Deixe vazio para desabilitá-lo.";
+"settings_meetings_show_past_meetings_title" = "Exibir reuniões anteriores";
+"Voicemail" = "Correio de voz";
+"conversation_info_leave_chatroom_confirm" = "Sair";
