@@ -71,7 +71,7 @@ struct SideMenuAccountRow: View {
 						.foregroundStyle(model.registrationStateAssociatedUIColor)
 						.onChange(of: model.registrationStateAssociatedUIColor) { _ in
 							accountProfileViewModel.accountError = CoreContext.shared.accounts.contains {
-								($0.registrationState == .Cleared && $0.isDefaultAccount) ||
+								($0.registrationState == .Cleared && $0.isDefaultAccount && UIApplication.shared.applicationState == .active) ||
 								$0.registrationState == .Failed
 							}
 						}

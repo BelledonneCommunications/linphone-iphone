@@ -80,6 +80,18 @@ class AccountLoginViewModel: ObservableObject {
 				// To configure a SIP account, we need an Account object and an AuthInfo object
 				// The first one is how to connect to the proxy server, the second one stores the credentials
 				
+				// Account object replaces deprecated ProxyConfig object
+				// Account object is configured through an AccountParams object that we can obtain from the Core
+				
+				let accountParams = try core.createAccountParams()
+
+				// A SIP account is identified by an identity address that we can construct from the username and domain
+				// The identity and auth info only use the host of the entered domain, the port (if any) is kept for the server address
+				let domainAddress = try Factory.Instance.createAddress(addr: String("sip:user@" + domain))
+				let host = domainAddress.domain ?? domain
+				let identity = try Factory.Instance.createAddress(addr: String("sip:" + username + "@" + host))
+				try accountParams.setIdentityaddress(newValue: identity)
+
 				// The auth info can be created from the Factory as it's only a data class
 				// userID is set to null as it's the same as the username in our case
 				// ha1 is set to null as we are using the clear text password. Upon first register, the hash will be computed automatically.
@@ -90,17 +102,8 @@ class AccountLoginViewModel: ObservableObject {
 					passwd: self.passwd,
 					ha1: "",
 					realm: "",
-					domain: domain
+					domain: host
 				)
-				
-				// Account object replaces deprecated ProxyConfig object
-				// Account object is configured through an AccountParams object that we can obtain from the Core
-				
-				let accountParams = try core.createAccountParams()
-				
-				// A SIP account is identified by an identity address that we can construct from the username and domain
-				let identity = try Factory.Instance.createAddress(addr: String("sip:" + username + "@" + domain))
-				try accountParams.setIdentityaddress(newValue: identity)
 
 				if let existingAccount = core.accountList.first(where: { $0.params?.identityAddress?.weakEqual(address2: identity) == true }) {
 					Log.warn("Account with identity address [" + (existingAccount.params?.identityAddress?.asStringUriOnly() ?? "") + "] already exists, do not add it again")
@@ -153,18 +156,30 @@ class AccountLoginViewModel: ObservableObject {
 				accountParams.pushNotificationConfig?.provider = "apns" + pushEnvironment
 				
 				self.mCoreDelegate = CoreDelegateStub(onAccountRegistrationStateChanged: { (core: Core, account: Account, state: RegistrationState, message: String) in
+					guard account.params?.identityAddress?.weakEqual(address2: identity) == true else { return }
+
 					
 					Log.info("New registration state is \(state) for user id " +
 							 "\( String(describing: account.params?.identityAddress?.asString())) = \(message)\n")
 					
 					switch state {
+						case .Ok:
+							core.removeDelegate(delegate: self.mCoreDelegate)
 					case .Failed:  // If registration failed, remove account from core
 						if let authInfo = account.findAuthInfo() {
 							core.removeAuthInfo(info: authInfo)
 						}
 						
 						Log.warn("Registration failed for account \(account.displayName()), deleting it from core")
-						core.removeAccountWithData(account: account)
+							core.removeAccountWithData(account: account)
+
+						if self.coreContext.networkStatusIsConnected {
+							DispatchQueue.main.async {
+								// If network is disconnected, a toast message with key "Unavailable_network" should already be displayed
+								ToastViewModel.shared.show("Registration_failed")
+							}
+						}
+						core.removeDelegate(delegate: self.mCoreDelegate)
 					default:
 						break
 					}
