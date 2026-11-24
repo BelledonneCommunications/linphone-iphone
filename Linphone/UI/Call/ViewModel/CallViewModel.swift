@@ -1571,58 +1571,17 @@ class CallViewModel: ObservableObject {
 	}
 	
 	func getChatRoomParams(call: Call) -> ConferenceParams? {
-		let localAddress = call.callLog?.localAddress
 		let remoteAddress = call.remoteAddress
-		let core = call.core
-		if let account = LinphoneUtils.getAccountForAddress(address: localAddress!) ?? LinphoneUtils.getDefaultAccount() {
-			do {
-				let params = try coreContext.mCore.createConferenceParams(conference: call.conference)
-				params.chatEnabled = true
-				params.groupEnabled = false
-				params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
-				params.account = account
-				
-				if let chatParams = params.chatParams {
-					chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
-					
-					let sameDomain = remoteAddress?.domain == AppServices.corePreferences.defaultDomain && remoteAddress?.domain == account.params?.domain
-					if account.params != nil && (account.params!.instantMessagingEncryptionMandatory && sameDomain) {
-						Log.info(
-							"\(CallViewModel.TAG) Account is in secure mode & domain matches, requesting E2E encryption"
-						)
-						chatParams.backend = ChatRoom.Backend.FlexisipChat
-						params.securityLevel = Conference.SecurityLevel.EndToEnd
-					} else if account.params != nil && !account.params!.instantMessagingEncryptionMandatory {
-						if core != nil && LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core!) {
-							Log.info(
-								"\(CallViewModel.TAG) Account is in interop mode but LIME is available, requesting E2E encryption"
-							)
-							chatParams.backend = ChatRoom.Backend.FlexisipChat
-							params.securityLevel = Conference.SecurityLevel.EndToEnd
-						} else {
-							Log.info(
-								"\(CallViewModel.TAG) Account is in interop mode but LIME isn't available, disabling E2E encryption"
-							)
-							chatParams.backend = ChatRoom.Backend.Basic
-							params.securityLevel = Conference.SecurityLevel.None
-						}
-					} else {
-						Log.error(
-							"\(CallViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remoteAddress?.asStringUriOnly() ?? "")"
-						)
-						return nil
-					}
-					return params
-				} else {
-					return nil
-				}
-			} catch {
-				Log.error("\(CallViewModel.TAG) Can't create ConferenceParams \(remoteAddress?.asStringUriOnly() ?? "")")
-				return nil
-			}
-		} else {
+		let params = remoteAddress != nil
+			? LinphoneUtils.getChatRoomParamsForOneToOneConversationWithAddress(address: remoteAddress!, conference: call.conference)
+			: nil
+		if params == nil {
+			Log.error(
+				"\(CallViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remoteAddress?.asStringUriOnly() ?? "")"
+			)
 			return nil
 		}
+		return params
 	}
 	
 	func goToConversation(model: ConversationModel) {

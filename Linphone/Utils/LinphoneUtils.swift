@@ -130,7 +130,44 @@ class LinphoneUtils: NSObject {
 
 		return nil
 	}
-	
+
+	public class func getChatRoomParamsForOneToOneConversationWithAddress(address: Address, conference: Conference? = nil) -> ConferenceParams? {
+		guard let core = CoreContext.shared.mCore, let account = getDefaultAccount(), let accountParams = account.params else { return nil }
+
+		guard let params = try? core.createConferenceParams(conference: conference) else { return nil }
+		params.chatEnabled = true
+		params.groupEnabled = false
+		params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
+		params.account = account
+
+		guard let chatParams = params.chatParams else { return nil }
+		chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
+
+		let sameDomain = address.domain == AppServices.corePreferences.defaultDomain && address.domain == accountParams.domain
+		if accountParams.instantMessagingEncryptionMandatory && sameDomain {
+			Log.info("\(#function) Account is in secure mode & domain matches, requesting E2E encryption")
+			chatParams.backend = ChatRoom.Backend.FlexisipChat
+			params.securityLevel = Conference.SecurityLevel.EndToEnd
+		} else if !accountParams.instantMessagingEncryptionMandatory {
+			if isEndToEndEncryptedChatAvailable(core: core) {
+				Log.info("\(#function) Account is in interop mode but LIME is available, requesting E2E encryption")
+				chatParams.backend = ChatRoom.Backend.FlexisipChat
+				params.securityLevel = Conference.SecurityLevel.EndToEnd
+			} else if isGroupChatAvailable(core: core) {
+				Log.info("\(#function) Account is in interop mode but LIME isn't available, creating a Flexisip chat room without end-to-end encryption")
+				chatParams.backend = ChatRoom.Backend.FlexisipChat
+				params.securityLevel = Conference.SecurityLevel.None
+			} else {
+				Log.info("\(#function) Account is in interop mode but LIME isn't available, creating a SIP simple conversation")
+				chatParams.backend = ChatRoom.Backend.Basic
+				params.securityLevel = Conference.SecurityLevel.None
+			}
+		} else {
+			return nil
+		}
+		return params
+	}
+
 	public class func createGroupCall(core: Core, account: Account?, subject: String) -> Conference? {
 		do {
 			let conferenceParams = try core.createConferenceParams(conference: nil)
