@@ -525,35 +525,7 @@ class ConversationsListViewModel: ObservableObject {
 			}
 			
 			do {
-				let params = try core.createConferenceParams(conference: nil)
-				params.chatEnabled = true
-				params.groupEnabled = false
-				params.subject = NSLocalizedString("conversation_one_to_one_hidden_subject", comment: "")
-				params.account = account
-				
-				guard let chatParams = params.chatParams else { return }
-				chatParams.ephemeralLifetime = 0 // Make sure ephemeral is disabled by default
-				
-				let sameDomain = remote.domain == AppServices.corePreferences.defaultDomain && remote.domain == account!.params?.domain
-				if account!.params != nil && (account!.params!.instantMessagingEncryptionMandatory && sameDomain) {
-					Log.info("\(ConversationsListViewModel.TAG) Account is in secure mode & domain matches, creating an E2E encrypted conversation")
-					chatParams.backend = ChatRoom.Backend.FlexisipChat
-					params.securityLevel = Conference.SecurityLevel.EndToEnd
-				} else if account!.params != nil && (!account!.params!.instantMessagingEncryptionMandatory) {
-					if LinphoneUtils.isEndToEndEncryptedChatAvailable(core: core) {
-						Log.info(
-							"\(ConversationsListViewModel.TAG) Account is in interop mode but LIME is available, creating an E2E encrypted conversation"
-						)
-						chatParams.backend = ChatRoom.Backend.FlexisipChat
-						params.securityLevel = Conference.SecurityLevel.EndToEnd
-					} else {
-						Log.info(
-							"\(ConversationsListViewModel.TAG) Account is in interop mode but LIME isn't available, creating a SIP simple conversation"
-						)
-						chatParams.backend = ChatRoom.Backend.Basic
-						params.securityLevel = Conference.SecurityLevel.None
-					}
-				} else {
+				guard let params = LinphoneUtils.getChatRoomParamsForOneToOneConversationWithAddress(address: remote) else {
 					Log.error(
 						"\(ConversationsListViewModel.TAG) Account is in secure mode, can't chat with SIP address of different domain \(remote.asStringUriOnly())"
 					)
@@ -575,7 +547,7 @@ class ConversationsListViewModel: ObservableObject {
 					
 					do {
 						let chatRoom = try core.createChatRoom(params: params, participants: participants)
-						if chatParams.backend == ChatRoom.Backend.FlexisipChat {
+						if params.chatParams?.backend == ChatRoom.Backend.FlexisipChat {
 							let state = chatRoom.state
 							if state == ChatRoom.State.Created {
 								let chatRoomId = LinphoneUtils.getConversationId(chatRoom: chatRoom)
