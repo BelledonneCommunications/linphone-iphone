@@ -229,6 +229,33 @@ class HistoryListViewModel: ObservableObject {
 		}
 	}
 	
+	func displayChatRoomFromCallLog(historyModel: HistoryModel) {
+		coreContext.doOnCoreQueue { core in
+			guard let callLogChatRoom = historyModel.callLog.chatRoom else {
+				Log.warn("\(HistoryModel.TAG) Call log \(historyModel.callLogId) has no associated chat room, can't display it")
+				return
+			}
+			
+			let chatRoomId = LinphoneUtils.getConversationId(chatRoom: callLogChatRoom)
+			Log.info("\(HistoryModel.TAG) Opening chat room \(chatRoomId) associated with call log \(historyModel.callLogId)")
+			
+			// Re-search the chat room to make sure we use a live reference
+			guard let chatRoom = core.searchChatRoomByIdentifier(identifier: chatRoomId) else {
+				Log.error("\(HistoryModel.TAG) No chat room found with identifier \(chatRoomId), can't display it")
+				return
+			}
+			
+			let model = ConversationModel(chatRoom: chatRoom)
+			DispatchQueue.main.async {
+				SharedMainViewModel.shared.operationInProgress = true
+				DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+					self.displayedConversation = model
+					SharedMainViewModel.shared.operationInProgress = false
+				}
+			}
+		}
+	}
+	
 	func createOneToOneChatRoomWith(remote: Address) {
 		CoreContext.shared.doOnCoreQueue { core in
 			let account = core.defaultAccount

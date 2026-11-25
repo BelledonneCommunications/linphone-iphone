@@ -140,14 +140,13 @@ struct EditContactFragment: View {
 								ToastViewModel.shared.show("Failed_contact_needs_name", duration: 5.0)
 								return
 							}
-							let hasInvalidAddress = editContactViewModel.sipAddresses
-								.filter { !$0.isEmpty }
-								.contains { (try? Factory.Instance.createAddress(addr: $0)) == nil }
-							guard !hasInvalidAddress else {
-								ToastViewModel.shared.show("Failed_contact_invalid_sip_address", duration: 5.0)
-								return
+							checkSipAddressesAreValid { hasInvalidAddress in
+								guard !hasInvalidAddress else {
+									ToastViewModel.shared.show("Failed_contact_invalid_sip_address", duration: 5.0)
+									return
+								}
+								addOrEditFriend()
 							}
-							addOrEditFriend()
 						}
 						.accessibilityIdentifier("contact_editor_save_button")
 						.accessibilityAddTraits(.isButton)
@@ -526,11 +525,27 @@ struct EditContactFragment: View {
 		invalidAddressToastTask = Task {
 			try? await Task.sleep(nanoseconds: 800_000_000)
 			guard !Task.isCancelled else { return }
-			let hasInvalidAddress = editContactViewModel.sipAddresses
-				.filter { !$0.isEmpty }
-				.contains { (try? Factory.Instance.createAddress(addr: $0)) == nil }
-			if hasInvalidAddress {
-				ToastViewModel.shared.show("Failed_contact_invalid_sip_address", duration: 3.0)
+			checkSipAddressesAreValid { hasInvalidAddress in
+				guard !Task.isCancelled else { return }
+				if hasInvalidAddress {
+					ToastViewModel.shared.show("Failed_contact_invalid_sip_address", duration: 3.0)
+				}
+			}
+		}
+	}
+	
+	// SIP addresses are stored without the "sip:" prefix, so they must be
+	// validated the same way they are parsed when the contact is saved
+	// (core.interpretUrl, which accepts "alice", "alice@domain", ...),
+	// not with Factory.createAddress which requires a full SIP URI.
+	private func checkSipAddressesAreValid(completion: @escaping (Bool) -> Void) {
+		let addresses = editContactViewModel.sipAddresses.filter { !$0.isEmpty }
+		CoreContext.shared.doOnCoreQueue { core in
+			let hasInvalidAddress = addresses.contains {
+				core.interpretUrl(url: $0, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) == nil
+			}
+			DispatchQueue.main.async {
+				completion(hasInvalidAddress)
 			}
 		}
 	}
