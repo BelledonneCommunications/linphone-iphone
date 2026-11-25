@@ -44,6 +44,7 @@ class HistoryModel: ObservableObject, Identifiable {
 	@Published var duration: Int
 	@Published var isFriend: Bool = false
 	@Published var avatarModel: ContactAvatarModel?
+	@Published var chatRoom: ChatRoom?
 	
 	init(callLog: CallLog) {
 		self.callLog = callLog
@@ -64,6 +65,8 @@ class HistoryModel: ObservableObject, Identifiable {
 		self.startDate = 0
 		
 		self.duration = 0
+		
+		self.chatRoom = nil
 		
 		self.initValue(callLog: callLog)
 	}
@@ -92,6 +95,8 @@ class HistoryModel: ObservableObject, Identifiable {
 			
 			let durationTmp = callLog.duration
 			
+			let chatRoomTmp = callLog.chatRoom
+			
 			DispatchQueue.main.async {
 				self.callLog = callLogTmp
 				self.callLogId = idTmp
@@ -110,6 +115,8 @@ class HistoryModel: ObservableObject, Identifiable {
 				self.startDate = startDateTmp
 				
 				self.duration = durationTmp
+				
+				self.chatRoom = chatRoomTmp
 			}
 			
 			self.refreshAvatarModel()
