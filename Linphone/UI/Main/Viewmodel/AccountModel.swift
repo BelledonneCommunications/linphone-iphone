@@ -30,6 +30,8 @@ class AccountModel: ObservableObject {
 	@Published var humanReadableRegistrationState: String = ""
 	@Published var summary: String = ""
 	@Published var registrationStateAssociatedUIColor: Color = .clear
+	@Published var registrationStateAssociatedTextColor: Color = .clear
+	@Published var registrationStateAssociatedBackgroundColor: Color = .clear
 	@Published var isRegistrered: Bool = false
 	@Published var notificationsCount: Int = 0
 	@Published var showMwi: Bool = false
@@ -156,22 +158,32 @@ class AccountModel: ObservableObject {
 					humanReadableRegistrationState = "drawer_menu_account_connection_status_cleared".localized()
 					summary = "manage_account_status_cleared_summary".localized()
 					registrationStateAssociatedUIColor = .orangeWarning600
+					registrationStateAssociatedTextColor = .orangeWarning900
+					registrationStateAssociatedBackgroundColor = .orangeWarning100
 				case .Progress:
 					humanReadableRegistrationState = "drawer_menu_account_connection_status_progress".localized()
 					summary = "manage_account_status_progress_summary".localized()
 					registrationStateAssociatedUIColor = .greenSuccess500
+					registrationStateAssociatedTextColor = .greenSuccess900
+					registrationStateAssociatedBackgroundColor = .greenSuccess100
 				case .Failed:
 					humanReadableRegistrationState = "drawer_menu_account_connection_status_failed".localized()
 					summary = "manage_account_status_failed_summary".localized()
 					registrationStateAssociatedUIColor = .redDanger500
+					registrationStateAssociatedTextColor = .redDanger600
+					registrationStateAssociatedBackgroundColor = .redDanger100
 				case .Ok:
 					humanReadableRegistrationState = "drawer_menu_account_connection_status_connected".localized()
 					summary = "manage_account_status_connected_summary".localized()
 					registrationStateAssociatedUIColor = .greenSuccess500
+					registrationStateAssociatedTextColor = .greenSuccess900
+					registrationStateAssociatedBackgroundColor = .greenSuccess100
 				case .Refreshing:
 					humanReadableRegistrationState = "drawer_menu_account_connection_status_refreshing".localized()
 					summary = "manage_account_status_progress_summary".localized()
 					registrationStateAssociatedUIColor = .grayMain2c500
+					registrationStateAssociatedTextColor = .grayOffline900
+					registrationStateAssociatedBackgroundColor = .grayOffline100
 				}
 				
 				registrationState = state

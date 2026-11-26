@@ -68,7 +68,7 @@ struct SideMenuAccountRow: View {
 				VStack {
 					Text(model.humanReadableRegistrationState)
 						.default_text_style_uncolored(styleSize: 12)
-						.foregroundStyle(model.registrationStateAssociatedUIColor)
+						.foregroundStyle(model.registrationStateAssociatedTextColor)
 						.onChange(of: model.registrationStateAssociatedUIColor) { _ in
 							accountProfileViewModel.accountError = CoreContext.shared.accounts.contains {
 								($0.registrationState == .Cleared && $0.isDefaultAccount && UIApplication.shared.applicationState == .active) ||
@@ -77,7 +77,7 @@ struct SideMenuAccountRow: View {
 						}
 				}
 				.padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
-				.background(Color.grayMain2c200)
+				.background(model.registrationStateAssociatedBackgroundColor)
 				.cornerRadius(12)
 				.frame(height: 20)
 				.frame(maxWidth: .infinity, alignment: .leading)

@@ -49,17 +49,26 @@ extension Color {
 	static let gray600 = Color(hex: "#2E3030")
 	static let gray900 = Color(hex: "#070707")
 	
+	static let redDanger100 = Color(hex: "#FBE9E9")
 	static let redDanger200 = Color(hex: "#F5CCBE")
 	static let redDanger500 = Color(hex: "#DD5F5F")
+	static let redDanger600 = Color(hex: "#B03A3A")
 	static let redDanger700 = Color(hex: "#9E3548")
 	
+	static let greenSuccess100 = Color(hex: "#E4F4EC")
 	static let greenSuccess500 = Color(hex: "#4FAE80")
 	static let greenSuccess700 = Color(hex: "#377D71")
+	static let greenSuccess900 = Color(hex: "#2A7050")
 	static let greenSuccess200 = Color(hex: "#ACF5C1")
 	
 	static let blueInfo500 = Color(hex: "#4AA8FF")
 	
+	static let orangeWarning100 = Color(hex: "#F8F1D4")
 	static let orangeWarning600 = Color(hex: "#DBB820")
+	static let orangeWarning900 = Color(hex: "#776208")
+	
+	static let grayOffline100 = Color(hex: "#E9EDF1")
+	static let grayOffline900 = Color(hex: "#37475A")
 	
 	static let orangeAway = Color(hex: "#FFA645")
 	
