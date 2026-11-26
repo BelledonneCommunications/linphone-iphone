@@ -549,7 +549,9 @@ class ConversationViewModel: ObservableObject {
 					}
 				})
 				
-				self.chatMessageDelegateHolders.removeAll()
+				// Only remove a previous holder for this same message (re-attach case),
+				// keep holders of other messages so their status/IMDN keeps being updated
+				self.chatMessageDelegateHolders.removeAll { $0.chatMessage.messageId == message.messageId }
 				
 				self.chatMessageDelegateHolders.append(ChatMessageDelegateHolder(message: message, delegate: chatMessageDelegate))
 			}
