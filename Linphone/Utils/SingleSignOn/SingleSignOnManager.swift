@@ -164,6 +164,34 @@ class SingleSignOnManager {
 			   let refreshToken = self.authState?.refreshToken,
 			   let lRefreshToken = try?Factory.Instance.createBearerToken(token: refreshToken, expirationTime: Int(expire)),
 			   let authInfo = CoreContext.shared.bearerAuthInfoPendingPasswordUpdate {
+				if self.username.isEmpty || (authInfo.username ?? "").isEmpty {
+					Log.warn("\(self.TAG) No username information yet, extracting it from JWT token")
+					if let json = LinphoneUtils.jwtTokenToJson(token: accessToken) {
+						var extractedUsername = ""
+						if let sipIdentity = json["sip_identity"] as? String,
+						   let address = try? Factory.Instance.createAddress(addr: sipIdentity),
+						   let addressUsername = address.username, !addressUsername.isEmpty {
+							Log.info("\(self.TAG) Extracted username [\(addressUsername)] from SIP identity field of JWT token with value [\(sipIdentity)]")
+							extractedUsername = addressUsername
+						}
+						if extractedUsername.isEmpty, let preferredUsername = json["preferred_username"] as? String, !preferredUsername.isEmpty {
+							let value = preferredUsername.contains("@") ? String(preferredUsername.split(separator: "@")[0]) : preferredUsername
+							Log.info("\(self.TAG) Extracted username [\(value)] from preferred username field of JWT token")
+							extractedUsername = value
+						}
+						if extractedUsername.isEmpty, let jwtUsername = json["username"] as? String, !jwtUsername.isEmpty {
+							let value = jwtUsername.contains("@") ? String(jwtUsername.split(separator: "@")[0]) : jwtUsername
+							Log.info("\(self.TAG) Extracted username [\(value)] from username field of JWT token")
+							extractedUsername = value
+						}
+						
+						if !extractedUsername.isEmpty {
+							Log.info("\(self.TAG) Found username information in JWT token, storing it in AuthInfo")
+							authInfo.username = extractedUsername
+						}
+					}
+				}
+				
 				authInfo.accessToken = lAccessToken
 				authInfo.refreshToken = lRefreshToken
 				authInfo.tokenEndpointUri = self.authState?.tokenEndpointUri

@@ -223,4 +223,25 @@ class LinphoneUtils: NSObject {
 	public class func isCallLogMissed(callLog: CallLog) -> Bool {
 		return callLog.dir == .Incoming && (callLog.status == .Missed || callLog.status == .Aborted || callLog.status == .EarlyAborted)
 	}
+	
+	public class func jwtTokenToJson(token: String) -> [String: Any]? {
+		let parts = token.components(separatedBy: ".")
+		guard parts.count >= 2 else {
+			return nil
+		}
+		
+		var payload = parts[1]
+			.replacingOccurrences(of: "-", with: "+")
+			.replacingOccurrences(of: "_", with: "/")
+		let padding = (4 - payload.count % 4) % 4
+		if padding > 0 {
+			payload += String(repeating: "=", count: padding)
+		}
+		
+		guard let data = Data(base64Encoded: payload),
+			  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+			return nil
+		}
+		return json
+	}
 }
