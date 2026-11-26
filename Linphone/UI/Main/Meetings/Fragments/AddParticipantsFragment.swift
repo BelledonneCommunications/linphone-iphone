@@ -239,10 +239,10 @@ struct AddParticipantsFragment: View {
 											if let address = core.interpretUrl(url: contactAvatarModelTmp.phoneNumbersWithLabel.first?.phoneNumber ?? "", applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 												addParticipantsViewModel.selectParticipant(addr: address)
 											}
-										} else {
+										} else if !contactAvatarModelTmp.addresses.isEmpty || !contactAvatarModelTmp.phoneNumbersWithLabel.isEmpty {
 											DispatchQueue.main.async {
-												isShowSipAddressesPopup = true
-											}
+											isShowSipAddressesPopup = true
+										}
 										}
 									}
 								}
@@ -294,7 +294,7 @@ struct AddParticipantsFragment: View {
 			}
 			.padding()
 			
-			if isShowSipAddressesPopup && contactAvatarModel != nil {
+			if isShowSipAddressesPopup && contactAvatarModel != nil && (!contactAvatarModel!.addresses.isEmpty || !contactAvatarModel!.phoneNumbersWithLabel.isEmpty) {
 				VStack(alignment: .leading) {
 					HStack {
 						Text("contact_dialog_pick_phone_number_or_sip_address_title")

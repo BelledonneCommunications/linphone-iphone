@@ -47,6 +47,10 @@ struct ContactInnerFragment: View {
 	@Binding var isShowIncreaseTrustLevelPopup: Bool
 	@Binding var isShowEditContactFragmentInContactDetails: Bool
 	
+	private var hasAnyAddressOrPhoneNumber: Bool {
+		!contactAvatarModel.addresses.isEmpty || !contactAvatarModel.phoneNumbersWithLabel.isEmpty
+	}
+	
 	var body: some View {
 		NavigationView {
 			GeometryReader { geometry in
@@ -152,7 +156,9 @@ struct ContactInnerFragment: View {
 										
 										Button(action: {
 											CoreContext.shared.doOnCoreQueue { core in
-												if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
+												if contactAvatarModel.addresses.isEmpty && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
+												Log.info("[ContactInnerFragment] contact has no SIP address and no phone number, nothing to do")
+											} else if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 													do {
 														let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 														telecomManager.doCallOrJoinConf(address: address, isVideo: false)
@@ -185,15 +191,21 @@ struct ContactInnerFragment: View {
 												
 												Text("contact_call_action")
 													.default_text_style(styleSize: 14)
+													.frame(minWidth: 80)
 											}
 										})
+										.disabled(!hasAnyAddressOrPhoneNumber)
+										.opacity(hasAnyAddressOrPhoneNumber ? 1.0 : 0.35)
 										
+										Spacer()
+
 										if !AppServices.corePreferences.disableChatFeature {
-											Spacer()
 											
 											Button(action: {
 												CoreContext.shared.doOnCoreQueue { core in
-													if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
+													if contactAvatarModel.addresses.isEmpty && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
+												Log.info("[ContactInnerFragment] contact has no SIP address and no phone number, nothing to do")
+											} else if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 														do {
 															let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 															contactsListViewModel.createOneToOneChatRoomWith(remote: address)
@@ -226,16 +238,22 @@ struct ContactInnerFragment: View {
 													
 													Text("contact_message_action")
 														.default_text_style(styleSize: 14)
+														.frame(minWidth: 80)
 												}
 											})
+										.disabled(!hasAnyAddressOrPhoneNumber)
+										.opacity(hasAnyAddressOrPhoneNumber ? 1.0 : 0.35)
 										}
 										
-										Spacer()
 										
+										Spacer()
+
 										if !SharedMainViewModel.shared.disableVideoCall {
 											Button(action: {
 												CoreContext.shared.doOnCoreQueue { core in
-													if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
+													if contactAvatarModel.addresses.isEmpty && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
+												Log.info("[ContactInnerFragment] contact has no SIP address and no phone number, nothing to do")
+											} else if contactAvatarModel.addresses.count == 1 && contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 														do {
 															let address = try Factory.Instance.createAddress(addr: contactAvatarModel.address)
 															telecomManager.doCallOrJoinConf(address: address, isVideo: true)
@@ -268,11 +286,14 @@ struct ContactInnerFragment: View {
 													
 													Text("contact_video_call_action")
 														.default_text_style(styleSize: 14)
+														.frame(minWidth: 80)
 												}
 											})
+										.disabled(!hasAnyAddressOrPhoneNumber)
+										.opacity(hasAnyAddressOrPhoneNumber ? 1.0 : 0.35)
 											
-											Spacer()
 										}
+										Spacer()
 									}
 									.padding(.top, 20)
 									.frame(maxWidth: .infinity)

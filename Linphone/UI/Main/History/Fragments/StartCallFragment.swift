@@ -357,10 +357,10 @@ struct StartCallFragment: View {
 														}
 													}
 												}
-											} else {
+											} else if !contactAvatarModel.addresses.isEmpty || !contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 												DispatchQueue.main.async {
-													isShowSipAddressesPopup = true
-												}
+											isShowSipAddressesPopup = true
+										}
 											}
 										}
 									}
@@ -393,7 +393,7 @@ struct StartCallFragment: View {
 			}
 			.background(.white)
 			
-			if isShowSipAddressesPopup && contactAvatarModel != nil {
+			if isShowSipAddressesPopup && contactAvatarModel != nil && (!contactAvatarModel!.addresses.isEmpty || !contactAvatarModel!.phoneNumbersWithLabel.isEmpty) {
 				VStack(alignment: .leading) {
 					HStack {
 						Text("contact_dialog_pick_phone_number_or_sip_address_title")

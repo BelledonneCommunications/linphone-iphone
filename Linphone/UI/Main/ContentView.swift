@@ -1538,7 +1538,7 @@ struct ContentView: View {
 						}
 					}
 					
-					if let contactsListVM = contactsListViewModel, let displayedFriend = sharedMainViewModel.displayedFriend, isShowSipAddressesPopup {
+					if let contactsListVM = contactsListViewModel, let displayedFriend = sharedMainViewModel.displayedFriend, isShowSipAddressesPopup, !displayedFriend.addresses.isEmpty || !displayedFriend.phoneNumbersWithLabel.isEmpty {
 						SipAddressesPopup(
 							isShowSipAddressesPopup: $isShowSipAddressesPopup,
 							isShowSipAddressesPopupType: $isShowSipAddressesPopupType

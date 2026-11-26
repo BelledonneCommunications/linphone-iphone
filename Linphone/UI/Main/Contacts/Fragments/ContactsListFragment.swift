@@ -102,7 +102,7 @@ struct ContactRow: View {
 			
 			CoreContext.shared.doOnCoreQueue { core in
 				if let friend = contactAvatarModel.friend {
-					if let friendAddress = friend.address {
+					if let friendAddress = friend.address ?? friend.addresses.first {
 						startCallFunc(friendAddress)
 					} else if !friend.phoneNumbers.isEmpty {
 						if let address = core.interpretUrl(url: friend.phoneNumbers.first ?? "", applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
