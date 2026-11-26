@@ -11,6 +11,33 @@ Group changes to describe their impact on the project, as follows:
 	Security to invite users to upgrade in case of vulnerabilities.
 	
 	
+## [6.2.5] - 2026-11-26
+
+### Added
+- Call button with an empty dialer input now pre-fills the last manually dialed number (press again to call it)
+- All calls / Missed filter in the call history list
+- Open the chat room from the call log history details
+- Multi-step contact creation and edition flow
+
+### Changed
+- Account status badges in the side menu now use a light tinted background with dark text
+- Emoji-only chat messages displayed with a larger text size
+- Possibility to create Flexisip based chat rooms without end-to-end encryption
+- Updated translations from Weblate
+
+### Fixed
+- IMDN/status only updated on the last message when sending multiple messages in a row
+- SIP addresses popup no longer shown for single-address (e.g. LDAP) contacts, action buttons greyed out when the contact has no address
+- SIP address validation in the contact editor
+- Username extracted from the JWT access token for SSO auth info when missing
+- Third-party SIP accounts authentication
+- Local preview lost after switching call conference layout to mosaic
+- Chat room opening from notification tap
+- Contacts filter domain resolved against the current account
+- Stale chat room references in conversation view models and core-state checks in doOnCoreQueue serialized on the core queue
+- Fall back to outbound proxy when the registrar URI is empty
+
+
 ## [6.2.3] - 2026-09-08
 
 ### Changed

@@ -58,6 +58,7 @@
 		C6A5A9432C10B5ED0070FEA4 /* DecodableExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A5A9422C10B5ED0070FEA4 /* DecodableExtension.swift */; };
 		C6A5A9452C10B6270070FEA4 /* OIDAuthStateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A5A9442C10B6270070FEA4 /* OIDAuthStateExtension.swift */; };
 		C6A5A9482C10B6A30070FEA4 /* AuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A5A9472C10B6A30070FEA4 /* AuthState.swift */; };
+		C6BB1C1B2F9DE6E7003D1A01 /* LocalPreviewVideoHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */; };
 		C6DC4E3D2C199C4E009096FD /* BundleExtenion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DC4E3C2C199C4E009096FD /* BundleExtenion.swift */; };
 		C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DC4E3E2C19C289009096FD /* SideMenuEntry.swift */; };
 		D703F7082DC8C605005B8F75 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D703F7072DC8C5FF005B8F75 /* FilePicker.swift */; };
@@ -176,7 +177,6 @@
 		D7AEB9A02F3E219600298546 /* ContactDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */; };
 		D7B5066D2AEFA9B900CEB4E9 /* ContactInnerFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */; };
 		D7B5678E2B28888F00DE63EB /* CallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B5678D2B28888F00DE63EB /* CallView.swift */; };
-		C6BB1C1B2F9DE6E7003D1A01 /* LocalPreviewVideoHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */; };
 		D7B99E992B29B39000BE7BF2 /* CallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */; };
 		D7B99E9B2B29F7C300BE7BF2 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B99E9A2B29F7C200BE7BF2 /* ActivityIndicator.swift */; };
 		D7BC10D42F4EF18600F09BDA /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */; };
@@ -337,6 +337,7 @@
 		C6A5A9422C10B5ED0070FEA4 /* DecodableExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableExtension.swift; sourceTree = "<group>"; };
 		C6A5A9442C10B6270070FEA4 /* OIDAuthStateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OIDAuthStateExtension.swift; sourceTree = "<group>"; };
 		C6A5A9472C10B6A30070FEA4 /* AuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthState.swift; sourceTree = "<group>"; };
+		C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPreviewVideoHolder.swift; sourceTree = "<group>"; };
 		C6DC4E3C2C199C4E009096FD /* BundleExtenion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtenion.swift; sourceTree = "<group>"; };
 		C6DC4E3E2C19C289009096FD /* SideMenuEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuEntry.swift; sourceTree = "<group>"; };
 		C6E408AF2F8E1A33003E0F8C /* LinphoneAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LinphoneAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -472,7 +473,6 @@
 		D7AEB99F2F3E218A00298546 /* ContactDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDeviceModel.swift; sourceTree = "<group>"; };
 		D7B5066C2AEFA9B900CEB4E9 /* ContactInnerFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactInnerFragment.swift; sourceTree = "<group>"; };
 		D7B5678D2B28888F00DE63EB /* CallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallView.swift; sourceTree = "<group>"; };
-		C6BB1C1C2F9DE6E7003D1A02 /* LocalPreviewVideoHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPreviewVideoHolder.swift; sourceTree = "<group>"; };
 		D7B99E982B29B39000BE7BF2 /* CallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallViewModel.swift; sourceTree = "<group>"; };
 		D7B99E9A2B29F7C200BE7BF2 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		D7BC10D32F4EF18100F09BDA /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
@@ -1940,7 +1940,7 @@
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1961,7 +1961,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1984,7 +1984,7 @@
 				CODE_SIGN_ENTITLEMENTS = msgNotificationService/msgNotificationService.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2004,7 +2004,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.msgNotificationService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2260,7 +2260,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";
@@ -2303,7 +2303,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2324,7 +2324,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Linphone/Linphone.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Linphone/Preview Content\"";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
@@ -2365,7 +2365,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.3;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DUSE_CRASHLYTICS";
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2384,7 +2384,7 @@
 				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2399,7 +2399,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -2418,7 +2418,7 @@
 				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2433,7 +2433,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -2451,7 +2451,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2466,7 +2466,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.intentsExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -2487,7 +2487,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2502,7 +2502,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 6.2.4;
+				MARKETING_VERSION = 6.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.intentsExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
