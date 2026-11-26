@@ -662,6 +662,14 @@ class CoreContext: ObservableObject {
 			
 			UserDefaults.standard.set("6.2.0", forKey: "lastMigrationVersion")
 		}
+		
+		if lastMigration.compare("6.3.0", options: .numeric) == .orderedAscending &&
+			currentVersion.compare("6.3.0", options: .numeric) != .orderedAscending {
+			
+			self.runMigration630()
+			
+			UserDefaults.standard.set("6.3.0", forKey: "lastMigrationVersion")
+		}
 	}
 	
 	func runMigration600() {
@@ -679,6 +687,23 @@ class CoreContext: ObservableObject {
 		doOnCoreQueueCoreStarted { core in
 			self.mCore.chatMessageFilesDeletionEnabled = true
 			Log.info("[CoreContext] Core is allowed to automatically delete files from previously logged directories when a chat message is deleted")
+		}
+	}
+	
+	func runMigration630() {
+		// Migrate UDP/TCP/TLS listening ports from -1 (RANDOM) to -2 (DONT BIND)
+		let config = self.mCore.config!
+		if config.getInt(section: "sip", key: "sip_port", defaultValue: -1) == -1 {
+			Log.info("[CoreContext] Migrating UDP listening port from -1 to -2")
+			config.setInt(section: "sip", key: "sip_port", value: -2)
+		}
+		if config.getInt(section: "sip", key: "sip_tcp_port", defaultValue: -1) == -1 {
+			Log.info("[CoreContext] Migrating TCP listening port from -1 to -2")
+			config.setInt(section: "sip", key: "sip_tcp_port", value: -2)
+		}
+		if config.getInt(section: "sip", key: "sip_tls_port", defaultValue: -1) == -1 {
+			Log.info("[CoreContext] Migrating TLS listening port from -1 to -2")
+			config.setInt(section: "sip", key: "sip_tls_port", value: -2)
 		}
 	}
 }
