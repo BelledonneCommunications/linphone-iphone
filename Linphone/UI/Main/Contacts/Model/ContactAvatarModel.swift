@@ -69,7 +69,7 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 	}
 	
 	func resetContactAvatarModel(friend: Friend?, name: String, address: String, withPresence: Bool?) {
-		CoreContext.shared.doOnCoreQueue { _ in
+		CoreContext.shared.doOnCoreQueue { core in
 			self.friend = friend
 			let nameTmp = name
 			let addressTmp = address
@@ -83,6 +83,16 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 			if let friend = friend {
 				friend.phoneNumbersWithLabel.forEach { phoneNum in
 					phoneNumbersWithLabelTmp.append((label: phoneNum.label ?? "", phoneNumber: phoneNum.phoneNumber))
+				}
+			}
+			if friend == nil && !addressTmp.isEmpty {
+				// No friend (e.g. LDAP contact not in any local friend list, or plain address):
+				// still expose the address/phone number so callers can act on it directly
+				// instead of showing an empty SIP addresses popup.
+				if addressTmp.hasPrefix("sip:") {
+					addressesTmp = [addressTmp]
+				} else if let parsedAddress = core.interpretUrl(url: addressTmp, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)), let username = parsedAddress.username, !username.isEmpty {
+					phoneNumbersWithLabelTmp = [("", username)]
 				}
 			}
 			let nativeUriTmp = friend?.nativeUri ?? ""
@@ -222,7 +232,7 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 					})
 					
 					if avatarModel == nil {
-						avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: addressFriend.address!.asStringUriOnly(), withPresence: false)
+						avatarModel = ContactAvatarModel(friend: addressFriend, name: addressFriend.name ?? "", address: addressFriend.address!.asStringUriOnly(), withPresence: false)
 					}
 					completion(avatarModel!)
 				} else if !addressFriend.phoneNumbers.isEmpty {
@@ -232,7 +242,7 @@ class ContactAvatarModel: ObservableObject, Identifiable {
 					})
 					
 					if avatarModel == nil {
-						avatarModel = ContactAvatarModel(friend: nil, name: addressFriend.name!, address: addressFriend.phoneNumbers.first ?? addressFriend.address?.asStringUriOnly() ?? "", withPresence: false)
+						avatarModel = ContactAvatarModel(friend: addressFriend, name: addressFriend.name ?? "", address: addressFriend.phoneNumbers.first ?? addressFriend.address?.asStringUriOnly() ?? "", withPresence: false)
 					}
 					
 					completion(avatarModel!)

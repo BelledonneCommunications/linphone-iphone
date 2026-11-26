@@ -197,10 +197,10 @@ struct StartConversationFragment: View {
 													if let firstPhoneNumbersWithLabel = contactAvatarModel.phoneNumbersWithLabel.first, let phoneAddr = core.interpretUrl(url: firstPhoneNumbersWithLabel.phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
 														startConversationViewModel.createOneToOneChatRoomWith(remote: phoneAddr)
 													}
-												} else {
+												} else if !contactAvatarModel.addresses.isEmpty || !contactAvatarModel.phoneNumbersWithLabel.isEmpty {
 													DispatchQueue.main.async {
-														isShowSipAddressesPopup = true
-													}
+											isShowSipAddressesPopup = true
+										}
 												}
 											}
 										}
@@ -233,7 +233,7 @@ struct StartConversationFragment: View {
 				}
 				.background(.white)
 				
-				if isShowSipAddressesPopup && contactAvatarModel != nil {
+				if isShowSipAddressesPopup && contactAvatarModel != nil && (!contactAvatarModel!.addresses.isEmpty || !contactAvatarModel!.phoneNumbersWithLabel.isEmpty) {
 					VStack(alignment: .leading) {
 						HStack {
 							Text("contact_dialog_pick_phone_number_or_sip_address_title")
